@@ -14,7 +14,7 @@ Speedscale is a 3 part process: **Observe**, **Analyze**, and **Replay**.
 
 In **Observe**, Speedscale listeners pick up traffic in a late stage environment (eg. UAT, Staging, or even Production). The environment is instrumented via reverse proxy images or Kubernetes sidecars, depending on your platform.
 
-![](<.gitbook/assets/Speedscale Data Capture.png>)
+![](<.gitbook/assets/Speedscale data capture.png>)
 
 The listener is picking up 2 things -- inbound traffic into your API, as well as outbound traffic to its dependencies and the resulting responses. We do this so we can transform inbound transactions into replayable test cases, and the backend requests/responses into mocked services to stand in for the real systems during traffic replay.
 
