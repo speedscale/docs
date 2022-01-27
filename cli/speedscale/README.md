@@ -53,7 +53,7 @@ Start capturing in proxy mode with the [local capture guide](guides/local-observ
 Download the latest version of `speedscale`, which will update the binary in your `~/.speedscale` directory.
 
 ```
-curl -sL https://downloads.speedscale.com/speedscale-cli/install | sh
+curl -sL https://downloads.speedscale.com/speedscale-cli/install | bash
 ```
 
 Initialize `speedscale` and answer the questions that follow.

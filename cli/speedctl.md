@@ -29,7 +29,7 @@ speedctl version v0.5.5 compiled at 2021-05-13T18:41:31+0000
 Here is how to download a new version, it will update the binary in your `~/.speedscale` directory.
 
 ```
-curl -sL https://downloads.speedscale.com/speedctl/install | sh
+curl -sL https://downloads.speedscale.com/speedctl/install | bash
 ```
 
 The output looks like this:
