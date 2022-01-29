@@ -38,32 +38,40 @@ const config = {
     themeConfig:
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
+            colorMode: {
+                disableSwitch: true,
+            },
             navbar: {
-                title: 'Speedscale',
+                title: '',
                 logo: {
                     alt: 'Speedscale Logo',
-                    src: 'img/logo.png',
+                    src: 'img/speedscale.svg',
+                    width: 220,
+                    height: 72,
                 },
                 items: [
                     {
                         href: 'https://speedscale.com',
-                        position: 'left',
+                        position: 'right',
                         label: 'Home',
                     },
                     {
                         href: 'https://speedscale.com/blog',
                         label: 'Blog',
-                        position: 'left',
+                        position: 'right',
                     },
                     {
                         href: 'https://app.speedscale.com',
                         label: 'Login',
-                        position: 'left',
+                        position: 'right',
                     },
                     {
                         href: 'https://speedscale.com/free-trial',
                         label: 'Free Trial',
-                        position: 'left',
+                        position: 'right',
+                        // id: 'test',
+                        class: 'free-trial',
+                        // className: 'testClassName',
                     },
                 ],
             },

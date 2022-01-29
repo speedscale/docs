@@ -14,6 +14,7 @@
   --ifm-color-primary-lighter: #359962;
   --ifm-color-primary-lightest: #3cad6e;
   --ifm-code-font-size: 95%;
+  --ifm-navbar-height: 82px;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -38,6 +39,35 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
+.iconExternalLink_node_modules-\@docusaurus-theme-classic-lib-next-theme-IconExternalLink-styles-module {
+  display: none;
+}
+
+.navbar {
+  /* height: 82px; */
+  padding: 0 63px;
+}
+
+.navbar__logo {
+  height: 72px;
+}
+
+.navbar__logo img {
+  height: 72px;
+}
+
 .footer {
   display: none;
+}
+
+.free-trial {
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #FAA31A;
+    border-radius: 38px 38px 38px 38px;
+    padding-left: 20px;
+    padding-right: 20px !important;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-decoration: none;
 }
