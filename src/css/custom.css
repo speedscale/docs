@@ -48,6 +48,19 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   padding: 0 63px;
 }
 
+
+.navbar__link:hover, .navbar__link--active {
+    cursor: pointer;
+    color: var(--ifm-navbar-link-color);
+    text-decoration: none;
+}
+
+.free-trial:hover {
+    cursor: pointer;
+    color: #ffffff;
+    text-decoration: none;
+}
+
 .navbar__logo {
   height: 72px;
 }
@@ -61,10 +74,11 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 }
 
 .free-trial {
-    font-weight: 500;
+    font-weight: 600;
     color: #ffffff;
     background-color: #FAA31A;
     border-radius: 38px 38px 38px 38px;
+    margin-left: 15px;
     padding-left: 20px;
     padding-right: 20px !important;
     padding-top: 10px;
