@@ -1,8 +1,7 @@
----
-description: Your friendly command line tool for working with Speedscale cloud.
----
 
 # speedctl
+
+Your friendly command line tool for working with Speedscale cloud.
 
 ### About
 

@@ -10,13 +10,14 @@ const config = {
     tagline: 'Stress test your APIs with real world scenarios',
     url: 'https://speedscale.com/',
     baseUrl: '/',
-    onBrokenLinks: 'throw',
+    onBrokenLinks: 'warn',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
     organizationName: 'speedscale', // Usually your GitHub org/user name.
     projectName: 'docs', // Usually your repo name.
 
     // plugins: [require.resolve('@cmfcmf/docusaurus-search-local')],
+    plugins: [[require.resolve('@cmfcmf/docusaurus-search-local'), { indexBlog: false }]],
 
     presets: [
         [
@@ -70,8 +71,8 @@ const config = {
                         label: 'Free Trial',
                         position: 'right',
                         // id: 'test',
-                        class: 'free-trial',
-                        // className: 'testClassName',
+                        // class: 'free-trial',
+                        className: 'free-trial',
                     },
                 ],
             },
@@ -83,7 +84,7 @@ const config = {
                         items: [
                             {
                                 label: 'Tutorial',
-                                to: '/docs/intro',
+                                to: '/',
                             },
                         ],
                     },
@@ -107,10 +108,10 @@ const config = {
                     {
                         title: 'More',
                         items: [
-                            {
-                                label: 'Blog',
-                                to: '/blog',
-                            },
+                            // {
+                            //     label: 'Blog',
+                            //     to: '/blog',
+                            // },
                             {
                                 label: 'GitHub',
                                 href: 'https://github.com/facebook/docusaurus',
