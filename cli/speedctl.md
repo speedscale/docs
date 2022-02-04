@@ -6,9 +6,9 @@ description: Your friendly command line tool for working with Speedscale cloud.
 
 ### About
 
-The `speedctl` CLI tool is used to interact with the Speedscale cloud, and requires an active Speedscale subscription.  If you don't have an account with Speedscale the [speedscale CLI tool](speedscale/) is fully free, with a limited set of functionality.
+The `speedctl` CLI tool is used to interact with the Speedscale cloud, and requires an active Speedscale subscription. If you don't have an account with Speedscale the [speedscale CLI tool](speedscale/) is fully free, with a limited set of functionality.
 
-`speedctl` is the Speedscale API.  Use `speedctl` to programmatically get reports, create snapshots, update configs, etc.
+`speedctl` is the Speedscale API. Use `speedctl` to programmatically get reports, create snapshots, update configs, etc.
 
 ### Version
 
@@ -29,7 +29,7 @@ speedctl version v0.5.5 compiled at 2021-05-13T18:41:31+0000
 Here is how to download a new version, it will update the binary in your `~/.speedscale` directory.
 
 ```
-curl -sL https://downloads.speedscale.com/speedctl/install | sh
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
 The output looks like this:
