@@ -16,9 +16,12 @@
   "dependencies": {
     "@cmfcmf/docusaurus-search-local": "^0.9.4",
     "@docusaurus/core": "2.0.0-beta.14",
+    "@docusaurus/plugin-google-gtag": "2.0.0-beta.14",
     "@docusaurus/preset-classic": "2.0.0-beta.14",
     "@mdx-js/react": "^1.6.21",
     "clsx": "^1.1.1",
+    "docusaurus-plugin-hubspot": "^1.0.0",
+    "docusaurus-plugin-segment": "^1.0.3",
     "prism-react-renderer": "^1.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"

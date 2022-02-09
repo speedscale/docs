@@ -17,7 +17,24 @@ const config = {
     projectName: 'docs', // Usually your repo name.
 
     // plugins: [require.resolve('@cmfcmf/docusaurus-search-local')],
-    plugins: [[require.resolve('@cmfcmf/docusaurus-search-local'), { indexBlog: false }]],
+    plugins: [
+        [require.resolve('@cmfcmf/docusaurus-search-local'), { indexBlog: false }],
+        // [
+        //     '@docusaurus/plugin-google-gtag',
+        //     {
+        //         trackingID: 'G-0QE379GMML',
+        //         anonymizeIP: true,
+        //     },
+        // ],
+        [
+            'docusaurus-plugin-segment',
+            {
+                apiKey: 'GdKpBTA5Bb5u7fUJcMgWS8dHMPwM92wo',
+                // Add other options here.
+            },
+        ],
+        'docusaurus-plugin-hubspot',
+    ],
 
     presets: [
         [
@@ -32,8 +49,12 @@ const config = {
                 theme: {
                     customCss: require.resolve('./src/css/custom.css'),
                 },
+                gtag: {
+                    trackingID: 'G-0QE379GMML',
+                    anonymizeIP: true,
+                },
             }),
-        ],
+        ]
     ],
 
     themeConfig:
@@ -124,6 +145,9 @@ const config = {
             prism: {
                 theme: lightCodeTheme,
                 darkTheme: darkCodeTheme,
+            },
+            hubspot: {
+                accountId: 7910857,
             },
         }),
 };
