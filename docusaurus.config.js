@@ -54,9 +54,6 @@ const config = {
           trackingID: "G-0QE379GMML",
           anonymizeIP: true,
         },
-        hubspot: {
-          accountId: 7910857,
-        },
       }),
     ],
   ],
@@ -64,6 +61,9 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      hubspot: {
+        accountId: 7910857,
+      },
       colorMode: {
         disableSwitch: true,
       },
