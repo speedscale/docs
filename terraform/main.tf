@@ -101,3 +101,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 output "cloudfront" {
   value = aws_cloudfront_distribution.s3_distribution.domain_name
 }
+
+output "dist_id" {
+  value = aws_cloudfront_distribution.s3_distribution.id
+}

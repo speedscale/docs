@@ -16,6 +16,13 @@ resource "aws_iam_user_policy" "lb_ro" {
       ],
       "Effect": "Allow",
       "Resource": "${aws_s3_bucket.bucket.arn}/*"
+    },
+    {
+      "Action": [
+        "cloudfront:CreateInvalidation"
+      ],
+      "Effect": "Allow",
+      "Resource": "${aws_cloudfront_distribution.s3_distribution.arn}"
     }
   ]
 }
@@ -27,10 +34,10 @@ resource "aws_iam_access_key" "ci" {
 }
 
 output "ci_access_key" {
-    value = aws_iam_access_key.ci.id
+  value = aws_iam_access_key.ci.id
 }
 
 output "ci_secret_key" {
-    sensitive = true
-    value = aws_iam_access_key.ci.secret
+  sensitive = true
+  value     = aws_iam_access_key.ci.secret
 }
