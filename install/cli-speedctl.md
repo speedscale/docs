@@ -11,7 +11,7 @@ description: >-
 To install the `speedctl` command line utility onto your local machine, open your favorite terminal and run this command to download and run the installer:
 
 ```
-curl -sL https://downloads.speedscale.com/speedctl/install | sh
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
 You should see output that looks something like this:
