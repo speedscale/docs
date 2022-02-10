@@ -20,8 +20,9 @@ jobs:
       run: yarn build
 
     - name: upload
-      run: aws s3 sync build s3://docs.speedscale.com
+      run: aws s3 sync build s3://docs.speedscale.com && aws cloudfront create-invalidation --distribution-id $DIST_ID --paths '/*'
       env:
+        DIST_ID: E3K70OREWBZ6OV
         AWS_DEFAULT_REGION: us-east-1
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
