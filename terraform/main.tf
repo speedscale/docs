@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   default_root_object = "index.html"
 
 
-  aliases = ["${local.domain}", "docs-new.speedscale.com"]
+  aliases = ["${local.domain}"]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
