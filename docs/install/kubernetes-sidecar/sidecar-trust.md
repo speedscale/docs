@@ -11,11 +11,11 @@ Speedscale will attempt to use the Root CA Cert in the `ss-certs` secret. Interc
 Configuring TLS trust is language specific. Every runtime language has different characteristics and if you do not configure this correctly you will get TLS/SSL errors. Always configure this in a controlled environment first
 :::
 
-### &#x20;TLS Trust for golang
+### TLS Trust for golang
 
 Go applications honor the environment variable `SSL_CERT_FILE` which is automatically injected by the operator. This will point to the location where the speedscale cert volume mount is placed.
 
-### &#x20;TLS Trust for NodeJS
+### TLS Trust for NodeJS
 
 NodeJS applications newer than v7.3.0 can be customized with an environment variable `NODE_EXTRA_CA_CERTS` which is automatically injected by the operator. This will point to the location where the speedscale cert volume mount is placed.
 
@@ -23,7 +23,7 @@ NodeJS applications newer than v7.3.0 can be customized with an environment vari
 
 Ruby applications honor the environment variable `SSL_CERT_FILE` which is automatically injected by the operator. This will point to the location where the speedscale cert volume mount is placed.
 
-### &#x20;TLS Trust for Java
+### TLS Trust for Java
 
 Java applications utilize a truststore to determine which certificates will be trusted. The CA Cert inside the **ss-certs** secret needs to be added to your truststore. First download the certs from your cluster. Note that there are 2 files, **tls.key** and **tls.crt**. Both of these files are base64 encoded. This command will get the certificate and decode it all at once.
 

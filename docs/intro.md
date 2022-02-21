@@ -15,7 +15,7 @@ Speedscale is a 3 part process: **Observe**, **Analyze**, and **Replay**.
 
 ### Observe <a href="#observe" id="observe"></a>
 
-In **Observe**, Speedscale listeners pick up traffic in a late stage environment (eg. UAT, Staging, or even Production). The environment is instrumented via reverse proxy images or Kubernetes sidecars, depending on your platform.
+In **Observe**, Speedscale listeners pick up traffic in a late stage environment (eg. UAT, Staging, or even Production). The environment is instrumented via Kubernetes sidecars or proxy servers, depending on your platform.
 
 ![](./speedscale-data-capture.png)
 
