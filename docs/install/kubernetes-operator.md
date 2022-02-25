@@ -6,6 +6,12 @@ configuring the various Speedscale components.
 
 The Speedscale Kubernetes Operator works similarly to a service mesh controller like Istio or Linkerd. It waits for deployments to be applied to the cluster that contain specific annotations. It then automatically stands up an isolation test environment around the deployment. The operator itself is a deployment that will be always present on the cluster.
 
+### Install Wizard
+
+The easiest way to install the Speedscale Operator is through the [install wizard](./install-wizard.md).
+The additional steps here provode instructions for manually generating Speedscale Operator manifests, which.
+is necessary when manifests are sourced from version control for example.
+
 ### Install Operator <a href="#install-operator" id="install-operator"></a>
 
 The Speedscale Operator is compatible with Kubernetes 1.16 and newer releases. To deploy the operator, run:
