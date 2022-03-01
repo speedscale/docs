@@ -10,11 +10,13 @@ The Istio Service Mesh modifies a cluster and manages traffic routing. Istio is 
 
 ### 1. Set sidecar captureMode=istio
 
-On your Kubernetes workload, add the following annotation
+On your Kubernetes workload, add the following annotations
 
 ```
+sidecar.speedscale.com/inject: true
 sidecar.speedscale.com/captureMode: "istio"
 ```
+along with any other [sidecar annotations](sidecar-annotations.md).
 
 This will let the Speedscale operator know to patch the sidecar including a WebAssembly Envoy filter.
 
