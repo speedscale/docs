@@ -9,7 +9,7 @@ The Speedscale Kubernetes Operator works similarly to a service mesh controller 
 ### Install Wizard
 
 The easiest way to install the Speedscale Operator is through the [install wizard](./install-wizard.md).
-The additional steps here provode instructions for manually generating Speedscale Operator manifests, which.
+The additional steps here provode instructions for manually generating Speedscale Operator manifests, which
 is necessary when manifests are sourced from version control for example.
 
 ### Install Operator <a href="#install-operator" id="install-operator"></a>
