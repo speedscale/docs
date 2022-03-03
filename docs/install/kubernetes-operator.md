@@ -20,27 +20,7 @@ The Speedscale Operator is compatible with Kubernetes 1.16 and newer releases. T
 speedctl deploy operator -e $(kubectl config current-context) | kubectl apply -f -
 ```
 
-If you'd like to review the yaml beforehand then remove the call to `kubectl` and inspect. The output should look something like this:
-
-```
-namespace/speedscale created
-secret/gcrcred created
-secret/awscreds created
-secret/ss-certs created
-secret/operator-cert created
-configmap/speedscale-controller created
-role.rbac.authorization.k8s.io/speed-operator-leader-election-role created
-clusterrole.rbac.authorization.k8s.io/speed-operator-manager-role created
-clusterrole.rbac.authorization.k8s.io/speed-operator-proxy-role created
-clusterrole.rbac.authorization.k8s.io/speed-operator-metrics-reader created
-rolebinding.rbac.authorization.k8s.io/speed-operator-leader-election-rolebinding created
-clusterrolebinding.rbac.authorization.k8s.io/speed-operator-manager-rolebinding created
-clusterrolebinding.rbac.authorization.k8s.io/speed-operator-proxy-rolebinding created
-service/speed-operator-controller-manager-metrics-service created
-service/speed-operator-webhook-service created
-deployment.apps/speed-operator-controller-manager created
-mutatingwebhookconfiguration.admissionregistration.k8s.io/speed-operator-mutating-webhook-configuration created
-```
+If you'd like to review the yaml beforehand then remove the call to `kubectl` and inspect before applying.
 
 Once you're done, go ahead and make sure the operator pods are running properly:
 
