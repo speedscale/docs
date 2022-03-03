@@ -16,7 +16,7 @@ Here are additional annotation values for the sidecar:
 | `sidecar.speedscale.com/proxyType`          | Type of proxy the sidecar should operate as, either `transparent` (default) or `dual`. Only valid if `captureMode` is `proxy`, ignored otherwise. |
 | `sidecar.speedscale.com/proxyHost`          | Set the host where you want to forward traffic. Only valid if `captureMode` is `proxy` and `proxyType` is `dual`, ignored otherwise. |
 | `sidecar.speedscale.com/proxyPort`          | Set the port where you want to forward traffic. Only valid if `captureMode` is `proxy` and `proxyType` is `dual`, ignored otherwise. |
-| `sidecar.speedscale.com/proxyProtocol`      | Set the protocol for the outbound proxy server. Supported values are `tcp:socks5` or `tcp:http`. Only valid if `captureMode` is `proxy` and `proxyType` is `dual`, ignored otherwise. |
+| `sidecar.speedscale.com/proxyProtocol`      | Set the protocol for the outbound proxy server. Supported values are `tcp:socks` or `tcp:http`. Only valid if `captureMode` is `proxy` and `proxyType` is `dual`, ignored otherwise. |
 | `sidecar.speedscale.com/tls`                | Set to "all" to configure TLS interception (see more details below). |
 | `sidecar.speedscale.com/tlsinsecret`        | Kubernetes secret with the TLS keys to use for inbound traffic, these keys will be exposed to API clients. |
 | `sidecar.speedscale.com/tlsinprivate`       | Filename of the TLS Inbound Private key (default tls.key). |
