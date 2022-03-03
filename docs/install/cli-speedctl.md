@@ -1,12 +1,12 @@
 
 # CLI speedctl
 
-The speedctl command line tool is used to interact with Speedscale from your
-own terminal.
+The speedctl command line tool is used to interact with Speedscale from your own terminal. `speedctl` is the Speedscale
+programmable API and the primary way to perform setup actions like installing the Speedscale Operator, generating manifests, etc.
 
-### Download installer
+### Install
 
-To install the `speedctl` command line utility onto your local machine, open your favorite terminal and run this command to download and run the installer:
+Install or upgrade `speedctl`:
 
 ```
 sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
