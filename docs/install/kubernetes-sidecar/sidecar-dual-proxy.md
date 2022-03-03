@@ -1,7 +1,7 @@
 
 # Sidecar Dual Proxy Mode
 
-The default proxy mode of the sidecar in a Kubernetes environment is known as a `transparent` proxy, meaning it is transparent to the workload. However, there are times when that cannot be used, for example if you use host networking, then you must configure the `dual` proxy mode. The `dual` mode indicates there is a proxy to capture inbound traffic and another proxy to capture outbound traffic.
+The default proxy mode of the sidecar in a Kubernetes environment is known as a `transparent` proxy, meaning it is transparent to the workload. However, there are times when that cannot be used, for example if you use host networking in Kubernetes, then you must configure the `dual` proxy mode. The `dual` mode indicates there is a proxy to capture inbound traffic and another proxy to capture outbound traffic.
 
 ## Configure Dual Proxy
 
