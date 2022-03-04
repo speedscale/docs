@@ -12,7 +12,7 @@ The components should be deployed from right-to-left. This will ensure the envir
 
 ### Pre-Requisites <a href="#pre-requisites" id="pre-requisites"></a>
 
-In order to run the isolation scenario you will need: \* The ID of the Snapshot you want to replay. \* Kubernetes cluster and kubectl command. \* Your favorite terminal window.
+In order to run the isolation scenario you will need: * The ID of the Snapshot you want to replay. * Kubernetes cluster and kubectl command. * Your favorite terminal window.
 
 ### Create namespace <a href="#create-namespace" id="create-namespace"></a>
 

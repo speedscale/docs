@@ -35,11 +35,11 @@ The value of status will be what you see in the Speedscale UI:
 
 * RUNNING
 * PASSED
-* MISSED\_GOALS
+* MISSED_GOALS
 * STOPPED
 * INITIALIZING
 * PROCESSING
-* RPT\_STATUS\_ERROR
+* RPT_STATUS_ERROR
 
 Vanilla kubernetes deployment yaml files don't allow templated or dynamic variables, as is the case with commit hashes. Helm is a potential solution to this. Alternatively, a simple way to do this would be via an intermediate template file. For example, assume you have a file named **scenario.tpl.yaml**:
 

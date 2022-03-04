@@ -1,8 +1,8 @@
-# http\_res\_header
+# http_res_header
 
 ### Purpose
 
-http\_res\_header extracts an HTTP header from the response portion of the RRPair.
+http_res_header extracts an HTTP header from the response portion of the RRPair.
 
 ### Usage
 

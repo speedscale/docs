@@ -1,8 +1,8 @@
-# http\_queryparam
+# http_queryparam
 
 ### Purpose
 
-http\_queryparam extracts a query parameter by name.
+http_queryparam extracts a query parameter by name.
 
 ### Usage
 

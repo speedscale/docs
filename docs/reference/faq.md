@@ -41,7 +41,10 @@ If you are using [**port forwarding**](https://kubernetes.io/docs/tasks/access-a
 
 Speedscale can be configured to adhere to Pod Security Policy. With the exception of the init container, all other deployments and containers run as non-root with very basic permissions such as needing to access config maps and secrets.
 
-The init container is part of the sidecar installation. It currently needs the following security permissions: _runAsNonRoot - \*_false **the init container must run as root to run the** iptables command. \* NET\_RAW - needed to configure a transparent proxy \* NET\_ADMIN - needed to bind an address for a transparent proxy
+The init container is part of the sidecar installation. It currently needs the following security permissions:
+* _runAsNonRoot - _false **the init container must run as root to run the** iptables command.
+* NET_RAW - needed to configure a transparent proxy
+* NET_ADMIN - needed to bind an address for a transparent proxy
 
 These are described in our own pod security policy which you can install through speedctl.
 

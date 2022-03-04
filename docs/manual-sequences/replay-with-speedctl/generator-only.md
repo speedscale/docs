@@ -4,7 +4,10 @@ sidebar_position: 2
 
 # Generator only
 
-The generator is available as a docker container or a Kubernetes job. It will replay the traffic from your scenario against an application that you already have running. There are a few requirements: \* Id of the scenario that you want to replay \* Type of replay run (standard, performance, etc.) \* URL where the application is running
+The generator is available as a docker container or a Kubernetes job. It will replay the traffic from your scenario against an application that you already have running. There are a few requirements:
+* Id of the scenario that you want to replay
+* Type of replay run (standard, performance, etc.)
+* URL where the application is running
 
 ### Deploy the Generator in Kubernetes <a href="#deploy-the-generator-in-kubernetes" id="deploy-the-generator-in-kubernetes"></a>
 

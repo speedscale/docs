@@ -1,8 +1,8 @@
-# http\_req\_header
+# http_req_header
 
 ### Purpose
 
-http\_req\_header extracts an HTTP header from the request portion of the RRPair.
+http_req_header extracts an HTTP header from the request portion of the RRPair.
 
 ### Usage
 

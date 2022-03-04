@@ -1,8 +1,8 @@
-# http\_req\_body
+# http_req_body
 
 ### Purpose
 
-http\_req\_body extracts the HTTP request body of the RRPair.
+http_req_body extracts the HTTP request body of the RRPair.
 
 ### Usage
 

@@ -1,6 +1,6 @@
-# xml\_path
+# xml_path
 
-**xml\_path** extracts a Data element from an XML document using XPath. The input token must be an XML document and the XPath must be valid. Note that we use the excellent [xml\_path](https://github.com/antchfx/xmlquery) library but not all XPath combinations are supported. Check the github page to see if a more complicated XPath is supported.
+**xml_path** extracts a Data element from an XML document using XPath. The input token must be an XML document and the XPath must be valid. Note that we use the excellent [xml_path](https://github.com/antchfx/xmlquery) library but not all XPath combinations are supported. Check the github page to see if a more complicated XPath is supported.
 
 ### Usage
 

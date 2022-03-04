@@ -1,6 +1,6 @@
-# http\_auth
+# http_auth
 
-**http\_auth** parses the HTTP Authorization header and moves its parts into variables. `Bearer` and `Basic`  HTTP authentication schemes are currently supported. This transform will populate a specified username and password variable so they can be used downstream.
+**http_auth** parses the HTTP Authorization header and moves its parts into variables. `Bearer` and `Basic`  HTTP authentication schemes are currently supported. This transform will populate a specified username and password variable so they can be used downstream.
 
 ### Usage
 
