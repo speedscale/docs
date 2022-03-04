@@ -11,6 +11,8 @@ speedctl install
 
 Answer the wizard's questions to install the Speedscale Operator and instrument your service with Speedscale.
 
+Make sure you are on the [latest version](./cli-speedctl.md) of `speedctl`.
+
 ## Supported Flows
 
 - **Kubernetes** - Install the Speedscale Operator and Speedscale Sidecar Proxy with an active [kubectl config](https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/)
