@@ -45,7 +45,7 @@ The sidecar will be listening for incoming transactions, and must present to the
 * &#x20;**tlsinprivate** (optional) is the filename of the private key inside the secret (default: tls.key)
 * &#x20;**tlsinpublic** (optional) is the filename of the public cert inside the secret (default: tls.crt)
 
-When your deployment is injected, the sidecar will have an extra environment variable **TLS\_IN\_UNWRAP=true**, **TLS\_IN\_PUBLIC\_KEY**, **TLS\_IN\_PRIVATE\_KEY** and a volume mount to access the files from the provided secret.
+When your deployment is injected, the sidecar will have an extra environment variable **TLS_IN_UNWRAP=true**, **TLS_IN_PUBLIC_KEY**, **TLS_IN_PRIVATE_KEY** and a volume mount to access the files from the provided secret.
 
 ```
   annotations:
@@ -63,7 +63,7 @@ To unwrap outbound TLS calls there are multiple steps required:
 * Configure the sidecar to the TLS "all" setting.
 * Configure your application to trust the new TLS Certificates
 
-When your deployment is injected, the sidecar will have an extra environment variable **TLS\_OUT\_UNWRAP=true** and a volume mount to access the files from the **ss-certs** secret. The operator will automatically create a secret named **ss-certs** and put into the namespace. All that is required is to add this annotation to your deployment:
+When your deployment is injected, the sidecar will have an extra environment variable **TLS_OUT_UNWRAP=true** and a volume mount to access the files from the **ss-certs** secret. The operator will automatically create a secret named **ss-certs** and put into the namespace. All that is required is to add this annotation to your deployment:
 
 ```
   annotations:
@@ -79,7 +79,7 @@ If your backend system requires [**Mutual Authentication**](https://tools.ietf. 
 * &#x20;**tlsmutualprivate** (optional) is the filename of the private key inside the secret (default: tls.key)
 * &#x20;**tlsmutualpublic** (optional) is the filename of the public cert inside the secret (default: tls.crt)
 
-When your deployment is injected, the sidecar will have extra environment variables **TLS\_MUTUAL\_PUBLIC\_KEY** and **TLS\_MUTUAL\_PRIVATE\_KEY** and a volume mount to access the files from the provided secret. You must provide a Kubernetes secret that has the TLS private key and public cert. The name of the secret and the names of the files can be provided to **operator** to inject automatically.
+When your deployment is injected, the sidecar will have extra environment variables **TLS_MUTUAL_PUBLIC_KEY** and **TLS_MUTUAL_PRIVATE_KEY** and a volume mount to access the files from the provided secret. You must provide a Kubernetes secret that has the TLS private key and public cert. The name of the secret and the names of the files can be provided to **operator** to inject automatically.
 
 ```
   annotations:

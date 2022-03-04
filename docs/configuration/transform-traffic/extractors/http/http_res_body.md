@@ -1,15 +1,15 @@
-# http\_res\_body
+# http_res_body
 
 ### Purpose
 
-http\_res\_body extracts the HTTP response body from the RRPair.
+http_res_body extracts the HTTP response body from the RRPair.
 
 ### Usage
 
 ```
 "type": "http_res_body",
 ```
-
+ß
 This extractor has no user configuration.
 
 ### Example

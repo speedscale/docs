@@ -1,16 +1,17 @@
-# http\_url
+# http_url
 
 ### Purpose
 
-http\_url extracts the HTTP URL from the request portion of the RRPair.
+http_url extracts the HTTP URL from the request portion of the RRPair. If an index is specified then the path will be split into an array and the zero-indexed  path segment will be returned. If no index is specified than then entire path is returned.
 
 ### Usage
 
 ```
 "type": "http_url"
+"config": {
+    "index": "<number>"
+}
 ```
-
-This extractor has no user configuration.
 
 ### Example
 

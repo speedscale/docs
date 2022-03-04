@@ -22,7 +22,7 @@ secret/ss-certs created
 
 ### Install Sidecar
 
-To install a sidecar you need two pieces of information \* The application namespace: \* The service deployment name:
+To install a sidecar you need two pieces of information * The application namespace: * The service deployment name:
 
 Insert these values into the following statement:
 

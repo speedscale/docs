@@ -38,5 +38,5 @@ This tokenizer re-signs JWT authorization tokens with updated expiration times. 
 
 ### Notes <a href="#notes" id="notes"></a>
 
-* Many http\_auth tokens with different prefixes can be present in the same tokenizer configuration. Only the rrpairs matching the specific tokenizer will be utilized. Tokenizers are executed in the order they are presented in the configuration file.
+* Many http_auth tokens with different prefixes can be present in the same tokenizer configuration. Only the rrpairs matching the specific tokenizer will be utilized. Tokenizers are executed in the order they are presented in the configuration file.
 * Most errors are caused by the generator not having the secrets available in the filename provided OR the key being in the wrong format. For example, if **alg=RS512** then the secret file must contain a valid RSA private key.
