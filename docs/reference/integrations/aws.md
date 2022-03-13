@@ -19,4 +19,4 @@ The Speedscale sidecar is able to capture traffic sent to numerous AWS services 
 
 ### APN Documentation
 
-* [AWS Partner Portal](https://partners.amazonaws.com/partners/0010h00001kN7BPAA0/Speedscale)
+* [AWS Partner Solution Directory](https://partners.amazonaws.com/partners/0010h00001kN7BPAA0/Speedscale)
