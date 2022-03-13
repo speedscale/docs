@@ -10,10 +10,54 @@ Speedscale is a 3 part process: **Observe**, **Analyze**, and **Playback**. That
 
 ### Supported <a href="#supported" id="supported"></a>
 
-<table><thead><tr><th>Technology</th><th data-type="select">Type</th><th data-type="select">Support</th><th>Notes</th></tr></thead><tbody><tr><td>Auth0</td><td>API</td><td>Full</td><td></td></tr><tr><td>Basic Auth</td><td>Auth</td><td>Full</td><td></td></tr><tr><td>Bearer JWT</td><td>Auth</td><td>Full</td><td>See <a href="../configuration/tokenizers-1/httpauthorization">JWT Tokenizer</a></td></tr><tr><td>Cookies</td><td>Auth</td><td>Full</td><td>See <a href="../configuration/tokenizers-1/http-cookie-tokenizer">Cookie Tokenizer</a></td></tr><tr><td>Desktop</td><td>Environment</td><td>Full</td><td>See <a href="../install/cli-speedctl">CLI: speedctl</a></td></tr><tr><td>Docker (non-K8S)</td><td>Environment</td><td>Full</td><td>See <a href="../manual-sequences/reverse-proxy-sidecar">Reverse Proxy</a></td></tr><tr><td>DynamoDB</td><td>DBMS</td><td>Full</td><td></td></tr><tr><td>Elasticsearch</td><td>DBMS</td><td>Full</td><td></td></tr><tr><td>Kubernetes (1.16+)</td><td>Environment</td><td>Full</td><td></td></tr><tr><td>Gmail</td><td>API</td><td>Full</td><td></td></tr><tr><td>GraphQL</td><td>Protocol</td><td>Full</td><td></td></tr><tr><td>gRPC</td><td>Protocol</td><td>Full</td><td></td></tr><tr><td>HTTP 1.1 / 2.0</td><td>Protocol</td><td>Full</td><td></td></tr><tr><td>HTTP/S inbound</td><td>Protocol</td><td>Full</td><td>See <a href="../install/kubernetes-sidecar/sidecar-annotations">TLS</a></td></tr><tr><td>JSON</td><td>Protocol</td><td>Full</td><td></td></tr><tr><td>IMAP</td><td>Protocol</td><td>Observe Only</td><td></td></tr><tr><td>MongoDB</td><td>DBMS</td><td>Partial</td><td></td></tr><tr><td>Mutual TLS (mTLS)</td><td>Protocol</td><td>Partial</td><td>See <a href="../install/kubernetes-sidecar/sidecar-annotations">TLS</a> (for outbound only)</td></tr><tr><td>Outlook 365</td><td>API</td><td>Full</td><td></td></tr><tr><td>Postgres</td><td>DBMS</td><td>Partial</td><td>Full Observe, most playback</td></tr><tr><td>S3 / minio</td><td>API</td><td>Full</td><td></td></tr><tr><td>Stripe</td><td>API</td><td>Full</td><td></td></tr><tr><td>Twilio</td><td>API</td><td>Full</td><td></td></tr><tr><td>XML</td><td>Protocol</td><td>Full</td><td></td></tr><tr><td>Zapier</td><td>API</td><td>Full</td><td></td></tr><tr><td>Google Autopilot</td><td>Environment</td><td>Full</td><td>Requires reverse proxy</td></tr></tbody></table>
+| Technology | Type | Support | Notes |
+| ---------- | ---- | ------- | ----- |
+| Auth0 | API | Full | |
+| Basic Auth | Auth | Full | |
+| Bearer JWT | Auth | Full | See [JWT Tokenizer](../../configuration/tokenizers-1/httpauthorization) |
+| Cookies | Auth | Full | See [Cookie Tokenizer](../../configuration/tokenizers-1/http-cookie-tokenizer) |
+| Desktop | Environment | Full | See [CLI](https://cli.speedscale.com) |
+| Docker (non-K8S) | Environment | Full | See [CLI](https://cli.speedscale.com) |
+| DynamoDB | DBMS | Full |  |
+| Elasticsearch | DBMS | Full |  |
+| Kubernetes (1.16+) | Environment | Full |  |
+| Gmail | API | Full |  |
+| GraphQL | Protocol | Full |  |
+| gRPC | Protocol | Full |  |
+| HTTP 1.1 / 2.0 | Protocol | Full |  |
+| HTTP/S inbound | Protocol | Full | See [TLS](../../install/kubernetes-sidecar/sidecar-trust/) |
+| JSON | Protocol | Full |  |
+| IMAP | Protocol | Observe Only |  |
+| MongoDB | DBMS | Partial |  |
+| Mutual TLS (mTLS) | Protocol | Partial | See [TLS](../../install/kubernetes-sidecar/sidecar-trust/) |
+| Outlook 365 | API | Full |  |
+| Postgres | DBMS | Partial | Full Observe, most playback |
+| S3 / minio | API | Full |  |
+| Stripe | API | Full |  |
+| Twilio | API | Full |  |
+| XML | Protocol | Full |  |
+| Zapier | API | Full | |
 
+### Kubernetes Distributions
 
+Speedscale control plane, sidecar and replay system are compatible with Kubernetes versions v1.16 and newer.
 
+| Distribution | Notes |
+| ------------ | ----- |
+| AWS EKS | |
+| Azure AKS | |
+| Canonical Microk8s | Must enable DNS |
+| Civo Kubernetes | |
+| CNCF Kind | |
+| CNCF Minikube | Must add `--cni=true` flag |
+| DigitalOcean Kubernetes | |
+| Docker Desktop | |
+| GCP GKE Autopilot | Requires [Dual Proxy](../../install/kubernetes-sidecar/sidecar-dual-proxy/) |
+| GCP GKE Standard | |
+| Rancher Desktop | |
+| Rancher K3S | |
+| Rancher RKE2 | Rancher Marketplace [Helm Chart](https://rancher.com/docs/rancher/v2.6/en/helm-charts/) |
 
+### Questions?
 
 If there are other protocols that are integral to your organization, please let us know at [support@speedscale.com](mailto:support@speedscale.com) or join our [slack community](http://slack.speedscale.com).

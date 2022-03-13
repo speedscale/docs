@@ -30,13 +30,13 @@ Now you can select a specific report and export it using `speedctl`:
 
 ```
 export SPD_REPORT_ID=0
-speedctl exportNewRelic report ${SPD_REPORT_ID} --accountId ${NR_ACCOUNT_ID} --insightsKey ${NR_INSIGHTS_KEY}
+speedctl export newrelic report ${SPD_REPORT_ID} --accountId ${NR_ACCOUNT_ID} --insightsKey ${NR_INSIGHTS_KEY}
 ✔ done
 ```
 
 After you have exported the report, you should see it in the New Relic Dashboard.
 
-![](./speedscale-reports.png)
+![](./new-relic-dashboard.png)
 
 ### Questions?
 
