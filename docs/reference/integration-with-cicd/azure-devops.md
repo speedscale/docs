@@ -103,7 +103,7 @@ steps:
       echo "> Replacing the API Key"
       sed -i 's|apiKeyPlaceholder|${{ parameters.speedscale_api_key }}|g' ~/.speedscale/config.yaml
 
-      if [[ -f "~/.speedscale/config.yaml" ]]; then
+      if [[ -f ~/.speedscale/config.yaml ]]; then
        cat ~/.speedscale/config.yaml
       else
        echo "ERROR: ~/.speedscale/config.yaml not exists"
@@ -178,11 +178,15 @@ steps:
       report_status=$(~/.speedscale/speedctl get report "${REPORT_ID}" | jq -r .report.status)
       echo "Report stasus is $report_status"
       case "${report_status}" in
-        "Complete"|"Missed Goals"|"Passed"|"Stopped")
+        "Complete"|"Passed"|"Stopped")
         echo "> Tests passed with status: ${report_status}"
         ;;
+        "Missed Goals"|"Error")
+        echo "> Speedscale tests failed. Report status ${report_status} "
+        exit 1
+        ;;
         *)
-        echo "> Failing with status: ${report_status} "
+        echo "> Unexpected error occured. Report status: ${report_status} "
         exit 1
       esac
     displayName: 'speedscale - Get report results'
