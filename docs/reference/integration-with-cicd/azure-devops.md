@@ -186,8 +186,6 @@ steps:
         exit 1
       esac
     displayName: 'speedscale - Get report results'
-
-
 ```
 
 ### 2.2 Call pipeline template
