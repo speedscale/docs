@@ -23,48 +23,53 @@ In order to integrate Speedscale into your CICD, there are few steps that needs 
 You can use Speedscale in several places - in merge request, after deploy or ad-hoc. This guide provides
 general pipeline template to accomplish Speedscale tests execution but timing is solely upon your needs. 
 
-### CI/CD
+## Guide
+### 1. Speedscale config.yaml preparation
+In order to work with speedscale cli (speedctl), you need a config.yaml with your organisation specific values.
+You can get this file from you local, after you install speedctl and run `speedctl init`.
 
-In order to run Speedscale, pipeline need to perform three steps
-1. Install speectl cli
-2. Path the desired deployment
-3. Wait and show the report
-
-### Example pipeline
-
-Inputs explained
-- **k8s_deployment**
-  - Name of the deployment that should be tested by Speedscale
-- **k8s_namespace**
-  - Namespace where this deployment sits
-- **service_connection**
-  - Name of the AZDO Service connection to your Kubernetes cluster
-- **speedscale_api_key**
-  - Speedscale API Key - This should be handled as secret (e.g. load from Key Vault) 
-- **speedscale_scenario_id**
-  - Speedscale Snapshot ID which should be used in the test
-- **speedscale_testconfig_id**
-  - Speedscale Test Config ID (etc. standard, performance_10replicas, chaos_10pct)
-- **speedscale_cleanup**
-  - Whether deployment should be removed after tests, it's especially useful in merge requests
-- **speedscale_tag**
-  - Used to link the Speedscale run to relevant report (and possibly build) 
-
-Calling the template within your pipeline
-```yaml
-steps:  # Run Speedscale here
-  - template: speedscale.yml
-    parameters:
-      k8s_deployment: replace-with-deployment-name
-      k8s_namespace: replace-with-namespace
-      service_connection: replace-with-service-connection
-      speedscale_api_key: replace-with-api-key
-      speedscale_scenario_id: replace-with-scenario-id
-      speedscale_testconfig_id: replace-with-test-config-id
-      speedscale_tag: $(Build.BuildId)  # Proposed way is to use BuildID predefined variable 
+This file has to be placed next to your pipeline template otherwise path to the file needs to be adjusted.
+If you pipeline fails during `speedscale - Install cli` step with error `ERROR: ~/.speedscale/config.yaml not exists`
+you need to adjust file copy in `speedscale - Install cli` step, so it will use the correct file path.
+```bash
+cp config.yaml ~/.speedscale/config.yaml
 ```
 
-Template code
+It is important to replace apiKey with **apiKeyPlaceholder**, in order to prevent secrets exposure. 
+The placeholder will be replaced within the pipeline template.
+
+Example of `config.yaml`
+```yaml
+current-context: my-context
+contexts:
+  - name: my-context
+    kind: enterprise
+    loglevel: info
+    container-type: stable
+    container-registry: gcr.io/speedscale
+    tenant: "000062"
+    app-url: app.speedscale.com
+  - name: local
+    kind: local
+    loglevel: info
+    container-type: stable
+    container-registry: public.ecr.aws/speedscale
+tenants:
+  - id: 01fde7a0-b929-xxx
+    name: "000062"
+    bucket: sstenant-00xxx
+    region: us-east-1
+    apikey: apiKeyPlaceholder
+    stream: sstenant-00xxx
+preferences:
+  update_policy: prompt
+```
+ 
+### 2.1 Create pipeline template
+
+In order to easily integrate Speedscale into your CICD, the best way of doing to is using calling a pipeline template
+
+`speedscale.yml`:
 ```yaml
 ### Speedscale tests template
 
@@ -88,15 +93,22 @@ steps:
   # Get speedscale cli
   # https://docs.speedscale.com/install/cli-speedctl/
   - bash: |
+      ls -l
       # Copy config so speedscale can work
-      echo "> Copyting config"
+      echo "> Copy config"
       mkdir ~/.speedscale
-      cp factory/templates/speedscale-config.yaml ~/.speedscale/config.yaml
+      cp config.yaml ~/.speedscale/config.yaml
 
       # Replace the apikey
       echo "> Replacing the API Key"
       sed -i 's|apiKeyPlaceholder|${{ parameters.speedscale_api_key }}|g' ~/.speedscale/config.yaml
-      cat ~/.speedscale/config.yaml
+
+      if [[ -f "~/.speedscale/config.yaml" ]]; then
+       cat ~/.speedscale/config.yaml
+      else
+       echo "ERROR: ~/.speedscale/config.yaml not exists"
+       exit 1
+      fi
 
       # Download speedscale CLI
       sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
@@ -178,5 +190,38 @@ steps:
 
 ```
 
+### 2.2 Call pipeline template
 
+
+Inputs explained
+- **k8s_deployment**
+  - Name of the deployment that should be tested by Speedscale
+- **k8s_namespace**
+  - Namespace where this deployment sits
+- **service_connection**
+  - Name of the AZDO Service connection to your Kubernetes cluster
+- **speedscale_api_key**
+  - Speedscale API Key - This should be handled as secret (e.g. load from Key Vault)
+- **speedscale_scenario_id**
+  - Speedscale Snapshot ID which should be used in the test
+- **speedscale_testconfig_id**
+  - Speedscale Test Config ID (etc. standard, performance_10replicas, chaos_10pct)
+- **speedscale_cleanup**
+  - Whether deployment should be removed after tests, it's especially useful in merge requests
+- **speedscale_tag**
+  - Used to link the Speedscale run to relevant report (and possibly build)
+
+Calling the template within your pipeline
+```yaml
+steps:  # Run Speedscale here
+  - template: speedscale.yml
+    parameters:
+      k8s_deployment: replace-with-deployment-name
+      k8s_namespace: replace-with-namespace
+      service_connection: replace-with-service-connection
+      speedscale_api_key: replace-with-api-key
+      speedscale_scenario_id: replace-with-scenario-id
+      speedscale_testconfig_id: replace-with-test-config-id
+      speedscale_tag: $(Build.BuildId)  # Proposed way is to use BuildID predefined variable 
+```
 
