@@ -30,7 +30,7 @@ Now you can select a specific report and export it using `speedctl`:
 
 ```
 export SPD_REPORT_ID=0
-speedctl export newrelic report ${SPD_REPORT_ID} --accountId ${NR_ACCOUNT_ID} --insightsKey ${NR_INSIGHTS_KEY}
+speedctl export newrelic ${SPD_REPORT_ID} --accountId ${NR_ACCOUNT_ID} --insightsKey ${NR_INSIGHTS_KEY}
 ✔ done
 ```
 
