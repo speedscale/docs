@@ -13,7 +13,7 @@ from version control for example.
 
 Please ensure the [Kubernetes Operator](../kubernetes-operator.md) is running in your cluster before moving on.
 
-Select the pod you'd like to monitor and add the following annotation to your deployment:
+Select the workload (deployment, statefulset, job, etc.) you'd like to monitor and add the following annotation:
 
 ```
   annotations:
@@ -26,14 +26,14 @@ That's it. Next time you deploy you can check the pods with get pods.
 kubectl -n <namespace> get pods
 ```
 
-You should notice your pod count increases by one and data should be flowing.
+You should notice your container count increases by one and data should be flowing.
 
 ```
 NAME                            READY   STATUS    RESTARTS   AGE
 carts-xxxxxxxxxx-xxxxx          2/2     Running   0          38d
 ```
 
-By default, the Speedscale init container starts after any existing init containers in the pod.
+By default, the Speedscale init container starts after any existing init containers in the workload.
 
 ### Remove the Sidecar from Your Deployment
 
@@ -44,4 +44,4 @@ If you already have the sidecar installed, but you need for it to be removed, yo
     sidecar.speedscale.com/remove: "true"
 ```
 
-After deploying or patching your deployment, you should notice your pod count decrease by one and the sidecar is no longer attached.
+After deploying or patching your deployment, you should notice your container count decrease by one and the sidecar is no longer attached.
