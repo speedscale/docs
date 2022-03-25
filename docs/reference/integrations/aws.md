@@ -17,6 +17,6 @@ The Speedscale sidecar is able to capture traffic sent to numerous AWS services 
 * SQS and SNS
 * Opensearch
 
-### APN Documentation
+### AWS Documentation
 
 * [AWS Partner Solution Directory](https://partners.amazonaws.com/partners/0010h00001kN7BPAA0/Speedscale)
