@@ -9,9 +9,22 @@ Check the [Technology Support](technology-support.md) page.
 
 ### Why am I missing CPU and Memory metrics in my test report? <a href="#why-am-i-missing-cpu-and-memory-metrics-in-my-test-report" id="why-am-i-missing-cpu-and-memory-metrics-in-my-test-report"></a>
 
-Usually these metrics are missing because either the **metrics-server** is not installed or the generator does not have the correct permissions. Most cloud providers install the **metrics-server** by default, but you can find the full installation instructions here [metrics-server github repo](https://github.com/kubernetes-sigs/metrics-server) if necessary.  The server and permissions can be verified by running `kubectl get --raw "/apis/metrics.k8s.io"`, which will return an error if improperly configured.
+Usually these metrics are missing because either the **metrics-server** is not installed or the generator does not have the correct permissions. Most cloud providers install the **metrics-server** by default, but you can find the full installation instructions in the [metrics-server github repo](https://github.com/kubernetes-sigs/metrics-server) if necessary.  You can verify if the metrics server API objects are installed with `kubectl get --raw "/apis/metrics.k8s.io"`, which will return an error if the API Group is not present. If the `metrics.k8s.io` API Group is installed and you still have issues, double check that the Deployment and associate pods are healthy with `kubectl describe -n kube-system deployment/metrics-server`.
 
-The generator should be assigned the correct metrics collection permissions by the operator during the test run. However, if you are manually running the generator you may need to add metrics collections permissions to the generator's role like so:apiVersion: rbac.authorization.k8s.io/v1 kind: Role metadata: name: metricrole rules: - apiGroups: \["metrics.k8s.io"] resources: \["pods"] verbs: \["get", "list"]
+The generator should be assigned the correct metrics collection permissions by the operator during the test run. However, if you are manually running the generator you may need to add metrics collections permissions to the generator's role like so:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+    metadata:
+        name: metricrole
+rules:
+    - apiGroups: ["metrics.k8s.io"]
+      resources: ["pods"]
+      verbs: ["get", "list"]
+```
+
+For further troubleshooting, please refer to the [metrics-server docs](https://github.com/kubernetes-sigs/metrics-server/blob/master/KNOWN_ISSUES.md).
 
 ### What if my pod doesn't start? <a href="#what-if-my-pod-doesnt-start" id="what-if-my-pod-doesnt-start"></a>
 
