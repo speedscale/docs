@@ -1,0 +1,9 @@
+| Annotation                             | Description                                                                                                                                           |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `test.speedscale.com/tag`              | Link a unique tag, build hash, etc. to the Speedscale report. That way you can connect the report results to the version of the code that was tested. |
+| `test.speedscale.com/deployResponder`  | Set to `"true"` to deploy the responder. (default: false)                                                                                             |
+| `test.speedscale.com/deployGenerator`  | Set to `"false"` to not deploy the generator (default: true)                                                                                          |
+| `test.speedscale.com/secrets`          | Use this setting to provide a list of secrets for the replay system to load (ex: JWT passwords).                                                      |
+| `test.speedscale.com/cleanup`          | Setting to `"false"`will not remove the system under test.                                                                                            |
+| `test.speedscale.com/logCollection`    | Set to `"true"` to collect logs from the system under test (default: false).                                                                          |
+| `test.speedscale.com/responderLowData` | Set to "true" to force the responder into a high efficiency/low data output mode. This is ideal for high volume performance tests.                    |
