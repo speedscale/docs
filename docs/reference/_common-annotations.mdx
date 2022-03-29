@@ -1,0 +1,5 @@
+|  Annotation                          | Description |
+| ------------------------------------ | ----------- |
+| `operator.speedscale.com/ignore`     | The presence of this annotation on a workload instructs the operator to skip processing of the workload regardless of any another Speedscale annotations. Changes made to a workload manually AFTER this annotation was added won’t be reverted by the operator.|
+| `operator.speedscale.com/sut`        | The presence of this annotation on a workload indicates that this workload has a sidecar injected AND/OR replay running. (SUT stands for System Under Test) |
+| `operator.speedscale.com/managed-by` | This annotation on a workload or `TrafficReplay` CR defines a unique name of the operator instance which manages this resource (sourced from INSTANCE_ID var in the operator’s ConfigMap). This is to prevent race conditions in cases where multiple Speedscale operators are installed to different namespaces. |
