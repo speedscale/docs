@@ -39,3 +39,7 @@ $ GIT_USER=<Your GitHub username> yarn deploy
 ```
 
 If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+
+### Partials
+
+`.mdx` files beginning with a `_` character are partials. These are useful for including a piece of content in multiple locations, such as tables of annotations that can be inserted both in their relevant section, as well as stored in a single reference location.
