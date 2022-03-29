@@ -37,6 +37,14 @@ speedscale-forwarder-xxxxxxxxx-xxxxx                 1/1     Running   0        
 speedscale-redis-xxxxxxxxxx-xxxxx                    1/1     Running   0          10s
 ```
 
+#### Adding Image Pull Secrets
+
+If you need custom image pull secrets (for example, if you're rehosting Speedscale images in a dedicated registry), you may provide one or more secret names with the `--imgpullsecrets` argument, and the secrets will be attached to the service account.
+
+```
+speectl deploy operator --imgpullsecrets my-secret1,my-secret2 -e $(kubectl config current-context)
+```
+
 ### Uninstall Operator <a href="#uninstall-operator" id="uninstall-operator"></a>
 
 Before you uninstall the operator, make sure that you have uninjected the sidecar from your pods.
