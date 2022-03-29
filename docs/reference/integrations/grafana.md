@@ -1,4 +1,4 @@
-# Grafana
+# Grafana K6
 
 Speedscale can export traffic in the open source [Grafana K6](https://github.com/grafana/k6) test case format. This lets you use your familiar tools to send test transactions to your app with traffic that was collected by Speedscale.
 
