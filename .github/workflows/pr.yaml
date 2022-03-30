@@ -1,0 +1,21 @@
+name: PR Build
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: install
+      uses: bahmutov/npm-install@v1
+      with:
+        install-command: yarn --frozen-lockfile --silent
+
+    - name: build
+      run: yarn build
