@@ -20,5 +20,5 @@ Once the sidecar and init containers are removed from your workloads, you may be
 
 ## Add Speedscale to Your Desired Workloads
 
-You may now install Speedscale on your target workload. You may use the `speedctl install` wizard, or a [GitOps]() tool.
+You may now install Speedscale on your target workload. You may use the `speedctl install` wizard, or a [GitOps](overview.md/#gitops-install-for-kubernetes-via-manifests) tool.
 
