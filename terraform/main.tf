@@ -27,6 +27,28 @@ resource "aws_s3_bucket_acl" "bucket" {
  acl = "public-read"
 }
 
+resource "aws_s3_bucket_policy" "prod_public" {
+ bucket = aws_s3_bucket.bucket.id
+ policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Sid": "PublicReadGetObject",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": [
+              "s3:GetObject"
+          ],
+          "Resource": [
+              "arn:aws:s3:::${local.domain}/*"
+          ]
+      }
+  ]
+}
+POLICY
+}
+
 resource "aws_s3_bucket_website_configuration" "bucket" {
  bucket = aws_s3_bucket.bucket.id
 
