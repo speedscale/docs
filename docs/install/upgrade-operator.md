@@ -1,6 +1,7 @@
 # Upgrade Speedscale Operator v1 to Operator v2
 
-Speedscale Operator v2 introduces new management methods for inventory, capture, and replays. It is not backwards compatible with Speedscale Operator v1.
+Speedscale Operator v2 introduces new management methods for inventory, capture, and replays.
+It is not backwards compatible with Speedscale Operator v1.
 
 To upgrade to Speedscale Operator v2, follow these steps.
 
@@ -8,17 +9,63 @@ To upgrade to Speedscale Operator v2, follow these steps.
 
 Before starting the upgrade process, you must remove the Speedscale proxy sidecar and init containers.
 
-To do so, annotate your workloads with `sidecar.speedscale.com/remove: true`. You may use `kubectl edit`, `kubectl annotate`, or some other automation tool to accomplish this.
+To do so, annotate your workloads with `sidecar.speedscale.com/remove: true`. You may use `kubectl edit`,
+`kubectl annotate`, or some other automation tool to accomplish this.
 
-## Run the Upgrade Wizard
+Once you have removed Speedscale from existing workloads, your process for upgrading depends on
+how you manage your Kubernetes environments.
 
-Once the sidecar and init containers are removed from your workloads, you may begin the upgrade wizard, which will remove the operator v1 installation and replace it with operator v2.
+ * [Run the Upgrade Wizard](#option-1-run-the-upgrade-wizard)
+ * [GitOps](#option-3-update-with-helm-v2-chart)
+ * [Helm Chart](#option-3-update-with-helm-v2-chart)
+
+## Option 1: Run the Upgrade Wizard
+
+If use `speedctl` to manage your enviroment, you may begin the upgrade wizard,
+which will remove the operator v1 installation and replace it with operator v2.
 
 ```shell
  speedctl upgrade operator
 ```
 
+## Option 2: Update Resources in Git
+
+If you are using a GitOps engine to manage your Kubernetes resources, you will need to update your git
+repository with the new manifests.
+
+ 1. Regardless of how your GitOps engine works, you must save the contents of the Speedscale certificates in your cluster prior to upgrading. If the secrets are currently in git, no action is needed. To save the secrets locally, you can run `kubectl -n speedscale get secrets ss-certs -o yaml > speedscale-certs.yaml`
+ 2. Delete the old operator resources from the Kubernetes cluster.
+    i.  Remove the Speedscale manifests from git and commit the changes.
+    ii. Run `kubectl delete ns speedscale`
+    iii. If your GitOps engine does not delete resources when removed from git, run `kubectl delete mutatingwebhookconfiguration.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration`
+ 3. Upgrade speedctl to the latest version:  `sh -c "$(curl -Lfs https://downloads.speedcale.com/speedctl/install)"`
+ 4. Generate new operator manifests, but don’t push them to git yet: `speedctl deploy operator -e $(kubectl config current-context) > speedscale-operator.yaml`
+ 5. Replace the `data` entry of the `speedscale-certs` Secrets in `speedscale-operator.yaml` with the data of the certs you saved in step 1.
+ 6. Commit the contents of speedscale-operator.yaml to git
+ 7. Run `speedctl check operator` to verify control plane health.
+
+## Option 3: Update with Helm v2 Chart
+
+To upgrade from Operator v1 to Operator v2 with Helm, you must first uninstall the Helm release associated with Operator v1
+
+```shell
+ helm uninstall release_name
+```
+
+Next, remove the `MutatingWebhookConfiguration` that Speedscale installed.
+
+```shell
+kubectl delete mutatingwebhookconfiguration.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration
+```
+
+Finally, install Operator v2 with the updated [Helm Chart](https://github.com/speedscale/operator-helm).
+
+```shell
+helm repo add speedscale https://speedscale.github.io/operator-helm/
+helm install --generate-name speedscale/speedscale-operator -f values.yaml
+```
+
 ## Add Speedscale to Your Desired Workloads
 
 You may now install Speedscale on your target workload. You may use the `speedctl install` wizard, or a [GitOps](overview.md/#gitops-install-for-kubernetes-via-manifests) tool.
-
+ 
