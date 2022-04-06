@@ -1,4 +1,4 @@
-terraform_version_constraint = "~> 1.0.0"
+terraform_version_constraint = "~> 1.1.0"
 
 remote_state {
   backend = "s3"
