@@ -33,16 +33,16 @@ which will remove the operator v1 installation and replace it with operator v2.
 If you are using a GitOps engine to manage your Kubernetes resources, you will need to update your git
 repository with the new manifests.
 
- 1. Regardless of how your GitOps engine works, you must save the contents of the Speedscale certificates in your cluster prior to upgrading. If the secrets are currently in git, no action is needed. To save the secrets locally, you can run `kubectl -n speedscale get secrets ss-certs -o yaml > speedscale-certs.yaml`
- 2. Delete the old operator resources from the Kubernetes cluster.
-    i.  Remove the Speedscale manifests from git and commit the changes.
-    ii. Run `kubectl delete ns speedscale`
-    iii. If your GitOps engine does not delete resources when removed from git, run `kubectl delete mutatingwebhookconfiguration.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration`
- 3. Upgrade speedctl to the latest version:  `sh -c "$(curl -Lfs https://downloads.speedcale.com/speedctl/install)"`
- 4. Generate new operator manifests, but don’t push them to git yet: `speedctl deploy operator -e $(kubectl config current-context) > speedscale-operator.yaml`
- 5. Replace the `data` entry of the `speedscale-certs` Secrets in `speedscale-operator.yaml` with the data of the certs you saved in step 1.
- 6. Commit the contents of speedscale-operator.yaml to git
- 7. Run `speedctl check operator` to verify control plane health.
+1. Regardless of how your GitOps engine works, you must save the contents of the Speedscale certificates in your cluster prior to upgrading. If the secrets are currently in git, no action is needed. To save the secrets locally, you can run `kubectl -n speedscale get secrets ss-certs -o yaml > speedscale-certs.yaml`
+2. Delete the old operator resources from the Kubernetes cluster.
+    1. Remove the Speedscale manifests from git and commit the changes.
+    1. Run `kubectl delete ns speedscale`
+    1. If your GitOps engine does not delete resources when removed from git, run `kubectl delete mutatingwebhookconfiguration.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration`
+3. Upgrade speedctl to the latest version:  `sh -c "$(curl -Lfs https://downloads.speedcale.com/speedctl/install)"`
+4. Generate new operator manifests, but don’t push them to git yet: `speedctl deploy operator -e $(kubectl config current-context) > speedscale-operator.yaml`
+5. Replace the `data` entry of the `speedscale-certs` Secrets in `speedscale-operator.yaml` with the data of the certs you saved in step 1.
+6. Commit the contents of speedscale-operator.yaml to git
+7. Run `speedctl check operator` to verify control plane health.
 
 ## Option 3: Update with Helm v2 Chart
 
