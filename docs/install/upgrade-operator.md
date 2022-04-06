@@ -1,3 +1,6 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Upgrade Speedscale Operator v1 to Operator v2
 
 Speedscale Operator v2 introduces new management methods for inventory, capture, and replays.
@@ -12,15 +15,18 @@ Before starting the upgrade process, you must remove the Speedscale proxy sideca
 To do so, annotate your workloads with `sidecar.speedscale.com/remove: true`. You may use `kubectl edit`,
 `kubectl annotate`, or some other automation tool to accomplish this.
 
+
+## Perform Upgrade
+
 Once you have removed Speedscale from existing workloads, your process for upgrading depends on
 how you manage your Kubernetes environments.
 
- * [Run the Upgrade Wizard](#option-1-run-the-upgrade-wizard)
- * [GitOps](#option-3-update-with-helm-v2-chart)
- * [Helm Chart](#option-3-update-with-helm-v2-chart)
+ * Run the Upgrade Wizard
+ * GitOps
+ * Helm Chart
 
-## Option 1: Run the Upgrade Wizard
-
+<Tabs>
+<TabItem value="wizard" label="Wizard" default>
 If use `speedctl` to manage your enviroment, you may begin the upgrade wizard,
 which will remove the operator v1 installation and replace it with operator v2.
 
@@ -28,7 +34,9 @@ which will remove the operator v1 installation and replace it with operator v2.
  speedctl upgrade operator
 ```
 
-## Option 2: Update Resources in Git
+</TabItem>
+
+<TabItem value="gitops" label="GitOps">
 
 If you are using a GitOps engine to manage your Kubernetes resources, you will need to update your git
 repository with the new manifests.
@@ -44,7 +52,9 @@ repository with the new manifests.
 6. Commit the contents of speedscale-operator.yaml to git
 7. Run `speedctl check operator` to verify control plane health.
 
-## Option 3: Update with Helm v2 Chart
+</TabItem>
+
+<TabItem value="helm" label="Helm">
 
 To upgrade from Operator v1 to Operator v2 with Helm, you must first uninstall the Helm release associated with Operator v1
 
@@ -64,6 +74,9 @@ Finally, install Operator v2 with the updated [Helm Chart](https://github.com/sp
 helm repo add speedscale https://speedscale.github.io/operator-helm/
 helm install --generate-name speedscale/speedscale-operator -f values.yaml
 ```
+
+</TabItem>
+</Tabs>
 
 ## Add Speedscale to Your Desired Workloads
 
