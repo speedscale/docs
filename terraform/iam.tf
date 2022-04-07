@@ -16,8 +16,9 @@ resource "aws_iam_user_policy" "lb_ro" {
       ],
       "Effect": "Allow",
       "Resource": [
-        "${aws_s3_bucket.bucket.arn}/*"
+        "${aws_s3_bucket.bucket.arn}/*",
         "${aws_s3_bucket.preview.arn}/*"
+       ]
     },
     {
       "Action": [
