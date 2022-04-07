@@ -86,6 +86,17 @@ resource "aws_s3_bucket_policy" "preview" {
               "arn:aws:s3:::${local.preview_domain}",
               "arn:aws:s3:::${local.preview_domain}/*"
           ]
+      },
+      {
+          "Sid": "PublicReadGetObjectPR",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": [
+              "s3:GetObject"
+          ],
+          "Resource": [
+              "arn:aws:s3:::${local.preview_domain}/pr-*"
+          ]
       }
   ]
 }
@@ -93,7 +104,7 @@ POLICY
 }
 
 resource "aws_s3_bucket_website_configuration" "preview" {
- bucket = aws_s3_bucket.bucket.id
+ bucket = aws_s3_bucket.preview.id
 
  index_document {
    suffix = "index.html"
@@ -163,4 +174,8 @@ output "cloudfront" {
 
 output "dist_id" {
   value = aws_cloudfront_distribution.s3_distribution.id
+}
+
+output "preview_domain" {
+  value = aws_s3_bucket_website_configuration.preview.website_endpoint
 }
