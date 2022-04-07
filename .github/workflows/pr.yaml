@@ -17,6 +17,9 @@ jobs:
       with:
         install-command: yarn --frozen-lockfile --silent
 
+    - name: update url for preview
+      run: sed -i 's/baseUrl: "\/"/baseUrl: "\/pr-${{ github.event.pull_request.number }}"/g' docusaurus.config.js
+
     - name: build
       run: yarn build
 
@@ -26,3 +29,6 @@ jobs:
         AWS_DEFAULT_REGION: us-east-1
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: show url
+      run: echo 'http://docs-preview.speedscale.com.s3-website-us-east-1.amazonaws.com/pr-${{ github.event.pull_request.number }}/'
