@@ -11,14 +11,25 @@ locals {
   }
 
   domain          = "docs.speedscale.com"
+  preview_domain  = "docs-preview.speedscale.com"
   s3_origin_id    = "s3Origin"
   certificate_arn = "arn:aws:acm:us-east-1:880246755038:certificate/5e22e4e0-36d8-499e-92b8-42f4917dce23"
 }
 
 resource "aws_s3_bucket" "bucket" {
   bucket = local.domain
-  acl    = "public-read"
-  policy = <<POLICY
+
+  tags = local.tags
+}
+
+resource "aws_s3_bucket_acl" "bucket" {
+ bucket = aws_s3_bucket.bucket.id
+ acl = "public-read"
+}
+
+resource "aws_s3_bucket_policy" "prod_public" {
+ bucket = aws_s3_bucket.bucket.id
+ policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -36,13 +47,36 @@ resource "aws_s3_bucket" "bucket" {
   ]
 }
 POLICY
+}
 
-  website {
-    index_document = "index.html"
-    error_document = "404.html"
-  }
+resource "aws_s3_bucket_website_configuration" "bucket" {
+ bucket = aws_s3_bucket.bucket.id
+
+ index_document {
+   suffix = "index.html"
+ } 
+
+ error_document {
+   key = "404.html"
+ } 
+}
+
+resource "aws_s3_bucket" "preview" {
+  bucket = local.preview_domain
 
   tags = local.tags
+}
+
+resource "aws_s3_bucket_website_configuration" "preview" {
+ bucket = aws_s3_bucket.bucket.id
+
+ index_document {
+   suffix = "index.html"
+ } 
+
+ error_document {
+   key = "404.html"
+ }
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
