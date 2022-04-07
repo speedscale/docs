@@ -67,6 +67,31 @@ resource "aws_s3_bucket" "preview" {
   tags = local.tags
 }
 
+resource "aws_s3_bucket_policy" "preview" {
+ bucket = aws_s3_bucket.preview.id
+ policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Sid": "PrivatePreviewAllowAll",
+          "Effect": "Allow",
+          "Principal": {
+              "AWS": "${aws_iam_user.ci.arn}"
+          },
+          "Action": [
+              "s3:*"
+          ],
+          "Resource": [
+              "arn:aws:s3:::${local.preview_domain}",
+              "arn:aws:s3:::${local.preview_domain}/*"
+          ]
+      }
+  ]
+}
+POLICY
+}
+
 resource "aws_s3_bucket_website_configuration" "preview" {
  bucket = aws_s3_bucket.bucket.id
 
