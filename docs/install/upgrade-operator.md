@@ -56,24 +56,8 @@ repository with the new manifests.
 
 <TabItem value="helm" label="Helm">
 
-To upgrade from Operator v1 to Operator v2 with Helm, you must first uninstall the Helm release associated with Operator v1
+To upgrade from Operator v1 to Operator v2 with Helm, please follow the stops in the [Helm Chart repository](https://github.com/speedscale/operator-helm).
 
-```shell
- helm uninstall release_name
-```
-
-Next, remove the `MutatingWebhookConfiguration` that Speedscale installed.
-
-```shell
-kubectl delete mutatingwebhookconfiguration.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration
-```
-
-Finally, install Operator v2 with the updated [Helm Chart](https://github.com/speedscale/operator-helm).
-
-```shell
-helm repo add speedscale https://speedscale.github.io/operator-helm/
-helm install --generate-name speedscale/speedscale-operator -f values.yaml
-```
 
 </TabItem>
 </Tabs>
