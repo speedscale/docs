@@ -1,7 +1,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Upgrade Speedscale Operator v1 to Operator v2
+# Upgrade Operator v1 to v2
 
 Speedscale Operator v2 introduces new management methods for inventory, capture, and replays.
 It is not backwards compatible with Speedscale Operator v1.
@@ -15,6 +15,12 @@ Before starting the upgrade process, you must remove the Speedscale proxy sideca
 To do so, annotate your workloads with `sidecar.speedscale.com/remove: true`. You may use `kubectl edit`,
 `kubectl annotate`, or some other automation tool to accomplish this.
 
+As an example with `kubectl annotate`:
+
+```shell
+kubectl annotate deployment/<your deployment> sidecar.speedscale.com/remove=true
+```
+
 
 ## Perform Upgrade
 
@@ -27,12 +33,11 @@ how you manage your Kubernetes environments.
 
 <Tabs>
 <TabItem value="wizard" label="Wizard" default>
-If use `speedctl` to manage your enviroment, you may begin the upgrade wizard,
+If you use `speedctl` to manage your enviroment, you may begin the upgrade wizard,
 which will remove the operator v1 installation and replace it with operator v2.
 
 ```shell
- kubectl create namespace speedscale
- speedctl upgrade operator
+speedctl upgrade operator
 ```
 
 </TabItem>
