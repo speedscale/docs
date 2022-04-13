@@ -12,7 +12,7 @@ To upgrade to Speedscale Operator v2, follow these steps.
 
 Before starting the upgrade process, you must remove the Speedscale proxy sidecar and init containers.
 
-To do so, annotate your workloads with `sidecar.speedscale.com/remove: true`. You may use `kubectl edit`,
+To do so, annotate your workloads with `sidecar.speedscale.com/remove: "true"`. You may use `kubectl edit`,
 `kubectl annotate`, or some other automation tool to accomplish this.
 
 As an example with `kubectl annotate`:
