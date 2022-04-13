@@ -31,6 +31,7 @@ If use `speedctl` to manage your enviroment, you may begin the upgrade wizard,
 which will remove the operator v1 installation and replace it with operator v2.
 
 ```shell
+ kubectl create namespace speedscale
  speedctl upgrade operator
 ```
 
