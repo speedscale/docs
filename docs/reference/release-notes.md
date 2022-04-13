@@ -7,6 +7,18 @@ sidebar_position: 2
 Semantic versioning is used (MAJOR.MINOR.PATCH), release notes are for MAJOR
 and MINOR changes.
 
+## v0.11: 2022-01-25
+
+* Forwarder filter rules can now be stored in Speedscale cloud.
+
+## v0.10: 2021-12-07
+
+* Migration to Speedscale cloud API keys.
+
+## v0.9: 2021-10-20
+
+* Added AMQP support
+
 ## v0.8: 2021-08-23
 
 ### Fixed
