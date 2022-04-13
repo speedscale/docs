@@ -21,6 +21,16 @@ As an example with `kubectl annotate`:
 kubectl annotate deployment/<your deployment> sidecar.speedscale.com/remove=true
 ```
 
+## Update speedctl
+
+You will need to get the latest speedctl client to perform the upgrade:
+
+```
+speedctl update
+```
+
+Also, you will need to edit your `~/.speedscale/config.yaml` and update the `container_type` value to `v0.12`.
+
 
 ## Perform Upgrade
 
@@ -67,6 +77,14 @@ To upgrade from Operator v1 to Operator v2 with Helm, please follow the stops in
 
 </TabItem>
 </Tabs>
+
+## Check that the deployment was successful
+
+Once your deployment has been upgraded, run the following to ensure the Speedscale control plane is healthy:
+
+```
+speedctl check operator
+```
 
 ## Add Speedscale to Your Desired Workloads
 
