@@ -60,7 +60,7 @@ speedctl deploy operator -e $(kubectl config current-context) --dir
 Once the Speedscale Operator is installed you will need to add annotations to
 your application's deployment.  This can be done once via the [install
 wizard](./install-wizard.md) or by adding
-[Speedscale annotations](./kubernetes-sidecar/sidecar-annotations.md) to your
+[Speedscale annotations](./kubernetes-sidecar/sidecar-annotations.mdx) to your
 application's deployment.
 
 ## GitOps install for Kubernetes via Helm
@@ -71,6 +71,6 @@ for instructions on installing the [Speedscale Kubernetes Operator](./kubernetes
 Once the Speedscale Operator is installed you will need to add annotations to
 your application's deployment.  This can be done once via the [install
 wizard](./install-wizard.md) or by adding
-[Speedscale annotations](./kubernetes-sidecar/sidecar-annotations.md) to your
+[Speedscale annotations](./kubernetes-sidecar/sidecar-annotations.mdx) to your
 application's deployment.
 

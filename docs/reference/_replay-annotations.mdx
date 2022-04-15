@@ -1,9 +1,21 @@
-| Annotation                             | Description                                                                                                                                           |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `test.speedscale.com/tag`              | Link a unique tag, build hash, etc. to the Speedscale report. That way you can connect the report results to the version of the code that was tested. |
-| `test.speedscale.com/deployResponder`  | Set to `"true"` to deploy the responder. (default: false)                                                                                             |
-| `test.speedscale.com/deployGenerator`  | Set to `"false"` to not deploy the generator (default: true)                                                                                          |
-| `test.speedscale.com/secrets`          | Use this setting to provide a list of secrets for the replay system to load (ex: JWT passwords).                                                      |
-| `test.speedscale.com/cleanup`          | Setting to `"false"`will not remove the system under test.                                                                                            |
-| `test.speedscale.com/logCollection`    | Set to `"true"` to collect logs from the system under test (default: false).                                                                          |
-| `test.speedscale.com/responderLowData` | Set to "true" to force the responder into a high efficiency/low data output mode. This is ideal for high volume performance tests.                    |
+| Annotation                             | Description   |
+| -------------------------------------- | ------------- |
+| `replay.speedscale.com/env-id`           | Name of the `TrafficReplay` Custom Resource tied to a replay for this workload |
+| `replay.speedscale.com/snapshot-id`      | ID of the Snapshot that is used to recreate traffic. |
+| `replay.speedscale.com/testconfig-id`    | ID of the test configuration used to recreate to traffic. (Default: `standard`)|
+| `replay.speedscale.com/build-tag`        | Link a unique tag, build hash, etc. to the Speedscale report. That way you can connect the report results to the version of the code that was tested. |
+| `replay.speedscale.com/mode`             | Defines how a replay will test the system. Values are `full`, `responder-only`, and `generator-only` (default: `full`). `full` will deploy generators to recreate observed requests, and responders to recreate observed responses. `responder-only` will create an infinitely running replay that responds to requests with observed responses. `generator-only` will recreate obeserved requests to the system under replay. |
+| `replay.speedscale.com/timeout`        | Specifies a timeout for a replay. Ignored when replay mode is `responder-only` |
+| `replay.speedscale.com/secrets`          | Use this setting to provide a list of secrets for the replay system to load (ex: JWT passwords). |
+| `replay.speedscale.com/cleanup`          | Cleans up provisioned resources after a traffic replay. Possible values: `inventory`, `all`, `none` (default: `inventory`). `inventory` will remove objects related to Speedscale's replay of traffic once finished, as well as reverting changes to the workload. `all` removes all replay objects, as well as the system under test. `none` will leave all resources on the system after a test run. |
+| `replay.speedscale.com/log-collection`    | Set to `"true"` to collect logs from the system under test (default: false). |
+| `replay.speedscale.com/responder-low-data` | Set to "true" to force the responder into a high efficiency/low data output mode. This is ideal for high volume performance tests. |
+| `replay.speedscale.com/timeout` | Specifies a timeout for a replay. Ignored when replay mode is `responder-only` |
+
+:::note
+
+The operator will remove all listed replay annotations from the workload during admission review and move them into an associated `TrafficReplay` Custom Resource.
+This prevents side effects such as the operator observing and executing the same replay after it has finished.
+It also allows subsequent runs of the same replay by applying the same manifests, or incorporating the annotations into a GitOps workflow.
+
+:::

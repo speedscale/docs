@@ -6,7 +6,8 @@
 The fastest and most reliable way to install Speedscale components is using the `speedctl` install wizard.
 
 ```
-speedctl install
+kubectl create namespace/speedscale
+speedctl install operator
 ```
 
 Answer the wizard's questions to install the Speedscale Operator and instrument your service with Speedscale.

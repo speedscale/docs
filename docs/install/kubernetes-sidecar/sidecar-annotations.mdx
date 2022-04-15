@@ -10,13 +10,6 @@ Here are additional annotation values for the sidecar:
 
 <SidecarAnnotations />
 
-:::note
-
-For version 2 of the operator, be sure to check the [table of changes](../../reference/kubernetes-annotations.md#sidecar-annotations-1) for updated annotations.
-Unless otherwise noted, these annotations can be applied prior to installing version 2 without interference.
-
-:::
-
 
 ### Capture Mode
 
@@ -38,17 +31,17 @@ When your deployment is injected, the sidecar will have an extra environment var
 ```
   annotations:
     sidecar.speedscale.com/inject: "true"
-    sidecar.speedscale.com/tls: "all"
-    sidecar.speedscale.com/tlsinsecret: "my-tls-secret"
-    sidecar.speedscale.com/tlsinprivate: "tls.key"
-    sidecar.speedscale.com/tlsinpublic: "tls.crt"
+    sidecar.speedscale.com/tls-out: "true"
+    sidecar.speedscale.com/tls-in-secret: "my-tls-secret"
+    sidecar.speedscale.com/tls-in-private: "tls.key"
+    sidecar.speedscale.com/tls-in-public: "tls.crt"
 ```
 
 ### TLS Outbound Interception
 
 To unwrap outbound TLS calls there are multiple steps required:
 
-* Configure the sidecar to the TLS "all" setting.
+* Configure the sidecar to enable outbound TLS interception
 * Configure your application to trust the new TLS Certificates
 
 When your deployment is injected, the sidecar will have an extra environment variable **TLS_OUT_UNWRAP=true** and a volume mount to access the files from the **ss-certs** secret. The operator will automatically create a secret named **ss-certs** and put into the namespace. All that is required is to add this annotation to your deployment:
@@ -56,7 +49,7 @@ When your deployment is injected, the sidecar will have an extra environment var
 ```
   annotations:
     sidecar.speedscale.com/inject: "true"
-    sidecar.speedscale.com/tls: "all"
+    sidecar.speedscale.com/tls-out: "true"
 ```
 
 ### Mutual Authentication for Outbound Calls
@@ -72,10 +65,10 @@ When your deployment is injected, the sidecar will have extra environment variab
 ```
   annotations:
     sidecar.speedscale.com/inject: "true"
-    sidecar.speedscale.com/tls: "all"
-    sidecar.speedscale.com/tlsmutualsecret: "my-tls-secret"
-    sidecar.speedscale.com/tlsmutualprivate: "tls.key"
-    sidecar.speedscale.com/tlsmutualpublic: "tls.crt"
+    sidecar.speedscale.com/tls-out: "true"
+    sidecar.speedscale.com/tls-mutual-secret: "my-tls-secret"
+    sidecar.speedscale.com/tls-mutual-private: "tls.key"
+    sidecar.speedscale.com/tls-mutual-public: "tls.crt"
 ```
 
 ####

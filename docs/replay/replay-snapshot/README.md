@@ -19,6 +19,7 @@ When you replay these are the key ingredients that you will use:
 | Service Under Test (SUT) | This is your application that you want to test, it should be described in a manifest already, such as a deployment yaml.                                   |
 | Generator                | This is a job that will be replay the traffic into the Service Under Test.                                                                                 |
 | Forwarder                | This container forwards test results to the Speedscale datastore.                                                                                          |
+| TrafficReplay            | A Kubernetes Custom Resource that tracks the state of a running replay.
 | _(optional)_ Responder   | This is an optional container that can simulate the downstream dependencies behind the SUT.                                                                |
 | _(optional)_ Collector   | This is an optional container that will collect logs and other telemetry from the SUT. This container only works in Kubernetes environments.               |
 | _(optional)_ Operator    | This is an optional container that will orchestrate your replay in a Kubernetes environment. You can also manually deploy components without the Operator. |
@@ -34,25 +35,30 @@ Readiness Probe: Your deployment should have a [readiness probe](https://kuberne
 Add these annotations to your deployment (or job or stateful set or daemon set) to tell the operator to take action:
 
 ```
-test.speedscale.com/scenarioid: <scenarioID>
-test.speedscale.com/testconfigid: <test config ID>
+replay.speedscale.com/snapshot-id: <snapshot ID>
+replay.speedscale.com/testconfig-id: <test config ID>
 ```
 
 ### Deployment Modes
 
-When deploying a snapshot, the default behavior is to deploy the Speedscale traffic generator, but not the responder. This will mean that all external requests and services will still be accessible as they normally would be during traffic record time. In order to enable the Speedscale responder for external service mocking, the following annotation may be added:
+When running a snapshot, the default behavior is to deploy both a Responder and a Generator. This is represented by the following annotation:
 
 ```
-test.speedscale.com/deployResponder: "true"
+replay.speedscale.com/mode: full-replay
 ```
 
-Some instances may not require the use of the Speedscale traffic generator, which is different the default deployment behavior where the traffic generator is deployed automatically. To disable deploying the generator, use the following annotation:
+In this mode, traffic will be generated that matches traffic observed in your capture.
+Additionally, the Responder will reply for calls to external services.
+
+You may only want a Generator or a Responder for a given test. In that case, you may deploy one or the other with the following annotations on your workload.
 
 ```
-test.speedscale.com/deployGenerator: "false"
+replay.speedscale.com/mode: responder-only
+replay.speedscale.com/mode: generator-only
 ```
 
 There are additional options that can be toggled depending on your specific needs for snapshot replay.
+See the full list of [Replay annotations](./optional-replay-annotations.mdx) for options.
 
 ### Extra info <a href="#extra-info" id="extra-info"></a>
 
@@ -69,8 +75,8 @@ kind: Deployment
 metadata:
   name: moto-api
   annotations:
-    test.speedscale.com/scenarioid: "a08532d90041-4e0f-bc69-d88103aef564"
-    test.speedscale.com/testconfigid: "standard"
+    replay.speedscale.com/env-id: "a08532d90041-4e0f-bc69-d88103aef564"
+    replay.speedscale.com/testconfig-id: "standard"
   labels:
     app: moto-api
 spec:

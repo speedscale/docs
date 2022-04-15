@@ -66,7 +66,7 @@ metadata:
   name: sprint-boot-app
   annotations:
     sidecar.speedscale.com/inject: "true"
-    sidecar.speedscale.com/tls: "all"
+    sidecar.speedscale.com/tls-out: "true"
 spec:
   template:
     spec:

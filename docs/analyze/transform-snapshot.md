@@ -14,7 +14,7 @@ The Speedscale analyzer examines a set of traffic and outputs the artifacts need
 
 In many cases, the process will work out of the box using the `standard` tokenizer configuration.
 
-Some applications will require custom configuration using either [tokenizers](../configuration/tokenizers-1/) or [transforms](../configuration/transform-traffic/).  Read these sections before continuing.
+Some applications will require custom configuration using either [tokenizers](../../configuration/tokenizers-1/) or [transforms](../../configuration/transform-traffic/).  Read these sections before continuing.
 
 This process can become complex so make sure to join the Speedscale Slack [community](http://slack.speedscale.com) and we will be happy to walk through your specific use case.
 

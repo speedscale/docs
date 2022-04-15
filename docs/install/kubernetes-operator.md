@@ -17,6 +17,7 @@ is necessary when manifests are sourced from version control for example.
 The Speedscale Operator is compatible with Kubernetes 1.16 and newer releases. To deploy the operator, run:
 
 ```
+kubectl create namespace speedscale
 speedctl deploy operator -e $(kubectl config current-context) | kubectl apply -f -
 ```
 
@@ -28,16 +29,15 @@ Once you're done, go ahead and make sure the operator pods are running properly:
 kubectl -n speedscale get pods
 ```
 
-Note: The operator will start 2 other pods (forwarder and redis) after it starts. On your cluster the ids of the pods will be different.
+Note: The Operator will start 2 pods (the operator itself and the Speedscale Forwarder) after it starts. On your cluster the ids of the pods will be different.
 
 ```
-NAME                                                 READY   STATUS    RESTARTS   AGE
-speed-operator-controller-manager-xxxxxxxxxx-xxxxx   2/2     Running   0          16s
-speedscale-forwarder-xxxxxxxxx-xxxxx                 1/1     Running   0          10s
-speedscale-redis-xxxxxxxxxx-xxxxx                    1/1     Running   0          10s
+NAME                                    READY   STATUS    RESTARTS   AGE
+speedscale-forwarder-xxxxxxxxxx-xxxxx   1/1     Running   0          5s
+speedscale-operator-xxxxxxxxxx-xxxxx    1/1     Running   0          15s
 ```
 
-#### Adding Image Pull Secrets
+#### Adding Image Pull Secrets <a href="#add-img-pull-secrets" id="add-img-pull-secrets"></a>
 
 If you need custom image pull secrets (for example, if you're rehosting Speedscale images in a dedicated registry), you may provide one or more secret names with the `--imgpullsecrets` argument, and the secrets will be attached to the service account.
 
@@ -53,6 +53,7 @@ To uninstall the Speedscale Operator, run the following command:
 
 ```
 speedctl deploy operator | kubectl delete -f -
+kubectl delete namespace/speedscale
 ```
 
 This command must be run to properly delete the Operator.
@@ -88,7 +89,7 @@ dial tcp xx.xx.xx.xx:443: connect: connection refused
 If you experience this problem, you can fix your cluster by deleting the webhook manually:
 
 ```
-kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration
+kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
 ```
 
 After the webhook has been deleted, re-run the full operator delete command to make sure that service roles and other items are properly cleaned up.
