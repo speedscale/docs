@@ -14,9 +14,9 @@ On your Kubernetes workload, add the following annotations
 
 ```
 sidecar.speedscale.com/inject: true
-sidecar.speedscale.com/captureMode: "istio"
+sidecar.speedscale.com/capture-mode: "istio"
 ```
-along with any other [sidecar annotations](sidecar-annotations.md).
+along with any other [sidecar annotations](../sidecar-annotations/).
 
 This will let the Speedscale operator know to patch the sidecar including a WebAssembly Envoy filter.
 
