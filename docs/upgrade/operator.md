@@ -35,6 +35,12 @@ As an example with `kubectl annotate`:
 kubectl annotate deployment/<your deployment> sidecar.speedscale.com/remove=true
 ```
 
+To update all workloads in a namespace:
+
+```
+kubectl annotate --namespace=<your namespace> <workload type> --all sidecar.speedscale.com/remove=true
+```
+
 ## Update speedctl
 
 You will need to get the latest speedctl client to perform the upgrade:
@@ -42,8 +48,6 @@ You will need to get the latest speedctl client to perform the upgrade:
 ```
 speedctl update
 ```
-
-
 
 Next, you will need to edit your `~/.speedscale/config.yaml` and update the `container_type` value to `v0.12`.
 
