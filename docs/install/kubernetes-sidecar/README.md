@@ -37,11 +37,11 @@ By default, the Speedscale init container starts after any existing init contain
 
 ### Remove the Sidecar from Your Deployment
 
-If you already have the sidecar installed, but you need for it to be removed, you add another annotation to your deployment with the instruction to remove:
+If you already have the sidecar installed, but you need for it to be removed, you may either set the `sidecare.speedscale.com/inject` annotation to `false`, or remove it:
 
 ```
   annotations:
-    sidecar.speedscale.com/remove: "true"
+    sidecar.speedscale.com/inject: "false"
 ```
 
 After deploying or patching your deployment, you should notice your container count decrease by one and the sidecar is no longer attached.
