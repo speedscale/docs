@@ -75,7 +75,7 @@ kind: Deployment
 metadata:
   name: moto-api
   annotations:
-    replay.speedscale.com/env-id: "a08532d90041-4e0f-bc69-d88103aef564"
+    replay.speedscale.com/snapshot-id: "a08532d90041-4e0f-bc69-d88103aef564"
     replay.speedscale.com/testconfig-id: "standard"
   labels:
     app: moto-api
