@@ -21,3 +21,5 @@ Below that you can find a summary of failures by URL. Alternatively it may be in
 And finally there is a list of every single assertion that was performed automatically. You can click on any one of these to see the actual and expected results.
 
 ![Assertion with Side by Side Diff](./screen-shot-2021-08-13-at-11.53.15-am.png)
+
+If your application has an unexpectedly low success rate, or displays other unusual behavior, reach out on the Speedscale Slack [community](http://slack.speedscale.com) or via [email](mailto:support@speedscale.com). We will be happy to walk through your specific use case. The Speedscale team is working on a configuration UI but for now we're happier to do the work for you than to have you stumble through this complex topic. If you're feeling adventurous, you can jump over to [transforms](../../configuration/transform-traffic/README.md) to learn more.

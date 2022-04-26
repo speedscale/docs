@@ -1,3 +1,6 @@
+---
+sidebar_position: 2
+---
 
 # View Snapshot
 
@@ -11,4 +14,4 @@ In addition to these details, a Service Map is shown that visually represents th
 
 ![Service Map](../../select-service-map.png)
 
-Congratulations, you have created your first snapshot. Now it's time to replay.
+Congratulations, you have created your first snapshot. Now it's time to transform the traffic and replay.
