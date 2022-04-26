@@ -12,6 +12,7 @@ When a new Service-Under-Test (SUT) workload is applied to the cluster, the oper
 
 Here are a few quick things that will help you understand if your replay is running:
 1. Check the operator logs, you should this message `traffic replay initiated`
+2. Check for `replay` objects in the namespace `kubectl get replay -n NAMESPACE`
 2. Check the [reports interface](https://app.speedscale.com/reports) to see if a new report has been generated
 3. Check your Service Under Test (SUT)'s namespace to see if a Speedscale generator or responder pod have been created
 
