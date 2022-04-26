@@ -8,13 +8,22 @@ Pull cord in case of emergency
 
 When a new Service-Under-Test (SUT) workload is applied to the cluster, the operator manages a complex automated workflow. These workflow events happen independently of the Speedscale cloud service. If no report is appearing in Speedscale cloud, the problem may be in the test cluster.
 
+## How to check if your replay is running
+
+Here are a few quick things that will help you understand if your replay is running:
+1. Check the operator logs, you should this message `traffic replay initiated`
+2. Check the [reports interface](https://app.speedscale.com/reports) to see if a new report has been generated
+3. Check your Service Under Test (SUT)'s namespace to see if a Speedscale generator or responder pod have been created
+
+If you don't see one or all of these items, double check your operator installation and your annotations. Reminder: make sure you are running the [latest operator](https://docs.speedscale.com/upgrade/operator/).
+
 As a reminder, you can view the operator logs using this kubectl command:
 
 ```
 kubectl -n speedscale logs deployment/speedscale-operator
 ```
 
-Let's walk through the sequence of events and show some troubleshooting steps to help you determine if everything is working properly in your cluster.&#x20;
+Now, let's walk through more detail with the sequence of events and show some troubleshooting steps to help you determine if everything is working properly in your cluster.&#x20;
 
 ## 1. Operator receives [mutating admission webhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/)
 
