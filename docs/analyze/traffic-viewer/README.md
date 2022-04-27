@@ -13,9 +13,13 @@ Click on one of the instances to open the Traffic Viewer which provides:
 
 ### Filtering <a href="#analyze-steps" id="analyze-steps"></a>
 
-Utilize the filters to drill down even further into a subset of transactions.
+Utilize the filters to drill down even further into a subset of transactions or to filter out unwanted traffic like heartbeats.
 
 ![Filters](./select-filters.png)
+
+:::info
+Did you know that you can filter traffic so that it is never sent to Speedscale cloud? This can help you prevent noise, lower your bill and keep private data safe. Check out the [filters](../../configuration/filters/from-traffic-viewer) section for suggestions.
+:::
 
 ### Request Response Details <a href="#overview" id="overview"></a>
 
