@@ -10,10 +10,8 @@ Speedscale provides the ability to filter traffic matching a pattern. Filters ar
 * **Assertions** - to tailor which tests are run for specific traffic patterns
 
 :::info
-The simplest way to build a forwarder filter is to assemble it in Traffic Viewer and then click the `Copy as JSON` button on the top right. Using this UI and checking the resultant JSON is also the easiest way to learn how filters are constructed. The rest of this section is reference material for refining existing filters.
+The simplest way to build a forwarder filter is to assemble it in Traffic Viewer. Editing the JSON is a lot more work so check out the [instructions](./from-traffic-viewer) here
 :::
-
-![Click "Copy to clipboard" in the Traffic Viewer to export a Forwarder filter](./image(9).png)
 
 ### Storage
 

@@ -1,10 +1,14 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Structure
 
-Fitler rule sets are collections of filters combined together with an operator.
+:::note
+These sections are provided for reference, most users should create filters using the [UI](../from-traffic-viewer).
+:::
+
+Filter rule sets are collections of filters combined together with an operator.
 
 Each individual filter has a condition, criteria and an operator. Condition/Criteria pairs are combined together with an `AND` or `OR` like a simple equation to determine if an RRPair is included. The basic format is:
 
