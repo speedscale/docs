@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # From Traffic Viewer
 
-Filters can be saved from the traffic viewer and then used to prevent traffic from ever reaching Speedscale. Most users will create fitlers using this UI. Filter rules are stored in Speedscale cloud and applied by the Speedscale Forwarder. Once a filter is applied to the forwarder, no traffic will leave your network that is prohibited by the filter.
+Filters can be saved from the traffic viewer and then used to prevent traffic from ever reaching Speedscale. Most users will create filters using this UI. Filter rules are stored in Speedscale cloud and applied by the Speedscale Forwarder. Once a filter is applied to the forwarder, no traffic will leave your network that is prohibited by the filter.
 
 Here's how you apply them:
 
