@@ -133,10 +133,10 @@ steps:
       patch: |
         metadata:
           annotations:
-            test.speedscale.com/scenarioid: "${{ parameters.speedscale_scenario_id }}"
-            test.speedscale.com/testconfigid: "${{ parameters.speedscale_testconfig_id }}"
-            test.speedscale.com/cleanup: "${{ parameters.speedscale_cleanup }}"
-            test.speedscale.com/tag: "${{ parameters.speedscale_tag }}"
+            replay.speedscale.com/snapshot-id: "${{ parameters.speedscale_scenario_id }}"
+            replay.speedscale.com/testconfig-id: "${{ parameters.speedscale_testconfig_id }}"
+            replay.speedscale.com/cleanup: "${{ parameters.speedscale_cleanup }}"
+            replay.speedscale.com/build-tag: "${{ parameters.speedscale_tag }}"
             sidecar.speedscale.com/inject: "true"
 
   # Get the test report results and show them

@@ -131,10 +131,10 @@ kind: Deployment
 metadata:
   name: my-deployment
   annotations:
-    test.speedscale.com/scenarioid: 954957b1-8aa5-453d-bace-a766f1992a2f
-    test.speedscale.com/testconfigid: standard
-    test.speedscale.com/cleanup: "true"
-    test.speedscale.com/tag: REPORT_TAG
+    replay.speedscale.com/snapshot-id: 954957b1-8aa5-453d-bace-a766f1992a2f
+    replay.speedscale.com/testconfig-id: standard
+    replay.speedscale.com/cleanup: "true"
+    replay.speedscale.com/build-tag: REPORT_TAG
     sidecar.speedscale.com/inject: "true"
 ```
 

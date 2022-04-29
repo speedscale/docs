@@ -14,9 +14,9 @@ kind: Deployment
 metadata:
   name: my-app
   annotations:
-    test.speedscale.com/scenarioid: 6aad9ac9-f7af-43f0-9528-0145bb9518a0
-    test.speedscale.com/testconfigid: standard
-    test.speedscale.com/tag: 31187a5a
+    replay.speedscale.com/snapshot-id: 6aad9ac9-f7af-43f0-9528-0145bb9518a0
+    replay.speedscale.com/testconfig-id: standard
+    replay.speedscale.com/build-tag: 31187a5a
 ```
 
 In the above example, **31187a5a** can be used to search for this report via **speedctl**. Note that there can a delay from the time when you start your deployment and when the report can be queried, so you want to loop on this call until the report returns.
@@ -49,9 +49,9 @@ kind: Deployment
 metadata:
   name: my-app
   annotations:
-    test.speedscale.com/scenarioid: 6aad9ac9-f7af-43f0-9528-0145bb9518a0
-    test.speedscale.com/testconfigid: my_test_config
-    test.speedscale.com/tag: COMMIT_HASH
+    replay.speedscale.com/snapshot-id: 6aad9ac9-f7af-43f0-9528-0145bb9518a0
+    replay.speedscale.com/testconfig-id: my_test_config
+    replay.speedscale.com/build-tag: COMMIT_HASH
 ```
 
 You can prepare a **scenario.yaml** file along the lines of:
