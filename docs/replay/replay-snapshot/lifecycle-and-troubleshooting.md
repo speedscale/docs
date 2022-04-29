@@ -159,13 +159,13 @@ By default, the operator will clean up all Speedscale components from the namesp
 If you want to collect debug logs, you can set the following annotation to prevent the operator from cleaning up:
 
 ```
-test.speedscale.com/cleanup: "none"
+replay.speedscale.com/cleanup: "none"
 ```
 
 You may also clean up the Speedscale replay inventory, but leave the workload running:
 
 ```
-test.speedscale.com/cleanup: "inventory"
+replay.speedscale.com/cleanup: "inventory"
 ```
 
 # Viewing Results
