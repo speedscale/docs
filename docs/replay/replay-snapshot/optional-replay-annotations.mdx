@@ -38,7 +38,7 @@ deploy_speedscale:
 If your application uses short lived JWTs, you need to provide a JWT secret that Speedscale can use to resign tokens. For example, if your service receives HTTP calls that contain a JWT authorization with 10 minute expiration (exp) setting, that JWT will be invalid by the time it is used for replay. To solve this, add the following annotations (insert your own secret names):
 
 ```
-test.speedscale.com/secrets: "jwtsecret,jwtsecret2,jwtsecret3"
+replay.speedscale.com/secrets: "jwtsecret,jwtsecret2,jwtsecret3"
 ```
 
 This will cause the Kubernetes operator to add each secret (comma separated) to the generator. Note that you need to include the secret filename to the tokenizer configuration (ask Speedscale how to do this, it isn't in the docs yet). The filename for each secret in the tokenizer will be in the format
@@ -57,7 +57,6 @@ The operator can be configured to automatically delete:
 You can stop this behavior to retain logs, etc by adding the following annotation to your deployment:
 
 ```
-test.speedscale.com/cleanup: "false"
+replay.speedscale.com/cleanup: "none""
 ```
 
-Leaving this option enabled (cleanup=false) is not recommended, because the generator and scenario will be cleaned up regardless.
