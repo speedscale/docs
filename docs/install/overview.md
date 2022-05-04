@@ -10,7 +10,7 @@ next to your running application is required to [observe](../intro.md#observe) y
  - [Quick install for Kubernetes](#quick-install-for-kubernetes)
  - [Quick install for VM or local via Docker Compose](#quick-install-for-vm-or-local)
  - [GitOps install for Kubernetes via manifests](#gitops-install-for-kubernetes-via-manifests)
- - [GitOps install for Kubernnetes via Helm](#gitops-install-for-kubernetes-via-helm)
+ - [GitOps install for Kubernetes via Helm](#gitops-install-for-kubernetes-via-helm)
 
 ## Quick install for Kubernetes
 
