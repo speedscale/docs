@@ -2,59 +2,21 @@
 description: Customize how the replay is performed.
 ---
 
-# Replay Configuration
+# Test Config
 
-Speedscale's load generator relies upon a basic set of config items to determine how it will behave at runtime. You can get a list of these configs by running `speedctl testconfig list` and downloading a single one with a command like `speedctl testconfig get standard` .
+Speedscale's load generator relies upon a basic set of config items to determine how it will behave at runtime. You can view these in the [UI](https://app.speedscale.com/config) or via the CLI.
 
-### Example Config
-
-```javascript
-{
-  "id": "standard",
-  "asserters": [
-    {
-      "type": "http_statuscode"
-    },
-    {
-      "type": "http_headers"
-    },
-    {
-      "type": "http_response_cookies"
-    },
-    {
-      "type": "http_response_body"
-    }
-  ],
-  "chaos": {},
-  "generator": {
-    "numReplicas": 1
-  },
-  "rules": [
-    {
-      "metricName": "passAssertPct",
-      "type": "TOO_LOW",
-      "value": 100,
-      "action": "ALERT"
-    }
-  ]
-}
-
+```bash
+speedctl testconfig list
+speedctl testconfig get standard
 ```
 
-### Configuration
+### Structure
 
-| Key           | Description                                                 |
-| ------------- | ----------------------------------------------------------- |
-| **id**        | Name of the configuration                                   |
-| **asserters** | List of the types of asserts that will be performed         |
-| **chaos**     | Rules for how chaos can be configured for mock services     |
-| **generator** | Customization of how the generator will replay the snapshot |
-| **rules**     | List of rules for determining a successful replay           |
+There are three sections within a Test Config:
 
-###
+1. **Assertions** - outlines expected responses from the application
+2. **Replay rules** - how load will be generated and how mocks will behave (incl. Chaos)
+3. **Goals** - what thresholds will constitute a failed test report
 
-###
-
-###
-
-###
+![Test Configs](./test-config.png)
