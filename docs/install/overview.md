@@ -14,16 +14,16 @@ next to your running application is required to [observe](../intro.md#observe) y
 
 ## Quick install for Kubernetes
 
-Start by installing `speedctl` the Speedscale CLI-based API:
-
-```
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
-```
-
-Or via [Homebrew](https://brew.sh):
+Start by installing `speedctl` the Speedscale CLI-based API via [Homebrew](https://brew.sh):
 
 ```
 brew install speedscale/tap/speedctl
+```
+
+Or via the install script:
+
+```
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
 Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The install wizard will
@@ -32,16 +32,16 @@ and adding the [Speedscale Sidecar](./kubernetes-sidecar/README.md) to your depl
 
 ## Quick install for VM or local
 
-Start by installing `speedctl` the Speedscale CLI-based API:
-
-```
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
-```
-
-Or via [Homebrew](https://brew.sh):
+Start by installing `speedctl` the Speedscale CLI-based API via [Homebrew](https://brew.sh):
 
 ```
 brew install speedscale/tap/speedctl
+```
+
+Or via the install script:
+
+```
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
 Then run `speedctl install`, choose "Docker" and follow the prompts.  The install wizard will
@@ -51,16 +51,16 @@ your service for load or contract testing.
 
 ## GitOps install for Kubernetes via manifests
 
-Start by installing `speedctl` the Speedscale CLI-based API:
-
-```
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
-```
-
-Or via [Homebrew](https://brew.sh):
+Start by installing `speedctl` the Speedscale CLI-based API via [Homebrew](https://brew.sh):
 
 ```
 brew install speedscale/tap/speedctl
+```
+
+Or via the install script:
+
+```
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
 Then apply manifests to your cluster.
