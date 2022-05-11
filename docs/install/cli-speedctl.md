@@ -6,16 +6,16 @@ programmable API and the primary way to perform setup actions like installing th
 
 ### Install
 
-Install or upgrade `speedctl`:
-
-```
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
-```
-
-Or via [Homebrew](https://brew.sh):
+Install or upgrade `speedctl` via [Homebrew](https://brew.sh):
 
 ```
 brew install speedscale/tap/speedctl
+```
+
+Or via the install script:
+
+```
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
 ### Initialization <a href="#part-ii-run-speedctl-initialization" id="part-ii-run-speedctl-initialization"></a>
