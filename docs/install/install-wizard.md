@@ -19,3 +19,12 @@ If you need custom image pull secrets (for example, if you're rehosting Speedsca
 ```
 speectl install --imgpullsecrets my-secret1,my-secret2p
 ```
+
+## Demo
+
+After installing the Speedscale Operator, the quickest way to experience what Speedscale has to offer is via the `demo` command.
+```
+speedctl demo
+```
+
+This command will deploy a demo workload, create a snapshot and run replays so that you can get a head start without having to instrument your own apps.
