@@ -107,7 +107,7 @@ Input:
 
 Redacted output:
 
-``json
+```json
 {
     "unredacted": "value",
     "country": {
