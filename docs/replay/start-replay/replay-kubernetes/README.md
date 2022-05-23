@@ -1,14 +1,15 @@
 
 # Start Replay (Kubernetes)
 
-Simply use a few annotations to replay your traffic snapshot using the
-Kubernetes operator.
+For those who cannot start a replay from the dashboard, Kubernetes resource annotations may be modified directly to achieve the same result.
+
+The Speedscale Kubernetes Operator **must** be installed.
 
 ### Key Ingredients
 
 Once you have created a snapshot report, you can replay it at any time in your own environment.
 
-![Test environment with all components deployed](./image(3).png)
+![Test environment with all components deployed](./test-architecture.png)
 
 When you replay these are the key ingredients that you will use:
 
@@ -39,7 +40,7 @@ replay.speedscale.com/snapshot-id: <snapshot ID>
 replay.speedscale.com/testconfig-id: <test config ID>
 ```
 
-If this is the first time you are running a replay, you should start with the `standard` test config ID. Running this test config usually works. If it doesn't the report will give you an idea of how to configuration the data transformation. For more information about test configs see the [docs](../../configuration/configuration/README.md).
+If this is the first time you are running a replay, you should start with the `standard` test config ID. Running this test config usually works. If it doesn't the report will give you an idea of how to configuration the data transformation. For more information about test configs see the [docs](../../../configuration/configuration/README.md).
 
 ### Deployment Modes
 
