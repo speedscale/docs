@@ -32,6 +32,7 @@ Speedscale is a 3 part process: **Observe**, **Analyze**, and **Playback**. That
 | Mutual TLS (mTLS) | Protocol | Partial | See [TLS](../../install/kubernetes-sidecar/sidecar-trust/) |
 | Outlook 365 | API | Full |  |
 | Postgres | DBMS | Partial | Full Observe, most playback |
+| Redis | DBMS | Observe Only | |
 | S3 / minio | API | Full |  |
 | Stripe | API | Full |  |
 | Twilio | API | Full |  |
