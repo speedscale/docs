@@ -8,7 +8,7 @@ sidebar_position: 1
 You've got to start somewhere. Why not here?
 
 For the first time in the space, Speedscale provides a modern way to develop, execute and scale API quality automation as fast as
-releases take place. The old days of manually generating and maintaining tests one-by-one are gone.
+releases take place. The old days of manually generating and maintaining load / chaos, smoke, and integration tests are gone.
 
 Speedscale combines observability technology with cloud data warehouses to make test maintenance obsolete. The cost to generate
 regression and performance validation suites is so low, you no longer edit/modify old tests -- you simply generate a new one.
@@ -28,6 +28,8 @@ stand in for the real systems during traffic replay.
 
 The data we observe is being sent to Speedscale’s cloud data warehouse for storage and analysis.
 
+Once you have Speedscale installed, [view your services](https://app.speedscale.com/).
+
 ### Analyze <a href="#analyze" id="analyze"></a>
 
 In the **Analyze** step, you peruse the historical data collected on a per-API basis. Users can explore this data and learn how a system really works.
@@ -35,13 +37,21 @@ The traffic is broken down into understandable components like requests and resp
 
 ![](./observe-rrpair.png)
 
-There are a variety of ways to filter and subset the data to find the really interesting traffic. If you want to eventually replay this traffic,
-then create a snapshot. The snapshot helps you see what inbound traffic can be replayed into your application as well as the downstream
-dependencies. A responder can be used to stand in for those dependencies if this helps the traffic replay with less errors.
+There are a variety of ways to filter and subset the data to find the really interesting traffic.
 
 ![](./select-service-map.png)
 
+Once your application receives traffic, [view your traffic in Speedscale](https://app.speedscale.com/analyze)
+
 ### Replay <a href="#playback" id="playback"></a>
 
-Once you have created a snapshot, instructions will be generated for how to replay this traffic in your own environment. Speedscale can orchestrate
-the replay environment including to deploy the correct **Snapshot**, and **Generator/Responder** containers.
+In the **Replay** step, you replay your recorded application traffic back against your running application, like the same service on the version
+that's about to be released to production! Speedscale can orchestrate the replay environment and run the replay test automatically.
+
+![](./100-pct-report.png)
+
+But what if you don't want to make the same outbound requests to your database or another web service?  A responder can be used to stand in for
+those dependencies during traffic replay, responding with your captured traffic.
+
+Once you have run a replay, [view your test reports](https://app.speedscale.com/reports).
+
