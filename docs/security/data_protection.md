@@ -18,6 +18,12 @@ The data pipeline between the customer and Speedscale is also fully segmented fr
 
 Speedscale access to Customer Data is limited to functions with a business requirement. Speedscale has implemented access control for all employees with regular auditing and incident management processes.  Access to customer data by Speedscale employees is restricted using a variety of controls including Multi-Factor Authentication. Speedscale enforces the principle of least privilege and need-to-know for access to Customer Data. Adherence to this principle is audited continuously using 3rd party automated systems.
 
+### Data Loss Prevention
+
+Speedscale can redact sensitive and personally identifiable information found in captured traffic.
+Redaction happens before traffic leaves the customer network, and the original data cannot be recreated.
+View our [Data Loss Prevention](dlp.md) page for more details.
+
 ## Encryption
 Customer submitted data is encrypted when it leaves the customer premises and decrypted by Speedscale.
 
