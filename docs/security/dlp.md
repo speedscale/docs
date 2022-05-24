@@ -7,9 +7,11 @@ However, the overall shape or structure of the data is retained in order to faci
 
 ## Enabling DLP
 
-First, to enable DLP on your Speedscale Operator
+First, to enable DLP on your Speedscale Operator by adding the `WITH_DLP: "true"` line.
 
 ```shell
+kubectl edit -n speedscale configmap/speedscale-operator
+# Add WITH_DLP: "true"
 ```
 
 Restart your Speedscale Operator, and HTTP traffic sent to Speedscale will be processed for redaction.
@@ -27,38 +29,14 @@ The following types of data are currently inspected:
  * HTTP forms
  * HTTP JSON bodies
 
-The following keys are redacted by default (case insensitive):
+To see the keys that are redacted by default, you may view the `standard` DLP configuration file.
 
- *  `address`
- *  `apikey`
- *  `auth`
- *  `authorization`
- *  `authtoken`
- *  `bearer`
- *  `client`
- *  `clientid`
- *  `cookie`
- *  `country`
- *  `firstname`
- *  `fname`
- *  `jwt`
- *  `key`
- *  `lastname`
- *  `lname`
- *  `pass`
- *  `password`
- *  `phone`
- *  `phonenumber`
- *  `token`
- *  `user`
- *  `userid`
- *  `username`
- *  `zip`
- *  `zipcode`
+```shell
+speedctl get dlp-config standard
+```
 
-If any of these keys are found, their values will be replaced.
 
-## Nested data
+### Nested data
 
 Sometimes, blocked keys will have values that are complex data types like a JSON array or object.
 In these cases, the number of entries and the sub-keys will remain, but each value will be set to `-REDACTED-`.
@@ -119,4 +97,29 @@ Redacted output:
         ]
     }
 }
+```
+
+## Customizing your DLP configuraton
+
+Should you wish to customize the keys that are redacted, you can create a custom DLP configuration blocklist.
+
+### Creating the DLP configuration file
+
+The easiest way to create a DLP configuration file will be to copy the `standard` configuration and upload the copy.
+
+```shell
+speedctl get dlp-config standard > my-config.json
+# edit my-config.json
+speedctl put dlp-config my-config.json
+```
+
+### Using a custom DLP configuration file
+
+To use a custom DLP configuration file, it must be enabled in the Speedscale Forwarder ConfigMap
+
+Set the `DLP_CONFIG` value to the name of your custom configuration
+
+```shell
+kubectl edit -n speedscale configmap/speedscale-forwarder
+# Add a line for DLP_CONFIG: my-config
 ```
