@@ -44,7 +44,7 @@ To unwrap outbound TLS calls there are multiple steps required:
 * Configure the sidecar to enable outbound TLS interception
 * Configure your application to trust the new TLS Certificates
 
-When your deployment is injected, the sidecar will have an extra environment variable **TLS_OUT_UNWRAP=true** and a volume mount to access the files from the **ss-certs** secret. The operator will automatically create a secret named **ss-certs** and put into the namespace. All that is required is to add this annotation to your deployment:
+When your deployment is injected, the sidecar will have an extra environment variable **TLS_OUT_UNWRAP=true** and a volume mount to access the files from the **speedscale-certs** secret. The operator will automatically create a secret named **speedscale-certs** and put into the namespace. All that is required is to add this annotation to your deployment:
 
 ```
   annotations:
