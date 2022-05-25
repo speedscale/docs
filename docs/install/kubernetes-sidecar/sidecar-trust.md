@@ -2,10 +2,10 @@
 # Trusting TLS Certificates
 
 Now that TLS outbound calls are intercepted by goproxy, you must configure
-your application to trust the ss-certs from your cluster. If you skip this
+your application to trust the speedscale-certs from your cluster. If you skip this
 step you will get errors in your application.
 
-Speedscale will attempt to use the Root CA Cert in the `ss-certs` secret. Intercepted TLS calls will have a new cert that is generated from this Root CA. So your application needs to trust this Root CA for TLS calls to be handled automatically.
+Speedscale will attempt to use the Root CA Cert in the `speedscale-certs` secret. Intercepted TLS calls will have a new cert that is generated from this Root CA. So your application needs to trust this Root CA for TLS calls to be handled automatically.
 
 :::danger
 Configuring TLS trust is language specific. Every runtime language has different characteristics and if you do not configure this correctly you will get TLS/SSL errors. Always configure this in a controlled environment first
@@ -25,11 +25,11 @@ Ruby applications honor the environment variable `SSL_CERT_FILE` which is automa
 
 ### TLS Trust for Java
 
-Java applications utilize a truststore to determine which certificates will be trusted. The CA Cert inside the **ss-certs** secret needs to be added to your truststore. First download the certs from your cluster. Note that there are 2 files, **tls.key** and **tls.crt**. Both of these files are base64 encoded. This command will get the certificate and decode it all at once.
+Java applications utilize a truststore to determine which certificates will be trusted. The CA Cert inside the **speedscale-certs** secret needs to be added to your truststore. First download the certs from your cluster. Note that there are 2 files, **tls.key** and **tls.crt**. Both of these files are base64 encoded. This command will get the certificate and decode it all at once.
 
 ```
-kubectl -n dasboot get secret ss-certs -o=jsonpath='{.data.tls\.crt}' | base64 --decode > speedscale-cert.pem
-kubectl -n dasboot get secret ss-certs -o=jsonpath='{.data.tls\.key}' | base64 --decode > speedscale-key.pem
+kubectl -n dasboot get secret speedscale-certs -o=jsonpath='{.data.tls\.crt}' | base64 --decode > speedscale-cert.pem
+kubectl -n dasboot get secret speedscale-certs -o=jsonpath='{.data.tls\.key}' | base64 --decode > speedscale-key.pem
 ```
 
 The certificate file should start with this line:

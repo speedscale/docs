@@ -81,7 +81,7 @@ speedctl upgrade operator
 If you are using a GitOps engine to manage your Kubernetes resources, you will need to update your git
 repository with the new manifests.
 
-1. Regardless of how your GitOps engine works, you must save the contents of the Speedscale certificates in your cluster prior to upgrading. If the secrets are currently in git, no action is needed. To save the secrets locally, you can run `kubectl -n speedscale get secrets ss-certs -o yaml > speedscale-certs.yaml`
+1. Regardless of how your GitOps engine works, you must save the contents of the Speedscale certificates in your cluster prior to upgrading. If the secrets are currently in git, no action is needed. To save the secrets locally, you can run `kubectl -n speedscale get secrets speedscale-certs -o yaml > speedscale-certs.yaml`
 1. Generate new operator manifests, but don’t push them to git yet: `speedctl deploy operator -e $(kubectl config current-context) > speedscale-operator.yaml`
 1. Replace the `data` entry of the `speedscale-certs` Secrets in `speedscale-operator.yaml` with the data of the certs you saved in step 1.
 1. If your workloads are stored with Speedscale annotations, **be sure to [review the changed annotations](../changed-annotations) before proceeding.**
