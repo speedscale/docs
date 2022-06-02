@@ -5,7 +5,7 @@
 | `sidecar.speedscale.com/capture-mode`        | Sidecar capture mode. Supported values are `proxy` (default), `wasm` or `istio` |
 | `sidecar.speedscale.com/capture-node-traffic` | Configure inbound traffic originating from underlying Kubernetes node on which a pod is running to be routed through the proxy. The default behavior is to ignore inbound Kubernetes node traffic (e.g. readiness and liveness checks).Boolean string `"true"` or `"false"` (default). Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise. |
 | `sidecar.speedscale.com/proxy-type`          | Type of proxy the sidecar should operate as, `transparent` (default), `reverse`, or `http`. Only valid if `capture-mode` is `proxy`, ignored otherwise. |
-| `"sidecar.speedscale.com/proxy-protocol`     | Set the protocol for the outbound proxy. Only valid if `proxy-type` is `reverse` or `http`. Supported values: `http`, `tcp`, `tcp+http`, `tcp+socks` |
+| `sidecar.speedscale.com/proxy-protocol`     | Set the protocol for the outbound proxy. Only valid if `proxy-type` is `reverse` or `http`. Supported values: `http`, `tcp`, `tcp+http`, `tcp+socks` |
 | `sidecar.speedscale.com/proxy-host`          | Set the host where you want to forward traffic. Only valid if `capture-mode` is `proxy` |
 | `sidecar.speedscale.com/proxy-port`          | Set the port where you want to forward traffic. Only valid if `capture-mode` is `proxy` |
 | `sidecar.speedscale.com/proxy-in-port`          | Sets the `PROXY_IN_PORT` environment variable. Only valid if `capture-mode` is `proxy` |
