@@ -10,6 +10,7 @@
 | `replay.speedscale.com/cleanup`          | Cleans up provisioned resources after a traffic replay. Possible values: `inventory`, `all`, `none` (default: `inventory`). `inventory` will remove objects related to Speedscale's replay of traffic once finished, as well as reverting changes to the workload. `all` removes all replay objects, as well as the system under test. `none` will leave all resources on the system after a test run. |
 | `replay.speedscale.com/sut-url`          | Use this setting to override the URL the generator automatically determines (useful if you have customized your service definition). |
 | `replay.speedscale.com/collect-logs`    | Set to `"true"` to collect logs from the system under test (default: true). |
+| `replay.speedscale.com/generator-low-data` | Set to "true" to force the generator into a high efficiency/low data output mode. This is ideal for high volume performance tests. |
 | `replay.speedscale.com/responder-low-data` | Set to "true" to force the responder into a high efficiency/low data output mode. This is ideal for high volume performance tests. |
 
 :::note
