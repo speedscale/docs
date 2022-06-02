@@ -11,7 +11,7 @@
 | `sidecar.speedscale.com/proxy-in-port`          | Sets the `PROXY_IN_PORT` environment variable. Only valid if `capture-mode` is `proxy` |
 | `sidecar.speedscale.com/proxy-out-port`          | Sets the `PROXY_OUT_PORT` environment variable. Only valid if `capture-mode` is `proxy` |
 | `sidecar.speedscale.com/envoy-filter`       | Name of the provisioned Envoy filter. Only valid if `capture-mode` is `wasm` |
-| `sidecar.speedscale.com/tls-out`                | Set to "true" or "false" to configure TLS outbound interception. Defaults to "true"  |
+| `sidecar.speedscale.com/tls-out`                | Set to "true" or "false" to configure TLS outbound interception. Defaults to "false"  |
 | `sidecar.speedscale.com/tls-in-secret`        | Kubernetes secret with the TLS keys to use for inbound traffic, these keys will be exposed to API clients. Enables TLS inbound interception (see more details below).|
 | `sidecar.speedscale.com/tls-in-private`       | Filename of the TLS Inbound Private key (default tls.key). |
 | `sidecar.speedscale.com/tls-in-public`        | Filename of the TLS Inbound Public cert (default tls.crt). |
