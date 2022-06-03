@@ -13,7 +13,7 @@ The Istio Service Mesh modifies a cluster and manages traffic routing. Istio is 
 On your Kubernetes workload, add the following annotations
 
 ```
-sidecar.speedscale.com/inject: true
+sidecar.speedscale.com/inject: "true"
 sidecar.speedscale.com/capture-mode: "istio"
 ```
 along with any other [sidecar annotations](../sidecar-annotations/).
