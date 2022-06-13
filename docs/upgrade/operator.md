@@ -71,9 +71,20 @@ Once your deployment has been upgraded, run the following to ensure the Speedsca
 speedctl check operator
 ```
 
+## Restart Sidecars
+
+After an upgrade the next step is to restart your services to get the latest
+version of the Speedscale goproxy sidecar.  The easiest way to do this is to
+run a rolling deploy, allowing the Speedscale operator to inject the latest
+version of the proxy as they come up.
+
+```shell
+kubectl -n <namespace> rollout restart deploy
+```
+
 ## Add Speedscale to Workloads
 
-You may now install Speedscale on your target workload. You may use the
+You can now install Speedscale on new workloads. You may use the
 `speedctl install` wizard, or a
 [GitOps](../install/overview.md/#gitops-install-for-kubernetes-via-manifests)
 tool.
