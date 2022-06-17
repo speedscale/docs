@@ -26,7 +26,7 @@ Your process for upgrading depends on how you manage your Kubernetes environment
 <TabItem value="wizard" label="Wizard" default>
 
 If you use `speedctl` to manage your enviroment, you may begin the upgrade wizard,
-which will remove the operator v1 installation and replace it with operator v2.
+which will replace your Speedscale Operator with the latest version.
 
 ```shell
 speedctl upgrade operator
@@ -58,6 +58,14 @@ repository with the new manifests.
 
    If your GitOps engine does not delete resources when removed from git, run `kubectl delete mutatingwebhookconfiguration.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration`
 :::
+
+</TabItem>
+
+<TabItem value="helm" label="Helm">
+
+If you use helm please refer to the 
+[helm chart repository](https://github.com/speedscale/operator-helm)
+for details and follow the README instructions for upgrading.
 
 </TabItem>
 
