@@ -1,8 +1,8 @@
 ---
-sidebar_position: 1
+title: Creating Traffic Filters
+sidebar_position: 3
 ---
-
-# From Traffic Viewer
+# Creating Traffic Filters
 
 Filters can be saved from the traffic viewer and then used to prevent traffic from ever reaching Speedscale. Most users will create filters using this UI. Filter rules are stored in Speedscale cloud and applied by the Speedscale Forwarder. Once a filter is applied to the forwarder, no traffic will leave your network that is prohibited by the filter.
 
