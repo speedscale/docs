@@ -5,7 +5,7 @@ sidebar_position: 1
 # Overview
 
 There are a few different ways to get up and running with Speedscale.  Installing Speedscale
-next to your running application is required to [observe](../intro.md#observe) your service's traffic.
+next to your running application is required to [observe](../../intro.md#observe) your service's traffic.
 
  - [Quick install for Kubernetes](#quick-install-for-kubernetes)
  - [Quick install for VM or local via Docker Compose](#quick-install-for-vm-or-local)
