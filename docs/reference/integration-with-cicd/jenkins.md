@@ -13,7 +13,7 @@ The details of setting up a fully operational Jenkins environment are outside th
 
 Whether your Jenkins jobs run within docker containers or directly on Jenkins executor nodes, these environments will need to have the following installed:
 
-* [speedctl](../../install/cli-speedctl.md)
+* [speedctl](../../setup/install/cli-speedctl.md)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [jq](https://stedolan.github.io/jq/)
 
