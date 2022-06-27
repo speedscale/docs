@@ -92,3 +92,37 @@ wizard](./install-wizard.md) or by adding
 [Speedscale annotations](./kubernetes-sidecar/sidecar-annotations.mdx) to your
 application's deployment.
 
+
+## Installation Permissions
+
+No matter what deployment method you use, the following _create_ permissions are required to install Speedscale.
+
+* Cluster-wide resources:
+    * `CustomResourceDefinitions`
+    * `ClusterRole`
+    * `ClusterRoleBinding`
+    * `MutatingWebhookConfiguration`
+    * `ValidatingWebhookConfiguration`
+* Namespaced resources
+    * `ConfigMap`
+    * `Deployment`
+    * `Job`
+    * `Role`
+    * `Service`
+    * `Secret`
+
+You can verify you have permissions and other prerequisites by running `speedctl check operator --pre`.
+This will not modify anything within your cluster.
+
+## Operation Permissions
+
+Once Speedscale is installed in your cluster, the `speedscale-operator` cluster role will have permissions to create, list, watch, and modify workload manifests.
+Speedscale will use these permissions to add a sidecar container to the workload.
+Workloads include `Deployment`, `DaemonSet`, and `StatefulSet`.
+Additionally, the `speedscale-operator` role can create, modify, and watch networking configuration such as Istio's `EnvoyFilter`.
+
+For a full list of permissions that Speedscale is using, you may use one of the following methods:
+
+* Review the latest version of the Helm chart
+* Run `speedctl deploy operator --dir output>` and inspect `rbac.yaml` to read the manifest
+* Run `kubectl get -n speedscale clusterrole/speedscale-operator -o yaml` to see the installed manifest.
