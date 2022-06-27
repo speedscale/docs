@@ -28,5 +28,5 @@ transformation. Typically this is needed for authentication and time shifting.
 The Speedscale team is working on a configuration UI but for now we're happier
 to do the work for you than to have you stumble through this complex topic. If
 you're feeling adventurous, you can jump over to
-[transforms](../../../configuration/transform-traffic/README.md) to learn more,
+[transforms](../../../reference/transform-traffic/README.md) to learn more,
 but talking to us on Slack will be much easier.
