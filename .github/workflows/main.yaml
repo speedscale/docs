@@ -2,7 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - docs-overhaul
 
 jobs:
   build:
@@ -19,10 +21,19 @@ jobs:
     - name: build
       run: yarn build
 
-    - name: upload
+    - name: upload main
+      if: ${{ github.ref }} == '/refs/heads/main'
       run: aws s3 sync build s3://docs.speedscale.com && aws cloudfront create-invalidation --distribution-id $DIST_ID --paths '/*'
       env:
         DIST_ID: E3K70OREWBZ6OV
+        AWS_DEFAULT_REGION: us-east-1
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: upload overhaul
+      if: ${{ github.ref }} == '/refs/heads/docs-overhaul'
+      run: aws s3 sync build s3://docs-preview.speedscale.com/overhaul
+      env:
         AWS_DEFAULT_REGION: us-east-1
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
