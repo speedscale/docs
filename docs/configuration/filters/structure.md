@@ -22,7 +22,7 @@ Each individual filter has a condition, criteria and an operator. Condition/Crit
             "filters": [
                 {
                     "include": <true|false>,
-                    "operator": "<CONTAINS|IS>",
+                    "operator": "<CONTAINS|EQUAL>",
                     ...
                 },
         },
