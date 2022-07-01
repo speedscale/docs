@@ -97,6 +97,17 @@ resource "aws_s3_bucket_policy" "preview" {
           "Resource": [
               "arn:aws:s3:::${local.preview_domain}/pr-*"
           ]
+      },
+      {
+          "Sid": "PublicReadGetObjectPR",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": [
+              "s3:GetObject"
+          ],
+          "Resource": [
+              "arn:aws:s3:::${local.preview_domain}/overhaul/*"
+          ]
       }
   ]
 }
