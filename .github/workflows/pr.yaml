@@ -18,7 +18,7 @@ jobs:
         install-command: yarn --frozen-lockfile --silent
 
     - name: update url for preview
-      run: ./tools/update_preview_base.sh ${{ github.event.pull_request.number }}
+      run: ./tools/update_preview_base.sh pr-${{ github.event.pull_request.number }}
 
     - name: build
       run: yarn build

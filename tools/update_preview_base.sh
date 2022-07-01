@@ -10,4 +10,4 @@ then
     SED_OPTS+=" ''"
 fi
 
-sed ${SED_OPTS} "s|baseUrl: \"/\"|baseUrl: \"/pr-${1}/\"|g" ${SCRIPT_DIR}/../docusaurus.config.js
+sed ${SED_OPTS} "s|baseUrl: \"/\"|baseUrl: \"/${1}/\"|g" ${SCRIPT_DIR}/../docusaurus.config.js
