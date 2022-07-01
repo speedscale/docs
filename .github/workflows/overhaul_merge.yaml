@@ -1,4 +1,4 @@
-name: Build
+name: Build overhaul preview
 
 on:
   push:
