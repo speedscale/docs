@@ -4,11 +4,13 @@ description: Customize how the replay is performed.
 
 # Test Config
 
-Speedscale's load generator relies upon a basic set of config items to determine how it will behave at runtime. You can view these in the [UI](https://app.speedscale.com/config) or via the CLI.
+Speedscale's load generator relies upon a basic set of config items to
+determine how it will behave at runtime. You can view these in the
+[UI](https://app.speedscale.com/config) or via the CLI.
 
 ```bash
-speedctl testconfig list
-speedctl testconfig get standard
+speedctl get testconfigs
+speedctl get testconfig standard
 ```
 
 ### Structure
