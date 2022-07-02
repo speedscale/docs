@@ -45,7 +45,7 @@ Line 7 starts an array of filters that must be satisfied
 
 Line 9 determines whether this criteria means that the RRPair is included or excluded if satisfied.
 
-Line 10 can be either `CONTAINS` if it only requires a substring match or `IS` if an exact match is required.
+Line 10 can be either `CONTAINS` if it only requires a substring match or `EQUAL` if an exact match is required.
 
 Line 11 will be one of the following conditions:
 
