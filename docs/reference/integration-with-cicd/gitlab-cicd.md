@@ -19,16 +19,19 @@ metadata:
     replay.speedscale.com/build-tag: 31187a5a
 ```
 
-In the above example, **31187a5a** can be used to search for this report via **speedctl**. Note that there can a delay from the time when you start your deployment and when the report can be queried, so you want to loop on this call until the report returns.
+In the above example, **31187a5a** can be used to search for this report via
+**speedctl**. Note that there can a delay from the time when you start your
+deployment and when the report can be queried, so you want to loop on this call
+until the report returns.
 
 ```
-speedctl report list | grep 31187a5a
+speedctl get reports | grep 31187a5a
 ```
 
 Once you know the report is initialized, then you want to get the status:
 
 ```
-speedctl report list | grep 31187a5a | jq -r .status
+speedctl get reports | grep 31187a5a | jq -r .status
 ```
 
 The value of status will be what you see in the Speedscale UI:
@@ -41,7 +44,10 @@ The value of status will be what you see in the Speedscale UI:
 * PROCESSING
 * RPT_STATUS_ERROR
 
-Vanilla kubernetes deployment yaml files don't allow templated or dynamic variables, as is the case with commit hashes. Helm is a potential solution to this. Alternatively, a simple way to do this would be via an intermediate template file. For example, assume you have a file named **scenario.tpl.yaml**:
+Vanilla kubernetes deployment yaml files don't allow templated or dynamic
+variables, as is the case with commit hashes. Helm is a potential solution to
+this. Alternatively, a simple way to do this would be via an intermediate
+template file. For example, assume you have a file named **scenario.tpl.yaml**:
 
 ```
 apiVersion: apps/v1
@@ -66,7 +72,7 @@ After applying the tagged snapshot, the CI/CD system must wait until the report 
 ```
 ATTEMPT_COUNTER=0
 MAX_ATTEMPTS=5
-until [ ! -z "$(speedctl report list |grep ${REVISION} ||true)" ]; do
+until [ ! -z "$(speedctl get reports | grep ${REVISION} ||true)" ]; do
     if [[ ${ATTEMPT_COUNTER} == ${MAX_ATTEMPTS} ]]; then
       echo "Max attempts reached"
       exit 1
@@ -83,7 +89,7 @@ Now that the report is available, check the status:
 ATTEMPT_COUNTER=0
 MAX_ATTEMPTS=5
 FINISHED_STATUSES='PASSED MISSED_GOALS'
-STATUS=$(jq -r .status <<<$(speedctl report list |grep ${REVISION}))
+STATUS=$(jq -r .status <<<$(speedctl get reports | grep ${REVISION}))
 until [[ "$FINISHED_STATUSES" =~ "$STATUS" ]]; do
     if [[ ${ATTEMPT_COUNTER} == ${MAX_ATTEMPTS} ]]; then
       echo "Max attempts reached"
@@ -93,7 +99,7 @@ until [[ "$FINISHED_STATUSES" =~ "$STATUS" ]]; do
     ATTEMPT_COUNTER=$(($ATTEMPT_COUNTER+1))
     sleep 5
 
-    STATUS=$(jq -r .status <<<$(speedctl report list |grep ${REVISION}))
+    STATUS=$(jq -r .status <<<$(speedctl get reports | grep ${REVISION}))
 done
 ```
 
