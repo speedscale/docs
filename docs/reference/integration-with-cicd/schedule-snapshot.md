@@ -395,4 +395,5 @@ Next, we'll look at how to add a Kubernetes [CronJob](https://kubernetes.io/docs
 
 ## The full script
 
+The entire script is [available on GitLab](https://gitlab.com/-/snippets/2363552).
 TODO: figure out how to embed, preferably without copy/pasting the whole thing in.
