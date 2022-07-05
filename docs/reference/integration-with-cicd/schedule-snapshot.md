@@ -179,7 +179,7 @@ We're not looking to do much with the information in this snapshot, so we'll use
   },
 ```
 
-Finally, we provide [Filter Expressions](TODO:LINK).
+Finally, we provide [Filter Expressions](../../../configuration/filters).
 These expressions allow you to more selectively include traffic for a service, based on a number of criteria.
 For this test case, we want to _include_ traffic that matches the service name, the cluster name, and our time range.
 By default, filter expressions will exclude traffic.
@@ -304,7 +304,7 @@ reportid=$(speedctl infra replay ${SERVICE_NAME} --cluster ${CLUSTER_NAME} --nam
 
 `reportid` saves the ID so we can query its status.
 
-The loop here looks slightly different - in addition to querying the Speedscale cloud, we'll also look for the [TrafficReplay](TODO:LINK) created within our Kubernetes cluster.
+The loop here looks slightly different - in addition to querying the Speedscale cloud, we'll also look for the TrafficReplay created within our Kubernetes cluster.
 
 ```shell
 last=""
@@ -391,7 +391,8 @@ To wrap up the script, we again check for the time out, since we could have reac
 
 ## Next steps
 
-Next, we'll look at how to add a Kubernetes [CronJob](TODO:LINK) that will run this script on a schedule.
+Next, we'll look at how to add a Kubernetes [CronJob](https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/) that will run this script on a schedule.
 
 ## The full script
-TODO: embed it here
+
+TODO: figure out how to embed, preferably without copy/pasting the whole thing in.
