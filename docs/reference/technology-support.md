@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Protocol Support
 
-Speedscale is a 3 part process: **Observe**, **Analyze**, and **Playback**. That means that protocol and technology support can be viewed through these steps separately.
+Speedscale replays involve three distinct steps that are supported separately: **Observe**, **Analyze**, and **Playback**. It is possible to have observability into one protocol without necessarily having full replay support.
 
 ### Supported <a href="#supported" id="supported"></a>
 
@@ -20,7 +20,7 @@ Speedscale is a 3 part process: **Observe**, **Analyze**, and **Playback**. That
 | Docker (non-K8S) | Environment | Full | See [CLI](https://cli.speedscale.com) |
 | DynamoDB | DBMS | Full |  |
 | Elasticsearch | DBMS | Full |  |
-| Kubernetes (1.16+) | Environment | Full |  |
+| Kubernetes (1.19+) | Environment | Full |  |
 | Gmail | API | Full |  |
 | GraphQL | Protocol | Full |  |
 | gRPC | Protocol | Full |  |
@@ -28,6 +28,7 @@ Speedscale is a 3 part process: **Observe**, **Analyze**, and **Playback**. That
 | HTTP/S inbound | Protocol | Full | See [TLS](../../install/kubernetes-sidecar/sidecar-trust/) |
 | JSON | Protocol | Full |  |
 | IMAP | Protocol | Observe Only |  |
+| Istio (1.12+) | Environment | Full | |
 | MongoDB | DBMS | Partial |  |
 | Mutual TLS (mTLS) | Protocol | Partial | See [TLS](../../install/kubernetes-sidecar/sidecar-trust/) |
 | Outlook 365 | API | Full |  |
@@ -41,7 +42,7 @@ Speedscale is a 3 part process: **Observe**, **Analyze**, and **Playback**. That
 
 ### Kubernetes Distributions
 
-Speedscale control plane, sidecar and replay system are compatible with Kubernetes versions v1.16 and newer.
+Speedscale control plane, sidecar and replay system are compatible with all currently supported versions of [Kubernetes](https://kubernetes.io/releases/) and [Istio](https://istio.io/latest/docs/releases/supported-releases/).
 
 | Distribution | Notes |
 | ------------ | ----- |
