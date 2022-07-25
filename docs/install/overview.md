@@ -119,7 +119,7 @@ This will not modify anything within your cluster.
 Once Speedscale is installed in your cluster, the `speedscale-operator` cluster role will have permissions to create, list, watch, and modify workload manifests.
 Speedscale will use these permissions to add a sidecar container to the workload.
 Workloads include `Deployment`, `DaemonSet`, and `StatefulSet`.
-Additionally, the `speedscale-operator` role can create, modify, and watch networking configuration such as Istio's `EnvoyFilter`.
+Additionally, the `speedscale-operator` role can create, modify, and watch configuration such as Istio's `Sidecar`.
 
 For a full list of permissions that Speedscale is using, you may use one of the following methods:
 
