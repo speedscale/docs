@@ -61,29 +61,21 @@ The following operator log message indicates that the operator is making changes
 
 The exact format and content of this message will vary. However, you will be able to see a variety of patches representing the modifications being made. They should match your annotations.
 
-### 2a. (optional) Operator creates envoy filter
-
-If you see this log message, the Envoy filters were deployed properly:
-
-```
-{"L":"INFO","T":"...","M","Capture mode Istio/WASM, creating EnvoyFilter resource", ...}
-```
-
-### 2b. (optional) Operator adds responder (test.speedscale.com/mode)
+### 2a. (optional) Operator adds responder (test.speedscale.com/mode)
 
 If the responder annotation is present, the operator will:
 
 * Add an init container to the SUT pod. This init container will stop the pod from continuing until the Speedscale responder responds to a readiness probe.
 * Add HostAlias entries to the SUT container to route traffic to the responder
 
-### 2c. (optional) Operator adds sidecar (sidecar.speedscale.com/inject)
+### 2b. (optional) Operator adds sidecar (sidecar.speedscale.com/inject)
 
 If the sidecar annotation is present, the operator will:
 
 * Add the init container sidecar to the SUT workoad
 * Add the proxy sidecar to the SUT workload
 
-### 2d. (optional) Operator adds TLS configuration (sidecar.speedscale.com/tls-out)
+### 2c. (optional) Operator adds TLS configuration (sidecar.speedscale.com/tls-out)
 
 If the TLS out annotation is present, the operator will:
 

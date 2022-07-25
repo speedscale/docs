@@ -11,13 +11,6 @@ Here are additional annotation values for the sidecar:
 <SidecarAnnotations />
 
 
-### Capture Mode
-
-Depending upon your environment you may want to customize the capture mode being used:
-
-* `proxy` is the default and should be used if there is no other sidecar.
-* `wasm` is what should be used if you have an istio sidecar already.
-
 ### TLS Inbound Interception
 
 The sidecar will be listening for incoming transactions, and must present to the client the correct certificate. Because you already have TLS configured, the cert files you are using must be provided to the sidecar. There are the fields:
