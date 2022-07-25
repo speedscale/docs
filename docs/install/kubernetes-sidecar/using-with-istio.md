@@ -22,7 +22,7 @@ proxy for inbound traffic and a forward proxy for outbound traffic. This require
    [Sidecar](https://istio.io/latest/docs/reference/config/networking/sidecar) resource.
 2. Your application must be configured to use an outbound proxy
 
-### 1. Add Workload Annotations
+### Add Workload Annotations
 
 Begin by adding the following annotations to your Kubernetes workload along with any other
 [sidecar annotations](../sidecar-annotations/):
@@ -46,7 +46,7 @@ sidecar.speedscale.com/proxy-host: "localhost"
 sidecar.speedscale.com/proxy-port: "8080"
 ```
 
-### 2. Configure Outbound Proxy Settings
+### Configure Outbound Proxy Settings
 
 In many instances, configuring your application to use an HTTP or SOCKS proxy for outbound traffic
 can be done simply by setting environment variables. Typically these environment variables are
@@ -76,14 +76,14 @@ spec:
 Note, if you configured the Speedscale proxy to use SOCKS4/5 instead of HTTP for outbound traffic,
 change the URL above to `socks5://localhost:4140`.
 
-### 2. Configure Outbound TLS Support
+### Configure Outbound TLS Support
 
 Outbound TLS support for the Speedscale sidecar can be enabled with the annotation
 `sidecar.speedscale.com/tls-out: "true"`. You may be required to perform additional steps if your
 application and not Envoy is originating TLS requests. See
 [Trusting TLS Certificates](../sidecar-trust/) for more information.
 
-### 3. Allow Egress Speedscale Traffic (Optional)
+### Allow Egress Speedscale Traffic (Optional)
 
 If your Istio installation and sidecar control which subset of egress traffic is allowable, you may
 need to add the `speedscale` namespace to the sidecar's egress configuration. This step is not
@@ -102,7 +102,7 @@ spec:
     - "speedscale/*"
 ```
 
-### 4. Ensure VirtualService Contains Host (Optional)
+### Ensure VirtualService Contains Host (Optional)
 
 If your service is accessible both outside and inside the cluster, make sure the Istio
 `VirtualService` contains the same host. See the Istio
