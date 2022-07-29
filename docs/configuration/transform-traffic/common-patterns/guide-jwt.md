@@ -32,11 +32,11 @@ JWT tokens are stored in the `Authorization` HTTP request header. The token itse
 1. Create a new [Traffic Transform](https://app.speedscale.com/trafficTransforms)
 2. Edit the JSON and change the `id` string to a unique name that you will remember (no spaces)
 3. Paste your traffic filter into your new transform and modify it to fit in the "generator->filters->filters" section as shown below
-4. Replace `/home/speedscale/secret/secret_name/key` with the name of the secret from your kubernetes cluster and the key you want to use within that secret. As a reminder, secrets are stored in Kubernetes as key/value pairs so you must specify both the secret name and the key.
+4. Replace `/home/speedscale/secret/secret-name/key` with the name of the secret from your kubernetes cluster and the key you want to use within that secret. As a reminder, secrets are stored in Kubernetes as key/value pairs so you must specify both the secret name and the key.
 
 As an example, let's assume we have a secret like the one below:
 ```
-$ kubectl get secret secret_name -o yaml
+$ kubectl get secret secret-name -o yaml
 
 apiVersion: v1
 data:
@@ -45,9 +45,9 @@ kind: Secret
 metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"v1","data":{"key":"S3ViZXJuZXRlc1JvY2tzIQ=="},"kind":"Secret","metadata":{"annotations":{},"name":"secret_name","namespace":"demo"},"type":"Opaque"}
+      {"apiVersion":"v1","data":{"key":"S3ViZXJuZXRlc1JvY2tzIQ=="},"kind":"Secret","metadata":{"annotations":{},"name":"secret-name","namespace":"demo"},"type":"Opaque"}
   creationTimestamp: "2022-07-28T23:33:29Z"
-  name: secret_name
+  name: secret-name
   namespace: default
   resourceVersion: "470465"
   uid: f4924324-88ea-43b3-9f17-18bb63a5e4c9
@@ -78,7 +78,7 @@ That would yield a transform configuration like the below:
         {
           "type": "http_auth",
           "config": {
-            "secret": "/home/speedscale/secret/secret_name/key"
+            "secret": "/home/speedscale/secret/secret-name/key"
           }
         }
       ]
@@ -100,7 +100,7 @@ If you are using the operator to manage replays you must instruct it to mount th
     replay.speedscale.com/testconfig-id: "standard"
     replay.speedscale.com/cleanup: "inventory"
     sidecar.speedscale.com/inject: "true"
-    replay.speedscale.com/secrets: "secret_name"
+    replay.speedscale.com/secrets: "secret-name"
 ```
 
-If you need mulitple secrets, then seperate them with commas (no spaces). For example, the value of `replay.speedscale.com/secrets` would change to `secret_name,secret2,secret3`.
+If you need mulitple secrets, then seperate them with commas (no spaces). For example, the value of `replay.speedscale.com/secrets` would change to `secret-name,secret2,secret3`.
