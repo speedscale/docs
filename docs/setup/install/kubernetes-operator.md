@@ -14,7 +14,7 @@ is necessary when manifests are sourced from version control for example.
 
 ### Install Operator <a href="#install-operator" id="install-operator"></a>
 
-Check the [Technology Support](../reference/technology-support.md) page to find if your Kubernetes and Istio versions are supported, if applicable. To deploy the operator, run:
+Check the [Technology Support](../../reference/technology-support.md) page to find if your Kubernetes and Istio versions are supported, if applicable. To deploy the operator, run:
 
 ```
 kubectl create namespace speedscale
