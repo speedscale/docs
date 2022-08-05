@@ -1,5 +1,8 @@
+---
+sidebar_position: 1
+---
 
-# Start Replay (Kubernetes)
+# Via Kubernetes
 
 For those who cannot start a replay from the dashboard, Kubernetes resource annotations may be modified directly to achieve the same result.
 
@@ -111,4 +114,3 @@ spec:
       nodeSelector:
         beta.kubernetes.io/os: linux
 ```
-
