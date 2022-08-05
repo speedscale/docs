@@ -3,7 +3,7 @@ slug: /
 sidebar_position: 1
 ---
 
-# Introduction
+# Getting Started
 
 You've got to start somewhere. Why not here?
 

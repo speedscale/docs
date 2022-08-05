@@ -2,9 +2,9 @@
 title: Changed Annotations
 ---
 
-import CommonV2Annotations from '../reference/_common-annotations.mdx'
-import SidecarV2Annotations from '../reference/_v2-sidecar-annotations.mdx'
-import ReplayV2Annotations from '../reference/_v2-replay-annotations.mdx'
+import CommonV2Annotations from '../../reference/_common-annotations.mdx'
+import SidecarV2Annotations from '../../reference/_v2-sidecar-annotations.mdx'
+import ReplayV2Annotations from '../../reference/_v2-replay-annotations.mdx'
 
 ### Sidecar Annotations
 

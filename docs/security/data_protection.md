@@ -22,7 +22,7 @@ Speedscale access to Customer Data is limited to functions with a business requi
 
 Speedscale can redact sensitive and personally identifiable information found in captured traffic.
 Redaction happens before traffic leaves the customer network, and the original data cannot be recreated.
-View our [Data Loss Prevention](../configuration/dlp.md) page for more details.
+View our [Data Loss Prevention](../reference/dlp.md) page for more details.
 
 ## Encryption
 Customer submitted data is encrypted when it leaves the customer premises and decrypted by Speedscale.
