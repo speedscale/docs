@@ -27,15 +27,3 @@ jobs:
         AWS_DEFAULT_REGION: us-east-1
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-    - name: update url for overhaul preview
-      if: ${{ github.ref }} == '/refs/heads/docs-overhaul'
-      run: ./tools/update_preview_base.sh overhaul
-
-    - name: upload overhaul
-      if: ${{ github.ref }} == '/refs/heads/docs-overhaul'
-      run: aws s3 sync build s3://docs-preview.speedscale.com/overhaul
-      env:
-        AWS_DEFAULT_REGION: us-east-1
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
