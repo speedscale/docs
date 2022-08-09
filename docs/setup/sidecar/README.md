@@ -5,13 +5,13 @@ The sidecar is used to collect data from an existing application.
 
 ### Install Wizard <a href="#install-sidecar-with-wizard" id="install-sidecar-with-wizard"></a>
 
-The easiest way to add the sidecar to your pod and start gaining visibility is through the [install wizard](../install-wizard.md).
+The easiest way to add the sidecar to your pod and start gaining visibility is through the [install wizard](../install/kubernetes-operator.md#install-wizard).
 The additional steps here provide instructions for manually instrumenting your services, which is necessary when manifests are sourced
 from version control for example.
 
 ### Add the Sidecar Annotation to Your Deployment
 
-Please ensure the [Kubernetes Operator](../kubernetes-operator.md) is running in your cluster before moving on.
+Please ensure the [Kubernetes Operator](../install/kubernetes-operator.md) is running in your cluster before moving on.
 
 Select the workload (deployment, statefulset, job, etc.) you'd like to monitor and add the following annotation:
 

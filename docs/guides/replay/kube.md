@@ -43,7 +43,7 @@ replay.speedscale.com/snapshot-id: <snapshot ID>
 replay.speedscale.com/testconfig-id: <test config ID>
 ```
 
-If this is the first time you are running a replay, you should start with the `standard` test config ID. Running this test config usually works. If it doesn't the report will give you an idea of how to configuration the data transformation. For more information about test configs see the [docs](../../../../reference/configuration/README.md).
+If this is the first time you are running a replay, you should start with the `standard` test config ID. Running this test config usually works. If it doesn't the report will give you an idea of how to configuration the data transformation. For more information about test configs see the [docs](../../reference/configuration/README.md).
 
 ### Deployment Modes
 

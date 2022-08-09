@@ -11,8 +11,8 @@ const config = {
   url: "https://docs.speedscale.com",
   baseUrl: "/",
   trailingSlash: true,
-  onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
+  onBrokenLinks: "throw",
+  onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.ico",
   organizationName: "speedscale", // Usually your GitHub org/user name.
   projectName: "docs", // Usually your repo name.

@@ -50,7 +50,7 @@ repository with the new manifests.
 1. Replace the `data` entry of the `speedscale-certs` Secrets in
    `speedscale-operator.yaml` with the data of the certs you saved in step 1.
 1. If your workloads are stored with Speedscale annotations, **be sure to
-   [review the changed annotations](../changed-annotations) before
+   [review the changed annotations](./changed-annotations) before
    proceeding.**
 1. Commit the contents of speedscale-operator.yaml to git
 
@@ -63,7 +63,7 @@ repository with the new manifests.
 
 <TabItem value="helm" label="Helm">
 
-If you use helm please refer to the 
+If you use helm please refer to the
 [helm chart repository](https://github.com/speedscale/operator-helm)
 for details and follow the README instructions for upgrading.
 
@@ -94,6 +94,5 @@ kubectl -n <namespace> rollout restart deploy
 
 You can now install Speedscale on new workloads. You may use the
 `speedctl install` wizard, or a
-[GitOps](../install/overview.md/#gitops-install-for-kubernetes-via-manifests)
+[GitOps](../sidecar/README.md)
 tool.
-

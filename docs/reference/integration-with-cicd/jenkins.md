@@ -17,7 +17,7 @@ already. If you do not, there are pre-built options available, including a
 Whether your Jenkins jobs run within docker containers or directly on Jenkins
 executor nodes, these environments will need to have the following installed:
 
-* [speedctl](../../setup/install/cli-speedctl.md)
+* [speedctl](../../setup/install/cli.md)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [jq](https://stedolan.github.io/jq/)
 
@@ -121,7 +121,7 @@ for i in {1..20}; do
     sleep 30
     continue
   fi
-  
+
   # get and check the status for the report ID we found
   status=$(speedctl get report ${report_id} | jq -rc 'report.status' | tr '[[:upper:]]' '[[:lower:]]' || true)
   case ${status} in
