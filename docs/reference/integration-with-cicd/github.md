@@ -20,7 +20,7 @@ Here is an [Example Workflow](https://github.com/speedscale/example-config/blob/
 
 ### Test
 
-Setup `kubectl` and `speedctl`. You should populate the secret `speedctl_config` which should be the file generated during your CLI setup as documented [here](../../../install/cli-speedctl) and is installed by default to `~/.speedscale/config`. Your `kubectl` setup will vary based on what cloud provider you use and how you configure authentication. For eg. if you use GKE, you’ll replace the `aws eks ...` line with `echo $KUBE_CONFIG >> ~/.kubectl/config`
+Setup `kubectl` and `speedctl`. You should populate the secret `speedctl_config` which should be the file generated during your CLI setup as documented [here](../../../setup/install/cli) and is installed by default to `~/.speedscale/config`. Your `kubectl` setup will vary based on what cloud provider you use and how you configure authentication. For eg. if you use GKE, you’ll replace the `aws eks ...` line with `echo $KUBE_CONFIG >> ~/.kubectl/config`
 
 ```
       # This installs the necessary speedctl binary but also does some AWS/EKS specific things you will replace.
@@ -47,7 +47,7 @@ These environment variables are identical to the parameters found in the How To 
 
 ![Snapshot](github-snapshot.png)
 
-To customize your replay even more, you can add more parameters to the `patch.yml` generated in the test step as specified here: [replay-snapshot](../../../replay/replay-snapshot).
+To customize your replay even more, you can add more parameters to the `patch.yml` generated in the test step as specified [here](../../../guides/replay/optional-replay-annotations/).
 
 ### Questions?
 

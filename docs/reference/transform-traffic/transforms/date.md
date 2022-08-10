@@ -8,7 +8,7 @@ For example, if the RRPair was recorded on `2021-05-19` but the time in a partic
 
 When the transaction is replayed in the generator, the current date shifted by 31 days will be automatically applied to that HTTP Header. The Service Under Test will get a date that is 31 days from the current date, just like when the traffic was first recorded. Note that in this example we used a round date to keep things simple but this can be applied to timestamps with nanosecond precision.
 
-Check the [Common Patterns](../common-patterns/) section for practical examples.
+Check the [Common Patterns](../../common-patterns/) section for practical examples.
 
 ### Usage
 

@@ -18,7 +18,7 @@ Utilize the filters to drill down even further into a subset of transactions or 
 ![Filters](./select-filters.png)
 
 :::info
-Did you know that you can filter traffic so that it is never sent to Speedscale cloud? This can help you prevent noise, lower your bill and keep private data safe. Check out the [filters](../../configuration/filters/from-traffic-viewer) section for suggestions.
+Did you know that you can filter traffic so that it is never sent to Speedscale cloud? This can help you prevent noise, lower your bill and keep private data safe. Check out the [filters](../../reference/filters) section for suggestions.
 :::
 
 ### Request Response Details <a href="#overview" id="overview"></a>

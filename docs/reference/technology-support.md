@@ -14,8 +14,8 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | ---------- | ---- | ------- | ----- |
 | Auth0 | API | Full | |
 | Basic Auth | Auth | Full | |
-| Bearer JWT | Auth | Full | See [JWT Tokenizer](../../configuration/tokenizers-1/httpauthorization) |
-| Cookies | Auth | Full | See [Cookie Tokenizer](../../configuration/tokenizers-1/http-cookie-tokenizer) |
+| Bearer JWT | Auth | Full | See [JWT Tokenizer](../tokenizers-1/httpauthorization) |
+| Cookies | Auth | Full | See [Cookie Tokenizer](../tokenizers-1/http-cookie-tokenizer) |
 | Desktop | Environment | Full | See [CLI](https://cli.speedscale.com) |
 | Docker (non-K8S) | Environment | Full | See [CLI](https://cli.speedscale.com) |
 | DynamoDB | DBMS | Full |  |
@@ -25,12 +25,12 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | GraphQL | Protocol | Full |  |
 | gRPC | Protocol | Full |  |
 | HTTP 1.1 / 2.0 | Protocol | Full |  |
-| HTTP/S inbound | Protocol | Full | See [TLS](../../install/kubernetes-sidecar/sidecar-trust/) |
+| HTTP/S inbound | Protocol | Full | See [TLS](../../../setup/sidecar/sidecar-trust/) |
 | JSON | Protocol | Full |  |
 | IMAP | Protocol | Observe Only |  |
 | Istio (1.12+) | Environment | Full | |
 | MongoDB | DBMS | Partial |  |
-| Mutual TLS (mTLS) | Protocol | Partial | See [TLS](../../install/kubernetes-sidecar/sidecar-trust/) |
+| Mutual TLS (mTLS) | Protocol | Partial | See [TLS](../../../setup/sidecar/sidecar-trust/) |
 | Outlook 365 | API | Full |  |
 | Postgres | DBMS | Partial | Full Observe, most playback |
 | Redis | DBMS | Observe Only | |
@@ -54,7 +54,7 @@ Speedscale control plane, sidecar and replay system are compatible with all curr
 | CNCF Minikube | Must add `--cni=true` flag |
 | DigitalOcean Kubernetes | |
 | Docker Desktop | |
-| GCP GKE Autopilot | Requires [Dual Proxy](../../install/kubernetes-sidecar/sidecar-dual-proxy/) |
+| GCP GKE Autopilot | Requires [Dual Proxy](../../../setup/sidecar/sidecar-http-proxy/) |
 | GCP GKE Standard | |
 | Rancher Desktop | |
 | Rancher K3S | |

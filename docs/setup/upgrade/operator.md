@@ -50,7 +50,7 @@ repository with the new manifests.
 1. Replace the `data` entry of the `speedscale-certs` Secrets in
    `speedscale-operator.yaml` with the data of the certs you saved in step 1.
 1. If your workloads are stored with Speedscale annotations, **be sure to
-   [review the changed annotations](./changed-annotations) before
+   [review the changed annotations](../changed-annotations/) before
    proceeding.**
 1. Commit the contents of speedscale-operator.yaml to git
 
@@ -94,5 +94,5 @@ kubectl -n <namespace> rollout restart deploy
 
 You can now install Speedscale on new workloads. You may use the
 `speedctl install` wizard, or a
-[GitOps](../sidecar/README.md)
+[GitOps](../../sidecar/)
 tool.
