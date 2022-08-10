@@ -5,7 +5,7 @@ sidebar_position: 2
 # Structure
 
 :::note
-These sections are provided for reference, most users should create filters using the [UI](../from-traffic-viewer).
+These sections are provided for reference, most users should create filters using the [UI](../../../guides/traffic-viewer/).
 :::
 
 Filter rule sets are collections of filters combined together with an operator.
