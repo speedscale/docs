@@ -1,3 +1,6 @@
+---
+sidebar_position: 3
+---
 # Replaying Traffic
 
 Speedscale replays real traffic captured in your system.
