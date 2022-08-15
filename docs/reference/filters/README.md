@@ -10,10 +10,9 @@ Speedscale provides the ability to filter traffic matching a pattern. Filters ar
 * **Assertions** - to tailor which tests are run for specific traffic patterns
 
 :::info
-The simplest way to build a forwarder filter is to assemble it in Traffic Viewer. Editing the JSON is a lot more work but you can check out the [instructions](../../guides/traffic-viewer/) here
+The simplest way to build a forwarder filter is to assemble it in Traffic Viewer. Editing the JSON is a lot more work but you can check out the [instructions](../../guides/creating-a-snapshot.md#filtering-) here
 :::
 
 ### Storage
 
 Filters are stored in Speedscale cloud so they can be reused. Manipulate them directly using `speedctl` commands like `get`, `put` and `delete`. To configure the Forwarder to use a filter rule insert the filter's ID in the Operator or Forwarder's `SPEEDSCALE_FILTER_RULE` environment variable.
-

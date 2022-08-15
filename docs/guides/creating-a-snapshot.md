@@ -1,7 +1,11 @@
+---
+sidebar_position: 3
+title: Creating a Snapshot
+---
 
-# Traffic Viewer
+## Observe Traffic
 
-The Traffic Viewser provides a detailed log of every transaction in the system.
+The Traffic Viewer provides a detailed log of every transaction in the system.
 
 Click on one of the instances to open the Traffic Viewer which provides:
 
@@ -30,6 +34,27 @@ or even a call from the service to a downstream system, even if it uses TLS. The
 * **Request** section includes the Headers and Body that were sent
 * **Response** section includes the Headers and Body that were received
 
-![Request Response Pair](../../observe-rrpair.png)
+![Request Response Pair](../observe-rrpair.png)
 
 Now that you have identified the subset of traffic that you would like to replay, it's time to create a snapshot.
+
+## View Snapshot
+
+A traffic snapshot is created from the selected traffic when running a replay so the same set of traffic can be reviewed and replayed again.
+
+![Snapshot](./snapshot.png)
+
+In addition to these details, a Service Map visually represents the inbound and outbound traffic, and how the replay will be orchestrated.
+
+![Service Map](../select-service-map.png)
+
+
+## Transform Traffic
+
+Speedscale provides a sophisticated data transformation system to ensure that traffic replays successfully.
+
+:::info
+Before using any custom configuration, attempt a traffic replay with defaults. The default `standard` configuration works in many cases so most users should skip ahead to the next step.
+:::
+
+However, if after performing a test run your application has a very low success rate, or displays other unusual behavior, reach out on the Speedscale Slack [community](http://slack.speedscale.com) or via [email](mailto:support@speedscale.com). We will be happy to walk through your specific use case. The Speedscale team is working on a configuration UI but for now we're happier to do the work for you than to have you stumble through this complex topic. If you're feeling adventurous, you can jump over to [transforms](../reference/transform-traffic/README.md) to learn more.
