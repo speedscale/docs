@@ -1,4 +1,4 @@
-# Guide: Signing JWTs
+# Signing JWTs
 
 When replaying traffic, it is important to re-sign JWTs that have expired so that the application accepts these new calls. If you are seeing 401 or 403 errors during replay, that is a strong indicator you need to re-sign your JWTs.
 
