@@ -25,7 +25,32 @@ Ruby applications honor the environment variable `SSL_CERT_FILE` which is automa
 
 ### TLS Trust for Java
 
-Java applications utilize a truststore to determine which certificates will be trusted. The CA Cert inside the **speedscale-certs** secret needs to be added to your truststore. First download the certs from your cluster. Note that there are 2 files, **tls.key** and **tls.crt**. Both of these files are base64 encoded. This command will get the certificate and decode it all at once.
+Java applications utilize a truststore to determine which certificates will be trusted. During Operator installation a secret called **speedscale-jks** will be created that contains the `speedscale-certs` root CA along with a standard set of CA certs used by `openjdk`. This secret is automatically mounted when the `tls-out` setting is configured as shown below. The Java app itself needs to be configured to use this secret as well which requires configuring your JVM to use the truststore with **-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks and **-Djavax.net.ssl.trustStorePassword=changeit**
+
+Here is an example of a patch file that configures TLS Out and configures the Java app to use the mounted trust store. You will likely have to customize this for your environment.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sprint-boot-app
+  annotations:
+    sidecar.speedscale.com/inject: "true"
+    sidecar.speedscale.com/tls-out: "true"
+spec:
+  template:
+    spec:
+      containers:
+        - name: sprint-boot-app
+          env:
+            - name: JAVA_OPTS
+              value: "-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks -Djavax.net.ssl.trustStorePassword=changeit"
+```
+
+#### Mutual TLS in Java
+If you are using mutual TLS or want to use a custom Java trust store, you will have to add the speedscale certs to the trust store.
+
+The CA Cert inside the **speedscale-certs** secret needs to be added to your truststore. First download the certs from your cluster. Note that there are 2 files, **tls.key** and **tls.crt**. Both of these files are base64 encoded. This command will get the certificate and decode it all at once.
 
 ```
 kubectl -n dasboot get secret speedscale-certs -o=jsonpath='{.data.tls\.crt}' | base64 --decode > speedscale-cert.pem
@@ -55,32 +80,31 @@ Lastly you need to make sure that your Java container uses this updated truststo
 
 * Storing the truststore in a Kubernetes secret or configmap
 * Mounting the truststore as a volume mount
-* Configuring your JVM to use the truststore with **-Djavax.net.ssl.trustStore=** and **-Djavax.net.ssl.trustStorePassword**
+* Configuring your JVM to use the truststore with **-Djavax.net.ssl.trustStores and **-Djavax.net.ssl.trustStorePassword**
 
-Here is an example of a patch file that configures TLS Out and mounts the **speedscale-keystore** secret which contains the JKS file. You will likely have to customize this for your environment.
-
+Here is an example of using the trust store created in the previous steps.
 ```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sprint-boot-app
-  annotations:
-    sidecar.speedscale.com/inject: "true"
-    sidecar.speedscale.com/tls-out: "true"
+ name: sprint-boot-app
+ annotations:
+   sidecar.speedscale.com/inject: "true"
+   sidecar.speedscale.com/tls-out: "true"
 spec:
-  template:
-    spec:
-      containers:
-        - name: sprint-boot-app
-          env:
-            - name: JAVA_OPTS
-              value: "-Djavax.net.ssl.trustStore=/mnt/keystores/speedscale.jks -Djavax.net.ssl.trustStorePassword=changeit"
-          volumeMounts:
-            - name: speedscale-keystore
-              mountPath: /mnt/keystores
-      volumes:
-        - name: speedscale-keystore
-          secret:
-            defaultMode: 420
-            secretName: speedscale-keystore
+ template:
+   spec:
+     containers:
+       - name: sprint-boot-app
+         env:
+           - name: JAVA_OPTS
+             value: "-Djavax.net.ssl.trustStore=/mnt/keystores/speedscale.jks -Djavax.net.ssl.trustStorePassword=changeit"
+         volumeMounts:
+           - name: speedscale-keystore
+             mountPath: /mnt/keystores
+     volumes:
+       - name: speedscale-keystore
+         secret:
+           defaultMode: 420
+           secretName: speedscale-keystore
 ```
