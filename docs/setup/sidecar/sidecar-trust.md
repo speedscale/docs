@@ -80,7 +80,7 @@ Lastly you need to make sure that your Java container uses this updated truststo
 
 * Storing the truststore in a Kubernetes secret or configmap
 * Mounting the truststore as a volume mount
-* Configuring your JVM to use the truststore with **-Djavax.net.ssl.trustStores and **-Djavax.net.ssl.trustStorePassword**
+* Configuring your JVM to use the truststore with **-Djavax.net.ssl.trustStores** and **-Djavax.net.ssl.trustStorePassword**
 
 Here is an example of using the trust store created in the previous steps.
 ```
