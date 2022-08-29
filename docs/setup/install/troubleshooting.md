@@ -47,6 +47,19 @@ minikube start \
     --ALL_YOUR_OTHER_FLAGS_HERE
 ```
 
+#### Signature expired
+
+If you see errors relating to an invalid signature involving timestamps (example below), this is because the VM your minikube instance is running on has fallen out of sync with the actual time. This is a [known problem with Hyperkit](https://github.com/kubernetes/minikube/issues/1378).
+
+```
+SignatureDoesNotMatch: Signature expired: 20220727T233601Z is now earlier than 20220727T234712Z (20220728T000212Z - 15 min.)
+```
+
+The time needs to be resynced on the VM and can be done via
+```
+ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i date -u $(date -u +%m%d%H%M%Y)"
+```
+
 ### Using microk8s <a href="#webhook-errors" id="webhook-errors"></a>
 
 If you get webhook errors when running in microk8s, it could be related to the network configuration. You need to enable the [dns add-on](https://microk8s.io/docs/addon-dns) to ensure the network is properly configured:
