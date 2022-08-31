@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: Preventing Data Exfiltration
+title: Preventing Data Loss
 ---
 
 ## Prerequisites
@@ -17,7 +17,7 @@ Since we are capturing traffic from our service, we can observe individual reque
 
 Although we can manipulate this during a replay using [transforms](../reference/transform-traffic/README.md), we may not want to ever capture this data or let it leave the cluster. This is where [Data Loss Prevention](../reference/dlp.md) comes in. We can configure the Operator to redact this data.
 
-## Configure DLP
+## Configure Data Loss Prevention
 
 ![DLP](./dlp-sidebar.png)
 
@@ -25,7 +25,7 @@ Navigate to the DLP config section and select the standard config. Here you can 
 
 ![Config](./dlp-config.png)
 
-## Enable DLP
+## Enable Data Loss Prevention
 
 DLP is not enabled by default so you must configure it during or after installation. If you have installed via the Helm chart, you can see the corresponding values that need to be edited here:
 
