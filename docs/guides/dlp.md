@@ -19,11 +19,11 @@ Although we can manipulate this during a replay using [transforms](../reference/
 
 ## Configure Data Loss Prevention
 
-![DLP](./dlp-sidebar.png)
+![DLP](./dlp/dlp-sidebar.png)
 
 Navigate to the DLP config section and select the standard config. Here you can see that the standard config comes with a default set of fields to redact such as `authorization`, `apikey`, `jwt` and so on. If you want to make a custom config, you can [create your own](../reference/dlp.md).
 
-![Config](./dlp-config.png)
+![Config](./dlp/dlp-config.png)
 
 ## Enable Data Loss Prevention
 
@@ -64,6 +64,6 @@ Edit the fields `WITH_DLP` and `DLP_CONFIG` to the desired values and then make 
 
 ## Confirm redaction
 
-![Redacted](./redacted.png)
+![Redacted](./dlp/redacted.png)
 
 After making this change, we can see for the same request that the field has been redacted. This happens at the Operator level and not in our cloud sytem so the `Authorization` header value never left your cluster and was never seen by Speedscale.
