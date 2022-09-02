@@ -1,5 +1,5 @@
 
-# Transform Traffic
+# Transforms
 
 Automatically modify traffic before it is replayed.
 
@@ -7,7 +7,7 @@ Automatically modify traffic before it is replayed.
 
 In order to replay properly, most apps require traffic to contain up to date JWTs, timestamps and more. Speedscale provides a general purpose data transformation system very similar to Unix pipes for this purpose.
 
-![Data is extracted, transformed and re-inserted into the RRPair](./image.png)
+![Data is extracted, transformed and re-inserted into the RRPair](./transform_1.png)
 
 First, data is extracted from the RRPair using an **Extractor**. For example, an extractor might pull the value of a particular HTTP header in an request. Extractors always produce a string that can be further transformed. The extracted string is called a **token** throughout this documentation.
 
@@ -19,7 +19,7 @@ Last, the transformed data is re-inserted into the RRPair in exactly the same lo
 
 ### Example
 
-![Concrete example of two transforms](./image(11).png)
+![Concrete example of two transforms](./transform_2.png)
 
 As an example, let's assume we need to shift the date in an HTTP header. We would extract that header and apply a date offset. This is a complete transform chain.
 
