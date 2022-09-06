@@ -1,16 +1,16 @@
-| Annotation                                  | Description | Supported Values |
-| ------------------------------------------- | ----------- | ---------------- |
-| `sidecar.speedscale.com/inject`             | Add the sidecar to your: deployment, job, stateful set or daemon set. | Boolean<br/>Default: `"false"` |
-| `sidecar.speedscale.com/insert-init-first`  | Add Speedscale's init container as the first in the list on the target workload. | Boolean<br/>Default: `"false"` |
-| `sidecar.speedscale.com/capture-mode`        | Sidecar capture mode. The only supported value is `proxy` (default) | <ul><li>`proxy`</li><li>Default: `proxy`</li></ul> |
+| Annotation                                    | Description | Supported Values |
+| --------------------------------------------- | ----------- | ---------------- |
+| `sidecar.speedscale.com/inject`               | Add the sidecar to your: deployment, job, stateful set or daemon set. | Boolean<br/>Default: `"false"` |
+| `sidecar.speedscale.com/insert-init-first`    | Add Speedscale's init container as the first in the list on the target workload. | Boolean<br/>Default: `"false"` |
+| `sidecar.speedscale.com/capture-mode`         | Sidecar capture mode. The only supported value is `proxy` (default) | <ul><li>`proxy`</li><li>Default: `proxy`</li></ul> |
 | `sidecar.speedscale.com/capture-node-traffic` | Configure inbound traffic originating from underlying Kubernetes node on which a pod is running to be routed through the proxy. The default behavior is to ignore inbound Kubernetes node traffic (e.g. readiness and liveness checks). Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise. | Boolean<br/>Default: `"false"` |
-| `sidecar.speedscale.com/proxy-type`          | Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `proxy`, ignored otherwise. | <ul><li>`transparent`</li><li>`reverse`</li><li>`forward`</li><li>`dual`</li><li>Default: `transparent`</li></ul>
-| `sidecar.speedscale.com/proxy-protocol`     | Set the protocol for `reverse`, `forward`, or `dual` proxy types. Not valid if `proxy-type` is `transparent`. | <ul><li>`tcp` (only applies to reverse/inbound)</li><li>`http`</li><li>`socks`</li><li>`tcp:http`</li><li>`tcp:socks`</li></ul> |
-| `sidecar.speedscale.com/proxy-host`          | Set the host where you want to forward traffic. Only valid if `capture-mode` is `proxy` | String |
-| `sidecar.speedscale.com/proxy-port`          | Set the port where you want to forward traffic. Only valid if `capture-mode` is `proxy` | String |
-| `sidecar.speedscale.com/proxy-in-port`          | Sets the `PROXY_IN_PORT` environment variable. Only valid if `capture-mode` is `proxy` | String |
-| `sidecar.speedscale.com/proxy-out-port`          | Sets the `PROXY_OUT_PORT` environment variable. Only valid if `capture-mode` is `proxy` | String |
-| `sidecar.speedscale.com/tls-out`                | Enables or disables TLS outbound interception. | <ul><li>`"true"`</li><li>`"false"`</li><li>Default: `"true"`</li></ul> |
+| `sidecar.speedscale.com/proxy-type`           | Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `proxy`, ignored otherwise. | <ul><li>`transparent`</li><li>`reverse`</li><li>`forward`</li><li>`dual`</li><li>Default: `transparent`</li></ul>
+| `sidecar.speedscale.com/proxy-protocol`       | Set the protocol for `reverse`, `forward`, or `dual` proxy types. Not valid if `proxy-type` is `transparent`. | <ul><li>`tcp` (only applies to reverse/inbound)</li><li>`http`</li><li>`socks`</li><li>`tcp:http`</li><li>`tcp:socks`</li></ul> |
+| `sidecar.speedscale.com/proxy-host`           | Set the host where you want to forward traffic. Only valid if `capture-mode` is `proxy` | String |
+| `sidecar.speedscale.com/proxy-port`           | Set the port where you want to forward traffic. Only valid if `capture-mode` is `proxy` | String |
+| `sidecar.speedscale.com/proxy-in-port`        | Sets the `PROXY_IN_PORT` environment variable. Only valid if `capture-mode` is `proxy` | String |
+| `sidecar.speedscale.com/proxy-out-port`       | Sets the `PROXY_OUT_PORT` environment variable. Only valid if `capture-mode` is `proxy` | String |
+| `sidecar.speedscale.com/tls-out`              | Enables or disables TLS outbound interception. | <ul><li>`"true"`</li><li>`"false"`</li><li>Default: `"true"`</li></ul> |
 | `sidecar.speedscale.com/tls-in-secret`        | Kubernetes secret with the TLS keys to use for inbound traffic, these keys will be exposed to API clients. Enables TLS inbound interception (see more details below).| String |
 | `sidecar.speedscale.com/tls-in-private`       | Filename of the TLS Inbound Private key. | String<br/> Default: `tls.key` |
 | `sidecar.speedscale.com/tls-in-public`        | Filename of the TLS Inbound Public cert. | String<br/> Default: `tls.crt` |
@@ -21,8 +21,10 @@
 | `sidecar.speedscale.com/ignore-src-hosts`     | Source hostnames for inbound traffic that should <strong>not</strong> be routed through the proxy. Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise. Wildcards are not currently supported. | Comma separated string.<br/>Example: `sidecar.speedscale.com/ignore-src-hosts: "example.com,mysvc.internal"`|
 | `sidecar.speedscale.com/ignore-dst-ips`       | Destination IPv4 addresses or IPv4 CIDR blocks for outbound traffic that should <strong>not</strong> be routed through the proxy. Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise. | Comma separated string.<br/>Wildcards are not currently supported.<br/>Example: `sidecar.speedscale.com/ignore-dst-ips: "10.10.0.40,10.200.10.0/24"`|
 | `sidecar.speedscale.com/ignore-dst-hosts`     | Destination hostnames for outbound traffic that should <strong>not</strong> be routed through the proxy. Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise. Wildcards are not currently supported. | Comma separated string.<br/>Wildcards are not currently supported.<br/>Example: `sidecar.speedscale.com/ignore-dst-hosts: "example.com,mysvc.internal"`|
+| `sidecar.speedscale.com/ignore-loopback`      | Ignore any traffic whose target is a loopback interface. This has the effect of discarding pod-local traffic. Only valid when `proxy-type` is `transparent` | Boolean<br />Default: "false" |
+| `sidecar.speedscale.com/track-loopback`       | Track and redirect outbound traffic depending on its destination interface. Normal external traffic will be redirected to `PROXY_OUT_PORT` but traffic directed at a loopback interface will be redirected to `PROXY_IN_PORT`. Enable this setting if you need to capture port forwarded traffi. Only valid when `proxy-type` is `transparent` | Boolean<br />Default: "false" |
 | `sidecar.speedscale.com/cpu-limit`            | CPU limit for Speedscales proxy sidecar | [CPU resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu) |
 | `sidecar.speedscale.com/cpu-request`          | CPU request for Speedscales proxy sidecar | [CPU resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu) |
 | `sidecar.speedscale.com/memory-limit`         | Memory limit for Speedscales proxy sidecar | [Memory resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory) |
 | `sidecar.speedscale.com/memory-request`       | Memory request for Speedscales proxy sidecar | [Memory resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory) |
-| `sidecar.speedscale.com/kube-api-support` | Use this setting so your pod can see egress calls to the kube api server. | Boolean<br/>Default: "false"  |
+| `sidecar.speedscale.com/kube-api-support`     | Use this setting so your pod can see egress calls to the kube api server. | Boolean<br/>Default: "false"  |
