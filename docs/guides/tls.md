@@ -1,5 +1,6 @@
 ---
 title: Enabling TLS
+sidebar_position: 5
 ---
 
 ## Prerequisites

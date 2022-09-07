@@ -4,7 +4,7 @@ Our workflow template provides a way for you to build your code, deploy it to Ku
 
 ## How to use the template
 
-Here is an [Example Workflow](https://github.com/speedscale/example-config/blob/master/ci/github-actions.yaml). There are two high level jobs specified in the workflow, **build** and **test**.
+Here is an [Example Workflow](https://github.com/speedscale/example-config/blob/master/ci/github-actions/ci.yaml). There are two high level jobs specified in the workflow, **build** and **test**.
 
 ### Build
 
