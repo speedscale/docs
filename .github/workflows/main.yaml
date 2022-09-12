@@ -21,7 +21,7 @@ jobs:
       run: yarn build
 
     - name: upload main
-      run: aws s3 sync build s3://docs.speedscale.com && aws cloudfront create-invalidation --distribution-id $DIST_ID --paths '/*'
+      run: aws s3 sync --delete  build s3://docs.speedscale.com && aws cloudfront create-invalidation --distribution-id $DIST_ID --paths '/*'
       env:
         DIST_ID: E3K70OREWBZ6OV
         AWS_DEFAULT_REGION: us-east-1
