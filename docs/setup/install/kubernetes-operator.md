@@ -29,6 +29,10 @@ If you need custom image pull secrets (for example, if you're rehosting Speedsca
 speectl install --imgpullsecrets my-secret1,my-secret2p
 ```
 
+### Specifying nodeSelectors, tolerations and affinity
+
+If you want to schedule Speedscale related resources only on certain nodes using the mechanisms mentioned, you can set these via the `values.yaml` during Helm installation or by manually setting them on the `speedscale-operator` deployment after initial install. The settings applied to the operator will be applied to all related resources whether they are present for the full control plane lifecycle or ephemeral during a replay.
+
 ## Uninstall Operator <a href="#uninstall-operator" id="uninstall-operator"></a>
 
 Before you uninstall the operator, make sure that you have uninjected the sidecar from your pods.
