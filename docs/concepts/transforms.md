@@ -3,7 +3,7 @@
 
 Automatically modify traffic before it is replayed.
 
-### Structure
+### Basic Principles
 
 In order to replay properly, most apps require traffic to contain up to date JWTs, timestamps and more. Speedscale provides a general purpose data transformation system very similar to Unix pipes for this purpose.
 
@@ -17,10 +17,53 @@ Transforms also have a data cache where **variables** can be stored. Variables f
 
 Last, the transformed data is re-inserted into the RRPair in exactly the same location. Each transform runs in reverse order to re-encode the new **token** and place it back in its correct place.
 
-### Example
-
 ![Concrete example of two transforms](./transform_2.png)
 
-As an example, let's assume we need to shift the date in an HTTP header. We would extract that header and apply a date offset. This is a complete transform chain.
+### Where to Transform Traffic
 
-For a second example, let's extract part of the request body and change a JSON key. That would also be a complete transform chain.
+Data can be transformed at four different points during a replay:
+
+* **generator** - modify data before the generator sends it to the service under test (SUT) or extract data from a generator response
+* **generator variables** - used to pre-load the variable cache when the generator starts up
+* **responder** - modify a request received by the responder before attempting to pattern match a response
+* **responder variables** - used to pre-load the variable cache when the responder starts up
+
+How can the request and response both use the same transforms? Because each transform chain starts with an extractor that specifically targets the request or the response. In the generator, that means if the extractor references the HTTP Request Body, then the request will be modified before it is sent to the SUT. If an HTTP Request Body is extracted in a responder chain, then the request is modified before signature matching (response lookup) is run.
+
+A complete set of traffic transformation configuration is stored as a Traffic Transform Template (TTT). You can view and edit these in the main [UI](https://app.speedscale.com/trafficTransforms). Although TTT's can be edited graphically, they are stored as JSONs for easy portability.  The JSON structure is fairly straightforward:
+
+```json
+{
+  "id": "sample_transforms",
+  "generator": [
+    {
+      "extractor": {
+        "type": "http_req_body"
+      },
+      "transforms": [
+        {
+          "type": "json_path",
+          "config": {
+            "path": "UserName"
+          }
+        },
+        {
+          "type": "one_of",
+          "config": {
+            "options": "ken,liz,mike",
+            "strategy": "sequential"
+          }
+        }
+      ]
+    }
+  ],
+  "generatorVariables": [
+  ],
+  "responder": [
+  ],
+  "responderVariables": [
+  ]
+}
+```
+
+The id must be unique for your tenant. Each top level section (generator, responder, etc) follows the same internal format.  A single "extractor" must be defined and then an array of transforms that will be run sequentially.

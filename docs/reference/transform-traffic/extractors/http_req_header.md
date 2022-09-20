@@ -9,11 +9,13 @@ http_req_header extracts an HTTP header from the request portion of the RRPair.
 ```
 "type": "http_req_header",
 "config": {
-    "name": "<header>"
+    "name": "<header>",
+    "index": 0
 }
 ```
 
 **name** - the case-sensitive name of the HTTP header to extract
+**index** - (optional) array location within the header (defaults to 0)
 
 ### Example
 
