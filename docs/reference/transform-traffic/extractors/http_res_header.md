@@ -9,11 +9,13 @@ http_res_header extracts an HTTP header from the response portion of the RRPair.
 ```
 "type": "http_res_header",
 "config": {
-    "name": "<header>"
+    "name": "<header>",
+    "index": 0
 }
 ```
 
 **name** - the case-sensitive name of the HTTP header to extract
+**index** - (optional) array location within the header (defaults to 0)
 
 ### Example
 
