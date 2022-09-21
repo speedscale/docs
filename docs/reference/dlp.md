@@ -7,7 +7,7 @@ However, the overall shape or structure of the data is retained in order to faci
 
 ## Enabling DLP
 
-First, to enable DLP on your Speedscale Operator by adding the `WITH_DLP: "true"` line.
+First, to enable DLP on your Speedscale Operator by adding the `WITH_DLP: "true"` line. For security, this requires access to your kubernetes cluster.
 
 ```shell
 kubectl edit -n speedscale configmap/speedscale-operator
@@ -29,7 +29,7 @@ The following types of data are currently inspected:
  * HTTP forms
  * HTTP JSON bodies
 
-To see the keys that are redacted by default, you may view the `standard` DLP configuration file.
+To see the keys that are redacted by default, you may view the `standard` DLP configuration file in the main [UI](https://staging.speedscale.com/dlpConfig/standard).
 
 ```shell
 speedctl get dlp-config standard
@@ -101,25 +101,40 @@ Redacted output:
 
 ## Customizing your DLP configuraton
 
-Should you wish to customize the keys that are redacted, you can create a custom DLP configuration blocklist.
+Should you wish to customize the keys that are redacted, you need to follow a simple two step process:
+1. Create a custom DLP Rule redactlist
+2. Configure the forwarder to use a custom DLP Rule
 
-### Creating the DLP configuration file
+### Create a custom DLP Rule redactlist
 
-The easiest way to create a DLP configuration file will be to copy the `standard` configuration and upload the copy.
+Open the DLP configuration editor in the main [UI](https://app.speedscale.com/dlpConfig) and create a new DLP Rule. Feel free to copy/paste the contents of the `standard` DLP Rule.
 
-```shell
-speedctl get dlp-config standard > my-config.json
-# edit my-config.json
-speedctl put dlp-config my-config.json
+This standard redact list will redact any HTTP header, query parameter, form, request body JSON or response body JSON where the key is named "authorization" (case insensitive). Additional keys can be added to the "all" section like in this example:
+
+```json
+{
+  "id": "my-rule",
+  "redactlist": {
+    "entries": {
+      "all": [
+        "authorization",
+        "super_secret_query_parameter",
+        "super_secret_header_key"
+      ]
+    }
+  }
+}
 ```
 
-### Using a custom DLP configuration file
+Remember to save your new DLP Rule with a unique id.
 
-To use a custom DLP configuration file, it must be enabled in the Speedscale Forwarder ConfigMap
+### Configure the forwarder to use a custom DLP Rule
 
-Set the `DLP_CONFIG` value to the name of your custom configuration
+To use a custom DLP Rule, it must be enabled in the Speedscale Forwarder ConfigMap.
+
+Set the `DLP_CONFIG` value to the name of your custom configuration. For security, this requires access to your kubernetes cluster.
 
 ```shell
 kubectl edit -n speedscale configmap/speedscale-forwarder
-# Add a line for DLP_CONFIG: my-config
+# Add a line for DLP_CONFIG: my-rule
 ```
