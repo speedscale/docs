@@ -26,24 +26,16 @@ gcloud container clusters get-credential <cluster-name> --region <region>
 
 ### Deploy Speedscale components
 
-Now that the cluster is set up, deploy the needed components by applying the provided manifests. We'll need to modify the manifests with custom values from `~/.speedctl/config` First, replace the following values in:
+Now that the cluster is set up, deploy the needed components by applying the provided manifests. We'll need to modify the manifests with custom values from `~/.speedctl/config`. Replace the following values in the [capture.yaml](#manifest):
 
-* `speedscale-forwarder` configmap from `~/.speedctl/config`
-  * `CLUSTER_NAME`
-  * `SUB_TENANT_STREAM`
-  * `TENANT_BUCKET`
-  * `TENANT_ID`
-  * `TENANT_NAME`
-* `speedscale-apikey` secret
-  * `SPEEDSCALE_API_KEY` with `echo -n <your-api-key> | base64`
-* `goproxy` deployment env vars
-  * `APP_LABEL`, `APP_POD_NAME`, `APP_POD_NAMESPACE` with your app name
-  * `REVERSE_PROXY_HOST` with the full URL of your cloud run app
+* `APP_LABEL`, `APP_POD_NAME`, `APP_POD_NAMESPACE` with your app name
+* `REVERSE_PROXY_HOST` with the full URL of your cloud run app
 
 Then run
 ```
 kubectl create ns speedscale
-kubectl apply -f manifests/
+speedctl deploy operator -e <cluster-name>
+kubectl apply -f capture.yaml
 ```
 
 Now you'll need the IP of the goproxy instance you just created which you can get by running
@@ -70,24 +62,26 @@ This pulls the TLS cert from Kubernetes and creates the same secret in Google Se
 Now that all our infrastructure is setup, we can modify our app to capture traffic. In Cloud Run, navigate to the app and in the YAML tab, hit edit. We're going to add the env variables and mount the secret we created in the above step. The `ports` and `resources` section are shown just to indicate the level of indentation needed for our settings. Make sure to replace the IP in proxy settings to the one we grabbed from the Kubernetes service above (the port will remain unchanged ie. `4140`).
 
 ```yaml
-ports:
-- name: http1
-  containerPort: 8080
-env:
-- name: SSL_CERT_FILE
-  value: /etc/ssl/speedscale/tls.crt
-- name: HTTP_PROXY
-  value: http://35.222.2.222:4140
-- name: HTTPS_PROXY
-  value: http://35.222.2.222:4140
-resources:
-  limits:
-    cpu: 1000m
-    memory: 512Mi
-volumeMounts:
-- name: tls
-  readOnly: true
-  mountPath: /etc/ssl/speedscale
+containers:
+- image: gcr.io/speedscale-demos/payment
+  ports:
+  - name: http1
+    containerPort: 8080
+  env:
+  - name: SSL_CERT_FILE
+    value: /etc/ssl/speedscale/tls.crt
+  - name: HTTP_PROXY
+    value: http://35.222.2.222:4140
+  - name: HTTPS_PROXY
+    value: http://35.222.2.222:4140
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+  volumeMounts:
+  - name: tls
+    readOnly: true
+    mountPath: /etc/ssl/speedscale
 volumes:
 - name: tls
   secret:
@@ -103,5 +97,101 @@ The environment variables depend on the language of your app so refer to [http p
 
 Now if you run `curl http://35.222.2.222:4143/<some path for your app>`, you should be able to access your Cloud Run app and also see the traffic in Speedscale.
 
-## Future Enhancements
-* Setting up a Load Balancer with HTTPS to route to our inbound goproxy.
+## Advanced setup
+
+This setup assumes the Cloud Run service being instrumented is available publicly. If you want to make the service load balancer internal only, you can add this annotation `networking.gke.io/load-balancer-type: "Internal"` to the Kubernetes service definition. This requires the Cloud Run service to be on the same VPC as the GKE cluster and also requires a separate Ingress setup. More details can be found [here](https://cloud.google.com/kubernetes-engine/docs/concepts/ingress).
+
+## Manifest
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: goproxy
+  name: goproxy
+  namespace: speedscale
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: goproxy
+  template:
+    metadata:
+      labels:
+        app: goproxy
+    spec:
+      containers:
+      - image: gcr.io/speedscale/goproxy:v1.1.88
+        imagePullPolicy: Always
+        name: goproxy
+        env:
+        - name: APP_LABEL
+          value: payment
+        - name: APP_POD_NAME
+          value: payment
+        - name: APP_POD_NAMESPACE
+          value: payment
+        - name: CAPTURE_MODE
+          value: proxy
+        - name: FORWARDER_ADDR
+          value: speedscale-forwarder.speedscale.svc:80
+        - name: PROXY_TYPE
+          value: dual
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: TLS_OUT_UNWRAP
+          value: "true"
+        - name: REVERSE_PROXY_HOST
+          value: 'https://payment-cloud-run.a.run.app'
+        - name: REVERSE_PROXY_PORT
+          value: '443'
+        - name: LOG_LEVEL
+          value: info
+        ports:
+        - containerPort: 4143
+          name: proxy-in
+          protocol: TCP
+        - containerPort: 4140
+          name: proxy-out
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/ssl/speedscale
+          name: speedscale-tls-out
+          readOnly: true
+        resources: {}
+        securityContext:
+          readOnlyRootFilesystem: false
+          runAsGroup: 2102
+          runAsUser: 2102
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      volumes:
+      - name: speedscale-tls-out
+        secret:
+          defaultMode: 420
+          optional: false
+          secretName: speedscale-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: goproxy
+  name: goproxy
+  namespace: speedscale
+spec:
+  ports:
+  - name: in
+    port: 4143
+    protocol: TCP
+    targetPort: 4143
+  - name: out
+    port: 4140
+    protocol: TCP
+    targetPort: 4140
+  selector:
+    app: goproxy
+  type: LoadBalancer
+```
