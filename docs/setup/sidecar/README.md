@@ -13,7 +13,7 @@ from version control for example.
 
 Please ensure the [Kubernetes Operator](../install/kubernetes-operator.md) is running in your cluster before moving on.
 
-Select the workload (deployment, statefulset, job, etc.) you'd like to monitor and add the following annotation:
+Select the workload (daemonset, deployment, statefulset, job or replicaset) you'd like to monitor and add the following annotation:
 
 ```
   annotations:

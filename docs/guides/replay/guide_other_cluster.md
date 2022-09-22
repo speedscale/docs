@@ -33,6 +33,6 @@ One great use of Speedscale is to record traffic in one cluster and replay it an
 
 ![Replay 2nd Cluster](./replay_new_cluster.png)
 
-4. Select your new cluster and workload and finish the wizard. You should see any workload type including deployments, statefulsets, replicasets and daemonsets. Jobs are not currently supported.
+4. Select your new cluster and workload and finish the wizard. You should see any workload type including deployments, statefulsets, replicasets, jobs and daemonsets. Jobs are not currently supported.
 
 5. View your report!
