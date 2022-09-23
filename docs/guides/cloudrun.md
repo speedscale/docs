@@ -47,6 +47,19 @@ goproxy   LoadBalancer   10.84.6.133   35.222.2.222   4143:30886/TCP,4140:31256/
 
 Grab the external IP (35.222.2.222 here). It may take some time to show up as a TCP Load Balancer is provisioned when you deploy the manifests.
 
+This step also creates a Network Endpoint Group (NEG) that can be used as a backend in a Load Balancer.
+```
+kubectl -n speedscale describe svc goproxy
+Name:                     goproxy
+Namespace:                speedscale
+Labels:                   app=goproxy
+Annotations:              cloud.google.com/neg: {"exposed_ports": {"4143":{}, "4140":{}}}
+                          cloud.google.com/neg-status:
+                            {"network_endpoint_groups":{"4140":"k8s1-0fb6446b-speedscale-goproxy-4140-e0c33991","4143":"k8s1-0fb6446b-speedscale-goproxy-4143-7e876f3b...
+                          networking.gke.io/load-balancer-type: Internal
+```
+If you are using a Load Balancer to route to your Cloud Run service, you will need to configure it to use the backend NEG for 4143 in this case called `k8s1-0fb6446b-speedscale-goproxy-4143-7e876f3b...`.
+
 ### Create the Google secret
 
 In order to establish TLS connections to our proxy, we'll need to add the TLS cert to our trust store. We'll use Google Secret Manager to do this.
@@ -85,10 +98,10 @@ containers:
 volumes:
 - name: tls
   secret:
-  secretName: speedscale-certs
-  items:
-  - key: latest
-    path: tls.crt
+    secretName: speedscale-certs
+    items:
+    - key: latest
+      path: tls.crt
 ```
 
 The environment variables depend on the language of your app so refer to [http proxy settings](../setup/sidecar/sidecar-http-proxy.md#configuring-your-application-proxy-server) and [side car trust settings](../setup/sidecar/sidecar-trust.md).
@@ -99,7 +112,7 @@ Now if you run `curl http://35.222.2.222:4143/<some path for your app>`, you sho
 
 ## Advanced setup
 
-This setup assumes the Cloud Run service being instrumented is available publicly. If you want to make the service load balancer internal only, you can add this annotation `networking.gke.io/load-balancer-type: "Internal"` to the Kubernetes service definition. This requires the Cloud Run service to be on the same VPC as the GKE cluster and also requires a separate Ingress setup. More details can be found [here](https://cloud.google.com/kubernetes-engine/docs/concepts/ingress).
+This setup assumes the Cloud Run service being instrumented is available publicly. If you want to make the service load balancer internal only, you can add this annotation `networking.gke.io/load-balancer-type: "Internal"` to the Kubernetes service definition. This requires the Cloud Run service to be on the same VPC as the GKE cluster and requires you to connect your Cloud Run app to your VPC as detailed [here](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access)
 
 ## Manifest
 ```yaml
@@ -181,6 +194,8 @@ metadata:
     app: goproxy
   name: goproxy
   namespace: speedscale
+  annotations:
+    cloud.google.com/neg: '{"exposed_ports": {"4143":{}, "4140":{}}}'
 spec:
   ports:
   - name: in
