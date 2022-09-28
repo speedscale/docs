@@ -114,6 +114,18 @@ The environment variables depend on the language of your app so refer to [http p
 
 Now if you run `curl http://35.222.2.222:4143/<some path for your app>`, you should be able to access your Cloud Run app and also see the traffic in Speedscale.
 
+## Running Replays
+
+Replays can be run against the service through the Kubernetes cluster as detailed [here](./guides/replay/README.md). The HTTP Proxy settings and TLS settings set on the Cloud Run service above need to remain as is. It's recommended to set the `collect-logs` option to `false` since the Kubernetes service logs are not relevant in this setup.
+
+:::info
+Note that the CPU and memory graphs displayed in the report will be those for the proxy container and not the actual cloud run service.
+:::
+
+:::danger
+Do not set the cleanup mode setting (`replay.speedscale.com/cleanup`) to `all` as this will delete the proxy container which is acting as the entrypoint and HTTP Proxy for your Cloud Run app.
+:::
+
 ## Advanced setup
 
 This setup assumes the Cloud Run service being instrumented is available publicly. If you want to make the service load balancer internal only, you can add this annotation `networking.gke.io/load-balancer-type: "Internal"` to the Kubernetes service definition. This requires the Cloud Run service to be on the same VPC as the GKE cluster and requires you to connect your Cloud Run app to your VPC as detailed [here](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access)
