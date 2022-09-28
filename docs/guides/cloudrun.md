@@ -35,6 +35,10 @@ Then run
 ```
 kubectl create ns speedscale
 speedctl deploy operator -e <cluster-name>
+kubectl create ns capture
+kubectl -n speedscale get secret speedscale-certs -o json | jq -r '.data["tls.crt"]' | base64 -D >> tls.crt
+kubectl -n speedscale get secret speedscale-certs -o json | jq -r '.data["tls.key"]' | base64 -D >> tls.key
+kubectl -n capture create secret tls tls-certs --cert=tls.crt --key=tls.key
 kubectl apply -f capture.yaml
 ```
 
@@ -66,7 +70,7 @@ In order to establish TLS connections to our proxy, we'll need to add the TLS ce
 
 ```
 gcloud secrets create speedscale-certs --replication-policy="automatic"
-kubectl -n speedscale get secret speedscale-certs -o json | jq -r '.data["tls.crt"]' | base64 -D | gcloud secrets versions add speedscale-certs --data-file=-
+gcloud secrets versions add speedscale-certs --data-file=tls.crt
 ```
 This pulls the TLS cert from Kubernetes and creates the same secret in Google Secret Manager. It is now available for our Cloud Run app to use.
 
@@ -122,7 +126,7 @@ metadata:
   labels:
     app: goproxy
   name: goproxy
-  namespace: speedscale
+  namespace: capture
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -156,6 +160,8 @@ spec:
           value: http
         - name: TLS_OUT_UNWRAP
           value: "true"
+        - name: TLS_CERT_DIR
+          value: /etc/ssl/capture
         - name: REVERSE_PROXY_HOST
           value: 'https://payment-cloud-run.a.run.app'
         - name: REVERSE_PROXY_PORT
@@ -170,8 +176,8 @@ spec:
           name: proxy-out
           protocol: TCP
         volumeMounts:
-        - mountPath: /etc/ssl/speedscale
-          name: speedscale-tls-out
+        - mountPath: /etc/ssl/capture
+          name: tls-out
           readOnly: true
         resources: {}
         securityContext:
@@ -181,11 +187,11 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
       volumes:
-      - name: speedscale-tls-out
+      - name: tls-out
         secret:
           defaultMode: 420
           optional: false
-          secretName: speedscale-certs
+          secretName: tls-certs
 ---
 apiVersion: v1
 kind: Service
@@ -193,7 +199,7 @@ metadata:
   labels:
     app: goproxy
   name: goproxy
-  namespace: speedscale
+  namespace: capture
   annotations:
     cloud.google.com/neg: '{"exposed_ports": {"4143":{}, "4140":{}}}'
 spec:
@@ -209,4 +215,5 @@ spec:
   selector:
     app: goproxy
   type: LoadBalancer
+
 ```
