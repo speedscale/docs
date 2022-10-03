@@ -1,5 +1,5 @@
 ---
-title: Capturing Traffic in Docker
+title: Working in Docker
 ---
 
 :::danger
@@ -44,6 +44,12 @@ You can now run requests against your service through `localhost:4143` instead o
 ![Traffic](./docker/traffic.png)
 
 You should be able to see traffic in the Speedscale UI after a few minutes and now you can using this traffic to [create a snapshot](./creating-a-snapshot.md).
+
+### Replaying traffic
+
+If you've created a snapshot, you can replay it in Docker as well. Take the ID of the snapshot you created (something like `b973b5e2-651f-4a30-8c69-7bd62a678544`) and fill it in the `SCENARIO_ID` variable shown in the [generator snippet](#manifests). You can also change the `TEST_CONFIG_ID` to a [custom config](../reference/configuration/README.md) you may have created. Paste that snippet into your `docker-compose.yaml` file and run `docker compose up -d` again to start the test.
+
+This will generate a report which you can find more details for [here](./reports/README.md).
 
 ## Manifests
 config.env
@@ -94,4 +100,17 @@ services:
       options:
         max-size: "1000k"
         max-file: "10"
+```
+
+generator snippet
+```yaml
+  generator:
+    image: gcr.io/speedscale/generator:v1.1
+    env_file:
+      - config.env
+    environment:
+      - SCENARIO_ID=b973b5e2-651f-4a30-8c69-7bd62a678544
+      - TEST_CONFIG_ID=standard
+      - CUSTOM_URL=goproxy:4143
+      - LOCAL_REPLAY_MODE=true
 ```
