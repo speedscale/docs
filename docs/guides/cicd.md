@@ -308,7 +308,7 @@ if kubectl wait "replay/${REPLAY_NAME}" \
   --namespace "$NAMESPACE" \
   --for condition=Ready \
   --timeout "$TIMEOUT"; then
-  status=$(kubectl get replay/${replay_name} -n ${replay_ns} -o json | jq '.status.conditions[-1].message' -r)
+  status=$(kubectl get replay/${REPLAY_NAME} -n "$NAMESPACE" -o json | jq '.status.conditions[-1].message' -r)
 else
   echo "timed out waiting for traffic replay"
   exit 1
@@ -317,11 +317,11 @@ fi
 echo "Report Status: $status"
 
 case "${status}" in
-  "Success: Test passed")
-    return 0
+  "Failed: Missed Goals")
+    exit 1
     ;;
   *)
-    return 1
+    exit 0
     ;;
 esac
 ```
