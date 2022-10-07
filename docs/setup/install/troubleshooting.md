@@ -97,3 +97,11 @@ kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io spee
 ```
 
 After the webhook has been deleted, re-run the full operator delete command to make sure that service roles and other items are properly cleaned up.
+
+### Istio Errors
+
+In Istio with dual proxy capture mode, the Operator creates a `Sidecar` resource that routes traffic through the Istio mesh into the Speedscale sidecar. In the case of invalid settings, you may see an error along the lines of
+```
+{"L":"ERROR","T":"2022-08-05T15:36:45.149Z","M":"failed to provision envoy sidecar config, provisioning failed","reqId":"2f061731-46f0-4d33-9f37-b99c16a0dec3","op":"UPDATE","kind":"Deployment","apiVersion":"apps/v1","name":"inventory-availability","namespace":"perf1-inventory-availability","error":"resource already exists"}
+```
+in the Operator logs. This usually happens if the port specified is invalid (not an integer). This can also happen if the Operator is not given permissions to create Istio Sidecar resources. This should be handled during installation but if you encounter this, try [upgrading the operator](../upgrade/operator.md).
