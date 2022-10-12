@@ -111,6 +111,6 @@ generator snippet
     environment:
       - SCENARIO_ID=b973b5e2-651f-4a30-8c69-7bd62a678544
       - TEST_CONFIG_ID=standard
-      - CUSTOM_URL=goproxy:4143
+      - CUSTOM_URL=http://goproxy:4143
       - LOCAL_REPLAY_MODE=true
 ```
