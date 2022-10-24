@@ -63,4 +63,4 @@ Speedscale control plane, sidecar and replay system are compatible with all curr
 
 ### Questions?
 
-If there are other protocols that are integral to your organization, please let us know at [support@speedscale.com](mailto:support@speedscale.com) or join our [slack community](http://slack.speedscale.com).
+If there are other protocols that are integral to your organization, please let us know at [support@speedscale.com](mailto:support@speedscale.com) or join our [slack community](https://slack.speedscale.com).

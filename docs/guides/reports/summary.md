@@ -22,7 +22,7 @@ At a glance you should be able to see:
 
 If you see a very low success rate, or your service displays other unusual
 behavior, reach out on the [Speedscale Slack
-community](http://slack.speedscale.com) or via
+community](https://slack.speedscale.com) or via
 [email](mailto:support@speedscale.com) because you may need to configure data
 transformation. Typically this is needed for authentication and time shifting.
 The Speedscale team is working on a configuration UI but for now we're happier
