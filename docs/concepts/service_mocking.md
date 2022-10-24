@@ -21,3 +21,5 @@ You can request new protocol support in the Speedscale [community Slack](https:/
 ## What are some of the downsides of service mocking?
 
 Custom built service mocks tend to fall out of date quickly because the data or the API contract changes. For this reason we recommend Speedscale regenerate your mocks automatically every sprint (if possible).
+
+For more information see our [tutorial](https://speedscale.com/how-to-mock-apis-in-kubernetes/) on mock APIs.
