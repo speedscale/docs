@@ -34,7 +34,7 @@ The value `anyuid` is a default SCC provided by OpenShift. Any SCC can be used s
 strategy is set to `RunAsAny`. See `oc explain scc` for more detail.
 :::
 
-Once this step is complete, you can continue [installing the Speedscale operator](../setup/installation/kubernetes-operator.md).
+Once this step is complete, you can continue [installing the Speedscale operator](../setup/install/kubernetes-operator.md).
 
 ## Capturing Traffic
 
