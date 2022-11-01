@@ -64,9 +64,9 @@ metadata:
   name: speedscale-sidecar
 allowHostDirVolumePlugin: false
 allowHostIPC: false
-allowHostNetwork: true
+allowHostNetwork: false
 allowHostPID: false
-allowHostPorts: true
+allowHostPorts: false
 allowPrivilegeEscalation: false
 allowPrivilegedContainer: false
 allowedCapabilities:
