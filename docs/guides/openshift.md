@@ -162,6 +162,49 @@ ID it specifies, you can also remove that as well:
 oc adm policy remove-scc-from-group anyuid system:serviceaccounts:<WORKLOAD_NAMESPACE>
 ```
 
+## Replaying Traffic
+
+As with capturing traffic, replaying a traffic snapshot will also require an SCC that allows Speedscale
+components to run with the user ID they specify. However, for some instances in which TLS outbound traffic is
+being mocked, the Speedscale sidecar is attached to the workload during replay. For this reason, consider
+creating a custom SCC referenced for the transparent proxy configuration mentioned above:
+
+```bash
+cat <<EOF | oc create -f -
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: speedscale-sidecar
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegeEscalation: false
+allowPrivilegedContainer: false
+allowedCapabilities:
+- NET_ADMIN
+- NET_RAW
+readOnlyRootFilesystem: false
+fsGroup:
+  type: RunAsAny
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+supplementalGroups:
+  type: RunAsAny
+volumes:
+- "*"
+EOF
+```
+
+Then add the SCC to your service account group policy:
+
+```bash
+oc adm policy add-scc-to-group speedscale-sidecar system:serviceaccounts:<WORKLOAD_NAMESPACE>
+```
+
 ## Getting Help
 
 If you are experiencing issues with this guide and have further questions, please reach out to us on the
