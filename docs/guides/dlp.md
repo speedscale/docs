@@ -5,7 +5,7 @@ title: Preventing Data Loss
 
 ## Prerequisites
 1. [The Operator is installed](../quick-start.md).
-2. [A sidecar has been installed and traffic is being captured](../setup/sidecar/README.md)
+2. [A sidecar has been installed and traffic is being captured](../setup/sidecar/install.md)
 
 ## Viewing traffic
 

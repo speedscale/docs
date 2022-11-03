@@ -1,4 +1,7 @@
-
+---
+title: Sidecar Installation
+position: 1
+---
 # Speedscale Sidecar
 
 The sidecar is used to collect data from an existing application.
