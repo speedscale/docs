@@ -34,7 +34,7 @@ When you're done, you should be able to click on the "Advanced" tab and see JSON
 ```JSON
 {
   "id": "jwt-test",
-  "responderResp": [
+  "responder": [
     {
       "filters": {
         "filters": [
