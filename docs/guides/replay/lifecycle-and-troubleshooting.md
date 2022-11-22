@@ -61,23 +61,23 @@ The following operator log message indicates that the operator is making changes
 
 The exact format and content of this message will vary. However, you will be able to see a variety of patches representing the modifications being made. They should match your annotations.
 
-### 2a. (optional) Operator adds responder (test.speedscale.com/mode)
+### 2a. (optional) Operator adds responder
 
-If the responder annotation is present, the operator will:
+With annotation `replay.speedscale.com/mode` is set to `full-replay` or `responder-only`, the operator will:
 
 * Add an init container to the SUT pod. This init container will stop the pod from continuing until the Speedscale responder responds to a readiness probe.
 * Add HostAlias entries to the SUT container to route traffic to the responder
 
-### 2b. (optional) Operator adds sidecar (sidecar.speedscale.com/inject)
+### 2b. (optional) Operator adds sidecar
 
-If the sidecar annotation is present, the operator will:
+With annotation `sidecar.speedscale.com/inject` set to `"true"`, the operator will:
 
 * Add the init container sidecar to the SUT workoad
 * Add the proxy sidecar to the SUT workload
 
-### 2c. (optional) Operator adds TLS configuration (sidecar.speedscale.com/tls-out)
+### 2c. (optional) Operator adds TLS configuration
 
-If the TLS out annotation is present, the operator will:
+With the annotation `sidecar.speedscale.com/tls-out` set to `"true"`, the operator will:
 
 * volume mount the user-provided outbound certificates to the SUT workload
 * modify the TLS environment variables or trust store in the SUT workload
@@ -93,7 +93,7 @@ The following steps will occur asynchronously.
 In other words, Kubernetes will be allowed to continue SUT workload while Speedscale continues working in the background.
 
 A `TrafficReplay` for the workload will be generated to track the status of your replay.
-The name of the specific `TrafficReplay` can be found by retrieving the `test.speedscale.com/env-id` annotation from the SUT.
+The name of the specific `TrafficReplay` can be found by retrieving the `replay.speedscale.com/env-id` annotation from the SUT.
 
 ```
 kubectl get deploy <NAME> -o jsonpath='{.metadata.annotations.replay\.speedscale\.com/env-id}'
@@ -108,7 +108,7 @@ kubectl get jobs <NAME> -o jsonpath='{.metadata.annotations.replay\.speedscale\.
 
 If the collector feature flag is set, the container logs are collected using a pod called `collector`. If logs are not appearing in your report, can check for errors in the collector container logs.
 
-### 3c. (optional) Operator waits for responder to start (`test.speedscale.com/mode: full`)
+### 3c. (optional) Operator waits for responder to start (`replay.speedscale.com/mode: full`)
 
 When the responder is present, an init container will stop the SUT workload from starting until the Speedscale responder responds to a readiness probe. The responder failing to start will cause the SUT startup to appear frozen. Check the logs of the init container to see if it can reach the responder:
 
@@ -132,9 +132,9 @@ One additional edge case occurs if there are no inbound transactions in the snap
 {"L":"ERROR","T":"...","M":"no inbound transactions in this scenario, no test report will be generated", ... }
 ```
 
-#### 3b. (optional) Operator deploys generator (`test.speedscale.com/mode: full`)
+#### 3b. (optional) Operator deploys generator
 
-The generator will start and you will see this log message:
+With annotation `replay.speedscale.com/mode` is set to `full-replay` or `generator-only`, the generator will start and you will see this log message:
 
 ```
 {"L":"INFO","T":"...","M":"START generator"
