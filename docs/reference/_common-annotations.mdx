@@ -1,5 +1,28 @@
-|  Annotation                          | Description | Supported Values |
-| ------------------------------------ | ----------- | ---------------- |
-| `operator.speedscale.com/ignore`     | Instructs the operator to skip processing of this workload regardless of any other Speedscale annotations. Changes made to a workload manually AFTER this annotation was added won’t be reverted by the operator. | Boolean<br/>Default: `false` |
-| `operator.speedscale.com/sut`        | Indicates that this workload has a sidecar injected AND/OR replay running. (SUT stands for System Under Test) | Boolean|
-| `operator.speedscale.com/managed-by` | Unique name of the operator instance which manages this workload or `TrafficReplay` CR. This is to prevent race conditions in cases where multiple Speedscale operators are installed to different namespaces. | String<br/>Sourced from INSTANCE_ID var in the operator’s ConfigMap |
+### `operator.speedscale.com/ignore`
+
+Instructs the Speedscale operator to skip processing of this workload regardless of any other Speedscale
+annotations. Changes made to a workload manually AFTER this annotation was added won’t be reverted by the
+operator.
+
+* Accepted Values:
+  * `true`
+  * `false` (default)
+
+
+***
+
+
+### `operator.speedscale.com/sut`
+
+Indicates that this workload is the System Under Test, or SUT, that has a sidecar injected AND/OR replay
+running. This boolean value is assigned automatically by the Speedscale operator.
+
+
+***
+
+
+### `operator.speedscale.com/managed-by`
+
+Unique name of the Speedscale operator instance which manages this workload or `TrafficReplay` CR. This
+prevents contention between operators in the event that there are multiple operator instances in different
+namespaces. This string value is assigned automatically by the Speedscale operator.

@@ -14,4 +14,4 @@ Because GKE Autopilot is configured with strict security policies, it is not pos
 * **Dual Proxy** - this does not require privileges, but you must reconfigure your port
 * **Istio** - this requires a privileged container (for the istio sidecar)
 
-Because of the security restrictions for Autopilot, you must configure [Sidecar HTTP Proxy](../../../setup/sidecar/sidecar-http-proxy/) mode for the sidecar to capture traffic.
+Because of the security restrictions for Autopilot, you must configure the [proxy mode](/setup/sidecar/proxy-modes/) mode for the sidecar to capture traffic.

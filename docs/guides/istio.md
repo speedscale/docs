@@ -1,4 +1,6 @@
-# Using with Istio
+---
+title: Working with Istio
+---
 
 [Istio](https://istio.io) is a service mesh offering that modifies a cluster to provide, among
 other things, traffic and network management. Istio makes use of a proxy known as
@@ -25,9 +27,9 @@ proxy for inbound traffic and a forward proxy for outbound traffic. This require
 ### Add Workload Annotations
 
 Begin by adding the following annotations to your Kubernetes workload along with any other
-[sidecar annotations](../sidecar-annotations/):
+[sidecar annotations](/setup/sidecar/annotations/):
 
-```
+```yaml
 sidecar.speedscale.com/inject: "true"
 sidecar.speedscale.com/capture-mode: proxy
 sidecar.speedscale.com/proxy-type: dual
@@ -36,12 +38,12 @@ sidecar.speedscale.com/proxy-protocol: tcp:http
 
 Note: the `proxy-protocol` annotation shown above will operate the outbound, forward proxy as an
 HTTP proxy. If your application needs so use a SOCKS4 or SOCKS5 proxy, use `tcp:socks`. See
-[sidecar http proxy mode](../sidecar-http-proxy/) for more information.
+[proxy modes](/setup/sidecar/proxy-modes/) for more information.
 
 Also, add annotations to inform the Speedscale sidecar on what host and port your application
 container is listening. For example, if your application listens to localhost port 8080:
 
-```
+```yaml
 sidecar.speedscale.com/proxy-host: "localhost"
 sidecar.speedscale.com/proxy-port: "8080"
 ```
@@ -51,13 +53,13 @@ sidecar.speedscale.com/proxy-port: "8080"
 In many instances, configuring your application to use an HTTP or SOCKS proxy for outbound traffic
 can be done simply by setting environment variables. Typically these environment variables are
 `HTTP_PROXY` for unencrypted HTTP requests and `HTTPS_PROXY` for TLS HTTP requests. See the
-[Configuring Your Application Proxy Server](../sidecar-http-proxy/#configuring-your-application-proxy-server)
+[Configuring Your Application Proxy Server](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
 documentation more detail and some language specific examples.
 
 Modify your workload to add the necessary proxy configuration to your application container's
 environment variables. For example:
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -81,7 +83,7 @@ change the URL above to `socks5://localhost:4140`.
 Outbound TLS support for the Speedscale sidecar can be enabled with the annotation
 `sidecar.speedscale.com/tls-out: "true"`. You may be required to perform additional steps if your
 application and not Envoy is originating TLS requests. See
-[Trusting TLS Certificates](../sidecar-trust/) for more information.
+[Trusting TLS Certificates](../tls/#trusting-tls-certificates) for more information.
 
 ### Allow Egress Speedscale Traffic (Optional)
 
@@ -90,7 +92,7 @@ need to add the `speedscale` namespace to the sidecar's egress configuration. Th
 necessary if you do not have custom sidecar configuration. Here is an example from the Istio
 [docs](https://istio.io/latest/docs/reference/config/networking/sidecar/):
 
-```
+```yaml
 apiVersion: networking.istio.io/v1beta1
 kind: Sidecar
 metadata:

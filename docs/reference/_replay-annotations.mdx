@@ -1,22 +1,166 @@
-| Annotation                             | Description   | Supported Values |
-| -------------------------------------- | ------------- | ---------------- |
-| `replay.speedscale.com/env-id`           | Name of the `TrafficReplay` Custom Resource tied to a replay for this workload | Strings, automatically assigned |
-| `replay.speedscale.com/snapshot-id`      | ID of the Snapshot that is used to recreate traffic. | UUIDs for Snapshots |
-| `replay.speedscale.com/testconfig-id`    | ID of the test configuration used to recreate to traffic.| String of valid test configuration. <br/>Default: `standard`|
-| `replay.speedscale.com/build-tag`        | Link a unique tag, build hash, etc. to the Speedscale report. That way you can connect the report results to the version of the code that was tested. | String |
-| `replay.speedscale.com/mode`             | Defines how a replay will test the system. | <ul><li>`full-replay` will deploy generators to recreate observed requests, and responders to recreate observed responses.</li><li>`responder-only` will create an infinitely running replay that responds to requests with observed responses.</li><li> `generator-only` will recreate obeserved requests to the system under replay.</li><li>Default: `full-replay`</li></ul> |
-| `replay.speedscale.com/timeout`        | Specifies a timeout for a replay. Ignored when replay mode is `responder-only` | Duration |
-| `replay.speedscale.com/secrets`          | Use this setting to provide a list of secrets for the replay system to load (ex: JWT passwords). | Comma separated list of strings |
-| `replay.speedscale.com/cleanup`          | Cleans up provisioned resources after a traffic replay. | <ul><li>`inventory` will remove objects related to Speedscale's replay of traffic once finished, as well as reverting changes to the workload.</li><li>`all` removes all replay objects, as well as the system under test.</li><li>`none` will leave all resources on the system after a test run.</li><li>Default: `inventory`</li></ul> |
-| `replay.speedscale.com/sut-url`          | Use this setting to override the URL the generator automatically determines (useful if you have customized your service definition). | URL |
-| `replay.speedscale.com/collect-logs`     | Collect logs from the system under test. | Boolean<br/>Default: "true"|
-| `replay.speedscale.com/generator-low-data` | Forces the generator into a high efficiency/low data output mode. This is ideal for high volume performance tests. |Boolean<br/>Default: "false" |
-| `replay.speedscale.com/responder-low-data` | Forces the responder into a high efficiency/low data output mode. This is ideal for high volume performance tests. | Boolean<br/>Default: "false" |
+export const SUT = () => (
+    <abbr title="System Under Test">SUT</abbr>
+);
 
-:::note
 
-The operator will remove all listed replay annotations from the workload during admission review and move them into an associated `TrafficReplay` Custom Resource.
-This prevents side effects such as the operator observing and executing the same replay after it has finished.
-It also allows subsequent runs of the same replay by applying the same manifests, or incorporating the annotations into a GitOps workflow.
+### `replay.speedscale.com/env-id`
+
+Name of the `TrafficReplay` Custom Resource tied to a replay for this workload. This value is automatically
+assigned by the Speedscale operator.
+
+
+***
+
+
+### `replay.speedscale.com/snapshot-id`
+
+ID of the Snapshot that is used to recreate traffic.
+
+* Accepted Values: any valid snapshot UUID
+
+
+***
+
+
+### `replay.speedscale.com/testconfig-id`
+
+ID of the test configuration used to recreate to traffic.
+
+* Default: `standard`
+* Accepted Values: any valid [test configuration](/reference/configuration)
+
+
+***
+
+
+### `replay.speedscale.com/build-tag`
+
+Optional unique tag, build hash, etc. to attach to the Speedscale report. Use this as a way to correlate
+Speedscale report results to the version of your code that was tested.
+
+
+***
+
+
+### `replay.speedscale.com/mode`
+
+Configure how a traffic replay will test your system by instructing the Speedscale operator to deploy either
+generators to recreate observed requests **TO** your application, or responders to recreate observed responses
+to requests **FROM** your application, or both. Setting this to `full-replay`, both generators and responders
+are deployed, while `generator-only` will only deploy generators. Setting this to `responder-only` will only
+responders which will run indefinitely until removed.
+
+* Accepted Values:
+  * `full-replay` (default)
+  * `generator-only`
+  * `responder-only`
+
+
+***
+
+
+### `replay.speedscale.com/timeout`
+
+Specifies the maximum amount of time a generator for a replay is allowed to be idle (i.e. fails to send a
+heartbeat event) before the Speedscale operator forcibly ends the replay. This does **NOT** enforce a static
+timeout for the replay itself. Ignored when replay mode is `responder-only`.
+
+* Default: `20m`
+* Accepted Values: a valid duration string according to Go's [ParseDuration()](https://pkg.go.dev/time#ParseDuration) function
+
+
+***
+
+
+### `replay.speedscale.com/secrets`
+
+Comma separated list of Kubernetes secrets such as JWT tokens, passwords, etc. to attach as volume mounts to
+deployed generators and responders.
+
+
+***
+
+
+### `replay.speedscale.com/cleanup`
+
+Configures how the Speedscale operator cleans up provisioned resources after a traffic replay. If set to
+`inventory`, the operator removes objects related to Speedscale's replay of traffic, as well as reverts
+changes to the <SUT />. If set to `all`, the operator removes all replay objects, as well as the <SUT />. If
+set to `none`, the operator will leave all resources on the system after a replay.
+
+* Accepted Values:
+  * `inventory` (default)
+  * `all`
+  * `none`
+
+
+***
+
+
+### `replay.speedscale.com/sut-url`
+
+Overrides the <SUT /> URL determinited automatically by the generator when replaying traffic. This is useful
+if you have customized your service definition.
+
+* Accepted Values: a valid URL
+
+
+***
+
+
+### `replay.speedscale.com/collect-logs`
+
+If set to `true`, the operator will deploy an additional component during a replay that will collect the logs
+of the <SUT />. Collected logs will then be available on the report page of the Speedscale UI.
+
+* Accepted Values:
+  * `true` (default)
+  * `false`
+
+
+***
+
+
+### `replay.speedscale.com/generator-low-data`
+
+If set to `true`, the *generator* is forced into a high efficiency/low data output mode in which individual
+transaction assertions are disabled and only overall replay aggregates are calculated and reported.
+
+:::tip
+This setting is ideal and recommended for high volume performance tests.
+:::
+
+* Accepted Values:
+  * `true`
+  * `false` (default)
+
+
+***
+
+
+### `replay.speedscale.com/responder-low-data`
+
+If set to `true`, the *responder* is forced into a high efficiency/low data output mode in which individual
+transaction assertions are disabled and only overall replay aggregates are calculated and reported.
+
+:::tip
+This setting is ideal and recommended for high volume performance tests.
+:::
+
+
+* Accepted Values:
+  * `true`
+  * `false` (default)
+
+
+***
+
+
+:::caution Important
+
+The operator will remove all listed replay annotations from the workload during admission review and move them
+into an associated `TrafficReplay` Custom Resource. This prevents side effects such as the operator observing
+and executing the same replay after it has finished. It also allows subsequent runs of the same replay by
+applying the same manifests, or incorporating the annotations into a GitOps workflow.
 
 :::

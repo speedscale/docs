@@ -26,12 +26,12 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | GraphQL | Protocol | Full |  |
 | gRPC | Protocol | Full |  |
 | HTTP 1.1 / 2.0 | Protocol | Full |  |
-| HTTP/S inbound | Protocol | Full | See [TLS](../../setup/sidecar/sidecar-trust/) |
+| HTTP/S inbound | Protocol | Full | See [TLS](/setup/sidecar/tls/) |
 | JSON | Protocol | Full |  |
 | IMAP | Protocol | Observe Only |  |
 | Istio (1.12+) | Environment | Full | |
 | MongoDB | DBMS | Partial |  |
-| Mutual TLS (mTLS) | Protocol | Partial | See [TLS](../../setup/sidecar/sidecar-trust/) |
+| Mutual TLS (mTLS) | Protocol | Partial | See [TLS](/setup/sidecar/tls/) |
 | Outlook 365 | API | Full |  |
 | Postgres | DBMS | Partial | Full Observe, most playback |
 | Redis | DBMS | Observe Only | |
@@ -55,7 +55,7 @@ Speedscale control plane, sidecar and replay system are compatible with all curr
 | CNCF Minikube | Must add `--cni=true` flag |
 | DigitalOcean Kubernetes | |
 | Docker Desktop | |
-| GCP GKE Autopilot | Requires [Dual Proxy](../../setup/sidecar/sidecar-http-proxy/) |
+| GCP GKE Autopilot | Requires [Dual Proxy](/setup/sidecar/proxy-modes/) |
 | GCP GKE Standard | |
 | Rancher Desktop | |
 | Rancher K3S | |
