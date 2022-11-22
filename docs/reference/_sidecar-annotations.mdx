@@ -48,6 +48,28 @@ otherwise.
 ***
 
 
+### `sidecar.speedscale.com/host-resolution`
+
+Configure how the sidecar determines a hostname for requests to IP addresses for which there is no clear way
+to determine the target host, such as undecrypted TLS and unknown protocols. By default, the sidecar uses a
+`smart` host resolution mode that maps IP addresses to hostnames based on observed DNS A record requests.
+Alternatively, if set to `standard`, host resolution is done with a DNS PTR record query. Setting this to
+`none` will disable automatic host resolution.
+
+:::caution Important
+Using `standard` mode host resolution is not guaranteed to discover a hostname for an IP address nor is
+it guaranteed to be accurate if it does, as it requires a PTR record to exist for the address.
+:::
+
+* Accepted Values:
+  * `smart` (default)
+  * `standard`
+  * `none`
+
+
+***
+
+
 ### `sidecar.speedscale.com/proxy-type`
 
 Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `proxy`, ignored otherwise. See
