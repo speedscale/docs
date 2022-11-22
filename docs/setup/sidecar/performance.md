@@ -1,5 +1,7 @@
-
-# Sidecar Performance
+---
+title: Performance
+sidebar_position: 4
+---
 
 The sidecar proxy can add latency and impact performance in the same way an Envoy or nginx proxy can. The exact impact of the proxy will vary based upon your workload and conditions. For that reason, we recommend testing the sidecar in pre-production and then using a progressive rollout strategy in production. Due to high variability, Speedscale does not currently publish benchmarks.
 

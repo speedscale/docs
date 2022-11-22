@@ -45,7 +45,7 @@ sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 
 Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The [install wizard](./setup/install/kubernetes-operator.md#install-wizard) will
 walk you through installing the [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
-and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
+and adding the [Speedscale Sidecar](./setup/sidecar/install/) to your deployment.
 
 </TabItem>
 
@@ -94,7 +94,7 @@ speedscale-forwarder-xxxxxxxxxx-xxxxx   1/1     Running   0          5s
 speedscale-operator-xxxxxxxxxx-xxxxx    1/1     Running   0          15s
 ```
 
-If you're ready to capture traffic skip ahead to [Sidecar](./setup/sidecar/install.md).
+If you're ready to capture traffic skip ahead to [Sidecar](./setup/sidecar/install/).
 
 :::tip
 

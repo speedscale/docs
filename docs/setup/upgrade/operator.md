@@ -94,5 +94,5 @@ kubectl -n <namespace> rollout restart deploy
 
 You can now install Speedscale on new workloads. You may use the
 `speedctl install` wizard, or a
-[GitOps](../sidecar/install.md)
+[GitOps](/setup/sidecar/install/)
 tool.

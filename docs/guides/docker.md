@@ -35,7 +35,7 @@ Using the [manifests](#manifests)
 
 Bring up the containers using `docker compose up -d` and it should start 2 containers for goproxy and forwarder. The goproxy will capture traffic and send to the forwarder which will push the data to Speedscale cloud. In a larger configuration you can run multiple goproxy sidecar containers against a single forwarder.
 
-Now you have to configure your application to use the socks proxy running on `*:4140` on your server, and you need it to [trust the certificates as well](../setup/sidecar/sidecar-http-proxy.md#configuring-your-application-proxy-server)
+Now you have to configure your application to use the socks proxy running on `*:4140` on your server, and you need it to [trust the certificates as well](/setup/sidecar/tls/#trusting-tls-certificates).
 
 You can now run requests against your service through `localhost:4143` instead of the normal port as our goproxy is acting as the entrypoint for the app now.
 

@@ -5,7 +5,7 @@ sidebar_position: 5
 
 ## Prerequisites
 1. [The Operator is installed](../quick-start.md).
-2. [A sidecar has been installed and traffic is being captured](../setup/sidecar/install.md)
+2. [A sidecar has been installed and traffic is being captured](/setup/sidecar/install/)
 
 ## Our app
 For this guide, we are using an app called `bq-app` that has an endpoint `/name/{state}` and makes calls out to Google's BigQuery on every inbound request.
@@ -30,7 +30,7 @@ metadata:
 ```
 
 :::danger
-TLS configuration depends heavily on the programming language your app uses. See [how to configure your app](../setup/sidecar/sidecar-trust.md).
+TLS configuration depends heavily on the programming language your app uses. See [how to configure your app](/setup/sidecar/tls/).
 :::
 
 This will change the sidecar settings on the deployment and cycle the pods to apply them.

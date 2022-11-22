@@ -1,10 +1,9 @@
 ---
 title: Sidecar Installation
-position: 1
+sidebar_position: 1
 ---
-# Speedscale Sidecar
 
-The sidecar is used to collect data from an existing application.
+The Speedscale sidecar, `goproxy`, is used to collect data from an existing application.
 
 ### Install Wizard <a href="#install-sidecar-with-wizard" id="install-sidecar-with-wizard"></a>
 
