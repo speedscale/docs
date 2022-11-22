@@ -46,7 +46,7 @@ Speedscale report results to the version of your code that was tested.
 
 Configure how a traffic replay will test your system by instructing the Speedscale operator to deploy either
 generators to recreate observed requests **TO** your application, or responders to recreate observed responses
-to requests __**FROM**__ your application, or both. Setting this to `full-replay`, both generators and responders
+to requests **FROM** your application, or both. Setting this to `full-replay`, both generators and responders
 are deployed, while `generator-only` will only deploy generators. Setting this to `responder-only` will only
 responders which will run indefinitely until removed.
 
@@ -61,7 +61,9 @@ responders which will run indefinitely until removed.
 
 ### `replay.speedscale.com/timeout`
 
-Specifies the maximum amount of time a replay is allowed to run. Ignored when replay mode is `responder-only`.
+Specifies the maximum amount of time a generator for a replay is allowed to be idle (i.e. fails to send a
+heartbeat event) before the Speedscale operator forcibly ends the replay. This does **NOT** enforce a static
+timeout for the replay itself. Ignored when replay mode is `responder-only`.
 
 * Default: `20m`
 * Accepted Values: a valid duration string according to Go's [ParseDuration()](https://pkg.go.dev/time#ParseDuration) function
