@@ -11,13 +11,13 @@ Below are all the relevant Kubernetes annotations for Speedscale.
 
 ## Sidecar Annotations
 
-These annotations relate to the proxy sidecar that Speedscale attaches to your workload with operator v1.
+These annotations relate to the proxy sidecar that the Speedscale operator attaches to your workload.
 
 <SidecarAnnotations />
 
 ## Replay Annotations
 
-These annotations control traffic replay for your workload with operator v1.
+These annotations control traffic replay for your workload.
 
 <ReplayAnnotations />
 
