@@ -9,13 +9,31 @@ Get started by making a copy of the standard config.
 
 ![clone_test_config](./clone_test_config_standard.png)
 
-**Generator** settings control load generation characteristics during replay.
+The test configuration is broken down into tabs and sections to help you
+configure replays. Modify the cloned config to create a template for
+[replaying traffic](/concepts/replay).
 
-**Responder** settings control mocked responses for outbound dependencies like an internal database or third party API during replay.
+## Load Pattern
 
-**Cluster** settings control Kubernetes cluster configuration during replay.
+The Load Pattern tab allows you to shape the load over the course of a traffic
+replay.
 
-**Sidecar** settings control how your service is wrapped and resources provided during replay.
+Let's say we want to create a load pattern that ramps up to 50 transactions per
+second (TPS) over the course of a minute, holds at 50 TPS for another minute,
+and ramps down to 0 over a third minute.
+
+We can actually implement this with only two stages.
+
+![ramp_stages_example](./ramp_stages_example.png)
+
+The first stage will ramp from 0 to the target TPS over 60 seconds then hold
+for the remainder of the stage duration. The second stage has the same total
+duration as the ramp time so the full stage will be used to ramp from the
+current TPS of 50 down to the target of 0.
+
+This load pattern will result in a throughput graph like this:
+
+![throughput](throughput_50_tps.png)
 
 ## Secret configuration
 
