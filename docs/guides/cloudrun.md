@@ -153,7 +153,7 @@ spec:
         app: goproxy
     spec:
       containers:
-      - image: gcr.io/speedscale/goproxy:v1.1.88
+      - image: gcr.io/speedscale/goproxy:v1.2
         imagePullPolicy: Always
         name: goproxy
         env:
