@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "forwarder" {
   container_definitions = jsonencode([
     {
       name      = "forwarder"
-      image     = "gcr.io/speedscale/forwarder:v1.1"
+      image     = "gcr.io/speedscale/forwarder:v1.2"
       essential = true
       portMappings = [
         {
@@ -120,7 +120,7 @@ You can also use S3 instead of Secrets Manager here
 
 ```bash
 openssl genrsa -out tls.key 4096
-openssl req -new -key tls.key -x509 -days 365 -our tls.crt -subj "/C=US/ST=Georgia/L=Atlanta/O=Speedscale/CN=speedscale.com"
+openssl req -new -key tls.key -x509 -days 365 -out tls.crt -subj "/C=US/ST=Georgia/L=Atlanta/O=Speedscale/CN=speedscale.com"
 
 OR
 
@@ -208,7 +208,7 @@ resource "aws_ecs_task_definition" "with-speedscale" {
     },
     {
       name      = "goproxy"
-      image     = "gcr.io/speedscale/goproxy:v1.1"
+      image     = "gcr.io/speedscale/goproxy:v1.2"
       essential = true
       logConfiguration = {
         logDriver = "awslogs",

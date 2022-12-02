@@ -56,7 +56,6 @@ config.env
 ```
 LOG_LEVEL=info
 FORWARDER_ADDR=forwarder:8888
-REDIS_SERVICE_HOST=redis
 SPEEDSCALE_API_KEY=
 SPEEDSCALE_APP_URL=app.speedscale.com
 SUB_TENANT_NAME=default
@@ -69,7 +68,7 @@ docker-compose.yaml
 ```yaml
 services:
   goproxy:
-    image: gcr.io/speedscale/goproxy:v1.1
+    image: gcr.io/speedscale/goproxy:v1.2
     ports:
       - "4140-4144:4140-4144"
     env_file:
@@ -91,7 +90,7 @@ services:
         max-size: "1000k"
         max-file: "10"
   forwarder:
-    image: gcr.io/speedscale/forwarder:v1.1
+    image: gcr.io/speedscale/forwarder:v1.2
     env_file:
       - config.env
     environment:
@@ -105,7 +104,7 @@ services:
 generator snippet
 ```yaml
   generator:
-    image: gcr.io/speedscale/generator:v1.1
+    image: gcr.io/speedscale/generator:v1.2
     env_file:
       - config.env
     environment:
