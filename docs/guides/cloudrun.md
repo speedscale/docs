@@ -2,8 +2,9 @@
 title: Working with Cloud Run
 ---
 
-:::danger
-This is not a natively supported workflow. Speedscale works best inside a Kubernetes cluster using the operator and this workaround is subject to change.
+:::caution
+This workflow is currently in preview status. Speedscale currently works best inside plain Kubernetes clusters
+such as EKS and GKE.
 :::
 
 ## Prerequisites
