@@ -7,6 +7,7 @@ In order to operate properly, the Speedscale operator requires network access to
 | app.speedscale.com | HTTPS | Outbound |
 | firehose.us-east-1.amazonaws.com | HTTPS | Outbound |
 | sqs.us-east-1.amazonaws.com | HTTPS | Outbound |
+| sns.us-east-1.amazonaws.com | HTTPS | Outbound |
 | s3.us-east-1.amazonaws.com | HTTPS | Outbound |
 | *.s3.us-east-1.amazonaws.com | HTTPS | Outbound |
 | sts.amazonaws.com | HTTPS | Outbound |
