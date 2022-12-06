@@ -1,0 +1,18 @@
+| Host | Protocol | Direction |
+| ---- | -------- | --------- |
+| app.speedscale.com | HTTPS | Outbound |
+| firehose.us-east-1.amazonaws.com | HTTPS | Outbound |
+| sqs.us-east-1.amazonaws.com | HTTPS | Outbound |
+| sns.us-east-1.amazonaws.com | HTTPS | Outbound |
+| s3.us-east-1.amazonaws.com | HTTPS | Outbound |
+| *.s3.us-east-1.amazonaws.com | HTTPS | Outbound |
+| sts.amazonaws.com | HTTPS | Outbound |
+| sts.us-east-1.amazonaws.com | HTTPS | Outbound |
+| gcr.io | HTTPS | Outbound |
+
+:::caution
+These hosts are subject to change and security via TLS is recommended as opposed to IP whitelisting. If you
+require a list of IPs, they can be programmatically accessed as shown [here for AWS](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html)
+and [here for GCR](https://www.gstatic.com/ipranges/cloud.json).
+:::
+

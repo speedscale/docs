@@ -2,19 +2,57 @@
 title: Working with Istio
 ---
 
-[Istio](https://istio.io) is a service mesh offering that modifies a cluster to provide, among
-other things, traffic and network management. Istio makes use of a proxy known as
-[Envoy](https://www.envoyproxy.io), which it adds as a sidecar to workloads that reside within the
-mesh.
+import ExternalServices from './_external-services.mdx'
 
-Both the Istio and Speedscale sidecars act as transparent proxies: each must modify `iptables`
-routing rules in order to intercept both ingress and egress traffic. Unfortunately, they cannot
-coexist when operating in this mode since both are attempting to intercept and manage workload
+[Istio](https://istio.io) is a service mesh offering that modifies a cluster to provide, among
+other things, traffic and network management.
+
+## External Networking Requirements
+
+Speedscale pods in the the `speedscale` namespace, as well as the `generator` and `responder` pods that are
+deployed during traffic replays require external internet access. If your istio installation is configured
+with an outbound traffic policy of `REGISTRY_ONLY` rather than `ALLOW_ANY`, meaning that only whitelisted
+services can be accessed from within the cluster (see
+[OutboundTrafficPolicy](https://istio.io/latest/docs/reference/config/istio.mesh.v1alpha1/#MeshConfig-OutboundTrafficPolicy)),
+you will to configure [ServiceEntry](https://istio.io/latest/docs/reference/config/networking/service-entry/)
+resources that allow the following `MESH_EXTERNAL` access:
+
+<ExternalServices />
+
+For example:
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: speedscale-external-svc-https
+  namespace: speedscale
+spec:
+  hosts:
+  - app.speedscale.com
+  - firehose.us-east-1.amazonaws.com
+  - sqs.us-east-1.amazonaws.com
+  - sns.us-east-1.amazonaws.com
+  - s3.us-east-1.amazonaws.com
+  - "*.s3.us-east-1.amazonaws.com"
+  - sts.amazonaws.com
+  - sts.us-east-1.amazonaws.com
+  location: MESH_EXTERNAL
+  ports:
+  - name: https
+    number: 443
+    protocol: TLS
+  resolution: NONE
+```
+
+## Speedscale Sidecar Configuration
+Istio makes use of a proxy known as [Envoy](https://www.envoyproxy.io), which it adds as a sidecar to
+workloads that reside within the mesh. Both the Istio and Speedscale sidecars act as transparent proxies: each
+must modify `iptables` routing rules in order to intercept both ingress and egress traffic. Unfortunately,
+they cannot coexist when operating in this mode since both are attempting to intercept and manage workload
 traffic.
 
 Istio **is** supported by Speedscale despite this conflict, but requires a few extra steps.
-
-## Speedscale Sidecar Configuration
 
 Within an Istio mesh, the Speedscale sidecar must operate as a non-transparent proxy; a reverse
 proxy for inbound traffic and a forward proxy for outbound traffic. This requires two things:
