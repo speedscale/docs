@@ -5,60 +5,36 @@ title: Import from Postman
 
 In this guide we will walk through importing an existing Postman collection and replaying it in a Kubernetes cluster. This guide is most helpful when you are unable to install the Speedscale sidecar for some reason, such as the service being brand new with no traffic.
 
+We'll take the following steps:
+
+1. Export your collection from Postman
+2. Import your collection to Speedscale
+3. Replay
+
 ## Export Postman collection
 
 Open your Postman collection and export it to a file on your local desktop. Note that only collections v2.1 are supported.
 
-![Postman Export](./postman-export.png)
+![Postman Export](./postman/postman-export.png)
 
 ## Import to Speedscale
 
-Navigate to the [services](https://app.speedscale.com) in the speedscale UI.
+Navigate to the [services](https://app.speedscale.com) in the speedscale UI. Click on the `Import Postman` button.
 
+![Postman Import](./postman/postman-import.png)
 
-
-
-
-## Filtering <a href="#analyze-steps" id="analyze-steps"></a>
-
-Utilize the filters to drill down even further into a subset of transactions or to filter out unwanted traffic like heartbeats.
-
-![Filters](./select-filters.png)
-
-:::info
-Did you know that you can filter traffic so that it is never sent to Speedscale cloud? This can help you prevent noise, lower your bill and keep private data safe. Check out the [filters](../../reference/filters) section for suggestions.
-:::
-
-### Request Response Details <a href="#overview" id="overview"></a>
-
-Clicking on any individual row reveals a Request / Response Pair. This could be for an inbound transaction to the service,
-or even a call from the service to a downstream system, even if it uses TLS. The following information is shown in the view:
-
-* **Info** section includes high level details like response code, duration, URL, etc.
-* **Request** section includes the Headers and Body that were sent
-* **Response** section includes the Headers and Body that were received
-
-![Request Response Pair](../observe-rrpair.png)
-
-Now that you have identified the subset of traffic that you would like to replay, it's time to create a snapshot.
+A pop up will appear asking you for a snapshot name, a Postman file and a unique Service Name. Note that the Service Name can be whatever you like but to prevent confusion it's better not to pick a real service that you are actually monitoring. Don't worry about picking the perfect service name, you'll put in the real URL of your service during replay. Most users will just leave it as the default.
 
 ## View Snapshot
 
-A traffic snapshot is created from the selected traffic when running a replay so the same set of traffic can be reviewed and replayed again.
+A traffic snapshot is created from your Postman collection. Snapshots are collections of requests that can be replayed in your cluster or from your local desktop. After import, you will be taken to the Snapshot summary screen for your postman requests.
 
 ![Snapshot](./snapshot.png)
 
-In addition to these details, a Service Map visually represents the inbound and outbound traffic, and how the replay will be orchestrated.
+If you click `View Traffic` you'll see your Postman requests ready to replay.
 
-![Service Map](../select-service-map.png)
+## Replay
 
+Postman-generated snapshots can be replayed like any other snapshot using the instructions on the Snapshot Summary page.  Remember that you will need to put in a `Custom URL` or `Replay Host` to point at the correct service during replay. This is different than replaying a recorded snapshot because Speedscale typically has an automatically discovered default that is reasonable.
 
-## Transform Traffic
-
-Speedscale provides a sophisticated data transformation system to ensure that traffic replays successfully.
-
-:::info
-Before using any custom configuration, attempt a traffic replay with defaults. The default `standard` configuration works in many cases so most users should skip ahead to the next step.
-:::
-
-However, if after performing a test run your application has a very low success rate, or displays other unusual behavior, reach out on the Speedscale Slack [community](https://slack.speedscale.com) or via [email](mailto:support@speedscale.com). We will be happy to walk through your specific use case. The Speedscale team is working on a configuration UI but for now we're happier to do the work for you than to have you stumble through this complex topic. If you're feeling adventurous, you can jump over to [transforms](../reference/transform-traffic/README.md) to learn more.
+For more information on initiating replays, check out the full [replay guide](./replay/README.md)
