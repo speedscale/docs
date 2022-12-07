@@ -2,11 +2,7 @@
 title: Working in Docker
 ---
 
-:::caution
-This workflow is currently in preview status. Speedscale currently works best inside plain Kubernetes clusters
-such as EKS and GKE.
-:::
-
+Run Speedscale components via Docker Compose.
 
 ### Pre-Requisites
 
@@ -53,6 +49,11 @@ If you've created a snapshot, you can replay it in Docker as well. Take the ID o
 This will generate a report which you can find more details for [here](./reports/README.md).
 
 ## Manifests
+
+The fast track to create Docker Compose manifests is by running `speedctl install`,
+and following the `Docker` flow. This provides working manifests with sane
+defaults. Otherwise manifests can be manually configured, as show below.
+
 config.env
 ```
 LOG_LEVEL=info
