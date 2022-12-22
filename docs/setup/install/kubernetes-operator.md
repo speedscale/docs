@@ -17,7 +17,7 @@ that will be always present on the cluster.
 Helm is familiar to many devs and SREs.  Reference the
 [Speedscale Helm repository](https://github.com/speedscale/operator-helm) for further instructions.
 
-## Install with Speedctl CLI
+## Install with Speedctl CLI Wizard
 
 ![gandalf](https://media.giphy.com/media/TcdpZwYDPlWXC/giphy.gif)
 
