@@ -1,6 +1,9 @@
 ---
 sidebar_position: 2
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # CLI
 
 The speedctl command line tool is used to interact with Speedscale from your own terminal. `speedctl` is the Speedscale
@@ -8,7 +11,11 @@ programmable API and the primary way to perform setup actions like installing th
 
 ### Install
 
-Install or upgrade `speedctl` via [Homebrew](https://brew.sh):
+<Tabs>
+
+<TabItem value="cli" label="MacOS/Linux">
+
+Start by installing `speedctl` the Speedscale CLI-based API via [Homebrew](https://brew.sh):
 
 ```
 brew install speedscale/tap/speedctl
@@ -19,6 +26,20 @@ Or via the install script:
 ```
 sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
+
+</TabItem>
+
+<TabItem value="cli_windows" label="Windows">
+
+Start by installing `speedctl` the Speedscale CLI-based API with a binary curl.
+
+```
+curl.exe -LO "https://downloads.speedscale.com/speedctl/speedctl.exe"
+```
+
+</TabItem>
+
+</Tabs>
 
 ### Initialization <a href="#part-ii-run-speedctl-initialization" id="part-ii-run-speedctl-initialization"></a>
 
