@@ -17,9 +17,9 @@ Please ensure the [Kubernetes Operator](../install/kubernetes-operator.md) is ru
 
 Select the workload (daemonset, deployment, statefulset, job or replicaset) you'd like to monitor and add the following annotation:
 
-```
-  annotations:
-    sidecar.speedscale.com/inject: "true"
+```yaml
+annotations:
+  sidecar.speedscale.com/inject: "true"
 ```
 
 That's it. Next time you deploy you can check the pods with get pods.
@@ -41,9 +41,9 @@ By default, the Speedscale init container starts after any existing init contain
 
 If you already have the sidecar installed, but you need for it to be removed, you may either set the `sidecare.speedscale.com/inject` annotation to `false`, or remove it:
 
-```
-  annotations:
-    sidecar.speedscale.com/inject: "false"
+```yaml
+annotations:
+  sidecar.speedscale.com/inject: "false"
 ```
 
 After deploying or patching your deployment, you should notice your container count decrease by one and the sidecar is no longer attached.

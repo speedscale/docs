@@ -5,6 +5,10 @@ sidebar_position: 2
 
 TLS interception and unwrapping is not enabled by default, but can be done so with annotations to your workload.
 
+:::tip Remember
+When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload.
+:::
+
 ## TLS Inbound Interception
 
 The sidecar will be listening for incoming transactions, and must present to the client the correct
