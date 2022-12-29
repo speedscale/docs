@@ -13,6 +13,10 @@ In these instances, the Speedscale sidecar must be run as an inline proxy that e
 proxy rather than transparently intercepting them. There are two halves to this inline proxy operation: a
 reverse proxy for handling inbound traffic, and a forward proxy for handling outbound traffic.
 
+:::tip Remember
+When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload.
+:::
+
 ## Proxy Configuration
 
 Configuration for this operation mode is managed with workload annotations. You must specify the type of proxy
