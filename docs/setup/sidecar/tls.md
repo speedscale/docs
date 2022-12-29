@@ -13,14 +13,14 @@ When using the annotation examples below, be sure to _add_ them to any existing 
 
 The sidecar will be listening for incoming transactions, and must present to the client the correct
 certificate. Because you already have TLS configured, the cert files you are using must be provided to the
-sidecar. There are the fields:
+sidecar. There are three available settings:
 
-* &#x20;**tlsinsecret** (required) is the name of the Kubernetes secret
-* &#x20;**tlsinprivate** (optional) is the filename of the private key inside the secret (default: tls.key)
-* &#x20;**tlsinpublic** (optional) is the filename of the public cert inside the secret (default: tls.crt)
+* `tls-in-secret` (required) is the name of the Kubernetes secret
+* `tls-in-private` (optional) is the filename of the private key inside the secret (default: `tls.key`)
+* `tls-in-public` (optional) is the filename of the public cert inside the secret (default: `tls.crt`)
 
-When your deployment is injected, the sidecar will have an extra environment variable **TLS_IN_UNWRAP=true**,
-**TLS_IN_PUBLIC_KEY**, **TLS_IN_PRIVATE_KEY** and a volume mount to access the files from the provided secret.
+When your deployment is injected, the sidecar will have an extra environment variable `TLS_IN_UNWRAP=true`,
+`TLS_IN_PUBLIC_KEY`, `TLS_IN_PRIVATE_KEY` and a volume mount to access the files from the provided secret.
 
 ```yaml
 annotations:
@@ -38,9 +38,9 @@ To unwrap outbound TLS calls there are multiple steps required:
 * Configure the sidecar to enable outbound TLS interception
 * Configure your application to trust the new TLS Certificates
 
-When your deployment is injected, the sidecar will have an extra environment variable **TLS_OUT_UNWRAP=true**
-and a volume mount to access the files from the **speedscale-certs** secret. The operator will automatically
-create a secret named **speedscale-certs** and put into the namespace. All that is required is to add this
+When your deployment is injected, the sidecar will have an extra environment variable `TLS_OUT_UNWRAP=true`
+and a volume mount to access the files from the `speedscale-certs` secret. The operator will automatically
+create a secret named `speedscale-certs` and put into the namespace. All that is required is to add this
 annotation to your deployment:
 
 ```yaml
@@ -51,19 +51,19 @@ annotations:
 
 ## Mutual Authentication for Outbound Calls
 
-If your backend system requires [**Mutual Authentication**](https://tools.ietf. Org/html/rfc8120) (aka Mutual
+If your backend system requires [Mutual Authentication](https://tools.ietf. Org/html/rfc8120) (aka Mutual
 TLS or 2-Way TLS), this requires configuring the sidecar with an additional X509 key pair. During the TLS
 handshake, the backend system will request a Client Certificate. This is the certificate that goproxy will
-present. There are the fields:
+present. There are three available settings:
 
-* &#x20;**tlsmutualsecret** (required) is the name of the Kubernetes secret
-* &#x20;**tlsmutualprivate** (optional) is the filename of the private key inside the secret (default: tls.key)
-* &#x20;**tlsmutualpublic** (optional) is the filename of the public cert inside the secret (default: tls.crt)
+* `tls-mutual-secret` (required) is the name of the Kubernetes secret
+* `tls-mutual-private` (optional) is the filename of the private key inside the secret (default: `tls.key`)
+* `tls-mutual-public` (optional) is the filename of the public cert inside the secret (default: `tls.crt`)
 
-When your deployment is injected, the sidecar will have extra environment variables **TLS_MUTUAL_PUBLIC_KEY**
-and **TLS_MUTUAL_PRIVATE_KEY** and a volume mount to access the files from the provided secret. You must
+When your deployment is injected, the sidecar will have extra environment variables `TLS_MUTUAL_PUBLIC_KEY`
+and `TLS_MUTUAL_PRIVATE_KEY` and a volume mount to access the files from the provided secret. You must
 provide a Kubernetes secret that has the TLS private key and public cert. The name of the secret and the names
-of the files can be provided to **operator** to inject automatically.
+of the files can be provided to `operator` to inject automatically.
 
 ```yaml
 annotations:
@@ -108,15 +108,21 @@ operator. This will point to the location where the speedscale cert volume mount
 ### TLS Trust for Java
 
 Java applications utilize a truststore to determine which certificates will be trusted. During Operator
-installation a secret called **speedscale-jks** will be created that contains the `speedscale-certs` root CA
+installation a secret called `speedscale-jks` will be created that contains the `speedscale-certs` root CA
 along with a standard set of CA certs used by `openjdk`. This secret is automatically mounted when the
 `tls-out` setting is configured as shown below. The Java app itself needs to be configured to use this secret
-as well which requires configuring your JVM to use the truststore with
-**-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks and
-**-Djavax.net.ssl.trustStorePassword=changeit**
+as well which requires configuring your JVM to use the truststore with these settings:
+
+- `-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks`
+- `-Djavax.net.ssl.trustStorePassword=changeit`
 
 Here is an example of a patch file that configures TLS Out and configures the Java app to use the mounted
 trust store. You will likely have to customize this for your environment.
+
+:::caution
+Applying patches that set `JAVA_OPTS`, like the ones below, are **not** additive. If your workload already has
+`JAVA_OPTS` environment settings, be sure to include those as well or they will be overwritten.
+:::
 
 ```yaml
 apiVersion: apps/v1
@@ -133,7 +139,9 @@ spec:
         - name: sprint-boot-app
           env:
             - name: JAVA_OPTS
-              value: "-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks -Djavax.net.ssl.trustStorePassword=changeit"
+              value: >-
+                -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
+                -Djavax.net.ssl.trustStorePassword=changeit"
 ```
 
 #### Mutual TLS in Java
@@ -141,8 +149,8 @@ spec:
 If you are using mutual TLS or want to use a custom Java trust store, you will have to add the speedscale
 certs to the trust store.
 
-The CA Cert inside the **speedscale-certs** secret needs to be added to your truststore. First download the
-certs from your cluster. Note that there are 2 files, **tls.key** and **tls.crt**. Both of these files are
+The CA Cert inside the `speedscale-certs` secret needs to be added to your truststore. First download the
+certs from your cluster. Note that there are 2 files, `tls.key` and `tls.crt`. Both of these files are
 base64 encoded. This command will get the certificate and decode it all at once.
 
 ```bash
@@ -175,7 +183,7 @@ by:
 
 * Storing the truststore in a Kubernetes secret or configmap
 * Mounting the truststore as a volume mount
-* Configuring your JVM to use the truststore with **-Djavax.net.ssl.trustStores** and **-Djavax.net.ssl.trustStorePassword**
+* Configuring your JVM to use the truststore with `-Djavax.net.ssl.trustStores` and `-Djavax.net.ssl.trustStorePassword`
 
 Here is an example of using the trust store created in the previous steps.
 
@@ -194,7 +202,9 @@ spec:
        - name: sprint-boot-app
          env:
            - name: JAVA_OPTS
-             value: "-Djavax.net.ssl.trustStore=/mnt/keystores/speedscale.jks -Djavax.net.ssl.trustStorePassword=changeit"
+             value: >-
+                -Djavax.net.ssl.trustStore=/mnt/keystores/speedscale.jks
+                -Djavax.net.ssl.trustStorePassword=changeit
          volumeMounts:
            - name: speedscale-keystore
              mountPath: /mnt/keystores
