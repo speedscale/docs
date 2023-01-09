@@ -37,6 +37,8 @@ const config = {
     "docusaurus-plugin-hubspot",
   ],
 
+  clientModules: [require.resolve('./plugins/koala.js')],
+
   presets: [
     [
       "classic",
