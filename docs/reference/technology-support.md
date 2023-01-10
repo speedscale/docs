@@ -14,9 +14,9 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | ---------- | ---- | ------- | ----- |
 | Auth0 | API | Full | |
 | Basic Auth | Auth | Full | |
-| Bearer JWT | Auth | Full | See [JWT Tokenizer](../tokenizers-1/httpauthorization) |
+| Bearer JWT | Auth | Full | |
 | BigQuery | DBMS | Full | If using the Google SDK with standard pagination |
-| Cookies | Auth | Full | See [Cookie Tokenizer](../tokenizers-1/http-cookie-tokenizer) |
+| Cookies | Auth | Full | |
 | Desktop | Environment | Full | See [CLI](https://cli.speedscale.com) |
 | Docker (non-K8S) | Environment | Full | See [CLI](https://cli.speedscale.com) |
 | DynamoDB | DBMS | Full |  |
