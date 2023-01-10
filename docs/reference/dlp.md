@@ -138,3 +138,25 @@ Set the `DLP_CONFIG` value to the name of your custom configuration. For securit
 kubectl edit -n speedscale configmap/speedscale-forwarder
 # Add a line for DLP_CONFIG: my-rule
 ```
+
+### JSON Format
+
+For reference, here is the JSON format for the DLP rules JSON:
+
+```json
+{
+    "version_num": integer (leave empty or accept default value),
+    "id": string (must be a unique identifier),
+    "name": string (user-identifiable name),
+    "redactlist": {
+        "entries": {
+            "all": [
+                "keyword1",
+                "keyword2"
+            ]
+        }
+    }
+}
+```
+
+Replace the "keyword" array with a list of keys you would like to redact.
