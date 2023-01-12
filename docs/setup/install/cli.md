@@ -3,6 +3,8 @@ sidebar_position: 2
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import MacOSLinuxInstall from './_cli_macos_linux.mdx'
+import WindowsCLIInstall from './_cli_windows.mdx'
 
 # CLI
 
@@ -15,27 +17,13 @@ programmable API and the primary way to perform setup actions like installing th
 
 <TabItem value="cli" label="MacOS/Linux">
 
-Start by installing `speedctl` the Speedscale CLI-based API via [Homebrew](https://brew.sh):
-
-```
-brew install speedscale/tap/speedctl
-```
-
-Or via the install script:
-
-```
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
-```
+<MacOSLinuxInstall />
 
 </TabItem>
 
-<TabItem value="cli_windows" label="Windows">
+<TabItem value="windows" label="Windows">
 
-Start by installing `speedctl` the Speedscale CLI-based API with a binary curl.
-
-```
-curl.exe -LO "https://downloads.speedscale.com/speedctl/speedctl.exe"
-```
+<WindowsCLIInstall />
 
 </TabItem>
 
