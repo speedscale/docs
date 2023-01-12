@@ -1,5 +1,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import MacOSLinuxInstall from './setup/install/_cli_macos_linux.mdx'
+import WindowsCLIInstall from './setup/install/_cli_windows.mdx'
 
 # Quick Start
 
@@ -31,17 +33,7 @@ for all configuration options available for the Helm chart.
 
 <TabItem value="cli" label="CLI (Mac/Linux)">
 
-Start by installing `speedctl` the Speedscale CLI-based API via [Homebrew](https://brew.sh):
-
-```
-brew install speedscale/tap/speedctl
-```
-
-Or via the install script:
-
-```
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
-```
+<MacOSLinuxInstall />
 
 Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The [install wizard](./setup/install/kubernetes-operator.md#install-wizard) will
 walk you through installing the [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
@@ -51,12 +43,7 @@ and adding the [Speedscale Sidecar](./setup/sidecar/install/) to your deployment
 
 <TabItem value="cli_windows" label="CLI (Windows)">
 
-Start by installing `speedctl` the Speedscale CLI-based API with a binary curl.
-
-```
-curl.exe -LO "https://downloads.speedscale.com/speedctl/speedctl.exe"
-speedctl init
-```
+<WindowsCLIInstall />
 
 Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The [install wizard](./setup/install/kubernetes-operator.md#install-wizard) will
 walk you through installing the [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
