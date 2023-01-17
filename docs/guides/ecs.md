@@ -19,7 +19,7 @@ To capture traffic for a service running in ECS, we need to setup some component
 
 ### Setup the forwarder
 
-The forwarder handles sending captured traffic up to Speedscale cloud and only a single forwarder is needed regardless of the number of services being captured. The Terraform below creates an ECS task definition, an ECS service and adds it to a private hosted zone for service discovery. Make sure to replace `SPEEDSCALE_API_KEY`, `TENANT_BUCKET` and `SUB_TENANT_STREAM` with values from `~/.speedctl/config` which should have been populated during `speedctl` setup.
+The forwarder handles sending captured traffic up to Speedscale cloud and only a single forwarder is needed regardless of the number of services being captured. The Terraform below creates an ECS task definition, an ECS service and adds it to a private hosted zone for service discovery. Make sure to replace `SPEEDSCALE_API_KEY`, `TENANT_BUCKET`, `TENANT_NAME`, etc. with values from `~/.speedctl/config` which should have been populated during `speedctl` setup.
 
 The service discovery hosted zone used for our example is `ecs.local` and our ECS service discovery block will setup `forwarder.ecs.local` which will be used in the next step.
 
@@ -66,6 +66,14 @@ resource "aws_ecs_task_definition" "forwarder" {
         {
           name  = "TENANT_BUCKET"
           value = "sstenant-tenant"
+        },
+        {
+          name  = "TENANT_NAME"
+          value = "sstenant-tenant"
+        },
+        {
+          name  = "TENANT_ID"
+          value = "uuid"
         },
         {
           name  = "TENANT_REGION"

@@ -87,6 +87,8 @@ SUB_TENANT_NAME=default
 SUB_TENANT_STREAM=
 TENANT_REGION=us-east-1
 TENANT_BUCKET=
+TENANT_ID=
+TENANT_NAME=
 ```
 
 docker-compose.yaml
