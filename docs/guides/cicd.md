@@ -34,12 +34,20 @@ Direct access to your Kubernetes cluster is optional.
 
 ## The Pipeline
 
+:::info
+Every CI system has a different way of setting the `PATH` for actions, make sure `~/.speedscale` is in the path after running the installer script.
+:::
+
 The **speedscale.sh** script can be implemented a few ways.  Choose the one that
 makes the most sense for your environment.
 
 <Tabs>
 
 <TabItem value="circleci" label="CircleCI">
+
+<!---
+https://support.circleci.com/hc/en-us/articles/360060789052-Unable-to-Override-PATH-or-NVM-DIR-Environment-Variables-with-Ubuntu-20-04-Machine-Images
+---->
 
 ```yaml
 version: '2.1'
@@ -56,6 +64,7 @@ jobs:
           kubectl-version: << parameters.kubectl-version >>
       - run:
           command: |
+            export PATH=${PATH}:${HOME}/.speedscale
             ./speedscale.sh # <--- Speedscale script - see below
 ```
 
@@ -66,6 +75,10 @@ for more context.
 </TabItem>
 
 <TabItem value="github" label="GitHub">
+
+<!---
+https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-system-path
+--->
 
 ```yaml
 name: CI with Speedscale
@@ -100,6 +113,8 @@ jobs:
 
       - name: Speedscale replay
         run: |
+          export PATH=${PATH}:${HOME}/.speedscale
+          echo "~/.speedscale" >> ${GITHUB_PATH}
           ./speedscale.sh # <--- Speedscale script - see below
 ```
 
@@ -139,6 +154,7 @@ speedscale-replay:
   environment:
     SERVICE: my-service # <--- Speedscale environment variables - see below
   script:
+    - export PATH=${PATH}:${HOME}/.speedscale
     - ./speedscale.sh # <--- Speedscale script - see below
 
 ```
@@ -147,7 +163,7 @@ speedscale-replay:
 
 <TabItem value="jenkins" label="Jenkins">
 
-```
+```groovy
 #!groovy
 
 pipeline {
@@ -155,6 +171,7 @@ pipeline {
 
   environment {
       SERVICE = 'my-service' // <--- Speedscale environment variables - see below
+      PATH = "${env.PATH}:${env.WORKSPACE}/.speedscale"
   }
   stages {
     stage('speedscale') {
@@ -178,8 +195,12 @@ pipeline {
 
 <TabItem value="azure" label="Azure DevOps">
 
+<!---
+https://learn.microsoft.com/en-us/azure/devops/pipelines/scripts/logging-commands?view=azure-devops&tabs=bash#prependpath-prepend-a-path-to-the--path-environment-variable
+--->
+
 ```yaml
-trigger: 
+trigger:
  - main
 
 variables:
@@ -189,7 +210,7 @@ variables:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps: 
+steps:
   # get kubectl
   - task: KubectlInstaller@0 # <--- if using kubectl - see below
     displayName: 'kubectl installed'
@@ -197,6 +218,8 @@ steps:
       kubectlVersion: 'latest'
   # run replay
   - bash |
+      echo "##vso[task.prependpath]~/.speedscale"
+      export PATH=${PATH}:${HOME}/.speedscale
       ./speedscale.sh # <--- Speedscale script - see below
 ```
 
@@ -334,5 +357,3 @@ esac
 
 Let us know on the [community Slack](https://slack.speedscale.com) if
 instructions for your deploy system are not included here.
-
-
