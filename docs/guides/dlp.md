@@ -243,6 +243,16 @@ Note, that it is still possible to manipulate redacted data during a replay usin
 this data, or even let it leave your cluster, which is what DLP provides.
 
 
+## Support for Additional Protocols
+
+As mentioned, protocol support for DLP is primarily limited to HTTP traffic but may expand to additional
+protocols in the future. If you need DLP support for non-HTTP traffic, drop us a message on our
+[community Slack](https://slack.speedscale.com) to discuss your specific needs. At this time, the following
+additional protocols are supported:
+
+- PostgreSQL
+
+
 ## DLP Cookbook
 
 Other than the `standard` DLP configuration, which is relatively trivial, there are no predefined behaviors
@@ -273,3 +283,59 @@ observed KMS traffic (as well as any `Authorization` header):
 
 Refer to the [KMS documentation](https://docs.aws.amazon.com/kms/index.html) for more information about data
 that you may wish to have redacted.
+
+### Redact PostgreSQL Traffic
+
+Postgres traffic can be redacted using a similar mechanism to HTTP redaction. However, because message _type_
+is significant for postgres traffic, the configuration structure is slightly different. Instead of broadly
+specifying named fields or keys to redact, as is the case with HTTP, you must specify a list of items that
+indicate the message type in addition to the fields to redact. For example:
+
+```json
+{
+  "id": "postgres-redaction",
+  "redactlist": {
+    "entries": {
+      "postgres": [
+        {
+          "kind": "msg_query",
+          "fields": [
+            "query_string"
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+The above configuration configures the DLP engine to redact query strings from postgres `QUERY` message types,
+either from the client or server. Additional items following the pattern `{"kind":"", "fields":[]}` can be
+specified in the `postgres` array. However, both `kind` and fields must resolve to a known message type and
+field. The postgres protocol is documented [here](https://www.postgresql.org/docs/current/protocol.html) and
+generally speaking `kind` values follow the form `msg_<name>` where `<name>` is `snake_case` form of the
+message type, and `fields` are the `snake_case` form of the field names.
+
+Another example to redact passwords:
+
+```json
+{
+  "id": "postgres-redaction",
+  "redactlist": {
+    "entries": {
+      "postgres": [
+        {
+          "kind": "msg_password_message",
+          "fields": [
+            "password"
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+:::caution Note
+Redaction for postgres is limited to string and character fields at this time
+:::
