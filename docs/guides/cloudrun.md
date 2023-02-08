@@ -45,7 +45,7 @@ kubectl apply -f capture.yaml
 
 Now you'll need the IP of the goproxy instance you just created which you can get by running
 ```
-kubectl -n speedscale get svc goproxy
+kubectl -n capture get svc goproxy
 NAME      TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                         AGE
 goproxy   LoadBalancer   10.84.6.133   35.222.2.222   4143:30886/TCP,4140:31256/TCP   22h
 ```
@@ -54,7 +54,7 @@ Grab the external IP (35.222.2.222 here). It may take some time to show up as a 
 
 This step also creates a Network Endpoint Group (NEG) that can be used as a backend in a Load Balancer.
 ```
-kubectl -n speedscale describe svc goproxy
+kubectl -n capture describe svc goproxy
 Name:                     goproxy
 Namespace:                speedscale
 Labels:                   app=goproxy
