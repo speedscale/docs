@@ -17,9 +17,16 @@ The performance view gives you information at a glance about how your code is pe
 * **Saturation** measured by looking at CPU and Memory from the environment
 * **Errors** there is an entire dashboard devoted to this information
 
-![Golden Signals](./screen-shot-2021-08-13-at-11.49.49-am.png)
+![Golden Signals](./report.png)
 
-As you scroll down you can find a summary of the performance by URL.
+## Latency Summary
 
-![Performance by URL](./screen-shot-2021-08-13-at-11.50.30-am.png)
+The bottom of the report performance tab shows a summary of latency by
+endpoint, aggregated metrics which apply to only a single endpoint. An endpoint
+is a more generalized view of a URL without the host, port, query parameters,
+etc.  Use this information to identify slow API calls and set
+[goals](../../../reference/configuration/goals/) to fail the report when an
+endpoint falls outside service level objectives.
+
+![Performance by URL](./latency-summary.png)
 
