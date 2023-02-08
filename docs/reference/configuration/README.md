@@ -14,8 +14,14 @@ You can view these in the [UI](https://app.speedscale.com/config):
 Or via the CLI:
 
 ```bash
-speedctl get testconfigs
-speedctl get testconfig standard
+# get all test configs
+speedctl get testconfigs -o pretty
+
+# pull a test config to the local cache
+speedctl pull test-config my-config
+
+# push a test config after modification
+speedctl push test-config my-config
 ```
 
 ### Structure
