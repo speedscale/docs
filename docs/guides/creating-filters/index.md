@@ -21,6 +21,6 @@ Here's how you apply them:
 
 ![Filter Name](./filter_name.png)
 
-5. Change the `SPEEDSCALE_FILTER_RULE` environment variable for your forwarder to the filter rule name you entered in step 4. If you are using Kubernetes that means changing the `SPEEDSCALE_FILTER_RULE` value in the `speedscale-forwarder` configmap. You can usually do this by running the following command and adding/editing the value `kubectl -n speedscale edit configmap speedscale-forwarder`
+5. Change the `filterRule` configured in your `values.yaml` file of the operator helm chart to the filter rule name you entered in step 4. After updating or overriding the value, then run the `helm upgrade` command for the changes to take effect. You should see `SPEEDSCALE_FILTER_RULE` is now properly set on the `speedscale-forwarder` config map in your cluster.
 
 Remember, if you get stuck you can get help quickly on the Speedscale [slack](https://slack.speedscale.com)
