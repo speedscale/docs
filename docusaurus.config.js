@@ -20,13 +20,6 @@ const config = {
   // plugins: [require.resolve('@cmfcmf/docusaurus-search-local')],
   plugins: [
     [require.resolve("@cmfcmf/docusaurus-search-local"), { indexBlog: false }],
-    // [
-    //     '@docusaurus/plugin-google-gtag',
-    //     {
-    //         trackingID: 'G-0QE379GMML',
-    //         anonymizeIP: true,
-    //     },
-    // ],
     [
       "docusaurus-plugin-segment",
       {
@@ -35,6 +28,12 @@ const config = {
       },
     ],
     "docusaurus-plugin-hubspot",
+    [
+      '@docusaurus/plugin-google-tag-manager',
+      {
+        containerId: 'GTM-TV35HML',
+      },
+    ]
   ],
 
   clientModules: [require.resolve('./plugins/koala.js')],
@@ -51,11 +50,7 @@ const config = {
         blog: false,
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
-        },
-        gtag: {
-          trackingID: "UA-161164697-1",
-          anonymizeIP: true,
-        },
+        }
       }),
     ],
   ],
