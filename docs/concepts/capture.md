@@ -13,10 +13,29 @@ This is more accurate than simulated tests because it's the actual data that wou
 By using real data, it is easier to diagnose and reproduce problems, such as an occasional spike in traffic that causes downtime.
 
 Additionally, that data can provide a basis for load testing.
-Using Speedscale's test configurations, the traffic can be multiplied, replayed over a longer period, or have various errors introduced to do chaos testing.
+Using Speedscale's test configurations, the traffic can be multiplied, replayed
+over a longer period, or have various errors introduced to do chaos testing.
 
 ## Snapshots
 
-A snapshot is a point in time set of captured traffic. It contains all the inbound and outbound traffic to and from a service to be used for a replay later on. A snapshot is created using a set of filters, the minimum set being the service and time range. More filters can be added [as shown here](../guides/creating-a-snapshot.md).
+A snapshot is a point in time set of captured traffic. It contains all the
+inbound and outbound traffic to and from a service to be used for a replay
+later on. A snapshot is created using a set of filters, the minimum set being
+the service and time range. More filters can be added [as shown
+here](../guides/creating-a-snapshot.md).
 
-In addition to filtering, snapshots can be transformed before use in replays. For eg. you may have timestamps as part of the header in your captured ingress and your application rejects timestamps older than an hour. You can configure [Traffic Transforms to achieve this](../reference/transform-traffic/README.md).
+In addition to filtering, snapshots can be transformed before use in replays.
+For eg. you may have timestamps as part of the header in your captured ingress
+and your application rejects timestamps older than an hour. You can configure
+[Traffic Transforms to achieve this](../reference/transform-traffic/README.md).
+
+## The Request Response Pair
+
+Snapshots, as referenced above, are made up mostly of request / response pairs,
+with a bit of metadata on top.  The request / response pair, often referenced
+as just RRPair, is the Speedscale internal representation in which all traffic
+is stored. The Goproxy sidecar stores captured traffic as RRPairs, a snapshot
+is made of a collection of RRPairs, and new RRPairs are created and modified
+during a replay. As suggested by the name RRPairs contain a request and
+associated response with all of the details parsed into individual fields.
+
