@@ -37,7 +37,7 @@ for all configuration options available for the Helm chart.
 
 Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The [install wizard](./setup/install/kubernetes-operator.md#install-wizard) will
 walk you through installing the [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
-and adding the [Speedscale Sidecar](./setup/sidecar/install/) to your deployment.
+and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
 
 </TabItem>
 
@@ -47,7 +47,7 @@ and adding the [Speedscale Sidecar](./setup/sidecar/install/) to your deployment
 
 Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The [install wizard](./setup/install/kubernetes-operator.md#install-wizard) will
 walk you through installing the [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
-and adding the [Speedscale Sidecar](./setup/sidecar/install/) to your deployment.
+and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
 
 </TabItem>
 
@@ -96,7 +96,7 @@ speedscale-forwarder-xxxxxxxxxx-xxxxx   1/1     Running   0          5s
 speedscale-operator-xxxxxxxxxx-xxxxx    1/1     Running   0          15s
 ```
 
-If you're ready to capture traffic skip ahead to [Sidecar](./setup/sidecar/install/).
+If you're ready to capture traffic skip ahead to [Sidecar](./setup/sidecar/install.md).
 
 :::tip
 
