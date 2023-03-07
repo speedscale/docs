@@ -138,8 +138,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: goproxy
-  name: goproxy
+    app: goproxy-capture
+  name: goproxy-capture
   namespace: capture
 spec:
   progressDeadlineSeconds: 600
@@ -147,16 +147,16 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: goproxy
+      app: goproxy-capture
   template:
     metadata:
       labels:
-        app: goproxy
+        app: goproxy-capture
     spec:
       containers:
       - image: gcr.io/speedscale/goproxy:v1.2
         imagePullPolicy: Always
-        name: goproxy
+        name: goproxy-capture
         env:
         - name: APP_LABEL
           value: payment
@@ -180,13 +180,17 @@ spec:
           value: 'https://payment-cloud-run.a.run.app'
         - name: REVERSE_PROXY_PORT
           value: '443'
+        - name: PROXY_IN_PORT
+          value: "8080"
+        - name: PROXY_OUT_PORT
+          value: "8081"
         - name: LOG_LEVEL
           value: info
         ports:
-        - containerPort: 4143
+        - containerPort: 8080
           name: proxy-in
           protocol: TCP
-        - containerPort: 4140
+        - containerPort: 8081
           name: proxy-out
           protocol: TCP
         volumeMounts:
@@ -211,23 +215,23 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: goproxy
-  name: goproxy
+    app: goproxy-capture
+  name: goproxy-capture
   namespace: capture
   annotations:
-    cloud.google.com/neg: '{"exposed_ports": {"4143":{}, "4140":{}}}'
+    cloud.google.com/neg: '{"exposed_ports": {"8080":{}, "8081":{}}}'
 spec:
   ports:
   - name: in
-    port: 4143
+    port: 8080
     protocol: TCP
-    targetPort: 4143
+    targetPort: 8080
   - name: out
-    port: 4140
+    port: 8081
     protocol: TCP
-    targetPort: 4140
+    targetPort: 8081
   selector:
-    app: goproxy
+    app: goproxy-capture
   type: LoadBalancer
 
 ```
