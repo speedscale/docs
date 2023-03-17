@@ -25,19 +25,26 @@ To follow the guide below, you will need:
 
 ## How It Works
 
-Speedscale's DLP engine orks by inspecting key/value elements in recorded traffic, removing the value from
-keys considered to be sensitive and instead replacing it with a placeholder string `-REDACTED-`. This
-redaction only applies to data that can be coerced as a string value; numerics, booleans, etc. are not
-supported at this time.
+Speedscale's DLP engine works by inspecting key/value elements in recorded traffic and replacing keys
+containing data considered to be sensitive with a redacted string form of their values. This redacted form
+string is the result of concatenating a prefix string `REDACTED-` with the hexadecimal string value of the
+original value's SHA-256 hash. For example:
+
+- A string value `example` would be redacted and replaced with the string
+  `REDACTED-50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c`
+- A number value `42` would be redacted and replaced with the string
+  `REDACTED-73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049`
+- A boolean value `false` would be redacted and replaced with the string
+  `REDACTED-fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa`
 
 The built-in standard behavior operates exclusively on HTTP traffic, inspecting and redacting data in the
 following locations:
 
- * HTTP headers
- * HTTP query paramaters
- * HTTP URIs
- * HTTP forms
- * HTTP JSON bodies
+- HTTP headers
+- HTTP query paramaters
+- HTTP URIs
+- HTTP forms
+- HTTP JSON bodies
 
 To see the keys that are redacted by default, you may view the Speedscale-maintained `standard` DLP
 configuration in the main [UI](https://app.speedscale.com/dlpConfig/standard). Or via the command line using
@@ -46,6 +53,12 @@ configuration in the main [UI](https://app.speedscale.com/dlpConfig/standard). O
 ```shell
 speedctl get dlp-config standard
 ```
+
+:::tip
+Including the SHA-256 hash of a value in its final redacted form, you can identify differences in datasets
+without needing any access to the original unredacted data. This could be very useful if you need to validate
+data equality when performing traffic replays.
+:::
 
 
 ## Enabling
@@ -157,7 +170,7 @@ speedctl put dlp-config my-config.json
 
 Some redaction behavior for HTTP could differ from your expectations, particularly with JSON data, where
 blocked keys will have values that are complex data types like a JSON array or object. In these cases, the
-number of entries and the sub-keys will remain, but each value will be set to `-REDACTED-`.
+number of entries and the sub-keys will remain, but each value will be set to its redacted string form.
 
 For example, with a nested JSON object:
 
@@ -176,9 +189,9 @@ A configuration setting to redact `token` will result in the following:
 ```json
 {
     "token": [
-        {"key": "-REDACTED-"},
-        {"key2": "-REDACTED-"},
-        {"key3": "-REDACTED-"}
+        {"key": "REDACTED-cd42404d52ad55ccfa9aca4adc828aa5800ad9d385a0671fbcbf724118320619"},
+        {"key2": "REDACTED-0537d481f73a757334328052da3af9626ced97028e20b849f6115c22cd765197"},
+        {"key3": "REDACTED-89dc6ae7f06a9f46b565af03eab0ece0bf6024d3659b7e3a1d03573cfeb0b59d"}
     ]
 }
 ```
@@ -193,7 +206,7 @@ Similarly, an array or list value behaves the same way:
       "US",
       "CA",
       "GB",
-      "JP
+      "JP"
     ]
   }
 }
@@ -206,10 +219,10 @@ Configuring `list` to be redacted:
   "unredacted": "value",
   "country": {
     "list": [
-      "-REDACTED-",
-      "-REDACTED-",
-      "-REDACTED-",
-      "-REDACTED-"
+      "REDACTED-9b202ecbc6d45c6d8901d989a918878397a3eb9d00e8f48022fc051b19d21a1d",
+      "REDACTED-4b650e5c4785025dee7bd65e3c5c527356717d7a1c0bfef5b4ada8ca1e9cbe17",
+      "REDACTED-b4043b0b8297e379bc559ab33b6ae9c7a9b4ef6519d3baee53270f0c0dd3d960",
+      "REDACTED-569ec6135d377e8ac326be2be2fd4cd8f3538fc3c23f33a89e81a4ed83671b7e"
     ]
   }
 }
