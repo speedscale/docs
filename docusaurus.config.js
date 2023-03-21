@@ -89,7 +89,7 @@ const config = {
             position: "right",
           },
           {
-            href: "https://speedscale.com/free-trial",
+            href: "https://app.speedscale.com/signup",
             label: "Free Trial",
             position: "right",
             // id: 'test',
