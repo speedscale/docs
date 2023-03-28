@@ -36,3 +36,18 @@ If we want to mock our backends indefinitely and not run a test, we can do this 
 * Have a cost associated with each API call. For eg. certain information APIs can cost a few cents per request which can add up quickly during development.
 * Have disruptive side effects. For eg. we do not want to ever make real credit card charges and always want to mock out Stripe's API.
 * Have low rate limits. Many public APIs such as Github's has strict rate limits which can be irritating to face when doing rapid iteration.
+
+## Disabling some mock responses
+
+Sometimes you don't want to mock everything in the environment. There are three ways to accomplish this:
+
+1. *Disable an entire mock* - You can accomplish this by turning off the mock by unchecking it in the replay wizard:
+![ReplayMockDisabled](./responders/replay_mock_disabled.png)
+You can also disable a mock from the snapshot summary page so that it is disabled for all replays utilizing that snapshot:
+![SnapshotMockDisabled](./responders/snapshot_mock_disabled.png)
+
+2. *Allow passthrough requests* - If you want to mock known requests but allow unrecognized transactions to continue to the original destination you can use `passthrough` mode. Just check the passthrough operation in your test config under the Mocks section:
+![TestConfigPassthrough](./responders/tc_passthrough.png)
+
+3. *Disable the responder* - If you want all mocks to be disabled, regardless of snapshot configuration, set your test config for "Tests only" mode.
+![TestsOnly](./responders/test_only.png)
