@@ -6,7 +6,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Speedscale",
+  title: "Speedscale Docs",
   tagline: "Stress test your APIs with real world scenarios",
   url: "https://docs.speedscale.com",
   baseUrl: "/",
