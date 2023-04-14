@@ -27,7 +27,7 @@ Only one JSON path may be matched.  Make a feature request if you need more.
 #### Configuration
 
 ```
-"type": "json_path",
+"type": "json_selector",
 "config": {
     "match": "nick_name",
     "recursive": "true",
@@ -74,7 +74,7 @@ Only one JSON path may be matched.  Make a feature request if you need more.
 #### Configuration
 
 ```
-"type": "json_path",
+"type": "json_selector",
 "config": {
     "match": "address.zip=30303",
     "recursive": "true",
