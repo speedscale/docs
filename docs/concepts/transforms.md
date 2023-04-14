@@ -21,12 +21,23 @@ Last, the transformed data is re-inserted into the RRPair in exactly the same lo
 
 ### Where to Transform Traffic
 
-Data can be transformed at four different points during a replay:
+Modify traffic and see the effects with the transform editor.
 
-* **generator** - modify data before the generator sends it to the service under test (SUT) or extract data from a generator response
-* **generator variables** - used to pre-load the variable cache when the generator starts up
-* **responder** - modify a request received by the responder before attempting to pattern match a response
-* **responder variables** - used to pre-load the variable cache when the responder starts up
+![transform_editor](./transform_editor.png)
+
+Data can be transformed at several points during a replay:
+
+- **generator**
+  - **RRPair request** - modify data before the generator sends it to the service under test (SUT)
+  - **RRPair response** - extract data from the response the generator receives from the SUT
+- **responder**
+  - **RRPair request** - modify a request received by the responder before attempting to pattern match a response
+  - **RRPair response** - modify captured response data before the responder sends it back to the SUT
+
+Variable caches store data extracted from traffic in one location and apply it in another:
+
+- **generator variables** - used to pre-load the variable cache when the generator starts up
+- **responder variables** - used to pre-load the variable cache when the responder starts up
 
 How can the request and response both use the same transforms? Because each transform chain starts with an extractor that specifically targets the request or the response. In the generator, that means if the extractor references the HTTP Request Body, then the request will be modified before it is sent to the SUT. If an HTTP Request Body is extracted in a responder chain, then the request is modified before signature matching (response lookup) is run.
 
