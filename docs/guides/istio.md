@@ -3,6 +3,7 @@ title: Working with Istio
 ---
 
 import ExternalServices from '../reference/_external-services.mdx'
+import ConfiguringProxy from '../reference/_configuring_proxy.mdx'
 
 [Istio](https://istio.io) is a service mesh offering that modifies a cluster to provide, among
 other things, traffic and network management.
@@ -86,44 +87,16 @@ sidecar.speedscale.com/proxy-host: "localhost"
 sidecar.speedscale.com/proxy-port: "8080"
 ```
 
-### Configure Outbound Proxy Settings
-
-In many instances, configuring your application to use an HTTP or SOCKS proxy for outbound traffic
-can be done simply by setting environment variables. Typically these environment variables are
-`HTTP_PROXY` for unencrypted HTTP requests and `HTTPS_PROXY` for TLS HTTP requests. See the
-[Configuring Your Application Proxy Server](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
-documentation more detail and some language specific examples.
-
-Modify your workload to add the necessary proxy configuration to your application container's
-environment variables. For example:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: my-app
-spec:
-  template:
-    spec:
-      containers:
-      - env:
-        - name: HTTP_PROXY
-          value: http://localhost:4140
-        - name: HTTPS_PROXY
-          value: http://localhost:4140
-```
-
-Note, if you configured the Speedscale proxy to use SOCKS4/5 instead of HTTP for outbound traffic,
-change the URL above to `socks5://localhost:4140`.
-
-### Configure Outbound TLS Support
+## Configure Outbound TLS Support
 
 Outbound TLS support for the Speedscale sidecar can be enabled with the annotation
 `sidecar.speedscale.com/tls-out: "true"`. You may be required to perform additional steps if your
 application and not Envoy is originating TLS requests. See
 [Trusting TLS Certificates](../tls/#trusting-tls-certificates) for more information.
 
-### Allow Egress Speedscale Traffic (Optional)
+<ConfiguringProxy />
+
+## Allow Egress Speedscale Traffic (Optional)
 
 If your Istio installation and sidecar control which subset of egress traffic is allowable, you may
 need to add the `speedscale` namespace to the sidecar's egress configuration. This step is not
