@@ -3,6 +3,8 @@ title: Proxy Modes
 sidebar_position: 3
 ---
 
+import ConfiguringProxy from '../../reference/_configuring_proxy.mdx'
+
 The default proxy mode of the sidecar in a Kubernetes environment is known as a `transparent` proxy, meaning
 it is transparent to the workload and requires no additional proxy configuration. This is done with `iptables`
 routing for both inbound and outbound traffic. While this is the preferred traffic capture mode, there are
@@ -110,81 +112,4 @@ annotations:
   sidecar.speedscale.com/proxy-out-port: "10001"
 ```
 
-## Configuring Your Application Proxy Server
-
-Every language has it's own nuances for how it works with a forward proxy server for outbound traffic. Here
-are some well-known patterns that can be used to configure your application to use the Speedscale proxy. Many
-languages and systems support environment variables `HTTP_PROXY` and `HTTPS_PROXY` or the lowercase
-alternative `http_proxy` and `https_proxy`.
-
-### Golang
-
-Golang supports `HTTP_PROXY` and `HTTPS_PROXY` environment variables to configure outbound http or https
-requests. For example, when the sidecar is configured as a socks forward proxy:
-
-```bash
-export HTTP_PROXY='socks5://127.0.0.1:4140'
-export HTTPS_PROXY='socks5://127.0.0.1:4140'
-```
-
-Or alternatively as an http forward proxy:
-
-```bash
-export HTTP_PROXY='http://127.0.0.1:4140'
-export HTTPS_PROXY='http://127.0.0.1:4140'
-```
-
-See: https://pkg.go.dev/net/http#ProxyFromEnvironment
-
-### Python
-
-Python supports `HTTP_PROXY` and `HTTPS_PROXY` as well as the lowercase alternatives `http_proxy` and
-`https_proxy`. This is true if you are using either the standard library `urllib.request` module or the
-popular `requests` module. These two options can also support specifying proxies directly with a dictionary:
-
-```python
-urllib.request.urlopen(
-    'http://example.com',
-    proxies={
-        'http': 'http://localhost:4140',
-        'https': 'http://localhost:4140',
-    },
-)
-```
-
-Socks proxies may require additional dependencies. For example, with the `requests` module:
-https://requests.readthedocs.io/en/latest/user/advanced/?highlight=proxy#socks
-
-### NodeJS
-
-When using NodeJS, you need to set `proxy-protocol` to `http` or `tcp:http`. In addition, the NodeJS app needs
-to be configured with global-agent:
-
-```bash
-npm install --save global-agent
-```
-
-Then add [global-agent](https://github.com/gajus/global-agent) to your code:
-
-```javascript
-import 'global-agent/bootstrap';
-```
-
-Set these environment variables in the NodeJS runtime environment to configure the global-agent proxy:
-
-```bash
-export GLOBAL_AGENT_HTTP_PROXY='http://127.0.0.1:4140'
-export GLOBAL_AGENT_HTTPS_PROXY='http://127.0.0.1:4140'
-export GLOBAL_AGENT_NO_PROXY='*127.0.0.1:12557'
-export NODE_EXTRA_CA_CERTS=${HOME}/.speedscale/certs/tls.crt
-```
-
-### Java
-
-When using Java, you need to set `proxy-protocol` to `socks` or `tcp:socks`. Java has built-in system
-properties for configuring the socks proxy server, add the following `-D` system property flags:
-
-```
--DsocksProxyHost=127.0.0.1
--DsocksProxyPort=4140
-```
+<ConfiguringProxy />
