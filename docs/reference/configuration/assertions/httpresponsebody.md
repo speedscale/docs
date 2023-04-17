@@ -10,6 +10,10 @@ This assertion checks the body of an HTTP response and identifies differences. I
 
 If no content type is identified, the default comparison is a simple hash compare.
 
+:::note
+By default the response body assertion will allow new fields which did not exist in captured traffic.  See `allowNew` for details.
+:::
+
 ### Example with Ignore <a href="#example" id="example"></a>
 
 ```javascript
@@ -38,6 +42,7 @@ If no content type is identified, the default comparison is a simple hash compar
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **ignore**      | Comma-separated list of JSON Paths that will be ignored during comparison.  A key will match if it contains one of the ignored strings anywhere in the path. For example, an ignore string of `errorCode` will prevent the comparison of `foo.bar.errorCode`,`errorCode`, and `foo.errorCode.bar`from being compared.  |
 | **includeOnly** | Comma-separated JSON Paths that will be included during comparison.  All other keys will be ignored. Given strings work the same as for **ignore**.                                                                                                                                                                    |
+| **allowNew**    | Allow new fields in replay traffic which did not exist in captured traffic. Defaults to true.|
 
 ### Notes <a href="#notes" id="notes"></a>
 
