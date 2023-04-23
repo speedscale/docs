@@ -18,7 +18,7 @@ The config supports the following fields:
 | recursive        | If true, allows the match path to be partial instead of requiring a full path from the document root. |
 | levelsUp         | The number of levels to move up from the matched JSON path. |
 
-:::note
+:::info
 Only one JSON path may be matched.  Make a feature request if you need more.
 :::
 

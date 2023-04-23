@@ -1,3 +1,7 @@
+---
+sidebar_position: 8
+---
+
 # Test Configs
 
 Test Configs enable you to change how traffic is [replayed](./replay.md) in

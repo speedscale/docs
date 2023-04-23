@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+---
+
 # Chaos Engineering (API)
 
 [Chaos Engineering](https://en.wikipedia.org/wiki/Chaos_engineering#Days_of_Chaos) means designing experiments to ensure that your service will tolerate failures adequately. This term was popularized by Netflix in the early 2010's and was initially focused on experiments involving infrastructure failures like network latency or server failure.
