@@ -19,7 +19,7 @@ Open your Postman collection and export it to a file on your local desktop. Note
 
 ## Import to Speedscale
 
-Navigate to the [services](https://app.speedscale.com) in the speedscale UI. Click on the `Import Postman` button.
+Navigate to the [services](https://app.speedscale.com) in the speedscale UI. Click on `Add service` and select the `Build from Postman Collection` option.
 
 ![Postman Import](./postman/postman-import.png)
 
