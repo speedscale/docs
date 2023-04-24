@@ -3,7 +3,7 @@ title: Proxy Modes
 sidebar_position: 3
 ---
 
-import ConfiguringProxy from '../../reference/_configuring_proxy.mdx'
+import ConfiguringProxy from '../../reference/proxy_config.mdx'
 
 The default proxy mode of the sidecar in a Kubernetes environment is known as a `transparent` proxy, meaning
 it is transparent to the workload and requires no additional proxy configuration. This is done with `iptables`

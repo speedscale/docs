@@ -3,7 +3,7 @@ title: Working with Istio
 ---
 
 import ExternalServices from '../reference/_external-services.mdx'
-import ConfiguringProxy from '../reference/_configuring_proxy.mdx'
+import ConfiguringProxy from '../reference/proxy_config.mdx'
 
 [Istio](https://istio.io) is a service mesh offering that modifies a cluster to provide, among
 other things, traffic and network management.
