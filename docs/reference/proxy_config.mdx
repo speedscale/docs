@@ -1,11 +1,19 @@
+---
+title: Proxy Configuration
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 ## Configuring Your Application Proxy Server
 
-Every language has it's own nuances for how it works with a forward proxy server for outbound traffic. Here
-are some well-known patterns that can be used to configure your application to use the Speedscale proxy. Many
-languages and systems support environment variables `HTTP_PROXY` and `HTTPS_PROXY` or the lowercase
-alternative `http_proxy` and `https_proxy`.
+Every language has it's own nuances for how it works with a forward proxy
+server for outbound traffic. Select your language to see well-known patterns
+for that language.
 
-### Golang
+<Tabs>
+
+<TabItem value="go" label="Go">
 
 Golang supports `HTTP_PROXY` and `HTTPS_PROXY` environment variables to configure outbound http or https
 requests. For example, when the sidecar is configured as a socks forward proxy:
@@ -24,7 +32,9 @@ export HTTPS_PROXY='http://127.0.0.1:4140'
 
 See: https://pkg.go.dev/net/http#ProxyFromEnvironment
 
-### Python
+</TabItem>
+
+<TabItem value="python" label="Python">
 
 Python supports `HTTP_PROXY` and `HTTPS_PROXY` as well as the lowercase alternatives `http_proxy` and
 `https_proxy`. This is true if you are using either the standard library `urllib.request` module or the
@@ -43,9 +53,11 @@ urllib.request.urlopen(
 Socks proxies may require additional dependencies. For example, with the `requests` module:
 https://requests.readthedocs.io/en/latest/user/advanced/?highlight=proxy#socks
 
-### NodeJS
+</TabItem>
 
-When using NodeJS, you need to set `proxy-protocol` to `http` or `tcp:http`. In addition, the NodeJS app needs
+<TabItem value="nodejs" label="Node.js">
+
+When using Node, you need to set `proxy-protocol` to `http` or `tcp:http`. In addition, the NodeJS app needs
 to be configured with global-agent:
 
 ```bash
@@ -67,7 +79,9 @@ export GLOBAL_AGENT_NO_PROXY='*127.0.0.1:12557'
 export NODE_EXTRA_CA_CERTS=${HOME}/.speedscale/certs/tls.crt
 ```
 
-### Java
+</TabItem>
+
+<TabItem value="java" label="Java">
 
 When using Java, you need to set `proxy-protocol` to `socks` or `tcp:socks`. Java has built-in system
 properties for configuring the socks proxy server, add the following `-D` system property flags:
@@ -76,3 +90,8 @@ properties for configuring the socks proxy server, add the following `-D` system
 -DsocksProxyHost=127.0.0.1
 -DsocksProxyPort=4140
 ```
+
+</TabItem>
+
+</Tabs>
+
