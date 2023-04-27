@@ -1,3 +1,8 @@
+---
+title: Speedscale on OpenShift
+sidebar_position: 16
+---
+
 # Working with OpenShift
 
 :::caution

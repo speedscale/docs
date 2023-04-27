@@ -1,5 +1,6 @@
 ---
-title: Working with Istio
+title: Speedscale with Istio
+sidebar_position: 29
 ---
 
 import ExternalServices from '../reference/_external-services.mdx'

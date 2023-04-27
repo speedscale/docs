@@ -1,10 +1,11 @@
 ---
-title: Working in Docker
+title: Speedscale on Docker
+sidebar_position: 16
 ---
 
 Run Speedscale components via Docker Compose.
 
-### Pre-Requisites
+### Prerequisites
 
 1. [Speedctl is installed](../setup/install/cli.md)
 1. Docker with compose.

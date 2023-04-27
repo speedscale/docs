@@ -1,5 +1,6 @@
 ---
-title: Working with ECS/Fargate
+title: Speedscale on ECS/Fargate
+sidebar_position: 28
 ---
 
 :::caution
