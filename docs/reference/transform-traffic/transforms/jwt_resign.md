@@ -32,7 +32,7 @@
 
 | Key                | Description                                                                                                                                                                                           |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **secretPath**     | The local path of secret mounted to generator (this is done automatically by the operator. See [howto](../../../guides/resign_jwt_mocks.md))
+| **secretPath**     | The local path of secret mounted to generator (this is done automatically by the operator. See [howto](../../../guides/resign-jwt-mocks.md))
 | **iss**            | (optional) A replacement for iss value
 | **aud**            | (optional) A replacement for aud value
 | **sub**            | (optional) A replacement for sub value
