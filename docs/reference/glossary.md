@@ -8,7 +8,7 @@ sidebar_position: 1
 
 A set of rules which determines whether to include or exclude traffic.
 
-See [creating traffic filters](../guides/creating-filters/index.md)
+See [creating traffic filters](../guides/creating-filters/index.md) for more information.
 
 ### Generator
 
@@ -16,7 +16,7 @@ A Speedscale component that generates traffic from a [snapshot](#snapshot),
 targeting the [SUT](#sut).  When running a load test the generator is the
 service responsible for generating the load.
 
-See [replaying traffic](../concepts/replay.md).
+See [replaying traffic](../concepts/replay.md) for more information.
 
 ### Operator
 
@@ -25,7 +25,7 @@ that runs in your cluster to perform Speedscale actions on your behalf.
 Actions like adding a sidecar proxy to your workload, or starting a
 [replay](#replay) in your cluster.
 
-See [Kubernetes Operator](../setup/install/kubernetes-operator.md).
+See [Kubernetes Operator](../setup/install/kubernetes-operator.md) for more information.
 
 ### Proxy
 
@@ -38,22 +38,20 @@ The act of replaying a [snapshot](#snapshot) which usually involves the
 generator making requests to the SUT.  A traditional replay involves a
 [Speedscale generator](#generator), which makes requests to the [SUT](#sut)
 (inbound), which makes requests to the [Speedscale responder](#responder)
-(outbound), which mocks external resources.
+(outbound), which mocks external resources. A replay may not involve a
+generator though, as in responder-only replay mode.
 
-```
- ┌─────────┐   ┌────────┐   ┌─────────┐
- │generator├───►your app├───►responder│
- └─────────┘   └────────┘   └─────────┘
-```
-
-A replay may not involve a generator though, as in responder-only replay mode.
+See [replaying traffic](../guides/replay/README.md) for more information.
 
 ### Report
 
 The artifact of a [replay](#replay), a report contains aggregate information
 about latency and throughput, as well as detailed information about the
-requests made.  See your reports on the
-[reports page](https://app.speedscale.com/reports).
+requests made.
+
+Reports are listed on the [snapshots page](https://app.speedscale.com/snapshots) in the UI.
+
+See [reports](../guides/reports/README.md) for more information.
 
 ### Responder
 
@@ -62,7 +60,8 @@ A Speedscale component that mocks other services using traffic from a
 server, or whatever else so that you can test your app in a controlled
 environment.
 
-See [service mocking](../concepts/service_mocking.md).
+See [service mocking](../concepts/service_mocking.md) and
+[mocking backends](../guides/responders.md) for more information.
 
 ### RRPair
 
@@ -76,12 +75,14 @@ response like when representing part of a data stream.
 A collection of captured [RRPairs](#rrpair) that can be replayed in your
 cluster or from your local desktop.
 
+Snapshots are listed on the [snapshots page](https://app.speedscale.com/snapshots) in the UI.
+
 ### speedctl
 
 The Speedscale CLI which can be used to interact with Speedscale resources in
 all the same ways the [Speedscale UI](https://app.speedscale.com) does.
 
-See [cli setup](../setup/install/cli.md).
+See [cli setup](../setup/install/cli.md) for more information.
 
 ### SUT
 
@@ -89,10 +90,32 @@ System under test.  Whenever Speedscale documentation mentions a SUT, we're
 talking about your application.  Your app/service is the system Speedscale is
 testing and this is a generic way to refer to it.
 
+### Test Config
+
+Configuration for a traffic [replay](#replay).
+
+Test configs are listed on the [test configs page](https://app.speedscale.com/config) in the UI.
+
+See [test configs](../concepts/test_config.md) for more information.
+
+### Traffic
+
+All of the bytes sent or received by your application.
+
+Inbound traffic is the traffic that is being sent to, and received by, your
+application. This may also be called ingress.  An example of inbound traffic
+is an HTTP request sent to your server's API.
+
+Outbound traffic is the traffic that is sent by your application to external
+resources.  This may also be called egress.  An example of outbound traffic
+is a database query, or calling the API of another service.
+
 ### Transform
 
 A set of functions which can be used to modify traffic at various points during
 a [replay](#replay).
 
-See [transforms](../concepts/transforms.md).
+Transforms are listed on the [transforms page](https://app.speedscale.com/trafficTransforms) in the UI.
+
+See [transforms](../concepts/transforms.md) for more information.
 

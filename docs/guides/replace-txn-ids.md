@@ -1,3 +1,8 @@
+---
+title: Replace Unique IDs in Mocks
+sidebar_position: 13
+---
+
 # Replace Unique Transaction (or Session) IDs
 
 Many applications use unique transaction (or session) IDs that must be replaced accurately with new test values. This is a trivial problem for transaction IDs that are used only once since you can create a transform chain to replace that individual data with a random string. The problem becomes much more complicated when the same transaction ID is used across multiple transactions. In this tutorial we'll walk through the steps for replacing unique transaction IDs without them getting mixed up or out of order.

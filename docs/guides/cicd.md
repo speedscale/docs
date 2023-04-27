@@ -1,6 +1,6 @@
 ---
-sidebar_position: 15
 title: CI/CD
+sidebar_position: 3
 ---
 
 import Tabs from '@theme/Tabs';
@@ -31,6 +31,10 @@ In order to integrate Speedscale into your CI/CD you will need:
 - At least one registered service, visible at https://app.speedscale.com
 
 Direct access to your Kubernetes cluster is optional.
+
+:::info
+Speedscale can also be run in [Docker](./docker.md)
+:::
 
 ## The Pipeline
 

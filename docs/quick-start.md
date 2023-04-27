@@ -6,6 +6,7 @@ import WindowsCLIInstall from './setup/install/_cli_windows.mdx'
 # Quick Start
 
 ## API Key
+
 You will need to get your API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key and paste when prompted.
 
 ![](./setup/install/api-key.png)
@@ -35,8 +36,10 @@ for all configuration options available for the Helm chart.
 
 <MacOSLinuxInstall />
 
-Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The [install wizard](./setup/install/kubernetes-operator.md#install-wizard) will
-walk you through installing the [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
+If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
+The [install wizard](./setup/install/kubernetes-operator.md#install-wizard)
+will walk you through installing the
+[Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
 and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
 
 </TabItem>
@@ -45,9 +48,13 @@ and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployme
 
 <WindowsCLIInstall />
 
-Then run `speedctl install`, choose "Kubernetes" and follow the prompts.  The [install wizard](./setup/install/kubernetes-operator.md#install-wizard) will
-walk you through installing the [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
+If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
+The [install wizard](./setup/install/kubernetes-operator.md#install-wizard)
+will walk you through installing the
+[Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
 and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
+
+Speedscale can also be used with [Docker](./guides/docker.md) and [locally](./guides/cli.md).
 
 </TabItem>
 
@@ -83,7 +90,7 @@ speedctl deploy operator -e $(kubectl config current-context) --dir
 
 ## Verify Install
 
-Once you're done, make sure the operator pods are running properly:
+For Kubernetes users, make sure the operator pods are running properly:
 
 ```
 kubectl -n speedscale get pods

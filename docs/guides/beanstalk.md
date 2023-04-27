@@ -1,5 +1,6 @@
 ---
-title: Working in AWS Elastic Beanstalk (Docker)
+title: Speedscale on Elastic Beanstalk
+sidebar_position: 17
 ---
 
 :::caution
@@ -7,7 +8,7 @@ This workflow is currently in preview status. Speedscale currently works best in
 such as EKS and GKE.
 :::
 
-## Pre-Requisites
+## Prerequisites
 
 1. [Speedctl is installed](../setup/install/cli.md)
 1. Access to the client application to configure proxy settings and trust certificates.

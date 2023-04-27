@@ -1,5 +1,6 @@
 ---
-title: Working with Cloud Run
+title: Speedscale on Cloud Run
+sidebar_position: 25
 ---
 
 :::caution

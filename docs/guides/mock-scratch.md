@@ -1,3 +1,8 @@
+---
+title: Mocks from Scratch
+sidebar_position: 12
+---
+
 # Mock Services from Scratch
 
 How to work with the data the responder uses:
@@ -6,7 +11,7 @@ How to work with the data the responder uses:
 2. Delete mock responses without using the UI
 3. Passthrough mode
 
-## Pre-Requisite - create a snapshot
+## Prerequisite - create a snapshot
 
 First you need a starter snapshot that you’ll work with, in my case I captured a single outbound request from an nginx container to NASA. Capture with these annotations:
 

@@ -3,7 +3,7 @@
 
 Export data from your Speedscale environment to New Relic One
 
-### Pre-Requisites
+### Prerequisites
 
 In order to utilize the integration you need to capture the following from New Relic:
 

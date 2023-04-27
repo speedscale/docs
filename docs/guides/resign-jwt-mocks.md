@@ -1,4 +1,9 @@
-# Re-signing JWTs in mocks
+---
+title: Re-sign JWTs in Mocks
+sidebar_position: 14
+---
+
+# Re-signing JWTs in Mocks
 
 Most real-world APIs require authentication. The most common type of authentication we see is JWT/OAuth2. This guide shows you how to train Speedscale to automatically re-sign JWTs when simulating backend services for your Service Under Test (SUT). This guide is only for automatically generated service mocks (not incoming load)
 

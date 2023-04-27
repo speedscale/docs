@@ -1,7 +1,8 @@
 ---
-sidebar_position: 8
 title: Import from Browser/HAR
+sidebar_position: 37
 ---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
