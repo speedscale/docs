@@ -10,7 +10,7 @@ Run Speedscale components via Docker Compose.
 1. [Speedctl is installed](../setup/install/cli.md)
 1. [Docker Desktop](https://docs.docker.com/desktop/) is installed
 
-## Captureing Traffic
+## Capturing Traffic
 
 Create Docker Compose manifests by running `speedctl install`, and following
 the `Docker` flow that allows you to capture traffic.  This will create working
