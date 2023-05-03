@@ -8,7 +8,7 @@ sidebar_position: 1
 
 A set of rules which determines whether to include or exclude traffic.
 
-See [creating traffic filters](../guides/creating-filters/index.md) for more information.
+See [creating traffic filters](../guides/creating-filters/index.md) and the [filters reference](./filters/README.md) for more information.
 
 ### Generator
 

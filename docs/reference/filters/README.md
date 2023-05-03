@@ -1,7 +1,7 @@
 
 # Filters
 
-Select a subset of traffic using filters.
+Select a subset of traffic using [filters](../../reference/glossary.md#filter).
 
 Speedscale provides the ability to filter traffic matching a pattern. Filters are used extensively by Speedscale during:
 
@@ -13,6 +13,25 @@ Speedscale provides the ability to filter traffic matching a pattern. Filters ar
 The simplest way to build a forwarder filter is to assemble it in Traffic Viewer. Editing the JSON is a lot more work but you can check out the [instructions](../../guides/creating-a-snapshot.md#filtering-) here
 :::
 
-### Storage
+## Storage
 
-Filters are stored in Speedscale cloud so they can be reused. Manipulate them directly using `speedctl` commands like `get`, `put` and `delete`. To configure the Forwarder to use a filter rule insert the filter's ID in the Operator or Forwarder's `SPEEDSCALE_FILTER_RULE` environment variable.
+Filters are stored in Speedscale cloud so they can be reused. Manipulate them
+directly using `speedctl` commands like `pull`, `edit`, `push` and `delete`. To configure
+the Forwarder to use a filter rule insert the filter's ID in the Operator or
+Forwarder's `SPEEDSCALE_FILTER_RULE` environment variable.
+
+## Debugging
+
+Use the `speedctl analyze filter` command to test your filters against a
+[snapshot](../../reference/glossary.md#snapshot) to see which RRPairs will be
+filtered out. This command also works with a single RRPair downloaded from the
+UI.
+
+## Advanced
+
+Filters can be [created in the Speedscale
+app](https://dev.speedscale.com/filterRules/) but the UI does not provide
+access to the full expressiveness of the filters.  If you're looking to do
+something advanced it's best to get as far as you can in the UI and then modify
+the JSON manually.
+
