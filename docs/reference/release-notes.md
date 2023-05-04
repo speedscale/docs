@@ -4,66 +4,18 @@ sidebar_position: 2
 
 # Release Notes
 
-Semantic versioning is used (MAJOR.MINOR.PATCH), release notes are for MAJOR
-and MINOR changes.
+## v1.2.576: 2023-05-01
 
-## v0.11: 2022-01-25
+* SPD-5186 Support strict mode in istio
 
-* Forwarder filter rules can now be stored in Speedscale cloud.
 
-## v0.10: 2021-12-07
+## v1.2.584: 2023-05-02
 
-* Migration to Speedscale cloud API keys.
-
-## v0.9: 2021-10-20
-
-* Added AMQP support
-
-## v0.8: 2021-08-23
-
-### Fixed
-
-* Improved speed of rrpair ingestion
-
-### Changed
-
-* The `speedctl` command outputs have changed for consistency purposes
-
-### Added
-
-* New process `collector` to gather logs from the system under test during replays
-* Now able to download `speedctl` for Windows
-
-## v0.7: 2021-08-10
-
-### Fixed
-
-* Bug fix for oauth2 tokenizer
-* Bug fix for istio support
-
-### Added
-
-* New Traffic Viewer capability
-* New assertion for schema comparison
-* New assertion support for HTML payloads
-
-## v0.6: 2021-07-14
-
-### Fixed
-
-* Improved speed of report processing from Speedscale cloud
-
-### Added
-
-* New support for tracking postgres calls
-
-## v0.5: 2021-03-09
-
-### Changed
-
-* Report processing performed within Speedscale cloud
-
-### Added
-
-* Initial support for istio
-* Support for operator to work with daemonsets
+* SPD-5212 Use signature hash instead of Sprintf to reduce memory usage
+* SPD-5196 update hint messages
+* SPD-4996 better errors for demo
+* SPD-5211 prevent protected uploads
+* SPD-5206 add host override
+* SPD-5208 handle trace logs
+* SPD-4425 Handle GRPC streams in generator
+* SPD-5207 some minor fixes
