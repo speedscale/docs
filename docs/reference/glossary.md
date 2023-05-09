@@ -70,6 +70,12 @@ representation in which all traffic is stored.  The RRPair is segregated into a
 request and a response, but also may contain just part of a request or
 response like when representing part of a data stream.
 
+### Schedule
+
+Schedule Speedscale actions to run automatically on a regular basis.
+
+See [schedules](../concepts/schedules.md) for more information.
+
 ### Snapshot
 
 A collection of captured [RRPairs](#rrpair) that can be replayed in your
@@ -118,4 +124,12 @@ a [replay](#replay).
 Transforms are listed on the [transforms page](https://app.speedscale.com/trafficTransforms) in the UI.
 
 See [transforms](../concepts/transforms.md) for more information.
+
+### Variable Cache
+
+A bucket of values which can be shared between requests during a [replay](#replay).
+Servers are often stateful, or expose stateful behavior from networked storage.
+In order to simulate this behavior a cache can store a value on one request and
+retrieve it from another.  Variables may also be populated statically in the
+[transform editor](../concepts/transforms.md/#where-to-transform-traffic).
 
