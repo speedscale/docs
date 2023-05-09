@@ -38,6 +38,6 @@ names with the `--imgpullsecrets` argument, and the secrets will be attached to
 the service account.
 
 ```
-speectl install --imgpullsecrets my-secret1,my-secret2p
+speedctl install --imgpullsecrets my-secret1,my-secret2p
 ```
 
