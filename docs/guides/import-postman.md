@@ -3,6 +3,8 @@ title: Import from Postman
 sidebar_position: 35
 ---
 
+<iframe src="https://player.vimeo.com/video/825263285?h=f6d27bc7a9" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
 In this guide we will walk through importing an existing Postman collection and replaying it in a Kubernetes cluster. This guide is most helpful when you are unable to install the Speedscale sidecar for some reason, such as the service being brand new with no traffic.
 
 We'll take the following steps:
