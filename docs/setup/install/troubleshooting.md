@@ -106,9 +106,15 @@ In Istio with dual proxy capture mode, the Operator creates a `Sidecar` resource
 ```
 in the Operator logs. This usually happens if the port specified is invalid (not an integer). This can also happen if the Operator is not given permissions to create Istio Sidecar resources. This should be handled during installation but if you encounter this, try [upgrading the operator](../upgrade/operator.md).
 
-### Other Errors
+### Leftover Certificates
 ```
 "error":"could not verify cert: crypto/rsa: verification error"
 ```
 
-This error usually happens when there's a fresh install after an incomplete uninstall. There are certs in the cluster that have stuck around when they shouldn't. Search for speedscale related certs and delete.
+This error usually happens when there's a fresh install after an incomplete uninstall. There are certs in the cluster that have stuck around when they shouldn't. Search for speedscale related certs and delete. The following commands may be helpful:
+```
+kubectl delete mutatingwebhookconfigurations speedscale-operator
+kubectl delete mutatingwebhookconfigurations speedscale-operator-replay
+kubectl delete validatingwebhookconfiguration speedscale-operator-replay 
+kubectl delete ns speedscale 
+```
