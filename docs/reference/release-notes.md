@@ -40,3 +40,18 @@ sidebar_position: 2
 * SPD-4836 logs
 * SPD-5217 create snapshot using existing filter
 * SPD-5210 add a simple edit subcommand
+
+## v1.3.17: 2023-05-12
+
+* SPD-5193 speedctl clone snapshot
+* SPD-5090 bootstrapping and parse at least the server greeeting
+* SPD-4875 Apply istio sidecar config to injected pods only
+* SPD-5277 speedmgmt user delete
+* SPD-5272 metric logs from warn to debug
+* SPD-5274 turn on discover patterns in standard
+* SPD-5232 user data rpcs
+* SPD-5238 use a consistent key in analysis mode
+* SPD-4874 Preserve inferred port for sidecar
+* SPD-5270 housekeeping
+* SPD-5051 use updated tcp state checks
+* SPD-5257 don't include fields
