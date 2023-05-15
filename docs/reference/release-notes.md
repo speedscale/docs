@@ -55,3 +55,11 @@ sidebar_position: 2
 * SPD-5270 housekeeping
 * SPD-5051 use updated tcp state checks
 * SPD-5257 don't include fields
+
+## v1.3.22: 2023-05-15
+
+* SPD-5290 use a dead simple health server
+* SPD-5090 build changes and add detected tech/protocol
+* SPD-5285 Ensure docker internal host is setup for linux
+* SPD-5232 read the file once and no more
+* SPD-5232 load file from S3 user data dir
