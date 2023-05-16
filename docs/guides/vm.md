@@ -30,7 +30,21 @@ The steps above setup an inbound proxy on port `4143` that forwards requests to 
 
 We have an existing target group going to our app which serves on port `8080`. We're going to create a new one with identical settings, the only difference will be the port `4143`.
 
+Make sure to configure the health check correctly, it should be identical to the existing one.
+
 ![Target Groups](./vm/target-groups-2.png)
+
+### Check the security groups
+
+Make sure the security groups/firewall rules for the load balancer and the VM allow traffic to flow between them.
+
+The inbound group for the EC2 should allow traffic on `4143`
+
+![Security Group](./vm/sg-1.png)
+
+The outbound group for the ALB should allow traffic out to `4143` as well
+
+![Security Group](./vm/sg-2.png)
 
 ### Modify the listener
 
