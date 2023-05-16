@@ -63,3 +63,17 @@ sidebar_position: 2
 * SPD-5285 Ensure docker internal host is setup for linux
 * SPD-5232 read the file once and no more
 * SPD-5232 load file from S3 user data dir
+
+## v1.3.33: 2023-05-16
+
+* SPD-5261 Record responder hits for grpc streams
+* SPD-5294 Ensure timestamp on replay events
+* SPD-5233 api gateway ingest
+* SPD-5090 fix binary parsing for mysql greeting
+* SPD-5295 Include port and extra hosts on replay
+* SPD-5297 Update tenant name in IDP
+* SPD-5292 postman import accept port
+* SPD-5090 fix issues with mysql data vis
+* SPD-5259 Don't nil out headers needed for protocol detection
+* SPD-5287 add speedctl check timeout
+* SPD-5234,SPD-5286 speedctl commands for user-data and cron
