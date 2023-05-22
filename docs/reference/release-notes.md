@@ -77,3 +77,18 @@ sidebar_position: 2
 * SPD-5259 Don't nil out headers needed for protocol detection
 * SPD-5287 add speedctl check timeout
 * SPD-5234,SPD-5286 speedctl commands for user-data and cron
+
+## v1.3.45: 2023-05-22
+
+* SPD-5318 Respect timeouts
+* SPD-5090 query resultset
+* SPD-5318 Make snapshot creation respect timeout
+* SPD-5311 add protocol override for postman import
+* SPD-5090 adding incomplete ping and query dissection
+* SPD-5322 add concurrency to snapshot creation
+* SPD-5321 minor transform refactor
+* SPD-5090 complete connection phase
+* SPD-5310 handle https proxy better
+* SPD-5306 add Google Cloud Trace to default filters
+* SPD-5303 add smart mode proxy to handle both socks and http inline proxies
+* SPD-5307 add bulk export to speedctl misc request response output
