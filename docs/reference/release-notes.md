@@ -92,3 +92,10 @@ sidebar_position: 2
 * SPD-5306 add Google Cloud Trace to default filters
 * SPD-5303 add smart mode proxy to handle both socks and http inline proxies
 * SPD-5307 add bulk export to speedctl misc request response output
+
+## v1.3.49: 2023-05-23
+
+* SPD-5335 deprecate unused ProtoBufs field
+* SPD-5336 tune analyzer SQL queries
+* SPD-5090 support valid utf8 strings
+* SPD-5090 prepared statements
