@@ -99,3 +99,12 @@ sidebar_position: 2
 * SPD-5336 tune analyzer SQL queries
 * SPD-5090 support valid utf8 strings
 * SPD-5090 prepared statements
+
+## v1.3.55: 2023-05-24
+
+* SPD-5315 remove analysis mode from config
+* SPD-5327 readme
+* SPD-5327 re-enable user on registration if deleted
+* SPD-5090 adding metrics for mysql
+* SPD-5319 Use stable protojson for proto decoding
+* SPD-5319 Use stable json marshalling
