@@ -108,3 +108,9 @@ sidebar_position: 2
 * SPD-5090 adding metrics for mysql
 * SPD-5319 Use stable protojson for proto decoding
 * SPD-5319 Use stable json marshalling
+
+## v1.3.58: 2023-05-25
+
+* SPD-5317 Support grpc in passthrough mode
+* SPD-5345 optimize analyzer filtering
+* SPD-5090 EOF bugfix, improved ergonomics, COM_QUIT support
