@@ -114,3 +114,8 @@ sidebar_position: 2
 * SPD-5317 Support grpc in passthrough mode
 * SPD-5345 optimize analyzer filtering
 * SPD-5090 EOF bugfix, improved ergonomics, COM_QUIT support
+
+## v1.3.60: 2023-05-25
+
+* SPD-5349 fix panic in operator and add safety measures
+* SPD-5090 implement remaining mysql command dissections
