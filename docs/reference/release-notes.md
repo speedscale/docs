@@ -119,3 +119,12 @@ sidebar_position: 2
 
 * SPD-5349 fix panic in operator and add safety measures
 * SPD-5090 implement remaining mysql command dissections
+
+## v1.3.66: 2023-05-30
+
+* SPD-5341 Support hostnetwork for operator
+* SPD-5359 cleanup
+* SPD-5354 add speedctl get snapshot latest option
+* SPD-5327 fix tenant allocation
+* SPD-5353 fix append() bug and improve operation humanize
+* SPD-5330 update go references to 1.20
