@@ -1,6 +1,6 @@
 ---
 title: Speedscale on OpenShift
-sidebar_position: 16
+sidebar_position: 18
 ---
 
 # Working with OpenShift

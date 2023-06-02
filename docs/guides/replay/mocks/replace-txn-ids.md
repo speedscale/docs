@@ -1,6 +1,6 @@
 ---
 title: Replace Unique IDs in Mocks
-sidebar_position: 13
+sidebar_position: 6
 ---
 
 # Replace Unique Transaction (or Session) IDs
@@ -28,7 +28,7 @@ You can see that new items (HTTP POSTs) are being created and deleted (HTTP DELE
 
 ## Modify and store new IDs
 
-To solve this problem we make use of the [map_store](../../reference/transform-traffic/transforms/map_store/) and [map_load](../../reference/transform-traffic/transforms/map_load/) transforms. The `map_store` transform creates a mapping between the original recorded transaction ID and the modified transaction ID that you define in your transforms. Using the example above, we would make a transform chain like the following:
+To solve this problem we make use of the [map_store](/reference/transform-traffic/transforms/map_store/) and [map_load](/reference/transform-traffic/transforms/map_load/) transforms. The `map_store` transform creates a mapping between the original recorded transaction ID and the modified transaction ID that you define in your transforms. Using the example above, we would make a transform chain like the following:
 
 ```
 filter: operation=POST

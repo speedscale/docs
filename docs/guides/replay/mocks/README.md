@@ -1,19 +1,14 @@
----
-title: Mocking Backends
-sidebar_position: 11
----
+# Mocking Backends
 
-## Prerequisites
-1. [The Operator is installed](../quick-start.md).
-2. [A sidecar has been installed and traffic is being captured](/setup/sidecar/install/)
-3. [Outbound TLS is being captured](./tls.md)
-4. [A snapshot has been created](./creating-a-snapshot.md)
+During a replay
+
+Mocks, backed by [responders](/reference/glossary.md#responder), can be turned on and off before a replay, or from the snapshot.  This page describes the basic interaction with mocks.
 
 ## Viewing the snapshot
 
 ![Service Map](./responders/map.png)
 
-We see here that our service has outbound calls to a variety of 3rd party APIs. We use DynamoDB, Stripe, Hubspot, Plaid and Google Cloud. Our goal is to run a test on this `payment` service without needing to rely on those external APIs. Speedscale allows us to mock these services out and reduce our dependency footprint during testing. A full list of supported technology is listed [here](../reference/technology-support.md). At Speedscale, we refer to these mocks as `responders`.
+We see here that our service has outbound calls to a variety of 3rd party APIs. We use DynamoDB, Stripe, Hubspot, Plaid and Google Cloud. Our goal is to run a test on this `payment` service without needing to rely on those external APIs. Speedscale allows us to mock these services out and reduce our dependency footprint during testing. A full list of supported technology is listed [here](/reference/technology-support.md). At Speedscale, we refer to these mocks as `responders`.
 
 ![List](./responders/table.png)
 

@@ -3,8 +3,8 @@ sidebar_position: 1
 ---
 # Capturing Traffic
 
-Speedscale captures traffic flowing through your application.
-This includes inbound as well as outbound, and is handled by a proxy sidecar added to your workloads.
+Speedscale captures [traffic](/reference/glossary.md#traffic) flowing through your application.
+This includes inbound as well as outbound, and is handled by a [proxy sidecar](/reference/glossary.md#proxy) added to your workloads.
 
 ## Why capture traffic?
 
@@ -22,18 +22,18 @@ A snapshot is a point in time set of captured traffic. It contains all the
 inbound and outbound traffic to and from a service to be used for a replay
 later on. A snapshot is created using a set of filters, the minimum set being
 the service and time range. More filters can be added [as shown
-here](../guides/creating-a-snapshot.md).
+here](/guides/creating-a-snapshot.md).
 
 In addition to filtering, snapshots can be transformed before use in replays.
 For eg. you may have timestamps as part of the header in your captured ingress
 and your application rejects timestamps older than an hour. You can configure
-[Traffic Transforms to achieve this](../reference/transform-traffic/README.md).
+[Traffic Transforms](/reference/transform-traffic/README.md) to achieve this.
 
 ## The Request Response Pair
 
 Snapshots, as referenced above, are made up mostly of request / response pairs,
 with a bit of metadata on top.  The request / response pair, often referenced
-as just RRPair, is the Speedscale internal representation in which all traffic
+as just [RRPair](/reference/glossary.md#rrpair), is the Speedscale internal representation in which all traffic
 is stored. The Goproxy sidecar stores captured traffic as RRPairs, a snapshot
 is made of a collection of RRPairs, and new RRPairs are created and modified
 during a replay. As suggested by the name RRPairs contain a request and

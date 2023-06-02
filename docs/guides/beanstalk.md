@@ -1,6 +1,6 @@
 ---
 title: Speedscale on Elastic Beanstalk
-sidebar_position: 17
+sidebar_position: 24
 ---
 
 :::caution

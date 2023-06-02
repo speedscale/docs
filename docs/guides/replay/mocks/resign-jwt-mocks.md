@@ -1,6 +1,6 @@
 ---
-title: Re-sign JWTs in Mocks
-sidebar_position: 14
+title: Re-sign JWTs
+sidebar_position: 3
 ---
 
 # Re-signing JWTs in Mocks
@@ -23,7 +23,7 @@ This workflow is currently in queue for complete automation by Speedscale engine
 
 * Find secret used to sign JWTs. Your application and the Speedscale responder must share the same secret for JWT re-signing to work.
 * For this example we will assume your [secret](https://kubernetes.io/docs/concepts/configuration/secret/) is mounted in Kubernetes. Technically, the Speedscale responder is just looking for a file so you can adapt these instructions easily to run outside of Kubernetes.
-* [Create a snapshot](./creating-a-snapshot.md) containing the traffic you need to re-sign
+* [Create a snapshot](/guides/creating-a-snapshot.md) containing the traffic you need to re-sign
 
 ## Configure your transform
 
@@ -105,6 +105,3 @@ spec:
 
 Now, run your replay using your new test config and you're ready to go!
 
-## Need Help?
-
-Reach out on the [community Slack](https://slack.speedscale.com) if you need help!
