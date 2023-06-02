@@ -77,7 +77,7 @@ server, or whatever else so that you can test your app in a controlled
 environment.
 
 See [service mocking](../concepts/service_mocking.md) and
-[mocking backends](../guides/responders.md) for more information.
+[mocking backends](/guides/replay/mocks/) for more information.
 
 ### RRPair
 

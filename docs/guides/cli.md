@@ -1,6 +1,6 @@
 ---
 title: Speedscale on the CLI
-sidebar_position: 15
+sidebar_position: 21
 ---
 
 In this guide we will use [speedctl](../setup/install/cli.md) to capture

@@ -1,6 +1,6 @@
 ---
 title: Replace Values from File
-sidebar_position: 14
+sidebar_position: 9
 ---
 
 In this guide we will store a list of values in a file and use them to replace
@@ -13,15 +13,15 @@ dynamically between requests.
 
 If these requirements do not make sense start with the [quickstart guide](/quick-start.md).
 
-- [speedctl](../setup/install/cli.md) installed
-- captured application [traffic](../reference/glossary.md#traffic)
-- an understanding of the [file extractor](../reference/transform-traffic/extractors/file.md) and [csv transform](../reference/transform-traffic/transforms/csv.md)
+- [speedctl](/setup/install/cli.md) installed
+- captured application [traffic](/reference/glossary.md#traffic)
+- an understanding of the [file extractor](/reference/transform-traffic/extractors/file.md) and [csv transform](/reference/transform-traffic/transforms/csv.md)
 
 ## The Problem
 
-We will create a contrived example so we have something concrete to work with.  Your API accepts orders from clients, but it's important that the order IDs are in the database your application will reference.  You recorded traffic from production and want to [replay](../reference/glossary.md#replay) in your staging environment, meaning the order IDs are unlikely to exist.  Our goal is to populate requests data with order numbers from the environment where the replay will be run.
+We will create a contrived example so we have something concrete to work with.  Your API accepts orders from clients, but it's important that the order IDs are in the database your application will reference.  You recorded traffic from production and want to [replay](/reference/glossary.md#replay) in your staging environment, meaning the order IDs are unlikely to exist.  Our goal is to populate requests data with order numbers from the environment where the replay will be run.
 
-The client will update the price of an item on an order by sending a `PUT` request to the `/orders/update/price` [endpoint](../reference/glossary.md#endpoint).
+The client will update the price of an item on an order by sending a `PUT` request to the `/orders/update/price` [endpoint](/reference/glossary.md#endpoint).
 
 ```json
 {
@@ -33,7 +33,7 @@ The client will update the price of an item on an order by sending a `PUT` reque
 }
 ```
 
-The snapshot traffic you've captured contains requests with JSON bodies that look like this, but if the order ID doesn't exist the update will fail.  We need to replace the order IDs in the requests made from the [generator](../reference/glossary.md#generator) to your API during replay.
+The snapshot traffic you've captured contains requests with JSON bodies that look like this, but if the order ID doesn't exist the update will fail.  We need to replace the order IDs in the requests made from the [generator](/reference/glossary.md#generator) to your API during replay.
 
 ## Upload Values File
 
@@ -63,7 +63,7 @@ speedctl push user-data staging-order-ids.csv
 
 ## Create Transforms
 
-With the CSV file stored in the Speedscale cloud we can use a transform to extract the values with the [file extractor](../reference/transform-traffic/extractors/file.md) and parse it with the [CSV transform](../reference/transform-traffic/transforms/csv.md).
+With the CSV file stored in the Speedscale cloud we can use a transform to extract the values with the [file extractor](/reference/transform-traffic/extractors/file.md) and parse it with the [CSV transform](/reference/transform-traffic/transforms/csv.md).
 
 :::note
 JSON does not support comments but they are added below for clarity.
@@ -144,5 +144,5 @@ Each time the `order-ids` variable is used it will pull the next value from the 
 
 ## Run a Replay
 
-Navigate to your application in the [traffic viewer](../reference/glossary.md#traffic-viewer).  Select a small window of traffic from your application and click the `Replay` button. When prompted, select the `replace-from-csv` transform.  The created [report](../reference/glossary.md#report) will show each request made in the [assertions](../reference/glossary.md#assertion) table.  Verify the request data sent to your application matches your expectations.
+Navigate to your application in the [traffic viewer](/reference/glossary.md#traffic-viewer).  Select a small window of traffic from your application and click the `Replay` button. When prompted, select the `replace-from-csv` transform.  The created [report](/reference/glossary.md#report) will show each request made in the [assertions](/reference/glossary.md#assertion) table.  Verify the request data sent to your application matches your expectations.
 
