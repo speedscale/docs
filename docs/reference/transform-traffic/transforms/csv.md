@@ -22,18 +22,37 @@
 
 | Key                | Description                                                                       |
 | ------------------ | --------------------------------------------------------------------------------- |
-| **column**         | [optional] column # to extract values from (header must be empty)
+| **column**         | [optional] zero indexed column number to extract values from (header must be empty)
 | **header**         | [optional] header name to extract values from (column must be empty)
 | **hasHeaders**     | [optional] indicates whether the first row contains headers (default: false)
 
 ### Example
 
-#### Configuration
+Let's use the following CSV file as an example:
 
+```csv
+firstName,lastName
+John,Doe
+Jane,Doe
+Wanda,Brown
 ```
+
+The first row of this CSV file is dedicated to headers which identify the data so we can reference those directly.
+
+```json
 "type": "csv",
 "config": {
-    "header": "SKU",
-    "hasHeaders": "true"
+    "hasHeaders": "true",
+    "header": "firstName"
 }
 ```
+
+Use the `column` config value to reference the first field of the CSV data when there are no headers present.  Columns start at 0.
+
+```json
+"type": "csv",
+"config": {
+    "column": "0"
+}
+```
+

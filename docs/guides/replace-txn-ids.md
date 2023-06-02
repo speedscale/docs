@@ -54,7 +54,3 @@ map_load()
 ```
 
 This transform chain will extract the URL, look up the transaction ID used in the original traffic and then replace it with the new value stored by `map_store`. There is no limit on how many times a value can be re-used. Optionally, data can be segmented using the "hashKey" parameter in `map_load` and `map_store`. Stored values are not currently shared between generator threads (vUsers).
-
-## Need Help?
-
-Reach out on the [community Slack](https://slack.speedscale.com) if you need help!
