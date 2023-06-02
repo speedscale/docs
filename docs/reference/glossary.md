@@ -125,6 +125,10 @@ Transforms are listed on the [transforms page](https://app.speedscale.com/traffi
 
 See [transforms](../concepts/transforms.md) for more information.
 
+### User Data
+
+Generic documents stored in the Speedscale cloud which can be referenced during a [replay](#replay).  Use [speedctl](#speedctl) to manage these documents.
+
 ### Variable Cache
 
 A bucket of values which can be shared between requests during a [replay](#replay).
