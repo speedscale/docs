@@ -4,6 +4,14 @@ sidebar_position: 1
 
 # Glossary
 
+### Assertion
+
+A validation applied to each individual RRPair captured in a [report](#report), used to confirm your application behavior during [replay](#replay).  Use a [filter](#filter) to narrow the scope of assertions.  Assertions are defined in [test configs](#test-config).  Assertions have no effect when running in [low data mode](#low-data-mode).
+
+### Endpoint
+
+A partial representation of a URI, endpoints often group similar requests together.  View the endpoints requests were made to during a [replay](#replay) at the bottom of the [report](#report).
+
 ### Filter
 
 A set of rules which determines whether to include or exclude traffic.
@@ -18,6 +26,10 @@ service responsible for generating the load.
 
 See [replaying traffic](../concepts/replay.md) for more information.
 
+### Low Data Mode
+
+A [replay](#replay) mode of operation which does not collect [RRPairs](#rrpair).  This mode is useful for high-throughput replays, like a load tests, which may make hundreds of thousands of requests.  In this case it may not be feasible to capture and analyze each request individually.  Low data mode can be applied to the [generator](#generator) or [responder](#responder) in the [test config](#test-config).
+
 ### Operator
 
 A [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
@@ -31,6 +43,10 @@ See [Kubernetes Operator](../setup/install/kubernetes-operator.md) for more info
 
 A process that accepts, stores, and forwards traffic.  Speedscale uses goproxy,
 a purpose-built proxy written in Go, in various ways to capture traffic and route requests.
+
+### Recursion
+
+See [recursion](#recursion).
 
 ### Replay
 
@@ -115,6 +131,12 @@ is an HTTP request sent to your server's API.
 Outbound traffic is the traffic that is sent by your application to external
 resources.  This may also be called egress.  An example of outbound traffic
 is a database query, or calling the API of another service.
+
+### Traffic Viewer
+
+Speedscale UI for visualizing traffic where each line contains an [RRPair](#rrpair).
+
+Traffic for each of your applications can be found on the [traffic page](https://app.speedscale.com/analyze) in the UI.
 
 ### Transform
 
