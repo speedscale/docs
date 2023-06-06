@@ -6,6 +6,12 @@ sidebar_position: 21
 In this guide we will use [speedctl](../setup/install/cli.md) to capture
 traffic, run a replay, and create local mocks, all from the command line.
 
+## Prerequisites
+
+- [speedctl](/reference/glossary.md#speedctl) installed
+- an existing [snapshot](/reference/glossary.md#snapshot)
+- an understanding of [Speedscale TLS certificate trust](../setup/sidecar/tls.md#trusting-tls-certificates)
+
 ## Capture Traffic
 
 :::caution

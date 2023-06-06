@@ -84,10 +84,25 @@ have a new cert that is generated from this Root CA. So your application needs t
 calls to be handled automatically.
 
 :::danger
-Configuring TLS trust is language specific. Every runtime language has different characteristics and if you do
+Configuring TLS trust is, in most cases, language specific. Every runtime language has different characteristics and if you do
 not configure this correctly you will get TLS/SSL errors. Always configure this in a controlled environment
-first
+first.
 :::
+
+### TLS Trust for macOS
+
+For desktop capture and replay add the Speedscale TLS certificate to your
+macOS keychain to allow your applications to make TLS requests to Speedscale
+components.
+
+After using [speedctl](/reference/glossary.md#speedctl) certificates will be
+created in your home directory. Use [this Apple user
+guide](https://support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac)
+to add the certificate located at `~/.speedscale/certs/tls.crt` to your
+keychain.
+
+Once added double click the **Speedscale** certificate, expand the **Trust** section,
+and set **When using this certificate:** to **Always Trust**.
 
 ### TLS Trust for golang
 
