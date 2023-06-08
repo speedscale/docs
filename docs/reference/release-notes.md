@@ -128,3 +128,26 @@ sidebar_position: 2
 * SPD-5327 fix tenant allocation
 * SPD-5353 fix append() bug and improve operation humanize
 * SPD-5330 update go references to 1.20
+
+## v1.3.86: 2023-06-08
+
+* SPD-5382 generator support for cut payload retrieval
+* SPD-4192 allow schemeless custom URL
+* SPD-5382 handle large payload responses from responder
+* SPD-5370 add signoz new relic and sentry filters
+* SPD-5420 add analyzer status messages to snapshot creation
+* SPD-5420 capture mock responses in speedctl
+* SPD-5417 tls trust docs
+* SPD-5392 fix forwarder escalating metrics
+* SPD-5401 Send more than one heartbeat
+* SPD-5047 Remove pod security policy references
+* SPD-5312 explain speedctl capture args
+* SPD-5373 warning for low data mode with assertions
+* SPD-5385 sort inspectors
+* SPD-4716 Remove firehose reporter from authapi
+* SPD-5378 rename put transform
+* SPD-4716 Use credentials from API key refresh
+* SPD-5362 protect grpc decoder from buffer overrun
+* SPD-5365 vars on demand
+* SPD-5365 cleanup and refactoring ahead of changes to transforms
+* SPD-5355 Add warning for progressDeadlineSeconds
