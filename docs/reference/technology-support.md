@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Protocol Support
 
-Speedscale replays involve three distinct steps that are supported separately: **Observe**, **Analyze**, and **Playback**. It is possible to have observability into one protocol without necessarily having full replay support.
+Speedscale replays involve three distinct steps that are supported separately: **Capture**, **Analyze**, and **Playback**. It is possible to have observability (Capture) into one protocol without necessarily having full replay support. Please reach out if you need support for a technology not in this list.
 
 ### Supported <a href="#supported" id="supported"></a>
 
@@ -28,13 +28,13 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | HTTP 1.1 / 2.0 | Protocol | Full |  |
 | HTTP/S inbound | Protocol | Full | See [TLS](/setup/sidecar/tls/) |
 | JSON | Protocol | Full |  |
-| IMAP | Protocol | Observe Only |  |
+| IMAP | Protocol | Capture Only |  |
 | Istio (1.12+) | Environment | Full | |
-| MongoDB | DBMS | Partial |  |
+| MongoDB | DBMS | Capture Only |  |
 | Mutual TLS (mTLS) | Protocol | Partial | See [TLS](/setup/sidecar/tls/) |
 | Outlook 365 | API | Full |  |
-| Postgres | DBMS | Partial | Full Observe, most playback |
-| Redis | DBMS | Observe Only | |
+| Postgres | DBMS | Partial | Full Capture, mock/test generation in progress |
+| Redis | DBMS | Capture Only | |
 | S3 / minio | API | Full |  |
 | Stripe | API | Full |  |
 | Twilio | API | Full |  |
