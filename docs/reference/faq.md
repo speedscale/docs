@@ -61,6 +61,14 @@ The init container is part of the sidecar installation. It currently needs the f
 
 These are described in our own pod security policy which you can install through speedctl.
 
+### What if we use custom CNI like Calico?
+
+Calico and most custom networking setups should work by default with Speedscale as long as the Kubernetes control plane can communicate with the worker nodes. In specific cases where the mesh and control plane are using different networking, for eg. EKS with Calico, you can use the `hostNetwork=true` flag for the Helm chart so that the operator webhook is on the same network as the control plane.
+
+### What if we use a security tool like TwistLock?
+
+Twistlock and other security plugins may disable the Speedscale sidecar from capturing traffic using `iptables` rules. If this is the case, Speedscale can be configured to run in `dual` proxy mode as detailed [here](../guides/istio.md).
+
 ### How can I view JSON Request-Response pairs directly? <a href="#how-can-i-view-json-request-response-pairs-directly" id="how-can-i-view-json-request-response-pairs-directly"></a>
 
 Sometimes when you're debugging your API or Snapshot, you want to see the raw request/response pairs in JSON format. This allows you to run **jq** or other mass conversion tools and understand what's happening better. Follow these quick steps to get at the Speedscale **raw** JSON RRPairs.
