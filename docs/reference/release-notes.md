@@ -151,3 +151,14 @@ sidebar_position: 2
 * SPD-5365 vars on demand
 * SPD-5365 cleanup and refactoring ahead of changes to transforms
 * SPD-5355 Add warning for progressDeadlineSeconds
+
+## v1.3.93: 2023-06-12
+
+* SPD-5456 fix auth recycling cpu usage
+* SPD-5360 increase provisioning timeout from 30 to 60s
+* SPD-5352 add a help message to speedmgmt output
+* SPD-5448 error only if report artifact missing is unexpected
+* SPD-4400 split test teardown from env teardown
+* SPD-5424 add speedctl create certs and let goproxy get certs from environment
+* SPD-5440 log top level errors
+* SPD-5440 revert if statement logic
