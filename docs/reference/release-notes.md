@@ -162,3 +162,7 @@ sidebar_position: 2
 * SPD-5424 add speedctl create certs and let goproxy get certs from environment
 * SPD-5440 log top level errors
 * SPD-5440 revert if statement logic
+
+## v1.3.94: 2023-06-12
+
+* SPD-5459 payloads already cut is not an error
