@@ -120,6 +120,15 @@ volume mount is placed.
 Ruby applications honor the environment variable `SSL_CERT_FILE` which is automatically injected by the
 operator. This will point to the location where the speedscale cert volume mount is placed.
 
+### TLS Trust for .NET
+
+.NET applications honor the environment variable `SSL_CERT_FILE` which is automatically injected by the
+operator. This will point to the location where the speedscale cert volume mount is placed.
+
+:::info
+.NET Core uses OpenSSL on Linux and Mac which respects these default settings. The default Microsoft .NET Docker base images are Linux based which means these settings apply, however running Windows based workloads may require additional configuration
+:::
+
 ### TLS Trust for Java
 
 Java applications utilize a truststore to determine which certificates will be trusted. During Operator
