@@ -7,6 +7,12 @@ sidebar_position: 2
 
 # Release Notes
 
+## v1.3.117: 2023-06-19
+
+* SPD-5485 add advanced grpc filtering
+
+
+
 ## v1.3.116: 2023-06-16
 
 * SPD-5509 rm panic caused by concurrent map changes
