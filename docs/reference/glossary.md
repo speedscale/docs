@@ -6,17 +6,24 @@ sidebar_position: 1
 
 ### Assertion
 
-A validation applied to each individual RRPair captured in a [report](#report), used to confirm your application behavior during [replay](#replay).  Use a [filter](#filter) to narrow the scope of assertions.  Assertions are defined in [test configs](#test-config).  Assertions have no effect when running in [low data mode](#low-data-mode).
+A validation applied to each individual RRPair captured in a [report](#report),
+used to confirm your application behavior during [replay](#replay).  Use a
+[filter](#filter) to narrow the scope of assertions.  Assertions are defined in
+[test configs](#test-config).  Assertions have no effect when running in [low
+data mode](#low-data-mode).
 
 ### Endpoint
 
-A partial representation of a URI, endpoints often group similar requests together.  View the endpoints requests were made to during a [replay](#replay) at the bottom of the [report](#report).
+A partial representation of a URI, endpoints often group similar requests
+together.  View the endpoints requests were made to during a [replay](#replay)
+at the bottom of the [report](#report).
 
 ### Filter
 
 A set of rules which determines whether to include or exclude traffic.
 
-See [creating traffic filters](../guides/creating-filters/index.md) and the [filters reference](./filters/README.md) for more information.
+See [creating traffic filters](../guides/creating-filters/index.md) and the
+[filters reference](./filters/README.md) for more information.
 
 ### Generator
 
@@ -26,9 +33,20 @@ service responsible for generating the load.
 
 See [replaying traffic](../concepts/replay.md) for more information.
 
+### Inspector
+
+A Speedscale component that executes actions on your behalf in your cluster.
+Actions like adding a sidecar proxy to your workload, or starting a
+[replay](#replay).
+
 ### Low Data Mode
 
-A [replay](#replay) mode of operation which does not collect [RRPairs](#rrpair).  This mode is useful for high-throughput replays, like a load tests, which may make hundreds of thousands of requests.  In this case it may not be feasible to capture and analyze each request individually.  Low data mode can be applied to the [generator](#generator) or [responder](#responder) in the [test config](#test-config).
+A [replay](#replay) mode of operation which does not collect
+[RRPairs](#rrpair).  This mode is useful for high-throughput replays, like a
+load tests, which may make hundreds of thousands of requests.  In this case it
+may not be feasible to capture and analyze each request individually.  Low data
+mode can be applied to the [generator](#generator) or [responder](#responder)
+in the [test config](#test-config).
 
 ### Operator
 
