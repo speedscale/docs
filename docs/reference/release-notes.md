@@ -7,6 +7,16 @@ sidebar_position: 2
 
 # Release Notes
 
+## v1.3.122: 2023-06-21
+
+* SPD-5513 disable sos graph validation temporarily
+* SPD-5468 friendly cron name
+* SPD-5394 prevent hanging on latencyAgg stop
+* SPD-5508 Fix sql batch logic
+* SPD-5513 separate latency table upload from reporting
+
+
+
 ## v1.3.117: 2023-06-19
 
 * SPD-5485 add advanced grpc filtering
