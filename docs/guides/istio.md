@@ -71,7 +71,6 @@ Begin by adding the following annotations to your Kubernetes workload along with
 
 ```yaml
 sidecar.speedscale.com/inject: "true"
-sidecar.speedscale.com/capture-mode: proxy
 sidecar.speedscale.com/proxy-type: dual
 sidecar.speedscale.com/proxy-protocol: tcp:http
 ```
@@ -79,14 +78,6 @@ sidecar.speedscale.com/proxy-protocol: tcp:http
 Note: the `proxy-protocol` annotation shown above will operate the outbound, forward proxy as an
 HTTP proxy. If your application needs so use a SOCKS4 or SOCKS5 proxy, use `tcp:socks`. See
 [proxy modes](/setup/sidecar/proxy-modes/) for more information.
-
-Also, add annotations to inform the Speedscale sidecar on what host and port your application
-container is listening. For example, if your application listens to localhost port 8080:
-
-```yaml
-sidecar.speedscale.com/proxy-host: "localhost"
-sidecar.speedscale.com/proxy-port: "8080"
-```
 
 ## Configure Outbound TLS Support
 
