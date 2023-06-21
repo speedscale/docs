@@ -103,7 +103,7 @@ e3VzZXJfbnVtYmVyOjB9Cg==
 
 `includeKeys` tells the JSON comparator to only pay attention to the listed keys.
 
-4. Trigger snpashot creation (see instructions at beginning of this page)
+4. Trigger snapshot creation (see instructions at beginning of this page)
 
 ## Filter by HTTP Header Value
 
@@ -161,5 +161,5 @@ eyJmaWVsZHNNYXAiOiB7IjMiOiB7ImZpZWxkcyI6IFt7ImFzU3RyaW5nIjogIlNFTEVDVCAxIn1dfX19
 
 `includeKeys` tells the JSON comparator to only pay attention to the listed keys.
 
-4. Trigger snpashot creation (see instructions at beginning of this page)
+4. Trigger snapshot creation (see instructions at beginning of this page)
 
