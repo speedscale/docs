@@ -16,7 +16,24 @@ for that language.
 <TabItem value="go" label="Go">
 
 Golang supports `HTTP_PROXY` and `HTTPS_PROXY` environment variables to configure outbound http or https
-requests. For example, when the sidecar is configured as a socks forward proxy:
+requests.
+<Tabs>
+<TabItem value="k8s" label="Kubernetes">
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: HTTP_PROXY
+          value: http://127.0.0.1:4140
+        - name: HTTPS_PROXY
+          value: http://127.0.0.1:4140
+```
+
+</TabItem>
+<TabItem value="not-k8s" label="Outside of Kubernetes">
 
 ```bash
 export HTTP_PROXY='socks5://127.0.0.1:4140'
@@ -31,14 +48,37 @@ export HTTPS_PROXY='http://127.0.0.1:4140'
 ```
 
 See: https://pkg.go.dev/net/http#ProxyFromEnvironment
-
+</TabItem>
+</Tabs>
 </TabItem>
 
 <TabItem value="python" label="Python">
 
 Python supports `HTTP_PROXY` and `HTTPS_PROXY` as well as the lowercase alternatives `http_proxy` and
 `https_proxy`. This is true if you are using either the standard library `urllib.request` module or the
-popular `requests` module. These two options can also support specifying proxies directly with a dictionary:
+popular `requests` module. Socks proxies may require additional dependencies. For example, with the `requests` module:
+https://requests.readthedocs.io/en/latest/user/advanced/?highlight=proxy#socks
+
+<Tabs>
+<TabItem value="k8s" label="Kubernetes">
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: HTTP_PROXY
+          value: http://127.0.0.1:4140
+        - name: HTTPS_PROXY
+          value: http://127.0.0.1:4140
+```
+
+</TabItem>
+
+<TabItem value="not-k8s" label="Outside of Kubernetes">
+
+These two options can also support specifying proxies directly with a dictionary:
 
 ```python
 urllib.request.urlopen(
@@ -50,9 +90,8 @@ urllib.request.urlopen(
 )
 ```
 
-Socks proxies may require additional dependencies. For example, with the `requests` module:
-https://requests.readthedocs.io/en/latest/user/advanced/?highlight=proxy#socks
-
+</TabItem>
+</Tabs>
 </TabItem>
 
 <TabItem value="nodejs" label="Node.js">
@@ -72,12 +111,35 @@ import 'global-agent/bootstrap';
 
 Set these environment variables in the NodeJS runtime environment to configure the global-agent proxy:
 
+<Tabs>
+<TabItem value="k8s" label="Kubernetes">
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: GLOBAL_AGENT_HTTP_PROXY
+          value: http://127.0.0.1:4140
+        - name: GLOBAL_AGENT_HTTPS_PROXY
+          value: http://127.0.0.1:4140
+        - name: GLOBAL_AGENT_NO_PROXY
+          value: "*127.0.0.1:12557"
+```
+
+</TabItem>
+
+<TabItem value="not-k8s" label="Outside of Kubernetes">
+
 ```bash
 export GLOBAL_AGENT_HTTP_PROXY='http://127.0.0.1:4140'
 export GLOBAL_AGENT_HTTPS_PROXY='http://127.0.0.1:4140'
 export GLOBAL_AGENT_NO_PROXY='*127.0.0.1:12557'
 export NODE_EXTRA_CA_CERTS=${HOME}/.speedscale/certs/tls.crt
 ```
+</TabItem>
+</Tabs>
 
 </TabItem>
 
@@ -86,12 +148,75 @@ export NODE_EXTRA_CA_CERTS=${HOME}/.speedscale/certs/tls.crt
 When using Java, you need to set `proxy-protocol` to `socks` or `tcp:socks`. Java has built-in system
 properties for configuring the socks proxy server, add the following `-D` system property flags:
 
-```
--DsocksProxyHost=127.0.0.1
--DsocksProxyPort=4140
+<Tabs>
+<TabItem value="k8s" label="Kubernetes">
+
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: >-
+            -Dhttp.proxyHost=127.0.0.1
+            -Dhttp.proxyPort=4140
+            -Dhttps.proxyHost=127.0.0.1
+            -Dhttps.proxyPort=4140
+            -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
+            -Djavax.net.ssl.trustStorePassword=changeit
 ```
 
 </TabItem>
 
+<TabItem value="not-k8s" label="Outside of Kubernetes">
+
+```
+-DsocksProxyHost=127.0.0.1
+-DsocksProxyPort=4140
+```
+</TabItem>
 </Tabs>
 
+</TabItem>
+
+<TabItem value="dotnet" label=".NET">
+
+.NET supports `HTTP_PROXY` and `HTTPS_PROXY` environment variables to configure outbound http or https
+requests.
+<Tabs>
+<TabItem value="k8s" label="Kubernetes">
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: HTTP_PROXY
+          value: http://127.0.0.1:4140
+        - name: HTTPS_PROXY
+          value: http://127.0.0.1:4140
+```
+
+</TabItem>
+<TabItem value="not-k8s" label="Outside of Kubernetes">
+
+```bash
+export HTTP_PROXY='socks5://127.0.0.1:4140'
+export HTTPS_PROXY='socks5://127.0.0.1:4140'
+```
+
+Or alternatively as an http forward proxy:
+
+```bash
+export HTTP_PROXY='http://127.0.0.1:4140'
+export HTTPS_PROXY='http://127.0.0.1:4140'
+```
+
+</TabItem>
+</Tabs>
+</TabItem>
+
+</Tabs>
