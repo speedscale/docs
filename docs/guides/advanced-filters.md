@@ -71,14 +71,14 @@ This command prints out a new snapshot ID that you can copy and paste into the s
 
 As an example, let's filter for a single user ID stored in the JSON request body. This would allow us to isolate a single user's API calls, store them in a snapshot, and then scale up that traffic to many users by transforming the user ID. To accomplish the first goal of filtering based on a JSON value, we will use the `requestBodyJson` filter criteria. `requestBodyJson` is capable of doing a full key/value document comparison but for this example we'll just search requests where the `user_number=0`.
 
-1. Create a JSON document with the keys and values you want to match on. In this example, we'll use this simple JSON document: `{user_number: "0"}` to extract a single user's calls. This filter type compares the entire JSON document so we need to create a small one with just the keys we care about to compare against.
+1. Create a JSON document with the keys and values you want to match on. In this example, we'll use this simple JSON document: `{"user_number": "0"}` to extract a single user's calls. This filter type compares the entire JSON document so we need to create a small one with just the keys we care about to compare against.
 
 2. Base64 the JSON document
 
 (on Mac and Linux)
 ```bash
-$ echo {user_number:0} | base64
-e3VzZXJfbnVtYmVyOjB9Cg==
+$ echo {\"user_number\":\"0\"} | base64
+eyJ1c2VyX251bWJlciI6IjAifQo=
 ```
 
 3. Insert the base64 string into the following snippet and append to the `filter_expression->criteria` section of your snapshot definition
@@ -91,9 +91,9 @@ e3VzZXJfbnVtYmVyOjB9Cg==
                         "operator": "CONTAINS",
                         "requestBodyJson": {
                             "compare": true,
-                            "body": "e3VzZXJfbnVtYmVyOjB9Cg==",
+                            "body": "eyJ1c2VyX251bWJlciI6IjAifQo=",
                             "includeKeys": [
-                                "location_number"
+                                "user_number"
                             ]
                         }
                     }
@@ -162,4 +162,33 @@ eyJmaWVsZHNNYXAiOiB7IjMiOiB7ImZpZWxkcyI6IFt7ImFzU3RyaW5nIjogIlNFTEVDVCAxIn1dfX19
 `includeKeys` tells the JSON comparator to only pay attention to the listed keys.
 
 4. Trigger snapshot creation (see instructions at beginning of this page)
+
+## Reference
+
+Speedscale supports the following filter types on RRpairs:
+
+```
+host
+tag
+requestBodyHash
+requestBodyJson
+requestBodyXml
+direction
+tech (show in UI as Detected Tech)
+l7protocol
+network_address
+service
+cluster
+namespace
+optUrl
+detectedCommand (shown in the UI as Operation)
+detectedLocation
+detectedStatus
+timeRange
+header
+httpReqXPath
+httpReqSoapXPath
+uuid
+snapshotId
+```
 
