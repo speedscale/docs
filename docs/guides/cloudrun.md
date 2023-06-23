@@ -46,9 +46,9 @@ kubectl apply -f capture.yaml
 
 Now you'll need the IP of the goproxy instance you just created which you can get by running
 ```
-kubectl -n capture get svc goproxy
-NAME      TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                         AGE
-goproxy   LoadBalancer   10.84.6.133   35.222.2.222   4143:30886/TCP,4140:31256/TCP   22h
+kubectl -n capture get svc goproxy-capture
+NAME              TYPE           CLUSTER-IP   EXTERNAL-IP   PORT(S)                         AGE
+goproxy-capture   LoadBalancer   10.2.4.180   35.222.2.222   8080:30116/TCP,8081:31841/TCP   101m
 ```
 
 Grab the external IP (35.222.2.222 here). It may take some time to show up as a TCP Load Balancer is provisioned when you deploy the manifests.
@@ -59,12 +59,12 @@ kubectl -n capture describe svc goproxy
 Name:                     goproxy
 Namespace:                speedscale
 Labels:                   app=goproxy
-Annotations:              cloud.google.com/neg: {"exposed_ports": {"4143":{}, "4140":{}}}
+Annotations:              cloud.google.com/neg: {"exposed_ports": {"8080":{}, "8081":{}}}
                           cloud.google.com/neg-status:
-                            {"network_endpoint_groups":{"4140":"k8s1-0fb6446b-speedscale-goproxy-4140-e0c33991","4143":"k8s1-0fb6446b-speedscale-goproxy-4143-7e876f3b...
+                            {"network_endpoint_groups":{"8081":"k8s1-0fb6446b-speedscale-goproxy-8081-e0c33991","8080":"k8s1-0fb6446b-speedscale-goproxy-8080-7e876f3b...
                           networking.gke.io/load-balancer-type: Internal
 ```
-If you are using a Load Balancer to route to your Cloud Run service, you will need to configure it to use the backend NEG for 4143 in this case called `k8s1-0fb6446b-speedscale-goproxy-4143-7e876f3b...`.
+If you are using a Load Balancer to route to your Cloud Run service, you will need to configure it to use the backend NEG for 8080 in this case called `k8s1-0fb6446b-speedscale-goproxy-8080-7e876f3b...`.
 
 ### Create the Google secret
 
@@ -78,7 +78,7 @@ This pulls the TLS cert from Kubernetes and creates the same secret in Google Se
 
 ### Configure the Cloud Run app
 
-Now that all our infrastructure is setup, we can modify our app to capture traffic. In Cloud Run, navigate to the app and in the YAML tab, hit edit. We're going to add the env variables and mount the secret we created in the above step. The `ports` and `resources` section are shown just to indicate the level of indentation needed for our settings. Make sure to replace the IP in proxy settings to the one we grabbed from the Kubernetes service above (the port will remain unchanged ie. `4140`).
+Now that all our infrastructure is setup, we can modify our app to capture traffic. In Cloud Run, navigate to the app and in the YAML tab, hit edit. We're going to add the env variables and mount the secret we created in the above step. The `ports` and `resources` section are shown just to indicate the level of indentation needed for our settings. Make sure to replace the IP in proxy settings to the one we grabbed from the Kubernetes service above (the port will remain unchanged ie. `8081`).
 
 ```yaml
 containers:
@@ -90,9 +90,9 @@ containers:
   - name: SSL_CERT_FILE
     value: /etc/ssl/speedscale/tls.crt
   - name: HTTP_PROXY
-    value: http://35.222.2.222:4140
+    value: http://35.222.2.222:8081
   - name: HTTPS_PROXY
-    value: http://35.222.2.222:4140
+    value: http://35.222.2.222:8081
   resources:
     limits:
       cpu: 1000m
@@ -115,7 +115,7 @@ and [trusting TLS certificates](/setup/sidecar/tls/#trusting-tls-certificates).
 
 ### Verification
 
-Now if you run `curl http://35.222.2.222:4143/<some path for your app>`, you should be able to access your Cloud Run app and also see the traffic in Speedscale.
+Now if you run `curl http://35.222.2.222:8080/<some path for your app>`, you should be able to access your Cloud Run app and also see the traffic in Speedscale.
 
 ## Running Replays
 
@@ -155,7 +155,7 @@ spec:
         app: goproxy-capture
     spec:
       containers:
-      - image: gcr.io/speedscale/goproxy:v1.2
+      - image: gcr.io/speedscale/goproxy:v1.3
         imagePullPolicy: Always
         name: goproxy-capture
         env:
