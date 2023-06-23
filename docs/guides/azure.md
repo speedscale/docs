@@ -1,5 +1,5 @@
 ---
-title: Speedscale on Cloud Run
+title: Speedscale on Azure App Services
 sidebar_position: 25
 ---
 
@@ -11,20 +11,22 @@ such as EKS and GKE.
 ## Prerequisites
 1. [Speedctl is installed](../setup/install/cli.md)
 
-## Working with Google Cloud Run
 
-![Architecture](./cloudrun/arch.png)
+## Working with Azure App Services
 
-In order to capture traffic from Cloud Run, we need to set up a few components shown in the diagram above.
+![Architecture](./azure/arch.png)
+
+In order to capture traffic from App Services, we need to set up a few components shown in the diagram above.
 
 ### Create a cluster
 
-We need to create a GKE cluster in order to run our proxy and forwarding components. Follow the prompts in the Google Cloud console to create a standard GKE cluster. Do not create an Autopilot cluster. All other standard settings should be fine. Cluster creation can take a few minutes and we need to wait till it's finished in order to deploy Speedscale components to it. Once it's done, setup `kubectl` access by running
+We need to create an AKS cluster in order to run our proxy and forwarding components. We're going to create this cluster in the same Virtual Network as our App Service as shown below. If the App Service has no existing VNet Integration then you can create a new virtual network and subnet.
 
-```
-gcloud container clusters get-credential <cluster-name> --region <region>
-```
+![AKS](./azure/../azure/aks.png)
 
+Once the cluster is created, connect to it using the instructions on the created cluster in the `Connect` Tab shown below.
+
+![Connect](./azure/connect.png)
 
 ### Deploy Speedscale components
 
@@ -46,76 +48,51 @@ kubectl apply -f capture.yaml
 
 Now you'll need the IP of the goproxy instance you just created which you can get by running
 ```
-kubectl -n capture get svc goproxy-capture
+kubectl -n capture get svc goproxy
+NAME      TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                         AGE
 NAME              TYPE           CLUSTER-IP   EXTERNAL-IP   PORT(S)                         AGE
-goproxy-capture   LoadBalancer   10.2.4.180   35.222.2.222   8080:30116/TCP,8081:31841/TCP   101m
+goproxy-capture   LoadBalancer   10.2.4.180   10.1.1.75     8080:30116/TCP,8081:31841/TCP   101m
 ```
 
-Grab the external IP (35.222.2.222 here). It may take some time to show up as a TCP Load Balancer is provisioned when you deploy the manifests.
+Grab the external IP (10.1.1.75 here). It may take some time to show up as a Load Balancer is provisioned when you deploy the manifests.
 
-This step also creates a Network Endpoint Group (NEG) that can be used as a backend in a Load Balancer.
-```
-kubectl -n capture describe svc goproxy
-Name:                     goproxy
-Namespace:                speedscale
-Labels:                   app=goproxy
-Annotations:              cloud.google.com/neg: {"exposed_ports": {"8080":{}, "8081":{}}}
-                          cloud.google.com/neg-status:
-                            {"network_endpoint_groups":{"8081":"k8s1-0fb6446b-speedscale-goproxy-8081-e0c33991","8080":"k8s1-0fb6446b-speedscale-goproxy-8080-7e876f3b...
-                          networking.gke.io/load-balancer-type: Internal
-```
-If you are using a Load Balancer to route to your Cloud Run service, you will need to configure it to use the backend NEG for 8080 in this case called `k8s1-0fb6446b-speedscale-goproxy-8080-7e876f3b...`.
+### Create Blob Container
 
-### Create the Google secret
+In a new or existing Storage Account, create a new blob called `certs` and upload the `tls.crt` file we created above.
 
-In order to establish TLS connections to our proxy, we'll need to add the TLS cert to our trust store. We'll use Google Secret Manager to do this.
+![Upload](./azure/upload.png)
 
-```
-gcloud secrets create speedscale-certs --replication-policy="automatic"
-gcloud secrets versions add speedscale-certs --data-file=tls.crt
-```
-This pulls the TLS cert from Kubernetes and creates the same secret in Google Secret Manager. It is now available for our Cloud Run app to use.
+We're going to mount this file share to our App Services app so that it can access this cert file.
 
-### Configure the Cloud Run app
+![Mount](./azure/mount.png)
 
-Now that all our infrastructure is setup, we can modify our app to capture traffic. In Cloud Run, navigate to the app and in the YAML tab, hit edit. We're going to add the env variables and mount the secret we created in the above step. The `ports` and `resources` section are shown just to indicate the level of indentation needed for our settings. Make sure to replace the IP in proxy settings to the one we grabbed from the Kubernetes service above (the port will remain unchanged ie. `8081`).
+### Connect Virtual Network
 
-```yaml
-containers:
-- image: gcr.io/speedscale-demos/payment
-  ports:
-  - name: http1
-    containerPort: 8080
-  env:
-  - name: SSL_CERT_FILE
-    value: /etc/ssl/speedscale/tls.crt
-  - name: HTTP_PROXY
-    value: http://35.222.2.222:8081
-  - name: HTTPS_PROXY
-    value: http://35.222.2.222:8081
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 512Mi
-  volumeMounts:
-  - name: tls
-    readOnly: true
-    mountPath: /etc/ssl/speedscale
-volumes:
-- name: tls
-  secret:
-    secretName: speedscale-certs
-    items:
-    - key: latest
-      path: tls.crt
-```
+When creating our cluster, we either used or created a Virtual Network to ensure our App Service could connect to `goproxy` directly. If you created a new one, make sure to add it to the App Service under `Networking/VNet Integration` as shown below. You may need to create a new subnet in the same vnet for this as well.
+
+![Vnet](./azure/vnet.png)
+
+![Vnet add](./azure/add-vnet.png)
+
+
+### Start Capturing
+
+For our inbound capturing, we're going to configure our Application Gateway to start routing requests to `goproxy`. Create a new backend pool for the gateway and use the external IP from the Kubernetes service to use for the pool.
+
+![Backend](./azure/gateway.png)
+
+Then configure whatever existing routing rules to use this new backend pool instead of the App Service from before. Note that the backend traffic should be http and using port 8080 as shown below.
+
+![Settings](./azure/backend-settings.png)
+
+For outbound capturing, we're going to tell the app to use `goproxy` as an http proxy. We add `HTTP_PROXY`, `HTTPS_PROXY` settings with the same `goproxy` IP as before but with a different port `http://10.1.1.75:8081` and we add `SSL_CERT_FILE` to point at the file we mounted in the previous section.
 
 The environment variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
 and [trusting TLS certificates](/setup/sidecar/tls/#trusting-tls-certificates).
 
-### Verification
+![App Settings](./azure/settings.png)
 
-Now if you run `curl http://35.222.2.222:8080/<some path for your app>`, you should be able to access your Cloud Run app and also see the traffic in Speedscale.
+And that's it! Now your inbound and outbound traffic is being collected.
 
 ## Running Replays
 
@@ -129,11 +106,9 @@ Note that the CPU and memory graphs displayed in the report will be those for th
 Do not set the cleanup mode setting (`replay.speedscale.com/cleanup`) to `all` as this will delete the proxy container which is acting as the entrypoint and HTTP Proxy for your Cloud Run app.
 :::
 
-## Advanced setup
-
-This setup assumes the Cloud Run service being instrumented is available publicly. If you want to make the service load balancer internal only, you can add this annotation `networking.gke.io/load-balancer-type: "Internal"` to the Kubernetes service definition. This requires the Cloud Run service to be on the same VPC as the GKE cluster and requires you to connect your Cloud Run app to your VPC as detailed [here](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access)
 
 ## Manifest
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -178,7 +153,7 @@ spec:
         - name: TLS_CERT_DIR
           value: /etc/ssl/capture
         - name: REVERSE_PROXY_HOST
-          value: 'https://payment-cloud-run.a.run.app'
+          value: 'https://speedscale.azurewebsites.net'
         - name: REVERSE_PROXY_PORT
           value: '443'
         - name: PROXY_IN_PORT
@@ -220,7 +195,7 @@ metadata:
   name: goproxy-capture
   namespace: capture
   annotations:
-    cloud.google.com/neg: '{"exposed_ports": {"8080":{}, "8081":{}}}'
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
   ports:
   - name: in
@@ -234,5 +209,4 @@ spec:
   selector:
     app: goproxy-capture
   type: LoadBalancer
-
 ```
