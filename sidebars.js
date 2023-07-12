@@ -17,6 +17,7 @@ const sidebars = {
   tutorialSidebar: [
     "intro",
     "quick-start",
+    "end-to-end",
     {
       type: "category",
       label: "SETUP",
