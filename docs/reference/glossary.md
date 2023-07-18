@@ -12,6 +12,13 @@ used to confirm your application behavior during [replay](#replay).  Use a
 [test configs](#test-config).  Assertions have no effect when running in [low
 data mode](#low-data-mode).
 
+### Collector
+
+A Speedscale component that collects logs and metric data from pods during a
+[replay](#replay).  This service runs beside replay components like the
+[generator](#generator) and [responder](#responder) during the replay and
+communicates with the Kubernetes API.
+
 ### Endpoint
 
 A partial representation of a URI, endpoints often group similar requests
@@ -47,6 +54,10 @@ load tests, which may make hundreds of thousands of requests.  In this case it
 may not be feasible to capture and analyze each request individually.  Low data
 mode can be applied to the [generator](#generator) or [responder](#responder)
 in the [test config](#test-config).
+
+Note that replay run with low data mode will not be able to run
+[assertions](#assertion) as the full RRPairs are not available, but the report
+will show when errors occur.
 
 ### Operator
 
@@ -155,6 +166,18 @@ is a database query, or calling the API of another service.
 Speedscale UI for visualizing traffic where each line contains an [RRPair](#rrpair).
 
 Traffic for each of your applications can be found on the [traffic page](https://app.speedscale.com/analyze) in the UI.
+
+### Transaction
+
+A single request and response, for HTTP.  Like a ping which goes out to the target and
+back, a transaction consists of a single round trip, whatever that means for
+the protocol in use.
+
+### Transactions Per Second
+
+The number of [transactions](#transaction) completed in a single second of
+measurement.  Transactions per second (TPS) are used to describe the throughput
+of one endpoint or a service as a whole.
 
 ### Transform
 

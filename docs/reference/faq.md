@@ -7,7 +7,7 @@ You've got questions, we've got answers.
 
 Check the [Technology Support](technology-support.md) page.
 
-### Why am I missing CPU and Memory metrics in my test report? <a href="#why-am-i-missing-cpu-and-memory-metrics-in-my-test-report" id="why-am-i-missing-cpu-and-memory-metrics-in-my-test-report"></a>
+### Why am I missing CPU and memory metrics in my test report? <a href="#why-am-i-missing-cpu-and-memory-metrics-in-my-test-report" id="why-am-i-missing-cpu-and-memory-metrics-in-my-test-report"></a>
 
 Usually these metrics are missing because either the **metrics-server** is not installed or the generator does not have the correct permissions. Most cloud providers install the **metrics-server** by default, but you can find the full installation instructions in the [metrics-server github repo](https://github.com/kubernetes-sigs/metrics-server) if necessary.  You can verify if the metrics server API objects are installed with `kubectl get --raw "/apis/metrics.k8s.io"`, which will return an error if the API Group is not present. If the `metrics.k8s.io` API Group is installed and you still have issues, double check that the Deployment and associate pods are healthy with `kubectl describe -n kube-system deployment/metrics-server`.
 
@@ -25,6 +25,10 @@ rules:
 ```
 
 For further troubleshooting, please refer to the [metrics-server docs](https://github.com/kubernetes-sigs/metrics-server/blob/master/KNOWN_ISSUES.md).
+
+### Why are some CPU and memory metrics missing in my test report?
+
+Often CPU and memory metrics have a gap in the data and metrics are not shows for the full [replay](/reference/glossary.md#replay) length.  The [collector](/reference/glossary.md#collector) starts up with the replay and there is a delay between when services start and when the Kubernetes API starts reporting their usage data.  Speedscale chooses to get your replay running as fast as possible at the risk of missing early usage data.
 
 ### What if my pod doesn't start? <a href="#what-if-my-pod-doesnt-start" id="what-if-my-pod-doesnt-start"></a>
 
