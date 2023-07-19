@@ -193,8 +193,15 @@ TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose --file s
 
 1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](./guides/creating-a-snapshot.md) section.
 2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
-3. Run `make local-replay`
-4. Run `speedctl replay SNAPSHOT_ID --test-config-id=standard  --custom-url='http://localhost:8080'`
+3. Run:
+```bash
+make local-replay
+```
+
+4. Replace `SNAPSHOT_ID` and run:
+```bash
+speedctl replay SNAPSHOT_ID --test-config-id=standard  --custom-url='http://localhost:8080'
+```
 
 </TabItem>
 
