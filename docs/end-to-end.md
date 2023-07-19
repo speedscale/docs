@@ -9,6 +9,8 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 
 1. [Speedctl is installed](./setup/install/cli.md)
 2. Clone https://github.com/speedscale/demo
+3. [Java](https://jdk.java.net/) is present
+4. Make sure `JAVA_HOME` is set correctly (on MacOS you can run `/usr/libexec/java_home` to find the correct `JAVA_HOME`)
 
 ## The App
 
@@ -16,31 +18,72 @@ The app is a Java Spring Boot web server with authenticated endpoints that makes
 
 ## Capture
 
+Make sure you navigate to the `java` subdirectory within the `demo` repository.
+
 <Tabs>
 
 <TabItem value="Kubernetes">
 
 1. [Install the operator](./setup/install/kubernetes-operator.md)
-2. Run `make kube-capture`
+2. Run:
+```bash
+make kube-capture
+```
 
 </TabItem>
 
 <TabItem value="Docker">
 
-1. Generate local certs by running `speedctl create certs --jks ./`
-2. Run `speedctl install`, choose the `Docker` option and then the `Capture` option. You can name the service anything you want, the default port setting of `8080` is necessary.
-3. Run `docker compose --file speedscale-docker-capture.yaml up -d` to bring up the Speedscale capture components.
-4. Run `make compose-capture` in one terminal window.
-5. Run `make client-capture`, use the provided Postman collection or run `curl` commands in another to generate some traffic.
+1. Generate local certs by running:
+```bash
+speedctl create certs --jks --output-dir ~/.speedscale/certs
+```
+Remember that JAVA_HOME must be set.
+
+2. Run:
+```bash
+speedctl install
+````
+
+Choose the `Docker` option and then the `Capture` option (option 1). You can name the service anything you want, the default port setting of `8080` is necessary.
+
+3. Run the following to bring up the Speedscale capture components:
+```bash
+docker compose --file speedscale-docker-capture.yaml up -d
+```
+4. Run in your current terminal window:
+```bash
+make compose-capture
+```
+
+5. Open a new terminal window and run:
+```bash
+make client-capture
+```
+Use the provided Postman collection or run `curl` commands in another to generate some traffic.
 
 </TabItem>
 
 <TabItem value="Local">
 
-1. Generate local certs by running `speedctl create certs --jks ./`
-2. Run `speedctl capture java-server 8080` in one terminal window
-3. Run `make local-capture` in another.
-4. Run `make client-capture`, use the provided Postman collection or run `curl` commands in another to generate some traffic.
+1. Generate local certs by running the following command:
+```bash
+speedctl create certs --jks --output-dir ~/.speedscale/certs
+```
+2. Run in a separate terminal window:
+```bash
+speedctl capture java-server 8080
+```
+3. Run in your original terminal window:
+```bash
+make local-capture
+```
+
+4. Run
+```bash
+make client-capture
+```
+Use the provided Postman collection or run `curl` commands in another to generate some traffic.
 
 </TabItem>
 
@@ -48,7 +91,7 @@ The app is a Java Spring Boot web server with authenticated endpoints that makes
 
 ## Analyze
 
-After a few minutes you should be able to see your traffic in the [Speedscale dashboard](https://app.speedscale.com). You should be able to see the inbound and outbound calls for this app as shown below.
+After a few minutes you should be able to see your traffic in the [Speedscale dashboard](https://app.speedscale.com). Make sure to select the the same service name that you entered in `speedctl install` from the traffic dropdown. You should be able to see the inbound and outbound calls for this app as shown below.
 
 ![Traffic](./end-to-end/traffic.png)
 
@@ -74,7 +117,10 @@ You can enable DLP to redact certain fields from an RRPair at capture time.
 
 <TabItem value="Kubernetes">
 
-Run `speedctl infra dlp enable`
+Run:
+```bash
+speedctl infra dlp enable
+```
 
 </TabItem>
 
@@ -86,8 +132,7 @@ Edit `speedscale-docker-capture.yaml` to add the following two environment varia
 services:
   forwarder:
     environment:
-      - SPEEDSCALE_CONFIG_YAML=/config.yaml
-      - SPEEDSCALE_REDACT="true"
+      - SPEEDSCALE_REDACT=true
       - SPEEDSCALE_DLP_CONFIG=standard
 ```
 
@@ -101,7 +146,7 @@ Run the `speedctl capture` command with the additional flag `--dlp-config standa
 
 </Tabs>
 
-Now we see the authorization header is redacted and never made it to Speedscale.
+Now we see the authorization header is redacted and never makes it to Speedscale.
 
 ![Redacted](./end-to-end/redacted.png)
 
@@ -115,26 +160,40 @@ We're now going to run a replay for this captured traffic.
 
 <TabItem value="Kubernetes">
 
-Click the `Replay` button on the top right and walk through the wizard. All the default settings are ok here. You can also do this outside of the UI with more instructions [here](./guides/replay/kube.md).
+Click the `Replay as Tests/Mocks` button on the top right and walk through the wizard. All the default settings are ok here. You can also do this outside of the UI with more instructions [here](./guides/replay/kube.md).
 
 </TabItem>
 
 <TabItem value="Docker">
 
-1. [Create a Snapshot](./guides/creating-a-snapshot.md) to save this set of traffic. Get the Snapshot ID.
-2. Run `speedctl install`, choose the `Docker` option and then the `Replay` option.
-3. Select your service and the standard test config.
-4. Input the Snapshot ID from step 1, the port should still be `8080`
-5. Run `make compose-replay` in one terminal window.
-6. Run `TEST_REPORT_ID=$(uuidgen) docker compose --file speedscale-docker-replay.yaml up -d` in another window to start the replay.
+1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](./guides/creating-a-snapshot.md) section.
+2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
+3. Run:
+```bash
+speedctl install
+```
+Choose the `Docker` option and then `Replay` (option 3). 
+
+4. Select your service and the standard test config. Make sure you select the same service name you entered during the capture phase.
+5. Input the Snapshot ID from step 1, the port should still be `8080`
+6. Run in one terminal window:
+```bash
+make compose-replay
+```
+
+7. Run in another window to start the replay:
+```bash
+TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]') docker compose --file speedscale-docker-replay.yaml up -d && echo "Your test report can be found at: https://app.speedscale.com/${TEST_REPORT_ID}
+```
 
 </TabItem>
 
 <TabItem value="Local">
 
-1. [Create a snapshot](./guides/creating-a-snapshot.md) to save this set of traffic. Get the Snapshot ID.
-2. Run `make local-replay`
-3. Run `speedctl replay SNAPSHOT_ID --test-config-id=standard  --custom-url='http://localhost:8080'`
+1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](./guides/creating-a-snapshot.md) section.
+2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
+3. Run `make local-replay`
+4. Run `speedctl replay SNAPSHOT_ID --test-config-id=standard  --custom-url='http://localhost:8080'`
 
 </TabItem>
 
@@ -142,7 +201,7 @@ Click the `Replay` button on the top right and walk through the wizard. All the 
 
 ## Making sense of a Replay
 
-You can find a report for your Replay in the [dashboard](https://app.speedscale.com/reports) and you will see something like this.
+If you are already viewing the Snapshot you recorded, you can see your replay appear in the `Replay` tab. Alternatively, you can find a report for your Replay in the [dashboard](https://app.speedscale.com/reports). It should look something like this.
 
 ![Report](./end-to-end/report.png)
 
@@ -200,6 +259,29 @@ In this demo we:
 6. Transformed some snapshot traffic
 7. Edited the assertions
 8. Reanalyzed the report for a higher success rate
+
+## Uninstall
+
+If you'd like to remove the demo from your environment follow these instructions:
+
+<Tabs>
+
+<TabItem value="Kubernetes">
+
+```bash
+make kube-clean
+```
+</TabItem>
+
+<TabItem value="Docker">
+
+```bash
+docker compose -f speedscale-docker-capture.yaml down
+```
+</TabItem>
+
+</Tabs>
+
 
 # Next Steps
 
