@@ -29,6 +29,7 @@ Make sure you navigate to the `java` subdirectory within the `demo` repository.
 ```bash
 make kube-capture
 ```
+This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
 
 </TabItem>
 
@@ -60,7 +61,7 @@ make compose-capture
 ```bash
 make client-capture
 ```
-Use the provided Postman collection or run `curl` commands in another to generate some traffic.
+This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
 
 </TabItem>
 
@@ -83,7 +84,7 @@ make local-capture
 ```bash
 make client-capture
 ```
-Use the provided Postman collection or run `curl` commands in another to generate some traffic.
+This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
 
 </TabItem>
 
@@ -183,7 +184,7 @@ make compose-replay
 
 7. Run in another window to start the replay:
 ```bash
-TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]') docker compose --file speedscale-docker-replay.yaml up -d && echo "Your test report can be found at: https://app.speedscale.com/${TEST_REPORT_ID}
+TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose --file speedscale-docker-replay.yaml up -d && echo "Your test report can be found at: https://app.speedscale.com/reports/${TEST_REPORT_ID}"
 ```
 
 </TabItem>
