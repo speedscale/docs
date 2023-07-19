@@ -14,7 +14,7 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 
 ## The App
 
-The app is a Java Spring Boot web server with authenticated endpoints that makes requests out to a few external services. The project README (at `java/README.md`) shows ways to run the app locally, in Docker and in Kubernetes. Speedscale can be configured to be compatible with whichever way you choose to deploy the app.
+The app is a Java Spring Boot web server with authenticated endpoints that makes requests out to a few external services. The project README (at `java/README.md`) shows ways to run the app locally, in Docker and in Kubernetes. Speedscale can be configured to be compatible with whichever way you choose to deploy the app. Note that for this test run we'll disable DLP but you can find instructions on how to enable it near the end.
 
 ## Capture
 
@@ -105,53 +105,6 @@ And we can also see the outbound request our app makes to the Treasury API to fu
 ![Treasury](./end-to-end/out-request.png)
 
 You can and inspect it further or you can skip ahead to running a replay which will also create a snapshot as a side effect.
-
-### (Optional) Data loss Protection
-
-If we drill down into a request, we can also see data we may not want to leave our environment.
-
-![Auth](./end-to-end/unredacted.png)
-
-You can enable DLP to redact certain fields from an RRPair at capture time.
-
-<Tabs>
-
-<TabItem value="Kubernetes">
-
-Run:
-```bash
-speedctl infra dlp enable
-```
-
-</TabItem>
-
-<TabItem value="Docker">
-
-Edit `speedscale-docker-capture.yaml` to add the following two environment variables.
-
-```yaml
-services:
-  forwarder:
-    environment:
-      - SPEEDSCALE_REDACT=true
-      - SPEEDSCALE_DLP_CONFIG=standard
-```
-
-</TabItem>
-
-<TabItem value="Local">
-
-Run the `speedctl capture` command with the additional flag `--dlp-config standard`.
-
-</TabItem>
-
-</Tabs>
-
-Now we see the authorization header is redacted and never makes it to Speedscale.
-
-![Redacted](./end-to-end/redacted.png)
-
-For more complex DLP configuration you can use [this guide](./guides/dlp.md).
 
 ## Replay
 
@@ -268,6 +221,17 @@ In this demo we:
 7. Edited the assertions
 8. Reanalyzed the report for a higher success rate
 
+
+
+# Next Steps
+
+This is just a small subset of things you can do with Speedscale, other things to try out could be:
+
+1. Capture traffic from one of your own apps
+2. [Replay traffic from one cluster into another](./guides/replay/guide_other_cluster.md)
+3. [Run a load test](./guides/replay/load-test.md)
+4. [Integrate with CI/CD](./guides/cicd.md)
+
 ## Uninstall
 
 If you'd like to remove the demo from your environment follow these instructions:
@@ -290,12 +254,49 @@ docker compose -f speedscale-docker-capture.yaml down
 
 </Tabs>
 
+### (Optional) Data loss Protection
 
-# Next Steps
+If we drill down into a request, we can also see data we may not want to leave our environment.
 
-This is just a small subset of things you can do with Speedscale, other things to try out could be:
+![Auth](./end-to-end/unredacted.png)
 
-1. Capture traffic from one of your own apps
-2. [Replay traffic from one cluster into another](./guides/replay/guide_other_cluster.md)
-3. [Run a load test](./guides/replay/load-test.md)
-4. [Integrate with CI/CD](./guides/cicd.md)
+You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low success rates because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you cna follow the instructions below.
+
+<Tabs>
+
+<TabItem value="Kubernetes">
+
+Run:
+```bash
+speedctl infra dlp enable
+```
+
+</TabItem>
+
+<TabItem value="Docker">
+
+Edit `speedscale-docker-capture.yaml` to add the following two environment variables.
+
+```yaml
+services:
+  forwarder:
+    environment:
+      - SPEEDSCALE_REDACT=true
+      - SPEEDSCALE_DLP_CONFIG=standard
+```
+
+</TabItem>
+
+<TabItem value="Local">
+
+Run the `speedctl capture` command with the additional flag `--dlp-config standard`.
+
+</TabItem>
+
+</Tabs>
+
+Now we see the authorization header is redacted and never makes it to Speedscale.
+
+![Redacted](./end-to-end/redacted.png)
+
+For more complex DLP configuration you can use [this guide](./guides/dlp.md).
