@@ -137,7 +137,7 @@ make compose-replay
 
 7. Run in another window to start the replay:
 ```bash
-TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose --file speedscale-docker-replay.yaml up -d && echo "Your test report can be found at: https://app.speedscale.com/reports/${TEST_REPORT_ID}"
+export TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose --file speedscale-docker-replay.yaml up -d && echo "Your test report can be found at: https://app.speedscale.com/reports/${TEST_REPORT_ID}"
 ```
 
 </TabItem>
