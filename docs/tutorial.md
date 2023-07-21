@@ -1,7 +1,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# End to End
+# Tutorial
 
 In this guide we're going to use [this repo's](https://github.com/speedscale/demo) example app in the `java` directory to [capture](./concepts/capture.md), [transform](./concepts/transforms.md) and [replay](./concepts/replay.md) traffic with [mocks](./concepts/service_mocking.md).
 
