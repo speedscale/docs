@@ -16,8 +16,9 @@ This directory contains a number of internal Speedscale files but the one that w
 It is also possible to edit the snapshot metadata file stored at `<user directory>/snapshots/<snapshot id>.json`. But that won't be necessary for this example.
 
 ## Prerequisites
-* Speedscale java [demo](https://github.com/speedscale/demo) is installed
-* [speedctl](./setup/install/cli.md) is installed
+
+- Speedscale java [demo](https://github.com/speedscale/demo) is installed
+- [speedctl](./setup/install/cli.md) is installed
 
 ## Create a Sample Raw File
 
@@ -28,7 +29,88 @@ We'll be creating an inbound RRPair in this guide. To learn how to edit outbound
 On your local machine create a file called `raw.jsonl`. The location of the file isn't important but we'll use the `~/Downloads` directory for simplicity. Insert the following line into your `~/Downloads/raw.jsonl` file.
 
 ```json
-{"msgType":"rrpair","resource":"MY_SERVICE","ts":"2023-07-19T21:42:35.974594462Z","l7protocol":"http","duration":5,"tags":{"k8sClusterName":"MY_SERVICE","sequence":"530","targetPort":"4143","clientType":"goproxy","proxyCID":"532","proxyId":"MY_SERVICE","proxyProtocol":"tcp:http","k8sAppLabel":"MY_SERVICE","k8sAppPodNamespace":"matthewleray","proxyReqAddr":"192.168.240.1:50516","reverseProxyHost":"host.docker.internal","targetHost":"localhost","captureMode":"proxy","compressed":"gzip","k8sAppPodName":"MY_SERVICE","proxyLocation":"in","proxyRespAddr":"192.168.65.254:8080","proxyType":"dual","proxyVersion":"v1.3.209","reverseProxyPort":"8080"},"wireformatSize":1334,"jsonLength":1693,"uuid":"6U/+hd4oRH6am3zHkaPq+Q==","direction":"IN","cluster":"MY_SERVICE","namespace":"matthewleray","service":"MY_SERVICE","tech":"JSON","network_address":"localhost:4143","command":"GET","location":"/spacex/ship","status":"200","detectedTech":["HTTP","JSON","HTTP Auth","Bearer","JWT"],"http":{"req":{"url":"/spacex/ship","uri":"/spacex/ship","version":"1.1","method":"GET","host":"localhost:4143","headers":{"Accept":["*/*"],"Authorization":["Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY4OTg4OTIwNCwiaWF0IjoxNjg5ODAyODA0fQ.-6Azf69e6sFCGW3b7m6dabdOE1czdWxdXm9zKf__BBw"],"User-Agent":["curl/7.88.1"]}},"res":{"contentType":"application/json","statusCode":200,"statusMessage":"200 ","headers":{"X-Xss-Protection":["0"],"Cache-Control":["no-cache, no-store, max-age=0, must-revalidate"],"Content-Type":["application/json"],"Date":["Wed, 19 Jul 2023 21:42:35 GMT"],"Expires":["0"],"Pragma":["no-cache"],"X-Content-Type-Options":["nosniff"],"X-Frame-Options":["DENY"]},"bodyBase64":"H4sIAAAAAAAE/wAmANn/eyJzaGlwX2lkIjoiNjE4ZmFkN2U1NjNkNjk1NzNlZDhjYWE5In0BAAD//7vdkzAmAAAA"}},"tokens":{"JWT:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY4OTg4OTIwNCwiaWF0IjoxNjg5ODAyODA0fQ.-6Azf69e6sFCGW3b7m6dabdOE1czdWxdXm9zKf__BBw":{"location":"http.req.headers.Authorization.0","regex":"^(?i)Bearer (.*)(?-i)","pattern":"DATA_PATTERN_JWT","replacementValue":"ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKemRXSWlPaUpoWkcxcGJpSXNJbVY0Y0NJNk1UWTRPVGc0T1RJd05Dd2lhV0YwSWpveE5qZzVPREF5T0RBMGZRLi02QXpmNjllNnNGQ0dXM2I3bTZkYWJkT0UxY3pkV3hkWG05ektmX19CQnc="}}}
+{
+  "msgType": "rrpair",
+  "resource": "MY_SERVICE",
+  "ts": "2023-07-19T21:42:35.974594462Z",
+  "l7protocol": "http",
+  "duration": 5,
+  "tags": {
+    "k8sClusterName": "MY_SERVICE",
+    "sequence": "530",
+    "targetPort": "4143",
+    "clientType": "goproxy",
+    "proxyCID": "532",
+    "proxyId": "MY_SERVICE",
+    "proxyProtocol": "tcp:http",
+    "k8sAppLabel": "MY_SERVICE",
+    "k8sAppPodNamespace": "matthewleray",
+    "proxyReqAddr": "192.168.240.1:50516",
+    "reverseProxyHost": "host.docker.internal",
+    "targetHost": "localhost",
+    "captureMode": "proxy",
+    "compressed": "gzip",
+    "k8sAppPodName": "MY_SERVICE",
+    "proxyLocation": "in",
+    "proxyRespAddr": "192.168.65.254:8080",
+    "proxyType": "dual",
+    "proxyVersion": "v1.3.209",
+    "reverseProxyPort": "8080"
+  },
+  "wireformatSize": 1334,
+  "jsonLength": 1693,
+  "uuid": "6U/+hd4oRH6am3zHkaPq+Q==",
+  "direction": "IN",
+  "cluster": "MY_SERVICE",
+  "namespace": "matthewleray",
+  "service": "MY_SERVICE",
+  "tech": "JSON",
+  "network_address": "localhost:4143",
+  "command": "GET",
+  "location": "/spacex/ship",
+  "status": "200",
+  "detectedTech": ["HTTP", "JSON", "HTTP Auth", "Bearer", "JWT"],
+  "http": {
+    "req": {
+      "url": "/spacex/ship",
+      "uri": "/spacex/ship",
+      "version": "1.1",
+      "method": "GET",
+      "host": "localhost:4143",
+      "headers": {
+        "Accept": ["*/*"],
+        "Authorization": [
+          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY4OTg4OTIwNCwiaWF0IjoxNjg5ODAyODA0fQ.-6Azf69e6sFCGW3b7m6dabdOE1czdWxdXm9zKf__BBw"
+        ],
+        "User-Agent": ["curl/7.88.1"]
+      }
+    },
+    "res": {
+      "contentType": "application/json",
+      "statusCode": 200,
+      "statusMessage": "200 ",
+      "headers": {
+        "X-Xss-Protection": ["0"],
+        "Cache-Control": ["no-cache, no-store, max-age=0, must-revalidate"],
+        "Content-Type": ["application/json"],
+        "Date": ["Wed, 19 Jul 2023 21:42:35 GMT"],
+        "Expires": ["0"],
+        "Pragma": ["no-cache"],
+        "X-Content-Type-Options": ["nosniff"],
+        "X-Frame-Options": ["DENY"]
+      },
+      "bodyBase64": "H4sIAAAAAAAE/wAmANn/eyJzaGlwX2lkIjoiNjE4ZmFkN2U1NjNkNjk1NzNlZDhjYWE5In0BAAD//7vdkzAmAAAA"
+    }
+  },
+  "tokens": {
+    "JWT:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY4OTg4OTIwNCwiaWF0IjoxNjg5ODAyODA0fQ.-6Azf69e6sFCGW3b7m6dabdOE1czdWxdXm9zKf__BBw": {
+      "location": "http.req.headers.Authorization.0",
+      "regex": "^(?i)Bearer (.*)(?-i)",
+      "pattern": "DATA_PATTERN_JWT",
+      "replacementValue": "ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKemRXSWlPaUpoWkcxcGJpSXNJbVY0Y0NJNk1UWTRPVGc0T1RJd05Dd2lhV0YwSWpveE5qZzVPREF5T0RBMGZRLi02QXpmNjllNnNGQ0dXM2I3bTZkYWJkT0UxY3pkV3hkWG05ektmX19CQnc="
+    }
+  }
+}
 ```
 
 Also, make sure that the Speedscale demo app was installed with the default service name `MY_SERVICE`. If that's not what you used, just find/replace each reference. The format of the RRPair is fairly self explanatory and in the real world you'll want to modify it to match the request you desire. You can add as many RRPairs, either inbound or outbound, as you like with each request occupying one line. Remember not to pretty print the JSON.
@@ -55,7 +137,7 @@ This will cause an analysis job to be run in Speedscale cloud and you should see
 
 ## Run a Replay
 
-Run a replay in the same way you normally would outlined in our End-to-End [guide](../end-to-end.md#replay). Select your new snapshot by name (in this example we called it `testing`).
+Run a replay in the same way you normally would outlined in our [tutorial](../tutorial.md#replay). Select your new snapshot by name (in this example we called it `testing`).
 
 ## Wrap up
 
