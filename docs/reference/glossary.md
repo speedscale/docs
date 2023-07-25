@@ -38,7 +38,16 @@ A Speedscale component that generates traffic from a [snapshot](#snapshot),
 targeting the [SUT](#sut).  When running a load test the generator is the
 service responsible for generating the load.
 
-See [replaying traffic](../concepts/replay.md) for more information.
+See [replaying traffic](/concepts/replay.md) for more information.
+
+### Goproxy
+
+A Speedscale component that captures [traffic](#traffic) from a client to your
+service (inbound) and from your service to third parties like other APIs or
+databases (outbound).  Go proxy is, as its name suggests, a [proxy](#proxy) which
+captures traffic routed through it.
+
+See [proxy modes](/setup/sidecar/proxy-modes.md) for more information.
 
 ### Inspector
 
@@ -70,8 +79,9 @@ See [Kubernetes Operator](../setup/install/kubernetes-operator.md) for more info
 
 ### Proxy
 
-A process that accepts, stores, and forwards traffic.  Speedscale uses goproxy,
-a purpose-built proxy written in Go, in various ways to capture traffic and route requests.
+A process that accepts, stores, and forwards traffic.  Speedscale uses
+[goproxy](#goproxy), a purpose-built proxy written in Go, in various ways to
+capture traffic and route requests.
 
 ### Recursion
 

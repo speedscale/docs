@@ -1,21 +1,42 @@
 ---
-title: Sidecar Installation
+title: Sidecar
 sidebar_position: 1
 ---
 
-The Speedscale sidecar, `goproxy`, is used to collect data from an existing application.
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-### Install Wizard <a href="#install-sidecar-with-wizard" id="install-sidecar-with-wizard"></a>
+The Speedscale sidecar proxy, [goproxy](/reference/glossary.md#goproxy), is
+used to collect data from an existing application.  To capture
+[traffic](/reference/glossary.md#traffic), requests to and from your
+application will need to be routed through the proxy.
 
-The easiest way to add the sidecar to your pod and start gaining visibility is through the [install wizard](../install/kubernetes-operator.md#install-wizard).
-The additional steps here provide instructions for manually instrumenting your services, which is necessary when manifests are sourced
-from version control for example.
+## Installation
 
-### Add the Sidecar Annotation to Your Deployment
+There are several ways to install the sidecar in your cluster.  See the [proxy
+configuration reference](/reference/proxy_config.mdx) for proxy configuration
+outside of a cluster.
 
-Please ensure the [Kubernetes Operator](../install/kubernetes-operator.md) is running in your cluster before moving on.
+<Tabs>
 
-Select the workload (daemonset, deployment, statefulset, job or replicaset) you'd like to monitor and add the following annotation:
+<TabItem value="webapp" label="Web App">
+
+From the [Speedscale web app](https://app.speedscale.com/) click on `Add
+service` to launch the add service wizard which will walk you through
+configuration and verification tailored to your environment.
+
+</TabItem>
+
+<TabItem value="annotation" label="Kubernetes Annotation">
+
+With cluster access you can add the sidecar with an annotation on your
+workload.
+
+Please ensure the [Kubernetes Operator](../install/kubernetes-operator.md) is
+running in your cluster before moving on.
+
+Select the workload (daemonset, deployment, statefulset, job or replicaset)
+you'd like to monitor and add the following annotation:
 
 ```yaml
 annotations:
@@ -35,15 +56,26 @@ NAME                            READY   STATUS    RESTARTS   AGE
 carts-xxxxxxxxxx-xxxxx          2/2     Running   0          38d
 ```
 
-By default, the Speedscale init container starts after any existing init containers in the workload.
+By default, the Speedscale init container starts after any existing init
+containers in the workload.
 
-### Remove the Sidecar from Your Deployment
+</TabItem>
 
-If you already have the sidecar installed, but you need for it to be removed, you may either set the `sidecare.speedscale.com/inject` annotation to `false`, or remove it:
+</Tabs>
+
+## Removal
+
+If you already have the sidecar installed, but you need for it to be removed,
+you may either set the `sidecare.speedscale.com/inject` annotation to `false`,
+or remove it:
 
 ```yaml
 annotations:
   sidecar.speedscale.com/inject: "false"
 ```
 
-After deploying or patching your deployment, you should notice your container count decrease by one and the sidecar is no longer attached.
+After deploying or patching your deployment, you should notice your container
+count decrease by one and the sidecar is no longer attached.
+
+Use `speedctl uninstall` to remove all Speedscale components.
+
