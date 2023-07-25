@@ -36,13 +36,40 @@ promoted.
 
 ![service-status](./argo/verify-argo-service.png)
 
-Promote the rollout to apply the rest:
+Verify changes and promote the rollout to apply to the rest of the pods:
 
 ```bash
+kubectl argo rollouts get rollout <rollout-name>
 kubectl argo rollouts promote <rollout-name>
 ```
 
 The status on the wizard should complete and send a test request.
+
+</TabItem>
+
+<TabItem value="speedctl" label="speedctl CLI">
+
+Make sure you have [speedctl installed](/setup/install/cli.md) before you
+start.  Verify you have the [inspector](/reference/glossary.md#inspector)
+running in your cluster with:
+
+```bash
+speedctl infra inspectors -o pretty
+```
+
+Using the proper cluster name, add the sidecar to the rollout:
+
+```bash
+speedctl infra sidecar add <rollout-name> --cluster <cluster-name> -n <namespace> --workload-type argorollout
+```
+
+This will apply the sidecar to some pods. Verify changes and promote the
+rollout to apply to the rest of the pods:
+
+```bash
+kubectl argo rollouts get rollout <rollout-name>
+kubectl argo rollouts promote <rollout-name>
+```
 
 </TabItem>
 
@@ -65,9 +92,10 @@ now=$(date) && kubectl patch rollout rollouts-demo -p '{"spec": {"template": {"m
 ```
 
 This will apply the sidecar to some pods. Verify changes and promote the
-rollout to apply the rest:
+rollout to apply to the rest of the pods:
 
 ```bash
+kubectl argo rollouts get rollout <rollout-name>
 kubectl argo rollouts promote <rollout-name>
 ```
 
