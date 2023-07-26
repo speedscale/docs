@@ -20,10 +20,12 @@ Notice the existing settings on the test config like [**low data
 mode**](/reference/glossary.md/#low-data-mode).
 
 :::info
-In low data mode response data will not be sent to Speedscale
-for analysis.  This removes the ability to run assertions, defined on the
+In low data mode only sampled response data of failures will not be sent to
+Speedscale for analysis.  This limits the number of
+[RRPairs](/reference/glossary.md/#rrpair) that will be collected and processed
+with [assertions](/reference/glossary.md/#assertions), defined on the
 **Assertions** tab, but enables much higher throughput than can be achieved
-otherwise.  Status codes will be compared in low data mode and will affect the
+otherwise.  Status codes will be compared in low data mode which determines the
 overall success rate of the replay report.
 :::
 
