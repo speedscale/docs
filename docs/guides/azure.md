@@ -96,7 +96,7 @@ And that's it! Now your inbound and outbound traffic is being collected.
 
 ## Running Replays
 
-Replays can be run against the service through the Kubernetes cluster as detailed [here](./guides/replay/README.md). The HTTP Proxy settings and TLS settings set on the Cloud Run service above need to remain as is. It's recommended to set the `collect-logs` option to `false` since the Kubernetes service logs are not relevant in this setup.
+Replays can be run against the service through the Kubernetes cluster as detailed [here](./replay/README.md). The HTTP Proxy settings and TLS settings set on the Cloud Run service above need to remain as is. It's recommended to set the `collect-logs` option to `false` since the Kubernetes service logs are not relevant in this setup.
 
 :::info
 Note that the CPU and memory graphs displayed in the report will be those for the proxy container and not the actual cloud run service.
