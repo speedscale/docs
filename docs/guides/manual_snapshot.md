@@ -18,7 +18,7 @@ It is also possible to edit the snapshot metadata file stored at `<user director
 ## Prerequisites
 
 - Speedscale java [demo](https://github.com/speedscale/demo) is installed
-- [speedctl](./setup/install/cli.md) is installed
+- [speedctl](../setup/install/cli.md) is installed
 
 ## Create a Sample Raw File
 
