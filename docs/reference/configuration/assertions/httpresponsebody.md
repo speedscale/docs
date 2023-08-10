@@ -38,11 +38,13 @@ By default the response body assertion will allow new fields which did not exist
 
 ### Configuration <a href="#configuration" id="configuration"></a>
 
-| Key             | Description                                                                                                                                                                                                                                                                                                            |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ignore**      | Comma-separated list of JSON Paths that will be ignored during comparison.  A key will match if it contains one of the ignored strings anywhere in the path. For example, an ignore string of `errorCode` will prevent the comparison of `foo.bar.errorCode`,`errorCode`, and `foo.errorCode.bar`from being compared.  |
-| **includeOnly** | Comma-separated JSON Paths that will be included during comparison.  All other keys will be ignored. Given strings work the same as for **ignore**.                                                                                                                                                                    |
-| **allowNew**    | Allow new fields in replay traffic which did not exist in captured traffic. Defaults to true.|
+| Key             | Description |
+| --------------- | ------------|
+| **allowNew**    | True by default, this setting allows new fields in replay traffic which did not exist in captured traffic. Field will still be marked as different, shown as red lines, but will be ignored.  Arrays may add, but not change or remove values.|
+| **ignore**      | Comma-separated list of [JSON paths](https://jsonpath.com/) that will be ignored during comparison.  A key will match if it contains one of the ignored strings anywhere in the path. For example, an ignore string of `errorCode` will prevent the comparison of `foo.bar.errorCode`,`errorCode`, and `foo.errorCode.bar`from being compared.  |
+| **includeOnly** | Comma-separated [JSON paths](https://jsonpath.com/) that will be included during comparison.  All other keys will be ignored. Given strings work the same as for **ignore**.|
+| **matchAll**    | Fields that do not match will still be marked as different, shown as red lines, but all lines will be ignored.|
+| **matchType**   | Keys will be compared and value types will be compared.  For example, a in the expected payload and a string in the actual payload will pass but an int will fail.
 
 ### Notes <a href="#notes" id="notes"></a>
 
