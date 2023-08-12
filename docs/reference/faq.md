@@ -113,3 +113,424 @@ Is equivalent to:
 ```
 kubectl get pods
 ```
+
+### What if I want to manually uninstall Speedscale?
+
+Sometimes `helm` misbehaves and crashes. Sometimes `speedctl uninstall` doesn't have the permissions to completely uninstall all components. Here's how you manually uninstall Speedscale completely.
+
+Uninstalling Speedscale requires three steps:
+
+1. Delete the operator webhooks
+
+Manually deleting the `speedscale` namespace will cause your cluster to stop accepting deployments due to a dangling mutating webhook. The error may look something like this:
+
+```
+Internal error occurred: failed calling webhook "operator.speedscale.com":
+Post "https://speedscale-operator.speedscale.svc:443/mutate?timeout=30s":dial tcp xx.xx.xx.xx:443: connect: connection refused
+```
+
+For that reason, we need to delete the webhook manually before deleting the operator/namespace. Run the following command:
+
+```bash
+kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
+```
+
+2. Delete the speedscale namespace
+
+Now it's ok to delete speedscale components like so:
+
+```bash
+kubectl delete ns speedscale
+```
+
+This will clean up the Speedscale control plane.
+
+3. Remove the sidecar from you workloads
+
+Deleting the control plane does not automatically delete sidecars already attached to your workloads. You'll need to manually identify workloads with the sidecar and delete the sidecar. Here's a helpful command that will identify sidecars:
+
+```bash
+kubectl get pods --selector=sidecar.speedscale.com/injected=true
+```
+
+Remember to insert your namespace qualifier if necessary. The easiest way to remove the sidecar is simply to redeploy from your source yaml.
+
+However, if you simply must remove the sidecar manually then delete both `goproxy` containers. Let's take an example workload extracted with `kubectl get deployment <name> -o yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/instance":"demo-java"},"name":"java-server","namespace":"default"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"java-server"}},"template":{"metadata":{"labels":{"app":"java-server"}},"spec":{"containers":[{"env":[{"name":"REQUEST_TAG","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}}],"image":"gcr.io/speedscale-demos/java-server:1.0.1","imagePullPolicy":"Always","name":"java-server","ports":[{"containerPort":8080,"name":"http"}],"readinessProbe":{"httpGet":{"path":"/healthz","port":"http"}},"resources":{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}}]}}}}
+    operator.speedscale.com/managed-by: k8s-1-27-4-do-0-nyc3-1691800765671-117b0b47-6533-4e39-aeac-484bc8894f14
+    operator.speedscale.com/namespace: speedscale
+    sidecar.speedscale.com/inject: "true"
+  creationTimestamp: "2023-08-12T01:10:04Z"
+  generation: 2
+  labels:
+    app.kubernetes.io/instance: demo-java
+    operator.speedscale.com/sut: "true"
+    sidecar.speedscale.com/injected: "true"
+  name: java-server
+  namespace: default
+  resourceVersion: "224994"
+  uid: d17176b2-8ae6-42e6-9955-5ff8b7e76394
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: java-server
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: java-server
+        sidecar.speedscale.com/injected: "true"
+    spec:
+      containers:
+      - env:
+        - name: REQUEST_TAG
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        image: gcr.io/speedscale-demos/java-server:1.0.1
+        imagePullPolicy: Always
+        name: java-server
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - env:
+        - name: APP_LABEL
+          value: java-server
+        - name: APP_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: APP_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: CAPTURE_MODE
+          value: proxy
+        - name: FORWARDER_ADDR
+          value: speedscale-forwarder.speedscale.svc:80
+        - name: LOG_LEVEL
+          value: info
+        - name: PROXY_IN_PORT
+          value: "4143"
+        - name: PROXY_OUT_PORT
+          value: "4140"
+        - name: PROXY_TYPE
+          value: transparent
+        - name: SPEC_NODENAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: SPEC_SERVICEACCOUNTNAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.serviceAccountName
+        - name: STATUS_HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        - name: STATUS_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: TLS_CERT_DIR
+          value: /etc/ssl/speedscale
+        - name: TLS_AUTODISCOVERY
+          value: "false"
+        image: gcr.io/speedscale/goproxy:v1.3.254
+        imagePullPolicy: Always
+        name: speedscale-goproxy
+        ports:
+        - containerPort: 4143
+          name: proxy-in
+          protocol: TCP
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+          readOnlyRootFilesystem: false
+          runAsGroup: 2102
+          runAsUser: 2102
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - command:
+        - init-iptables.sh
+        env:
+        - name: PROXY_IN_PORT
+          value: "4143"
+        - name: PROXY_OUT_PORT
+          value: "4140"
+        - name: PROXY_UID
+          value: "2102"
+        - name: CAPTURE_MODE
+          value: proxy
+        - name: PROXY_TYPE
+          value: transparent
+        - name: PROXY_PROTOCOL
+        - name: STATUS_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: STATUS_HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        image: gcr.io/speedscale/goproxy:v1.3.254
+        imagePullPolicy: Always
+        name: speedscale-initproxy-iptables
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_RAW
+            - NET_ADMIN
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+      - command:
+        - sh
+        - -c
+        - init-smartdns.sh || true
+        env:
+        - name: PROXY_IN_PORT
+          value: "4143"
+        - name: PROXY_OUT_PORT
+          value: "4140"
+        - name: PROXY_UID
+          value: "2102"
+        - name: CAPTURE_MODE
+          value: proxy
+        - name: PROXY_TYPE
+          value: transparent
+        - name: PROXY_PROTOCOL
+        - name: STATUS_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: STATUS_HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        image: gcr.io/speedscale/goproxy:v1.3.254
+        imagePullPolicy: Always
+        name: speedscale-initproxy-smartdns
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_RAW
+            - NET_ADMIN
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2023-08-12T01:10:04Z"
+    lastUpdateTime: "2023-08-12T01:35:56Z"
+    message: ReplicaSet "java-server-64c6d6486c" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2023-08-12T17:03:27Z"
+    lastUpdateTime: "2023-08-12T17:03:27Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+```
+
+You must delete these two sections:
+```yaml
+        image: gcr.io/speedscale/goproxy:v1.3.254
+        imagePullPolicy: Always
+        name: speedscale-goproxy
+        ports:
+        - containerPort: 4143
+          name: proxy-in
+          protocol: TCP
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+          readOnlyRootFilesystem: false
+          runAsGroup: 2102
+          runAsUser: 2102
+```
+
+```yaml
+      initContainers:
+      - command:
+        - init-iptables.sh
+        env:
+        - name: PROXY_IN_PORT
+          value: "4143"
+        - name: PROXY_OUT_PORT
+          value: "4140"
+        - name: PROXY_UID
+          value: "2102"
+        - name: CAPTURE_MODE
+          value: proxy
+        - name: PROXY_TYPE
+          value: transparent
+        - name: PROXY_PROTOCOL
+        - name: STATUS_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: STATUS_HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        image: gcr.io/speedscale/goproxy:v1.3.254
+        imagePullPolicy: Always
+        name: speedscale-initproxy-iptables
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_RAW
+            - NET_ADMIN
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+      - command:
+        - sh
+        - -c
+        - init-smartdns.sh || true
+        env:
+        - name: PROXY_IN_PORT
+          value: "4143"
+        - name: PROXY_OUT_PORT
+          value: "4140"
+        - name: PROXY_UID
+          value: "2102"
+        - name: CAPTURE_MODE
+          value: proxy
+        - name: PROXY_TYPE
+          value: transparent
+        - name: PROXY_PROTOCOL
+        - name: STATUS_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: STATUS_HOST_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        image: gcr.io/speedscale/goproxy:v1.3.254
+        imagePullPolicy: Always
+        name: speedscale-initproxy-smartdns
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_RAW
+            - NET_ADMIN
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+```
+
+Never hesitate to reach out to Speedscale support if you need help. We work hard to automate this process but we can't always prevent helm from crashing or other gremlins from pulling levers in your cluster.
