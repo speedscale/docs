@@ -114,7 +114,7 @@ Is equivalent to:
 kubectl get pods
 ```
 
-### What if I want to manually uninstall Speedscale?
+### What if I need to manually uninstall Speedscale?
 
 Sometimes `helm` misbehaves and crashes. Sometimes `speedctl uninstall` doesn't have the permissions to completely uninstall all components. Here's how you manually uninstall Speedscale completely.
 
@@ -132,7 +132,7 @@ Post "https://speedscale-operator.speedscale.svc:443/mutate?timeout=30s":dial tc
 For that reason, we need to delete the webhook manually before deleting the operator/namespace. Run the following command:
 
 ```bash
-kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
+kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator speedscale-operator-replay
 ```
 
 2. Delete the speedscale namespace
@@ -161,23 +161,15 @@ However, if you simply must remove the sidecar manually then delete both `goprox
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    deployment.kubernetes.io/revision: "2"
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/instance":"demo-java"},"name":"java-server","namespace":"default"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"java-server"}},"template":{"metadata":{"labels":{"app":"java-server"}},"spec":{"containers":[{"env":[{"name":"REQUEST_TAG","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}}],"image":"gcr.io/speedscale-demos/java-server:1.0.1","imagePullPolicy":"Always","name":"java-server","ports":[{"containerPort":8080,"name":"http"}],"readinessProbe":{"httpGet":{"path":"/healthz","port":"http"}},"resources":{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}}]}}}}
     operator.speedscale.com/managed-by: k8s-1-27-4-do-0-nyc3-1691800765671-117b0b47-6533-4e39-aeac-484bc8894f14
     operator.speedscale.com/namespace: speedscale
     sidecar.speedscale.com/inject: "true"
-  creationTimestamp: "2023-08-12T01:10:04Z"
-  generation: 2
   labels:
     app.kubernetes.io/instance: demo-java
     operator.speedscale.com/sut: "true"
     sidecar.speedscale.com/injected: "true"
   name: java-server
   namespace: default
-  resourceVersion: "224994"
-  uid: d17176b2-8ae6-42e6-9955-5ff8b7e76394
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -211,24 +203,6 @@ spec:
         - containerPort: 8080
           name: http
           protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /healthz
-            port: http
-            scheme: HTTP
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
       - env:
         - name: APP_LABEL
           value: java-server
@@ -393,27 +367,7 @@ spec:
         terminationMessagePolicy: FallbackToLogsOnError
       restartPolicy: Always
       schedulerName: default-scheduler
-      securityContext: {}
       terminationGracePeriodSeconds: 30
-status:
-  availableReplicas: 1
-  conditions:
-  - lastTransitionTime: "2023-08-12T01:10:04Z"
-    lastUpdateTime: "2023-08-12T01:35:56Z"
-    message: ReplicaSet "java-server-64c6d6486c" has successfully progressed.
-    reason: NewReplicaSetAvailable
-    status: "True"
-    type: Progressing
-  - lastTransitionTime: "2023-08-12T17:03:27Z"
-    lastUpdateTime: "2023-08-12T17:03:27Z"
-    message: Deployment has minimum availability.
-    reason: MinimumReplicasAvailable
-    status: "True"
-    type: Available
-  observedGeneration: 2
-  readyReplicas: 1
-  replicas: 1
-  updatedReplicas: 1
 ```
 
 You must delete these two sections:
