@@ -41,7 +41,7 @@ For a full list of permissions that Speedscale is using, you may use one of the 
 
 If you get webhook errors when running in minikube, it could be related to the network configuration. You need to add these 2 flags to your start command to ensure the network is properly configured:
 
-```
+```bash
 minikube start \
     --cni=true --container-runtime=containerd \
     --ALL_YOUR_OTHER_FLAGS_HERE
@@ -64,7 +64,7 @@ ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) "docker run --
 
 If you get webhook errors when running in microk8s, it could be related to the network configuration. You need to enable the [dns add-on](https://microk8s.io/docs/addon-dns) to ensure the network is properly configured:
 
-```
+```bash
 microk8s enable dns
 ```
 
@@ -79,7 +79,7 @@ Post "https://speedscale-operator.speedscale.svc:443/mutate?timeout=30s":dial tc
 
 If you experience this problem, you can fix your cluster by deleting the webhook manually:
 
-```
+```bash
 kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
 ```
 
@@ -112,7 +112,7 @@ in the Operator logs. This usually happens if the port specified is invalid (not
 ```
 
 This error usually happens when there's a fresh install after an incomplete uninstall. There are certs in the cluster that have stuck around when they shouldn't. Search for speedscale related certs and delete. The following commands may be helpful:
-```
+```bash
 kubectl delete mutatingwebhookconfigurations speedscale-operator
 kubectl delete mutatingwebhookconfigurations speedscale-operator-replay
 kubectl delete validatingwebhookconfiguration speedscale-operator-replay 
