@@ -77,10 +77,11 @@ Internal error occurred: failed calling webhook "operator.speedscale.com":
 Post "https://speedscale-operator.speedscale.svc:443/mutate?timeout=30s":dial tcp xx.xx.xx.xx:443: connect: connection refused
 ```
 
-If you experience this problem, you can fix your cluster by deleting the webhook manually:
+If you experience this problem, you can fix your cluster by deleting the webhooks manually:
 
 ```bash
-kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator
+kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator speedscale-operator-replay
+kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator-replay
 ```
 
 After the webhook has been deleted, re-run the full operator delete command to make sure that service roles and other items are properly cleaned up.

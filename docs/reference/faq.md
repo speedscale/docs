@@ -129,10 +129,11 @@ Internal error occurred: failed calling webhook "operator.speedscale.com":
 Post "https://speedscale-operator.speedscale.svc:443/mutate?timeout=30s":dial tcp xx.xx.xx.xx:443: connect: connection refused
 ```
 
-For that reason, we need to delete the webhook manually before deleting the operator/namespace. Run the following command:
+For that reason, we need to delete the webhooks manually before deleting the operator/namespace. Run the following commands:
 
 ```bash
 kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator speedscale-operator-replay
+kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io speedscale-operator-replay
 ```
 
 2. Delete the speedscale namespace
