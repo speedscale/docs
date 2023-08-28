@@ -31,8 +31,7 @@ You must tell Speedscale which JWTs you want to re-sign. This is accomplished wi
 1. Open the transform editor for your Snapshot
 2. Select the Responder tab
 3. Add a "JWT Resign" transform
-4. Set the "path" to the correct file path so the responder can find it.
-The path will always start with `/home/speedscale/secret/` and end with `secret_name/secret_key`. For example, let's say we have an RS256 TLS certficate stored in a Kubernetes secret called `jwt-demo`. The full path would be `/home/speedscale/secret/jwt-demo/tls.key` because the secret name is `jwt-demo` and by default Kubernetes stores TLS secrets with a key named `tls.key`. You can find more information in the Kubernetes [docs](https://kubernetes.io/docs/concepts/configuration/secret/)
+4. Set the "path" to the correct file path so the responder can find it. If you are running in Kubernetes you can use this format to specify a secret in the cluster: `${{secret:secret_name/key_inside_the_secret}}`. You can find more information in the Kubernetes [docs](https://kubernetes.io/docs/concepts/configuration/secret/). Whether you specify a secret or a direct file location the secret must match the algorithm of the JWT. For example, if the JWT is signed using HS512 then the secret or file must contain 64 bytes as a key. If RS512 it must be a certificate and so on.
 5. (optional) Select a subet of traffic to apply the transform to. Remember, if "access_token" is not found in an RRPair then the responder will just skip it. This means there should be little issue with not configuring fine grained filters unless you have many `access_token`s that need to be treated differently.
 
 When you're done, you should be able to click on the "Advanced" tab and see JSON resembling the following:
@@ -61,46 +60,13 @@ When you're done, you should be able to click on the "Advanced" tab and see JSON
         {
           "type": "jwt_resign",
           "config": {
-            "secretPath": "/home/speedscale/secret/jwt-demo/tls.key"
+            "secretPath": "${{secret:jwt-demo/tls.key}}"
           }
         }
       ]
     }
   ]
 }
-```
-
-## Mount your secrets to the responder from the UI
-
-The secret must be made available to the responder in your cluster. We do this by instructing the operator to mount the secret when starting a replay. Don't worry, it's easy.
-
-1. From the UI, select the [Test Config](https://dev.speedscale.com/config/standard) you would like to use for your replay.
-
-:::note
-Remember, you can clone the standard test config to get started.
-:::
-
-2. Add a secret to the cluster configuration.
-
-![replay secret](./jwt/replay_secrets.png)
-
-For this example, we would simply enter the name of our secret in the cluster, `jwt-demo`.
-
-(optional) If you are starting replays using a Traffic Replay CR, simply add a `secretRefs` to the spec. This step is only necessary if you are not using the UI to initiate a replay. Here is a complete example:
-
-```yaml
----
-apiVersion: speedscale.com/v1
-kind: TrafficReplay
-metadata:
-  name: replay-jwt-resign
-spec:
-  snapshotID: 3bde4a60-580e-451d-90d1-0effc2f83c92
-  workloadRef:
-    kind: Deployment
-    name: user
-  secretRefs:
-    - name: jwt-demo
 ```
 
 Now, run your replay using your new test config and you're ready to go!
