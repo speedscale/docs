@@ -69,5 +69,5 @@ When you're done, you should be able to click on the "Advanced" tab and see JSON
 }
 ```
 
-Now, run your replay using your new test config and you're ready to go!
+Now, run your replay and you're ready to go!
 
