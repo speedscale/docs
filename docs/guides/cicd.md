@@ -175,7 +175,7 @@ pipeline {
 
   environment {
       SERVICE = 'my-service' // <--- Speedscale environment variables - see below
-      PATH = "${env.PATH}:${env.WORKSPACE}/.speedscale"
+      PATH = "${env.PATH}:${HOME}/.speedscale"
   }
   stages {
     stage('speedscale') {
