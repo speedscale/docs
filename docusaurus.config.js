@@ -125,6 +125,7 @@ const config = {
           { from: '/reference/transform-traffic/extractors/http/http_res_body/', to: '/reference/transform-traffic/extractors/res_body/'},
           { from: '/reference/transform-traffic/transforms/grpc_field/', to: '/reference/transform-traffic/transforms/json_path/'},
           { from: '/reference/transform-traffic/transforms/http_auth/', to:  '/reference/transform-traffic/extractors/http_req_header/'},
+          { from: '/reference/transform-traffic/common-patterns/change-login/', to: '/guides/replay/change-login/'},
           { from: '/replay/preparing-the-environment/', to: '/guides/replay/'},
           { from: '/replay/replay-snapshot', to: '/guides/replay/'},
           { from: '/replay/replay-snapshot/lifecycle-and-troubleshooting/', to: '/guides/replay/lifecycle-and-troubleshooting/'},
