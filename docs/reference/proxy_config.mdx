@@ -219,4 +219,35 @@ export HTTPS_PROXY='http://127.0.0.1:4140'
 </Tabs>
 </TabItem>
 
+<TabItem value="ruby" label="Ruby">
+
+Ruby supports `HTTP_PROXY` and `HTTPS_PROXY` environment variables to configure outbound http or https
+requests.
+<Tabs>
+<TabItem value="k8s" label="Kubernetes">
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: HTTP_PROXY
+          value: http://127.0.0.1:4140
+        - name: HTTPS_PROXY
+          value: http://127.0.0.1:4140
+```
+
+</TabItem>
+<TabItem value="not-k8s" label="Outside of Kubernetes">
+
+```bash
+export HTTP_PROXY='http://127.0.0.1:4140'
+export HTTPS_PROXY='http://127.0.0.1:4140'
+```
+
+</TabItem>
+</Tabs>
+</TabItem>
+
 </Tabs>
