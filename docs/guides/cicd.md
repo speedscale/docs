@@ -33,7 +33,7 @@ In order to integrate Speedscale into your CI/CD you will need:
 Direct access to your Kubernetes cluster is optional.
 
 :::info
-Speedscale can also be run in [Docker](./docker.md)
+Speedscale can also be run in [Docker](../setup/install/docker.md)
 :::
 
 ## The Pipeline

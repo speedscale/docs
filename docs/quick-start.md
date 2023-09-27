@@ -108,7 +108,7 @@ will walk you through installing the
 [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
 and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
 
-Speedscale can also be used with [Docker](./guides/docker.md) and [locally](./guides/cli.md).
+Speedscale can also be used with [Docker](./setup/install/docker.md) and [locally](./guides/cli.md).
 
 </TabItem>
 
