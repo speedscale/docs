@@ -19,7 +19,7 @@ speedctl install
 
 Now you have to configure your application to use the socks
 [proxy](../../reference/glossary.md#proxy) running on `*:4140` on your server, and
-configure it to [trust the local certificates](../../setup/sidecar/tls/#trusting-tls-certificates).
+configure it to [trust the local cegitrtificates](../sidecar/tls/#trusting-tls-certificates).
 
 To test out the capture mechanism, you can make requests as you normally would but using `localhost:4143` instead of the port your app is serving on.
 
