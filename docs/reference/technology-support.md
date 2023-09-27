@@ -29,10 +29,10 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | IMAP | Protocol | Capture Only |  |
 | Istio (1.12+) | Environment | Full | |
 | Kafka | Protocol | Capture Only | Active beta for full replay |
+| Microsoft Outlook 365 | API | Full |  |
 | MongoDB | DBMS | Capture Only |  |
 | Mutual TLS (mTLS) | Protocol | Partial | See [TLS](/setup/sidecar/tls/) |
 | MySQL | DBMS | Full | |
-| Outlook 365 | API | Full |  |
 | Postgres | DBMS | Partial | Active beta for full replay |
 | Redis | DBMS | Capture Only | |
 | Salesforce | API | Full | |
@@ -50,30 +50,30 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | Environment/Distribution | Notes |
 | ------------ | ----- |
 | Argo Rollouts | See [guide](../guides/argo.md) |
-| AWS Elastic Container Service (ECS) or Fargate | See [guide](../guides/ecs.md) |
+| AWS Elastic Container Service (ECS) or Fargate | See [guide](../setup/install/ecs.md) |
 | AWS Elastic Kubernetes Service (EKS) | |
-| AWS Elastic Beanstalk | See [guide](../guides/beanstalk.md) |
-| AWS Elastic Compute Cloud (EC2) | See [guide](../guides/vm.md) |
+| AWS Elastic Beanstalk | See [guide](../setup/install/beanstalk.md) |
+| AWS Elastic Compute Cloud (EC2) | See [guide](../setup/install/vm.md) |
 | Canonical Microk8s | Must enable DNS |
 | Civo Kubernetes | |
 | CNCF Kind | |
 | CNCF Minikube | Must add `--cni=true` flag |
 | DigitalOcean Kubernetes | |
-| Docker Desktop | See [guide](../guides/docker.md) |
+| Docker Desktop | See [guide](../setup/install/docker.md) |
 | DigitalOcean Managed Kubernetes | |
 | GCP GKE Autopilot | Requires [Dual Proxy](/setup/sidecar/proxy-modes/) |
 | GCP GKE CloudRun | |
 | GCP GKE Standard | |
-| Istio | See [guide](../guides/istio.md) |
+| Istio | See [guide](../setup/install/istio.md) |
 | MacOS Desktop | See [CLI](../guides/cli.md) |
 | Microsoft Azure Kubernetes Service (AKS) | |
-| Microsoft Azure App Services | See [guide](../guides/azure.md) |
+| Microsoft Azure App Services | See [guide](../setup/install/azure.md) |
 | Postman Collections (v2+) | See [guide](../guides/import-postman.md) |
 | Rancher Desktop | |
 | Rancher K3S | |
 | Rancher RKE2 | Rancher Marketplace [Helm Chart](https://rancher.com/docs/rancher/v2.6/en/helm-charts/) |
-| Redhat OpenShift | See [guide](../guides/openshift.md) |
-| Virtual Machines (VMWare and others) | See [guide](../guides/vm.md) |
+| Redhat OpenShift | See [guide](../setup/install/openshift.md) |
+| Virtual Machines (VMWare and others) | See [guide](../setup/install/vm.md) |
 | Windows Desktop | See [CLI](../guides/cli.md) |
 
 Speedscale control plane, sidecar and replay system are compatible with all currently supported versions of [Kubernetes](https://kubernetes.io/releases/) and [Istio](https://istio.io/latest/docs/releases/supported-releases/).

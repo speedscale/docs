@@ -1,15 +1,14 @@
 ---
-title: Speedscale on ECS/Fargate
-sidebar_position: 28
+title: AWS ECS/Fargate
+sidebar_position: 4
 ---
 
 :::caution
-This workflow is currently in preview status. Speedscale currently works best inside plain Kubernetes clusters
-such as EKS and GKE.
+This workflow is currently in early access. Please 
 :::
 
 ## Prerequisites
-1. [Speedctl is installed](../setup/install/cli.md)
+1. [Speedctl is installed](../../quick-start.md)
 2. [ECS Service Discovery is setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html)
 
 ## Working with ECS

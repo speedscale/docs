@@ -1,16 +1,14 @@
 ---
-title: Speedscale on Azure App Services
-sidebar_position: 25
+title: Microsoft Azure App Services
+sidebar_position: 6
 ---
 
 :::caution
-This workflow is currently in preview status. Speedscale currently works best inside plain Kubernetes clusters
-such as EKS and GKE.
+This workflow is currently in preview status. Please provide feedback in our [slack community](https://slack.speedscale.com).
 :::
 
 ## Prerequisites
-1. [Speedctl is installed](../setup/install/cli.md)
-
+1. [Speedctl is installed](../../setup/install/cli.md)
 
 ## Working with Azure App Services
 
@@ -96,7 +94,7 @@ And that's it! Now your inbound and outbound traffic is being collected.
 
 ## Running Replays
 
-Replays can be run against the service through the Kubernetes cluster as detailed [here](./replay/README.md). The HTTP Proxy settings and TLS settings set on the Cloud Run service above need to remain as is. It's recommended to set the `collect-logs` option to `false` since the Kubernetes service logs are not relevant in this setup.
+Replays can be run against the service through the Kubernetes cluster as detailed [here](../../guides/replay/README.md). The HTTP Proxy settings and TLS settings set on the Cloud Run service above need to remain as is. It's recommended to set the `collect-logs` option to `false` since the Kubernetes service logs are not relevant in this setup.
 
 :::info
 Note that the CPU and memory graphs displayed in the report will be those for the proxy container and not the actual cloud run service.

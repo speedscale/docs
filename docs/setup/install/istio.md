@@ -1,10 +1,14 @@
 ---
-title: Speedscale with Istio
-sidebar_position: 29
+title: Istio
+sidebar_position: 11
 ---
 
-import ExternalServices from '../reference/_external-services.mdx'
-import ConfiguringProxy from '../reference/proxy_config.mdx'
+import ExternalServices from '../../reference/_external-services.mdx'
+import ConfiguringProxy from '../../reference/proxy_config.mdx'
+
+:::info
+Please make sure the [Speedscale Operator](../../quick-start.md) is installed before configuring Istio support.
+:::
 
 [Istio](https://istio.io) is a service mesh offering that modifies a cluster to provide, among
 other things, traffic and network management.

@@ -2,16 +2,59 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import MacOSLinuxInstall from './setup/install/_cli_macos_linux.mdx'
 import WindowsCLIInstall from './setup/install/_cli_windows.mdx'
+import ApiKey from './setup/install/api-key.png'
 
 # Quick Start
 
-## API Key
+This guide walks through installing Speedscale into a new environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./tutorial.md) to record, replay and view results for a demo application.
 
-You will need to get your API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key and paste when prompted.
+Speedscale is tested with apps hosted on the local desktop all the way up to high scale enterprise Kubernetes clusters. If this is your first time working with Speedscale, it's easiest to just run on your local desktop and record traffic from a local process. Keep in mind that it is very common to record traffic in one environment (like a production Kubernetes cluster) and replay it somewhere else (like a local mock server).
 
-![](./setup/install/api-key.png)
+This guide will walk you through the following steps:
 
-## Install
+1. Retrieve your API Key
+2. Install CLI (recommended)
+3. Install Operator (if required)
+4. Verify Installation
+5. Capture and replay traffic against a demo app
+
+## Retrieve your API Key <a href="retrieve_api_key" id="retrieve_api_key"></a>
+
+You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key and paste when prompted.
+
+<img src={ApiKey} width="600"/>
+
+## Install CLI <a href="install_cli" id="install_cli"></a>
+
+If you are running Speedscale on a local desktop or in Docker Desktop, the CLI is required. For all other users it is highly recommended because it allows programmatic interaction with Speedscale cloud.
+
+<Tabs>
+
+<TabItem value="mac" label="Mac/Linux">
+
+<MacOSLinuxInstall />
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+<WindowsCLIInstall />
+
+</TabItem>
+
+</Tabs>
+
+Run the following command. You'll need the API Key copied from the above section.
+```
+speedctl init
+```
+
+
+## Install Speedscale <a href="install_speedscale" id="install_speedscale"></a>
+
+If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./tutorial.md).
+
+If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then you can install using these instructions. If you are not running in Kubernetes, or are running with a more specialized enterprise distribution please select environment-specific [instructions](./setup/install/README.md) in this section.
 
 <Tabs>
 
@@ -32,15 +75,26 @@ for all configuration options available for the Helm chart.
 
 </TabItem>
 
-<TabItem value="cli" label="CLI (Mac/Linux)">
+<TabItem value="cli" label="CLI">
 
-<MacOSLinuxInstall />
+Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
-If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
 The [install wizard](./setup/install/kubernetes-operator.md#install-wizard)
 will walk you through installing the
 [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
 and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
+
+### (Optional) Adding Image Pull Secrets
+
+If you need custom image pull secrets (for example, if you're re-hosting
+Speedscale images in a dedicated registry), you may provide one or more secret
+names with the `--imgpullsecrets` argument, and the secrets will be attached to
+the service account.
+
+```
+speedctl install --imgpullsecrets my-secret1,my-secret2p
+```
+
 
 </TabItem>
 
@@ -82,15 +136,14 @@ or
 speedctl deploy operator -e $(kubectl config current-context) --dir
 ```
 
-
 </TabItem>
 
 </Tabs>
 
 
-## Verify Install
+## Verify Installation <a href="verify_install" id="verify_install"></a>
 
-For Kubernetes users, make sure the operator pods are running properly:
+Make sure the operator pods are running properly:
 
 ```
 kubectl -n speedscale get pods
@@ -103,10 +156,14 @@ speedscale-forwarder-xxxxxxxxxx-xxxxx   1/1     Running   0          5s
 speedscale-operator-xxxxxxxxxx-xxxxx    1/1     Running   0          15s
 ```
 
-If you're ready to capture traffic skip ahead to [Sidecar](./setup/sidecar/install.md).
-
 :::tip
 
-If you have any issues installing, check out the [troubleshooting guide](./setup/install/troubleshooting.md).
+If you have any issues installing, check out the [troubleshooting guide](./setup/install/troubleshooting.md) or contact support on [slack](https://slack.speedscale.com)
 
 :::
+
+# Next Steps
+
+At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
+
+If you're already an expert you can click the `Add Service` button in the UI to automatically add sidecars or install them [manually](./setup/sidecar/install.md).
