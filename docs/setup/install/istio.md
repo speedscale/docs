@@ -88,7 +88,7 @@ HTTP proxy. If your application needs so use a SOCKS4 or SOCKS5 proxy, use `tcp:
 Outbound TLS support for the Speedscale sidecar can be enabled with the annotation
 `sidecar.speedscale.com/tls-out: "true"`. You may be required to perform additional steps if your
 application and not Envoy is originating TLS requests. See
-[Trusting TLS Certificates](../tls/#trusting-tls-certificates) for more information.
+[Trusting TLS Certificates](../../guides/tls/#trusting-tls-certificates) for more information.
 
 <ConfiguringProxy />
 

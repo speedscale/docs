@@ -50,7 +50,7 @@ Using the [manifests](#manifests)
     - Remove the port binding of `80:{YOUR_APP_PORT}` (commented out in the manifest) from your app. Goproxy will become the new entrypoint for incoming requests.
 
 We're also configuring our app to use `goproxy` as an outbound http proxy so that we can capture outbound requests. Our example `notifications` app uses Golang so the variables are set accordingly in the manifest. The environment variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
-and [trusting TLS certificates](/setup/sidecar/tls/#trusting-tls-certificates).
+and [trusting TLS certificates](../../setup/sidecar/tls/#trusting-tls-certificates).
 
 ### Analyze Traffic
 

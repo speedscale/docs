@@ -24,8 +24,7 @@ cloud.
 
 Now you have to configure your application to use the socks
 [proxy](../../reference/glossary.md#proxy) running on `*:4140` on your server, and
-configure it to [trust the local
-certificates](/setup/sidecar/tls/#trusting-tls-certificates).
+configure it to [trust the local certificates](../../setup/sidecar/tls/#trusting-tls-certificates).
 
 You can now run requests against your service through `localhost:4143` instead
 of the normal port as our goproxy is acting as the entry point for the app now.
