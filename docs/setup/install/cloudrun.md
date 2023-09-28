@@ -111,7 +111,7 @@ volumes:
 ```
 
 The environment variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
-and [trusting TLS certificates](../sidecar/tls/#trusting-tls-certificates).
+and [trusting TLS certificates](/setup/sidecar/tls.md#trusting-tls-certificates).
 
 ### Verification
 

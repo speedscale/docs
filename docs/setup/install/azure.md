@@ -86,7 +86,7 @@ Then configure whatever existing routing rules to use this new backend pool inst
 For outbound capturing, we're going to tell the app to use `goproxy` as an http proxy. We add `HTTP_PROXY`, `HTTPS_PROXY` settings with the same `goproxy` IP as before but with a different port `http://10.1.1.75:8081` and we add `SSL_CERT_FILE` to point at the file we mounted in the previous section.
 
 The environment variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
-and [trusting TLS certificates](../sidecar/tls/#trusting-tls-certificates).
+and [trusting TLS certificates](/setup/sidecar/tls.md/#trusting-tls-certificates).
 
 ![App Settings](./azure/settings.png)
 
