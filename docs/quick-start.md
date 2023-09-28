@@ -18,13 +18,13 @@ This guide will walk you through the following steps:
 4. Verify Installation
 5. Capture and replay traffic against a demo app
 
-## Retrieve your API Key <a href="retrieve_api_key" id="retrieve_api_key"></a>
+## Retrieve your API Key
 
 You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key and paste when prompted.
 
 <img src={ApiKey} width="600"/>
 
-## Install CLI <a href="install_cli" id="install_cli"></a>
+## Install CLI
 
 If you are running Speedscale on a local desktop or in Docker Desktop, the CLI is required. For all other users it is highly recommended because it allows programmatic interaction with Speedscale cloud.
 
@@ -50,7 +50,7 @@ speedctl init
 ```
 
 
-## Install Speedscale <a href="install_speedscale" id="install_speedscale"></a>
+## Install Speedscale
 
 If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./tutorial.md).
 
@@ -141,7 +141,7 @@ speedctl deploy operator -e $(kubectl config current-context) --dir
 </Tabs>
 
 
-## Verify Installation <a href="verify_install" id="verify_install"></a>
+## Verify Installation
 
 Make sure the operator pods are running properly:
 
