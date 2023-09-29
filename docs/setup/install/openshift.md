@@ -1,13 +1,12 @@
 ---
-title: Speedscale on OpenShift
-sidebar_position: 18
+title: Redhat OpenShift
+sidebar_position: 10
 ---
 
 # Working with OpenShift
 
 :::caution
-This workflow is currently in preview status. Speedscale currently works best inside plain Kubernetes clusters
-such as EKS and GKE.
+This workflow is currently in preview status. Please provide feedback in our [slack community](https://slack.speedscale.com).
 :::
 
 ## Prerequisites
@@ -39,7 +38,7 @@ The value `anyuid` is a default SCC provided by OpenShift. Any SCC can be used s
 strategy is set to `RunAsAny`. See `oc explain scc` for more detail.
 :::
 
-Once this step is complete, you can continue [installing the Speedscale operator](../setup/install/kubernetes-operator.md).
+Once this step is complete, you can continue [installing the Speedscale operator](../../setup/install/kubernetes-operator.md).
 
 ## Capturing Traffic
 

@@ -1,21 +1,25 @@
 ---
-title: Speedscale on a VM/EC2
-sidebar_position: 17
+title: Virtual Machines/AWS EC2
+sidebar_position: 5
 ---
 
 ## Prerequisites
-1. [Speedctl is installed](../setup/install/cli.md)
+1. [Speedctl is installed](../../quick-start.md)
 1. [Docker is installed](https://docs.docker.com/engine/install/)
 
 ## Setting up local capture
 
+1. Run:
+```bash
+speedctl install
+```
 
-Run `speedctl install`, select the `Traditional server / VM` flow and subsequently the `Capture traffic and forward to Speedscale Cloud` option. This will output a manifest file and a command on how to run it with something similar to `docker compose --file speedscale-docker-capture.yaml up -d` .
+2. Select the `Traditional server / VM` flow
+3. Select the `Capture traffic and forward to Speedscale Cloud` option. This will output a manifest file and a command on how to run it with something similar to `docker compose --file speedscale-docker-capture.yaml up -d`.
 
 Now you have to configure your application to use the socks
-[proxy](../reference/glossary.md#proxy) running on `*:4140` on your server, and
-configure it to [trust the local
-certificates](/setup/sidecar/tls/#trusting-tls-certificates).
+[proxy](../../reference/glossary.md#proxy) running on `*:4140` on your server, and
+configure it to [trust the local cegitrtificates](/setup/sidecar/tls/#trusting-tls-certificates).
 
 To test out the capture mechanism, you can make requests as you normally would but using `localhost:4143` instead of the port your app is serving on.
 
@@ -61,7 +65,7 @@ That's it! Now all traffic will be forwarded to the Speedscale proxy and be avai
 ![Traffic](./docker/traffic.png)
 
 You should be able to see traffic in the Speedscale UI after a few minutes and
-now you can using this traffic to [create a snapshot](./creating-a-snapshot.md).
+now you can using this traffic to [create a snapshot](../../guides/creating-a-snapshot.md).
 
 
 ## Replaying Traffic
@@ -71,7 +75,7 @@ above.  Run `speedctl install` and choose the `Traditional server/VM` flow again
 replay recorded traffic.  When prompted, enter the ID of the snapshot you
 created.
 
-This will generate a [report](../reference/glossary.md#report) which you can find on the [reports page](./reports/README.md).
+This will generate a [report](../../reference/glossary.md#report) which you can find on the [reports page](../../guides/reports/README.md).
 
 :::note
 The `speedctl install` command is just a helper and environment variables like

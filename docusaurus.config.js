@@ -43,8 +43,8 @@ const config = {
           { from: '/analyze/traffic-viewer/transform-snapshot/', to: '/reference/transform-traffic/'},
           { from: '/analyze/traffic-viewer/view-snapshot/', to: '/guides/creating-a-snapshot/'},
           { from: '/cli/speedscale/', to: '/guides/cli/'},
-          { from: '/cli/speedscale/guides/docker-observability/', to: '/guides/docker/'},
-          { from: '/cli/speedscale/guides/docker-observability/demo-app/', to: '/guides/docker/'},
+          { from: '/cli/speedscale/guides/docker-observability/', to: '/setup/install/docker/'},
+          { from: '/cli/speedscale/guides/docker-observability/demo-app/', to: '/setup/install/docker/'},
           { from: '/cli/speedscale/guides/local-observability/', to: '/guides/cli/'},
           { from: '/cli/speedscale/guides/local-observability/python-demo-app/', to: '/guides/cli/'},
           { from: '/configuration/configuration/', to: '/reference/configuration/'},
@@ -92,7 +92,7 @@ const config = {
           { from: '/install/kubernetes-sidecar/sidecar-http-proxy/', to: '/setup/sidecar/proxy-modes/'},
           { from: '/install/kubernetes-sidecar/sidecar-perf/', to: '/setup/sidecar/performance/'},
           { from: '/install/kubernetes-sidecar/sidecar-trust/', to: '/setup/sidecar/tls/'},
-          { from: '/install/kubernetes-sidecar/using-with-istio/', to: '/guides/istio/'},
+          { from: '/install/kubernetes-sidecar/using-with-istio/', to: '/setup/install/istio/'},
           { from: '/install/networking/', to: '/reference/networking/'},
           { from: '/install/overview/', to: '/quick-start'},
           { from: '/manual-sequences/manually-installing-sidecar/', to: '/setup/sidecar/install/'},
@@ -136,7 +136,7 @@ const config = {
           { from: '/replay/viewing-reports-1/errors/', to: '/guides/reports/errors/'},
           { from: '/setup/sidecar/', to: '/setup/sidecar/install/'},
           { from: '/setup/sidecar/sidecar-trust/', to: '/setup/sidecar/tls/'},
-          { from: '/setup/sidecar/using-with-istio/', to: '/guides/istio/'},
+          { from: '/setup/sidecar/using-with-istio/', to: '/setup/install/istio/'},
           { from: '/setup/upgrade/changed-annotations/', to: '/setup/sidecar/annotations/'},
           { from: '/upgrade/operator/', to: '/setup/upgrade/operator/'}
         ]

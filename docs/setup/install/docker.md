@@ -1,13 +1,13 @@
 ---
-title: Speedscale on Docker
-sidebar_position: 16
+title: Docker
+sidebar_position: 8
 ---
 
 Run Speedscale components via Docker Compose.
 
 ## Prerequisites
 
-1. [Speedctl is installed](../setup/install/cli.md)
+1. [Speedctl is installed](../../quick-start.md)
 1. [Docker Desktop](https://docs.docker.com/desktop/) is installed
 
 ## Capturing Traffic
@@ -23,9 +23,8 @@ containers will aid in capturing traffic and sending it to the Speedscale
 cloud.
 
 Now you have to configure your application to use the socks
-[proxy](../reference/glossary.md#proxy) running on `*:4140` on your server, and
-configure it to [trust the local
-certificates](/setup/sidecar/tls/#trusting-tls-certificates).
+[proxy](../../reference/glossary.md#proxy) running on `*:4140` on your server, and
+configure it to [trust the local certificates](/setup/sidecar/tls/#trusting-tls-certificates).
 
 You can now run requests against your service through `localhost:4143` instead
 of the normal port as our goproxy is acting as the entry point for the app now.
@@ -35,7 +34,7 @@ of the normal port as our goproxy is acting as the entry point for the app now.
 ![Traffic](./docker/traffic.png)
 
 You should be able to see traffic in the Speedscale UI after a few minutes and
-now you can using this traffic to [create a snapshot](./creating-a-snapshot.md).
+now you can using this traffic to [create a snapshot](../../guides/creating-a-snapshot.md).
 
 ## Replaying Traffic
 
@@ -44,7 +43,7 @@ above.  Run `speedctl install` and choose the `Docker` flow that allows you to
 replay recorded traffic.  When prompted, enter the ID of the snapshot you
 created.
 
-This will generate a [report](../reference/glossary.md#report) which you can find on the [reports page](./reports/README.md).
+This will generate a [report](../../reference/glossary.md#report) which you can find on the [reports page](../../guides/reports/README.md).
 
 :::note
 The `speedctl install` command is just a helper and environment variables like

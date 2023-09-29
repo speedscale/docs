@@ -1,10 +1,14 @@
 ---
-title: Speedscale with Istio
-sidebar_position: 29
+title: Istio
+sidebar_position: 11
 ---
 
-import ExternalServices from '../reference/_external-services.mdx'
-import ConfiguringProxy from '../reference/proxy_config.mdx'
+import ExternalServices from '../../reference/_external-services.mdx'
+import ConfiguringProxy from '../../reference/proxy_config.mdx'
+
+:::info
+Please make sure the [Speedscale Operator](../../quick-start.md) is installed before configuring Istio support.
+:::
 
 [Istio](https://istio.io) is a service mesh offering that modifies a cluster to provide, among
 other things, traffic and network management.
@@ -84,7 +88,7 @@ HTTP proxy. If your application needs so use a SOCKS4 or SOCKS5 proxy, use `tcp:
 Outbound TLS support for the Speedscale sidecar can be enabled with the annotation
 `sidecar.speedscale.com/tls-out: "true"`. You may be required to perform additional steps if your
 application and not Envoy is originating TLS requests. See
-[Trusting TLS Certificates](../tls/#trusting-tls-certificates) for more information.
+[Trusting TLS Certificates](/setup/sidecar/tls/#trusting-tls-certificates) for more information.
 
 <ConfiguringProxy />
 

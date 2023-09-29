@@ -1,16 +1,14 @@
 ---
-title: Speedscale on Azure App Services
-sidebar_position: 25
+title: Microsoft Azure App Services
+sidebar_position: 6
 ---
 
 :::caution
-This workflow is currently in preview status. Speedscale currently works best inside plain Kubernetes clusters
-such as EKS and GKE.
+This workflow is currently in preview status. Please provide feedback in our [slack community](https://slack.speedscale.com).
 :::
 
 ## Prerequisites
-1. [Speedctl is installed](../setup/install/cli.md)
-
+1. [Speedctl is installed](../../setup/install/cli.md)
 
 ## Working with Azure App Services
 
@@ -88,7 +86,7 @@ Then configure whatever existing routing rules to use this new backend pool inst
 For outbound capturing, we're going to tell the app to use `goproxy` as an http proxy. We add `HTTP_PROXY`, `HTTPS_PROXY` settings with the same `goproxy` IP as before but with a different port `http://10.1.1.75:8081` and we add `SSL_CERT_FILE` to point at the file we mounted in the previous section.
 
 The environment variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
-and [trusting TLS certificates](/setup/sidecar/tls/#trusting-tls-certificates).
+and [trusting TLS certificates](/setup/sidecar/tls.md/#trusting-tls-certificates).
 
 ![App Settings](./azure/settings.png)
 
@@ -96,7 +94,7 @@ And that's it! Now your inbound and outbound traffic is being collected.
 
 ## Running Replays
 
-Replays can be run against the service through the Kubernetes cluster as detailed [here](./replay/README.md). The HTTP Proxy settings and TLS settings set on the Cloud Run service above need to remain as is. It's recommended to set the `collect-logs` option to `false` since the Kubernetes service logs are not relevant in this setup.
+Replays can be run against the service through the Kubernetes cluster as detailed [here](../../guides/replay/README.md). The HTTP Proxy settings and TLS settings set on the Cloud Run service above need to remain as is. It's recommended to set the `collect-logs` option to `false` since the Kubernetes service logs are not relevant in this setup.
 
 :::info
 Note that the CPU and memory graphs displayed in the report will be those for the proxy container and not the actual cloud run service.

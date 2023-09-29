@@ -1,16 +1,15 @@
 ---
-title: Speedscale on Elastic Beanstalk
-sidebar_position: 24
+title: AWS Elastic Beanstalk
+sidebar_position: 7
 ---
 
 :::caution
-This workflow is currently in preview status. Speedscale currently works best inside plain Kubernetes clusters
-such as EKS and GKE.
+This workflow is currently in preview status. Please provide feedback in our [slack community](https://slack.speedscale.com).
 :::
 
 ## Prerequisites
 
-1. [Speedctl is installed](../setup/install/cli.md)
+1. [Speedctl is installed](../../quick-start.md)
 1. Access to the client application to configure proxy settings and trust certificates.
 1. Application is using Beanstalk with [Docker Platform (ECS managed or otherwise)](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.html)
 
@@ -57,15 +56,15 @@ and [trusting TLS certificates](/setup/sidecar/tls/#trusting-tls-certificates).
 
 ![Traffic](./beanstalk/traffic.png)
 
-You should be able to see traffic in the Speedscale UI after a few minutes and now you can using this traffic to [create a snapshot](./creating-a-snapshot.md).
+You should be able to see traffic in the Speedscale UI after a few minutes and now you can using this traffic to [create a snapshot](../../guides/creating-a-snapshot.md).
 
 ### Replaying traffic
 
 If you've created a snapshot, you can replay it in Beanstalk as well. Take the ID of the snapshot you created (something like `b973b5e2-651f-4a30-8c69-7bd62a678544`) and fill it in the `SCENARIO_ID` variable shown in the [generator snippet](#manifests). This container has `restart: no` so that it only runs once. You can also run this same generator snippet locally against your deployment by changing the `CUSTOM_URL` to your internet facing Beanstalk URL.
 
-You can also change the `TEST_CONFIG_ID` to a [custom config](../reference/configuration/README.md) you may have created. Paste that snippet into your `docker-compose.yaml` file and run `docker compose up -d` again to start the test.
+You can also change the `TEST_CONFIG_ID` to a [custom config](../../reference/configuration/README.md) you may have created. Paste that snippet into your `docker-compose.yaml` file and run `docker compose up -d` again to start the test.
 
-This will generate a report which you can find more details for [here](./reports/README.md).
+This will generate a report which you can find more details for [here](../../guides/reports/README.md).
 
 ## Manifests
 Zip structure (`.ebextensions` are optional but usually present for Beanstalk apps)
