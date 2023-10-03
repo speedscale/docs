@@ -4,7 +4,7 @@ sidebar_position: 4
 ---
 
 :::caution
-This workflow is currently in early access. Please 
+This workflow is currently in preview status. Please provide feedback in our [slack community](https://slack.speedscale.com).
 :::
 
 ## Prerequisites
