@@ -138,7 +138,9 @@ const config = {
           { from: '/setup/sidecar/sidecar-trust/', to: '/setup/sidecar/tls/'},
           { from: '/setup/sidecar/using-with-istio/', to: '/setup/install/istio/'},
           { from: '/setup/upgrade/changed-annotations/', to: '/setup/sidecar/annotations/'},
-          { from: '/upgrade/operator/', to: '/setup/upgrade/operator/'}
+          { from: '/upgrade/operator/', to: '/setup/upgrade/operator/'},
+          { from: '/guides/istio/', to: '/setup/install/istio/'},
+          { from: '/guides/openshift/', to: '/setup/install/openshift/'}
         ]
       }
     ]
