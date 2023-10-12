@@ -15,6 +15,10 @@ Now click on the `Info` tab on that same RRPair. You can tell that Speedscale de
 
 ![session_id](./sessions/session_id.png)
 
+When a snapshot is created data about the sessions will be aggregated into a summary. The list of detected tokens/sessions can be viewed in the snapshot summary page under `Tokens`:
+
+![snapshot_summary](./sessions/token_summary.png)
+
 ## Replay
 
 During replay, Speedscale will automatically replace session IDs with their new value as returned by the server. When the load generator "logs in" it will expect the server to produce a new `access_token` response. Speedscale will detect and re-use that token wherever it is used in subsequent calls.
