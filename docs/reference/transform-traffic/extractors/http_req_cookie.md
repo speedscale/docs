@@ -2,7 +2,7 @@
 
 ### Purpose
 
-http_req_cookie extracts an HTTP cookie from the request portion of the RRPair.
+**http_req_cookie** extracts an HTTP cookie from the request portion of the RRPair.
 
 ### Usage
 

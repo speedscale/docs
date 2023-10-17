@@ -2,7 +2,7 @@
 
 ### Purpose
 
-http_res_header extracts an HTTP header from the response portion of the RRPair.
+**http_res_header** extracts an HTTP header from the response portion of the RRPair.
 
 ### Usage
 
