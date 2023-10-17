@@ -2,7 +2,7 @@
 
 ### Purpose
 
-http_url extracts the HTTP URL from the request portion of the RRPair. If an index is specified then the path will be split into an array and the zero-indexed  path segment will be returned. If no index is specified than then entire path is returned.
+**http_url** extracts the HTTP URL from the request portion of the RRPair. If an index is specified then the path will be split into an array and the zero-indexed  path segment will be returned. If no index is specified than then entire path is returned.
 
 ### Usage
 

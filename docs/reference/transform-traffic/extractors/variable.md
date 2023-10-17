@@ -1,4 +1,4 @@
-# Variable
+# variable
 
 ### Purpose
 
