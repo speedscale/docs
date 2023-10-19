@@ -1,3 +1,7 @@
+---
+sidebar_position: 7
+---
+
 # Change Username
 
 Generally speaking, usernames and passwords in test environments may not match production logins. This example shows you how to change production usernames into test environment usernames.
