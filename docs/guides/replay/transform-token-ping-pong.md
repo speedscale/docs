@@ -1,3 +1,7 @@
+---
+sidebar_position: 8
+---
+
 # Transformer Token Ping Pong
 
 A common pattern in restful APIs involves storing an identifier from a response and using it in subsequent requests. We call this the token ping pong.
