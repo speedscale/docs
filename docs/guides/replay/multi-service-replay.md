@@ -1,6 +1,6 @@
 # Multi-Service Replay
 
-Some applications require communication between multiple services to work correctly.  For example, imagine an API server which requires an authentication token.  In production a client might make a request to an auth service to get a token, then send that token to the API server.  In this guide we will configure Speedscale to run a replay simulating this example.
+Some applications require communication between multiple services to work correctly.  For example, imagine an API server which requires an authentication token.  In production a client might make a request to an auth service to get a token, then send that token to the API server.  In this guide we will configure Speedscale to run a [replay](/reference/glossary.md#replay) simulating this example.
 
 ## Select Traffic
 
@@ -249,4 +249,8 @@ Add an additional transform to store the `access_token` JSON value from the auth
 
 </p>
 </details>
+
+## Replay
+
+The merged snapshot now has traffic from both services and transforms to route to different locations.  Run a replay with the snapshot and iterate as necessary.
 
