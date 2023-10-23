@@ -14,6 +14,11 @@
 }
 ```
 
+| Key                | Description                                                                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------ |
+| **index**          | zero indexed string segment to be extracted
+| **separator**      | (optional) a comma delimited list of substrings to use as separators. Leave empty to split by comma.
+
 ### Example
 
 #### Configuration
@@ -38,8 +43,3 @@ string.splitting|is|fun
 
 `splitting`
 
-
-| Key                | Description                                                                                                                                                                                           |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **index**     | zero indexed string segment to be extracted
-| **separator**            | (optional) a comma delimited list of substrings to use as separators. Leave empty to split by comma.

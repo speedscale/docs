@@ -13,7 +13,7 @@
 }
 ```
 
-**new** - string to insert into token
+- **new** - string to insert into token
 
 ### Example
 

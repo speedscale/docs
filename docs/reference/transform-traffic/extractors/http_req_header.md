@@ -14,8 +14,8 @@
 }
 ```
 
-**name** - the case-sensitive name of the HTTP header to extract
-**index** - (optional) array location within the header (defaults to 0)
+- **name** - the case-sensitive name of the HTTP header to extract
+- **index** - (optional) array location within the header (defaults to 0)
 
 ### Example
 

@@ -14,9 +14,16 @@
 "type": "jwt_resign"
 ```
 
-### Example
+| Key                | Description                                                                                                                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **secretPath**     | The local path of secret mounted to generator (this is done automatically by the operator. See [howto](/guides/replay/mocks/resign-jwt-mocks.md)). If working in Kubernetes, you can specify a secret using this format: `${{secret:secret_name/key_inside_the_secret}}`
+| **iss**            | (optional) A replacement for iss value
+| **aud**            | (optional) A replacement for aud value
+| **sub**            | (optional) A replacement for sub value
+| **claims**         | (optional) key/val pairs to be overwritten into claims map (key1=val1,key2=val2)
+| **prefixes**       | (optional) prefixes to accept before JWT (defaults to "Bearer "). Don't forget the space at the end if it is present.
 
-#### Configuration
+### Example
 
 ```
 "type": "jwt_resign",
@@ -30,11 +37,3 @@
 }
 ```
 
-| Key                | Description                                                                                                                                                                                           |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **secretPath**     | The local path of secret mounted to generator (this is done automatically by the operator. See [howto](/guides/replay/mocks/resign-jwt-mocks.md)). If working in Kubernetes, you can specify a secret using this format: `${{secret:secret_name/key_inside_the_secret}}`
-| **iss**            | (optional) A replacement for iss value
-| **aud**            | (optional) A replacement for aud value
-| **sub**            | (optional) A replacement for sub value
-| **claims**         | (optional) key/val pairs to be overwritten into claims map (key1=val1,key2=val2)
-| **prefixes**       | (optional) prefixes to accept before JWT (defaults to "Bearer "). Don't forget the space at the end if it is present.
