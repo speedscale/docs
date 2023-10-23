@@ -22,7 +22,7 @@
 
 | Key                | Description                                                                       |
 | ------------------ | --------------------------------------------------------------------------------- |
-| **index**         | [optional] zero indexed column number to extract values from (header must be empty)
+| **index**          | [optional] zero indexed column number to extract values from (header must be empty)
 | **header**         | [optional] header name to extract values from (index must be empty)
 | **hasHeaders**     | [optional] indicates whether the first row contains headers (default: false)
 

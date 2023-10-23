@@ -4,6 +4,15 @@ sidebar_position: 1
 
 # Glossary
 
+### Action File
+
+A [snapshot](#snapshot) related file used internally by Speedscale services to store and access the [RRPairs](#rrpair) used by the [generator](#generator) during replay.
+
+```shell
+speedctl pull snapshot $SNAPSHOT_ID
+cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/action.jsonl
+```
+
 ### Assertion
 
 A validation applied to each individual RRPair captured in a [report](#report),
@@ -83,6 +92,24 @@ A process that accepts, stores, and forwards traffic.  Speedscale uses
 [goproxy](#goproxy), a purpose-built proxy written in Go, in various ways to
 capture traffic and route requests.
 
+### Raw File
+
+A [snapshot](#snapshot) related file used internally by Speedscale services to store and access all [RRPairs](#rrpair).
+
+```shell
+speedctl pull snapshot $SNAPSHOT_ID
+cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/raw.jsonl
+```
+
+### Reaction File
+
+A [snapshot](#snapshot) related file used internally by Speedscale services to store and access [RRPairs](#rrpair) used by the [responder](#responder) during replay.
+
+```shell
+speedctl pull snapshot $SNAPSHOT_ID
+cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/reaction.jsonl
+```
+
 ### Recursion
 
 See [recursion](#recursion).
@@ -137,6 +164,8 @@ A collection of captured [RRPairs](#rrpair) that can be replayed in your
 cluster or from your local desktop.
 
 Snapshots are listed on the [snapshots page](https://app.speedscale.com/snapshots) in the UI.
+
+See [creating a snapshot](/guides/creating-a-snapshot/) for more information.
 
 ### speedctl
 

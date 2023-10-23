@@ -20,15 +20,15 @@ Check the [Common Patterns](../../common-patterns/) section for practical exampl
 }
 ```
 
-**layout** - the expected date time format according to the Go time [format](https://pkg.go.dev/time#example-Time.Format)
+- **layout** - the expected date time format according to the Go time [format](https://pkg.go.dev/time#example-Time.Format)
 
 The following layouts may also be used, which are not supported in the Go time format:
 
-* **auto** - Speedscale will check a wide variety of common formats automatically
-* **epoch** - Seconds since the Unix Epoch
-* **epoch_ms** - Milliseconds since the Unix Epoch
+- **auto** - Speedscale will check a wide variety of common formats automatically
+- **epoch** - Seconds since the Unix Epoch
+- **epoch_ms** - Milliseconds since the Unix Epoch
 
-**precision** - a time interval to round the value to (like 1h). This is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+- **precision** - a time interval to round the value to (like 1h). This is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 
 ### Example
 

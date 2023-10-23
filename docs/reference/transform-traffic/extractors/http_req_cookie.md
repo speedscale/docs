@@ -13,7 +13,7 @@
 }
 ```
 
-**name** - the case-sensitive name of the HTTP cookie to extract
+- **name** - the case-sensitive name of the HTTP cookie to extract
 
 ### Example
 

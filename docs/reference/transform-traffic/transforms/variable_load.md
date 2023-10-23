@@ -13,7 +13,7 @@
 }
 ```
 
-**name** - name of variable to pull value from
+- **name** - name of variable to pull value from
 
 ### Example
 

@@ -13,7 +13,7 @@
 }
 ```
 
-**filename** - the fully qualified path to a local file or user data in the Speedscale cloud
+- **filename** - the fully qualified path to a local file or user data in the Speedscale cloud
 
 ### Example
 

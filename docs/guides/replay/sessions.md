@@ -19,10 +19,6 @@ When a snapshot is created data about the sessions will be aggregated into a sum
 
 ![snapshot_summary](./sessions/token_summary.png)
 
-## Filtering
-
-The Traffic Viewer is capable of filtering for individual sessions and displaying only transactions using the appropriate session ID. Add a session ID filter to the traffic viewer as you would any other filter to target a session.
-
 ## Replay
 
 During replay, Speedscale will automatically replace session IDs with their new value as returned by the server. When the load generator "logs in" it will expect the server to produce a new `access_token` response. Speedscale will detect and re-use that token wherever it is used in subsequent calls.

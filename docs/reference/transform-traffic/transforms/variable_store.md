@@ -13,7 +13,7 @@
 }
 ```
 
-**name** - name of variable to insert token into
+- **name** - name of variable to insert token into
 
 ### Example
 

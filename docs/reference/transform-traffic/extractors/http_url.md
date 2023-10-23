@@ -13,7 +13,7 @@
 }
 ```
 
-**index** - the index of the path segment
+- **index** - the index of the path segment
 
 ### Example
 
