@@ -102,6 +102,10 @@ kubectl get daemonsets <NAME> -o jsonpath='{.metadata.annotations.replay\.speeds
 kubectl get jobs <NAME> -o jsonpath='{.metadata.annotations.replay\.speedscale\.com/env-id}'
 ```
 
+:::tip
+Are your replays timing out because the Service Under Test is not ready in time? You can increase the amount of time the Speedscale Operator will wait by setting `TEST_PREP_TIMEOUT` in the operator Config Map. If you have access to your cluster you can run this kubectl command `kubectl -n speedscale patch configmap speedscale-operator --type=merge -p '{"data":{"TEST_PREP_TIMEOUT":"25m"}}'` with your new time.
+:::
+
 ### 3a. Operator adds Speedscale credentials to test namespace
 
 ### 3b. (optional) Operator starts telemetry collector
