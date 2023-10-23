@@ -15,7 +15,7 @@ This transform is usually used to populate variables during startup of the gener
 }
 ```
 
-**key** - name of the variable to store or extract
+**variable** - name of the variable to store or extract
 
 ### Example
 

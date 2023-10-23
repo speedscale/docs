@@ -13,6 +13,8 @@
 }
 ```
 
+**index** - the index of the path segment
+
 ### Example
 
 ```
