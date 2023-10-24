@@ -29,8 +29,8 @@ Now the first snapshot contains traffic from both services.
 Just to be sure we can investigate the snapshot traffic to verify by pulling the snapshot files and looking at the `resource` fields in the [action file](/reference/glossary.md#action-file):
 
 ```shell
-# speedctl pull snapshot $SNAPSHOT_ID
-# cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/raw.jsonl | head -n 5 | jq '.resource'
+$ speedctl pull snapshot $SNAPSHOT_ID
+$ cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/raw.jsonl | head -n 5 | jq '.resource'
 "frontend"
 "payment"
 "payment"
