@@ -254,3 +254,170 @@ Add an additional transform to store the `access_token` JSON value from the auth
 
 The merged snapshot now has traffic from both services and transforms to route to different locations.  Run a replay with the snapshot and iterate as necessary.
 
+## Reference
+
+Here's the full transform from the sections above:
+
+<details open><summary>JSON</summary>
+<p>
+
+```json
+{
+  "name": "my-transforms",
+  "id": "my-transforms",
+  "generator": [
+    {
+      "filters": {
+        "filters": [
+          {
+            "include": true,
+            "service": "frontend"
+          },
+          {
+            "include": true,
+            "detectedCommand": "POST"
+          }
+        ]
+      },
+      "extractor": {
+        "type": "target_host"
+      },
+      "transforms": [
+        {
+          "type": "constant",
+          "config": {
+            "new": "frontend"
+          }
+        }
+      ]
+    },
+    {
+      "filters": {
+        "filters": [
+          {
+            "include": true,
+            "service": "payment"
+          }
+        ]
+      },
+      "extractor": {
+        "type": "target_host"
+      },
+      "transforms": [
+        {
+          "type": "constant",
+          "config": {
+            "new": "payment"
+          }
+        }
+      ]
+    },
+    {
+      "filters": {
+        "filters": [
+          {
+            "include": true,
+            "service": "frontend"
+          },
+          {
+            "include": true,
+            "detectedCommand": "POST"
+          }
+        ]
+      },
+      "extractor": {
+        "type": "target_port"
+      },
+      "transforms": [
+        {
+          "type": "constant",
+          "config": {
+            "new": "3000"
+          }
+        }
+      ]
+    },
+    {
+      "filters": {
+        "filters": [
+          {
+            "include": true,
+            "service": "payment"
+          }
+        ]
+      },
+      "extractor": {
+        "type": "target_port"
+      },
+      "transforms": [
+        {
+          "type": "constant",
+          "config": {
+            "new": "3001"
+          }
+        }
+      ]
+    },
+    {
+      "filters": {
+        "filters": [
+          {
+            "include": true,
+            "service": "frontend"
+          },
+          {
+            "include": true,
+            "detectedCommand": "POST"
+          }
+        ]
+      },
+      "extractor": {
+        "type": "res_body"
+      },
+      "transforms": [
+        {
+          "type": "json_path",
+          "config": {
+            "path": "access_token"
+          }
+        },
+        {
+          "type": "var_store",
+          "config": {
+            "name": "access_token"
+          }
+        }
+      ]
+    },
+    {
+      "filters": {
+        "filters": [
+          {
+            "include": true,
+            "service": "payment"
+          }
+        ]
+      },
+      "extractor": {
+        "type": "http_req_header",
+        "config": {
+          "index": "0",
+          "name": "X-Access-Token"
+        }
+      },
+      "transforms": [
+        {
+          "type": "var_load",
+          "config": {
+            "name": "access_token"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+</p>
+</details>
+
