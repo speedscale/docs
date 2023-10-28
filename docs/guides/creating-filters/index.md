@@ -20,84 +20,76 @@ Here's how you create and apply them:
 ![Filter Name](./filter_name.png)
 
 
-## Create Filters With CLI
+## Create Filters with the CLI
 
 ### Prerequisites
 1. [Speedctl is installed](/setup/install/cli.md)
 
-### Pull Filter Using CLI
+### Pull Filter Using the CLI
 You can pull your filter using `speedctl`.
 ```bash
 speedctl pull filter my_excellent_filter
 ```
-By default, your filter will be download in `~/.speedscale/data/filters/my_excellent_filter.json`.
+By default, your filter will be download to `~/.speedscale/data/filters/my_excellent_filter.json`.
 
 After [editing](#edit-filter) the filter, you can use `push` command to update filter in speedscale cloud.
 ```bash
 speedctl push filter my_excellent_filter
 ```
 
-## Edit Filter
-There are two options to edit (or create) a filter:
+:::note
+Filter files contain both a human readable query string and an internal JSON representation. You can ignore the internal JSON representation. It will update automatically when you modify the query string.
+:::
 
-### 1. Edit Filter Query String
-The easiest option is using Query String with CLI. 
-You can use following options to edit query string. 
+## Edit the Filter Query String
+Speedscale employs a filter syntax that should be familiar to users of observability and monitoring tools. The syntax is a simple combination of  operators and grouping with parentheses. The following operators are supported:
 
-```
-header[{key}] {filter_operator} "{value}" # e.g. header[User-Agent] CONTAINS "Prometheus"
-reqsoapxpath[{key}] {filter_operator} "{value}"
-reqxpath[{key}] {filter_operator} "{value}"
-direction {filter_operator} "{value}"  # e.g. direction IS "IN"
-location {filter_operator} "{value}"
-cluster {filter_operator} "{value}"
-service {filter_operator} "{value}"
-tag {filter_operator} "{value}"
-networkaddr {filter_operator} "{value}"
-reqsoapxpath[{key}] {filter_operator} "{value}"
-reqxpath[{key}] {filter_operator} "{value}"
-namespace {filter_operator} "{value}"
-tech {filter_operator} "{value}"
-l7protocol {filter_operator} "{value}"
-url {filter_operator} "{value}"
-command {filter_operator} "{value}"
-status {filter_operator} "{value}"
-uuid {filter_operator} "{value}"
-snapshot {filter_operator} "{value}" 
-session {filter_operator} "{value}" 
-# time format should be RFC3339
-timerange {filter_operator} "{start_time}" "{end_time}" # e.g. timerange IS "2023-10-26T02:28:54Z" "2023-10-29T04:28:54Z"
-reqbodyjson {filter_operator} '{value}' # e.g. reqbodyjson IS '{"body": {"key":"value"}, "include_keys": ["key1", "key2"]}'
-reqbodyxml {filter_operator} '{value}'
-reqbodyhash {filter_operator} '{value}'
-```
-And this is list of `filter_operator`
 ```
 IS
 NOT
 CONTAINS
 NOTCONTAINS
 ```
-Between each two rules and between each set of rules should be a `logical_operator`: `AND`/`OR`.
 
-Each set of filter rules should be separated with parentheses even if there's only one filter rule.
-
-And if there's more than one rule for a key (`namespace`) they should be grouped together in a single set of parentheses.
+between each filter criteria should be an `AND` or `OR`. Each set of filter rules should be separated with parentheses even if there's only one filter rule. If there's more than one rule for a key (`namespace`) they should be grouped together in a single set of parentheses.
 
 This is a full example of a query:
 ```
 (header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")
 ```
 
-As you can see, all `header` filters are grouped together. And event though for `timerange` we only have a single filter, we still need to wrapp it inside parentheses.
+As you can see, all `header` filters are grouped together. And even though for `timerange` we only have a single filter, we still wrap it inside parentheses.
 
-Now you can use
+The following keywords can be used in your filter query:
+
+| Keyword | Description | Example |
+| --------| ----------- | ------- |
+| cluster | kubernetes cluster | cluster NOT qa-test-1
+| command | request command | command IS POST
+| direction | ingress(IN) or egress (OUT) | direction IS IN
+| header[{key}] | HTTP Header Key=Value | header[User-Agent] CONTAINS "Prometheus"
+| l7protocol | protocol type | l7protocol NOTCONTAINS HTTP
+| location | location/endpoint | location IS "/healthz"
+| namespace | kubernetes namespace | namespace IS default
+| networkaddr | network address/host | networkaddr NOT grpc-server:80
+| reqsoapxpath[{key}] | check request body against a soap XPath | reqsoapxpath[foo] IS bar
+| reqxpath[{key}] | check request body against an XPath | reqxpath[foo] IS bar
+| service | service name | service CONTAINS frontend
+| session | session (if set) | session IS "JWT:abc123"
+| snapshot | snapshot ID (if present) | snapshot IS 88e9b593-b617-44a2-9eaf-06f76605e941
+| status | status code | status IS 404
+| tag[{key}] | tag value | tag[testReportId] IS 88e9b593-b617-44a2-9eaf-06f76605e941
+| tech | detected tech (primary) | tech NOT CONTIANS "Google Spanner"
+| timerange | within a time range (RFC3339 format) | timerange IS "2023-10-26T02:28:54Z" "2023-10-29T04:28:54Z"
+| url | URL | url IS "/healthz"
+| uuid | identify a specific RRPair by UUID | uuid IS 88e9b593-b617-44a2-9eaf-06f76605e941
+
+You can now use the following command to update your filter:
 ```bash
 speedctl push filter my_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")
 ```
-to update your filter.
 
-Or to use a new filter, you can use `put` command. 
+You can also create a brand new filter using the `put` command. 
 ```bash
 speedctl put filter --id my_new_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")
 ```
