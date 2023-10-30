@@ -48,7 +48,7 @@ Speedscale employs a filter syntax that should be familiar to users of observabi
 IS
 NOT
 CONTAINS
-NOTCONTAINS
+NOT CONTAINS
 ```
 
 between each filter criteria should be an `AND` or `OR`. Each set of filter rules should be separated with parentheses even if there's only one filter rule. If there's more than one rule for a key (`namespace`) they should be grouped together in a single set of parentheses.
@@ -68,7 +68,7 @@ The following keywords can be used in your filter query:
 | command | request command | command IS POST
 | direction | ingress(IN) or egress (OUT) | direction IS IN
 | header[{key}] | HTTP Header Key=Value | header[User-Agent] CONTAINS "Prometheus"
-| l7protocol | protocol type | l7protocol NOTCONTAINS HTTP
+| l7protocol | protocol type | l7protocol NOT CONTAINS HTTP
 | location | location/endpoint | location IS "/healthz"
 | namespace | kubernetes namespace | namespace IS default
 | networkaddr | network address/host | networkaddr NOT grpc-server:80
