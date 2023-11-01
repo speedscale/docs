@@ -72,8 +72,10 @@ The following keywords can be used in your filter query:
 | location | location/endpoint | location IS "/healthz"
 | namespace | kubernetes namespace | namespace IS default
 | networkaddr | network address/host | networkaddr NOT grpc-server:80
-| reqsoapxpath[{key}] | check request body against a soap XPath | reqsoapxpath[foo] IS bar
-| reqxpath[{key}] | check request body against an XPath | reqxpath[foo] IS bar
+| req_json[{key}] | check request body against a json key/value | req_json[foo] IS bar
+| req_xml[{key}] | check request body against an xml key/value | req_xml[foo] IS bar
+| req_soapxpath[{key}] | check request body against a soap XPath | req_soapxpath[foo] IS bar
+| req_xpath[{key}] | check request body against an XPath | req_xpath[foo] IS bar
 | service | service name | service CONTAINS frontend
 | session | session (if set) | session IS "JWT:abc123"
 | snapshot | snapshot ID (if present) | snapshot IS 88e9b593-b617-44a2-9eaf-06f76605e941

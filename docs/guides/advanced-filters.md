@@ -69,41 +69,27 @@ This command prints out a new snapshot ID that you can copy and paste into the s
 
 ## Filter By JSON Value
 
-As an example, let's filter for a single user ID stored in the JSON request body. This would allow us to isolate a single user's API calls, store them in a snapshot, and then scale up that traffic to many users by transforming the user ID. To accomplish the first goal of filtering based on a JSON value, we will use the `requestBodyJson` filter criteria. `requestBodyJson` is capable of doing a full key/value document comparison but for this example we'll just search requests where the `user_number=0`.
+As an example, let's filter for a single user ID stored in the JSON request body. This would allow us to isolate a single user's API calls, store them in a snapshot, and then scale up that traffic to many users by transforming the user ID. To accomplish the first goal of filtering based on a JSON value, we will use the `reqFilter` filter criteria. `reqFilter` is capable of doing a key/value document comparison but for this example we'll just search requests where the `user_number=0`.
 
-1. Create a JSON document with the keys and values you want to match on. In this example, we'll use this simple JSON document: `{"user_number": "0"}` to extract a single user's calls. This filter type compares the entire JSON document so we need to create a small one with just the keys we care about to compare against.
+Note: `reqFilter` type by default is set to JSON (`REQ_FILTER_TYPE_JSON`) but it's capable of filtering other key/value documents like: XML (`REQ_FILTER_TYPE_XML`), SOAPXPath (`REQ_FILTER_TYPE_SOAPXPATH`) and XPath (`REQ_FILTER_TYPE_XPATH`).
 
-2. Base64 the JSON document
-
-(on Mac and Linux)
-```bash
-$ echo {\"user_number\":\"0\"} | base64
-eyJ1c2VyX251bWJlciI6IjAifQo=
-```
-
-3. Insert the base64 string into the following snippet and append to the `filter_expression->criteria` section of your snapshot definition
+1. Create a JSON document with the keys and values you want to match on. In this example, we insert the following snippet and append to the `filter_expression->criteria` section of your snapshot definition
 
 ```json
-            {
-                "filters": [
-                    {
-                        "include": true,
-                        "operator": "CONTAINS",
-                        "requestBodyJson": {
-                            "compare": true,
-                            "body": "eyJ1c2VyX251bWJlciI6IjAifQo=",
-                            "includeKeys": [
-                                "user_number"
-                            ]
-                        }
-                    }
-                ]
-            }
+    {
+      "filters": [
+        {
+          "include": true,
+          "reqFilter": {
+            "key": "user_number",
+            "value": "0"
+          }
+        }
+      ]
+    }
 ```
 
-`includeKeys` tells the JSON comparator to only pay attention to the listed keys.
-
-4. Trigger snapshot creation (see instructions at beginning of this page)
+2. Trigger snapshot creation (see instructions at beginning of this page)
 
 ## Filter by HTTP Header Value
 
@@ -127,41 +113,28 @@ This filter should be inserted into the snapshot creation workflow at the beginn
 
 ## Filter by gRPC Value
 
-Speedscale decodes gRPC into a general purpose JSON format that can be worked with like any other JSON. This format can be difficult to read because it is a translation of raw wire format, but it has the major upside of not requiring protobuf access to decode. As an example, let's take a section of [Google Spanner](https://cloud.google.com/spanner) traffic and filter out one specific SQL statement. To do this, we use the `requestBodyJson` filter because the gRPC request payload will be in JSON when passed through the filters.
+Speedscale decodes gRPC into a general purpose JSON format that can be worked with like any other JSON. This format can be difficult to read because it is a translation of raw wire format, but it has the major upside of not requiring protobuf access to decode. As an example, let's take a section of [Google Spanner](https://cloud.google.com/spanner) traffic and filter out one specific SQL statement. To do this, we use the `reqFilter` filter because the gRPC request payload will be in JSON when passed through the filters.
 
-For this example, let's isolate the `SELECT 1` SQL statement. For Google Spanner, the SQL statement is stored at JSONPath `fieldsMap.3.fields.0.asString`. `requestBodyJson` is capable of doing a full key/value document comparison but for this example we'll just search requests where `fieldsMap.3.fields.0.asString=SELECT 1`. Follow the steps below to create your own filter:
+For this example, let's isolate the `SELECT 1` SQL statement. For Google Spanner, the SQL statement is stored at JSONPath `fieldsMap.3.fields.0.asString`. `reqFilter` is capable of doing a key/value document comparison, so for this example we'll search requests where `fieldsMap.3.fields.0.asString=SELECT 1`. Follow the steps below to create your own filter:
 
-1. Create a JSON document with the keys and values you want to match on. In this example, we'll use this simple JSON document: `{"fieldsMap": {"3": {"fields": [{"asString": "SELECT 1"}]}}}` to extract all SELECT 1s. This filter type compares the entire JSON document so we need to create a small one with just the keys we care about to compare against.
 
-2. Base64 the JSON document
-
-(on Mac and Linux)
-```bash
-$ echo '{"fieldsMap": {"3": {"fields": [{"asString": "SELECT 1"}]}}}' | base64
-eyJmaWVsZHNNYXAiOiB7IjMiOiB7ImZpZWxkcyI6IFt7ImFzU3RyaW5nIjogIlNFTEVDVCAxIn1dfX19
-```
-
-3. Insert the base64 string into the following snippet and append to the `filter_expression->criteria` section of your snapshot definition
+1. Create the following key/value `reqFilter` filter and append it to the `filter_expression->criteria` section of your snapshot definition
 
 ```json
-            {
-                "filters": [
-                    {
-                        "requestBodyJson": {
-                            "compare": true,
-                            "body": "eyJmaWVsZHNNYXAiOiB7IjMiOiB7ImZpZWxkcyI6IFt7ImFzU3RyaW5nIjogIlNFTEVDVCAxIn1dfX19",
-                            "includeKeys": [
-                                "fieldsMap.3.fields.0.asString"
-                            ]
-                        }
-                    }
-                ]
-            }
+    {
+      "filters": [
+        {
+          "include": true,
+          "reqFilter": {
+            "key": "fieldsMap.3.fields.0.asString",
+            "value": "SELECT 1"
+          }
+        }
+      ]
+    }
 ```
 
-`includeKeys` tells the JSON comparator to only pay attention to the listed keys.
-
-4. Trigger snapshot creation (see instructions at beginning of this page)
+2. Trigger snapshot creation (see instructions at beginning of this page)
 
 ## Reference
 
@@ -170,9 +143,8 @@ Speedscale supports the following filter types on RRpairs:
 ```
 host
 tag
+reqFilter
 requestBodyHash
-requestBodyJson
-requestBodyXml
 direction
 tech (show in UI as Detected Tech)
 l7protocol
@@ -186,8 +158,6 @@ detectedLocation
 detectedStatus
 timeRange
 header
-httpReqXPath
-httpReqSoapXPath
 uuid
 snapshotId
 ```
