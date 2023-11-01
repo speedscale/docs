@@ -121,6 +121,10 @@ overwrites the URL, setting the protocol, host, and port.
 This command will run both the generator and the responder in the same terminal
 window and your app should receive all requests from the snapshot.
 
+:::note
+With `--daemon` flag, You can run generator and responder as a background process.  
+:::
+
 ## Create Local Mocks
 
 Local mocks are just another replay with no generator.
