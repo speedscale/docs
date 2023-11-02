@@ -26,41 +26,49 @@ Make sure you navigate to the `java` subdirectory within the `demo` repository.
 
 1. [Install the operator](./setup/install/kubernetes-operator.md)
 2. Run:
+
 ```bash
 make kube-capture
 ```
+
 This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
 
 </TabItem>
 
 <TabItem value="Docker">
 
-1. Generate local certs by running:
+1. Generate a jks for the Java app:
+
 ```bash
-speedctl create certs --jks --output-dir ~/.speedscale/certs
+docker run --rm -v ~/.speedscale/certs:/speedscale openjdk bash -c 'keytool -importcert -noprompt -cacerts  -storepass changeit  -alias speedscale -file  /speedscale/tls.crt && cp ${JAVA_HOME}/lib/security/cacerts /speedscale/cacerts.jks'
 ```
-Remember that JAVA_HOME must be set.
 
 2. Run:
+
 ```bash
 speedctl install
-````
+```
 
 Choose the `Docker` option and then the `Capture` option (option 1). You can name the service anything you want, the default port setting of `8080` is necessary.
 
 3. Run the following to bring up the Speedscale capture components:
+
 ```bash
 docker compose --file speedscale-docker-capture.yaml up -d
 ```
+
 4. Run in your current terminal window:
+
 ```bash
 make compose-capture
 ```
 
 5. Open a new terminal window and run:
+
 ```bash
 make client-capture
 ```
+
 This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
 
 </TabItem>
@@ -68,22 +76,29 @@ This should start generating traffic that you can see in the Speedscale UI withi
 <TabItem value="Local">
 
 1. Generate local certs by running the following command:
+
 ```bash
 speedctl create certs --jks --output-dir ~/.speedscale/certs
 ```
+
 2. Run in a separate terminal window:
+
 ```bash
 speedctl capture java-server 8080
 ```
+
 3. Run in your original terminal window:
+
 ```bash
 make local-capture
 ```
 
 4. Run
+
 ```bash
 make client-capture
 ```
+
 This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
 
 </TabItem>
@@ -123,19 +138,23 @@ Click the `Replay as Tests/Mocks` button on the top right and walk through the w
 1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](./guides/creating-a-snapshot.md) section.
 2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
 3. Run:
+
 ```bash
 speedctl install
 ```
-Choose the `Docker` option and then `Replay` (option 3). 
+
+Choose the `Docker` option and then `Replay` (option 3).
 
 4. Select your service and the standard test config. Make sure you select the same service name you entered during the capture phase.
 5. Input the Snapshot ID from step 1, the port should still be `8080`
 6. Run in one terminal window:
+
 ```bash
 make compose-replay
 ```
 
 7. Run in another window to start the replay:
+
 ```bash
 export TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose --file speedscale-docker-replay.yaml up -d && echo "Your test report can be found at: https://app.speedscale.com/reports/${TEST_REPORT_ID}"
 ```
@@ -147,11 +166,13 @@ export TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose -
 1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](./guides/creating-a-snapshot.md) section.
 2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
 3. Run:
+
 ```bash
 make local-replay
 ```
 
 4. Replace `SNAPSHOT_ID` and run:
+
 ```bash
 speedctl replay SNAPSHOT_ID --test-config-id=standard  --custom-url='http://localhost:8080'
 ```
@@ -221,8 +242,6 @@ In this demo we:
 7. Edited the assertions
 8. Reanalyzed the report for a higher success rate
 
-
-
 # Next Steps
 
 This is just a small subset of things you can do with Speedscale, other things to try out could be:
@@ -243,6 +262,7 @@ If you'd like to remove the demo from your environment follow these instructions
 ```bash
 make kube-clean
 ```
+
 </TabItem>
 
 <TabItem value="Docker">
@@ -250,6 +270,7 @@ make kube-clean
 ```bash
 docker compose -f speedscale-docker-capture.yaml down
 ```
+
 </TabItem>
 
 </Tabs>
@@ -267,6 +288,7 @@ You can enable DLP to redact certain fields from an RRPair at capture time. Note
 <TabItem value="Kubernetes">
 
 Run:
+
 ```bash
 speedctl infra dlp enable
 ```
