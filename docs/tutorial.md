@@ -37,19 +37,13 @@ This should start generating traffic that you can see in the Speedscale UI withi
 
 <TabItem value="Docker">
 
-1. Generate local certs by running:
-
-```bash
-speedctl create certs --output-dir ~/.speedscale/certs
-```
-
-2. Generate a jks for the Java app:
+1. Generate a jks for the Java app:
 
 ```bash
 docker run --rm -v ~/.speedscale/certs:/speedscale openjdk bash -c 'keytool -importcert -noprompt -cacerts  -storepass changeit  -alias speedscale -file  /speedscale/tls.crt && cp ${JAVA_HOME}/lib/security/cacerts /speedscale/cacerts.jks'
 ```
 
-3. Run:
+2. Run:
 
 ```bash
 speedctl install
