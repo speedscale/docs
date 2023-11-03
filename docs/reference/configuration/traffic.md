@@ -9,6 +9,30 @@ the [generator and responder](../../../concepts/replay).
 
 The tool tip for each setting should point you in the right direction and more nuanced settings are covered here.
 
+## Custom URL
+
+Custom URL accepts a full or partial URL and creates transforms which will override the base URL of requests during replay.
+
+- If a scheme is provided the scheme of the request will be replaced
+- if a hostname is provided the hostname of the request will be replaced
+- If a port is provided the port of the request will be replaced
+
+If the custom URL contains a scheme a scheme transform is created.
+If the custom URL contains a hostname a hostname transform is created.
+If the custom URL contains a port a port transform is created.
+
+Here are a few examples:
+
+| Captured URL | Custom URL | Replay URL |
+|--------------|------------|--------------|
+| https://original.com:443/foo | http://new.com:8080 | http://new.com:8080/foo |
+| https://original.com:443/foo | http://             | http://original.com:443/foo |
+| https://original.com:443/foo | http://new.com      | http://new.com:443/foo |
+| https://original.com:443/foo | new.com             | https://new.com:443/foo |
+| https://original.com:443/foo | new.com:8080        | https://new.com:8080/foo |
+| https://original.com:443/foo | :8080               | https://original.com:8080/foo |
+| https://original.com:443/foo | http://:8080        | http://original.com:8080/foo |
+
 ## Endpoint Grouping
 
 Traditionally the

@@ -152,7 +152,7 @@ It will ask you if you're sure `▸ Snapshot already exists, overwrite? [Y/n]: y
 Now you can run the replay with the following command. This uses the 100 replicas snapshot which will take the small number of calls and multiply them into a larger number of transactions.
 
 ```
-speedctl replay --replay-host en.wikipedia.org --test-config-id performance_100replicas SNAPSHOT_ID
+speedctl replay --custom-url en.wikipedia.org --test-config-id performance_100replicas SNAPSHOT_ID
 ```
 
 Even running 100 copies of the traffic is actually done fairly quickly (Wikipedia is pretty fast after all), and you'll see a report in the Speedscale UI. You can observe that the calls were each executed 100x as many times as they were recorded. This whole process only took a couple of minutes and much faster than writing a test case with all of these steps.

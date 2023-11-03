@@ -17,7 +17,7 @@ or with the [reference docs](../../reference/configuration).
 
 ## What can be controlled?
 
-* Generator configuration like number of traffic copies, delay between requests and replay host
+* Generator configuration like number of traffic copies, delay between requests, and the base URL of the [SUT](/reference/glossary.md#sut)
 * Responder behavior like number of replicas and chaos settings
 * Cluster-specific settings like whether to collect logs, include a sidecar or cleanup stale containers
 * Assertions like whether to check response bodies or status codes

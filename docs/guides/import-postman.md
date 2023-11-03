@@ -37,6 +37,6 @@ If you click `View Traffic` you'll see your Postman requests ready to replay.
 
 ## Replay
 
-Postman-generated snapshots can be replayed like any other snapshot using the instructions on the Snapshot Summary page.  Remember that you will need to put in a `Custom URL` or `Replay Host` to point at the correct service during replay. This is different than replaying a recorded snapshot because Speedscale typically has an automatically discovered default that is reasonable.
+Postman-generated snapshots can be replayed like any other snapshot using the instructions on the Snapshot Summary page.  Remember that you will need to put in a `Custom URL` to point at the correct service during replay. This is different than replaying a recorded snapshot because Speedscale typically has an automatically discovered default that is reasonable.
 
 For more information on initiating replays, check out the full [replay guide](./replay/README.md)

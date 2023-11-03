@@ -114,9 +114,7 @@ speedctl replay 310457d7-b17a-4802-897c-ac98004dab21 \
   --custom-url='http://localhost:8081'
 ```
 
-The `--replay-host` flag changes the host for outgoing generator requests while
-keeping other details from recorded traffic whereas `--custom-url` fully
-overwrites the URL, setting the protocol, host, and port.
+The `--custom-url` flag overrides the URL for each replay request.  See [custom URL configuration](/reference/configuration/traffic#custom-url) for more information.
 
 This command will run both the generator and the responder in the same terminal
 window and your app should receive all requests from the snapshot.
