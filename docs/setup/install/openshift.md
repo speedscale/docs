@@ -71,8 +71,8 @@ allowHostIPC: false
 allowHostNetwork: false
 allowHostPID: false
 allowHostPorts: false
-allowPrivilegeEscalation: false
-allowPrivilegedContainer: false
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: true
 allowedCapabilities:
 - NET_ADMIN
 - NET_RAW
@@ -87,6 +87,7 @@ supplementalGroups:
   type: RunAsAny
 volumes:
 - "*"
+
 EOF
 ```
 
@@ -184,8 +185,8 @@ allowHostIPC: false
 allowHostNetwork: false
 allowHostPID: false
 allowHostPorts: false
-allowPrivilegeEscalation: false
-allowPrivilegedContainer: false
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: true
 allowedCapabilities:
 - NET_ADMIN
 - NET_RAW
