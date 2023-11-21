@@ -1,17 +1,24 @@
 Start by installing the Speedscale CLI-based API (`speedctl`) via [Homebrew](https://brew.sh):
 
-```bash
+```shell
 brew install speedscale/tap/speedctl
 ```
 
 Or via the install script:
 
-```bash
+```shell
 sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
-Or You can download and install `speedctl` manualy by: 
-```bash
+Install a specific version py passing it to the install script:
+
+```shell
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)" -s v1.4.63
+```
+
+Optionally skip the install script and install manually:
+
+```shell
 # Download speedctl binay on your machine
 curl "https://downloads.speedscale.com/speedctl/speedctl-$(case $(uname -s) in  Darwin)   echo 'darwin' ;; Linux) echo 'linux';; esac)-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o speedctl
 
@@ -22,7 +29,7 @@ mv ./speedctl ~/.speedscale
 # Give execute permission to the binary
 chmod +x ~/.speedscale/speedctl
 
-# Add spceedscale path to your PATH, change bashrc based on your Shell
+# Add the Speedscale path to your PATH, change bashrc based on your Shell
 echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.bashrc
 
 ```
