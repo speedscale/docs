@@ -12,7 +12,7 @@ CMEK requires customers to maintain an AWS account that can be used for key stor
 
 # Enabling CMEK with Speedscale
 
-1. If you are a Speedscale Enterprise customer wanting to active CMEK, please reach out to Speedscale support through normal channels to begin the process.
+1. If you are a Speedscale Enterprise customer wanting to activate CMEK, please reach out to Speedscale support through normal channels to begin the process.
 2. Once initiated, Speedscale will request AWS admin contact information from the customer.
 3. Speedscale will provide an AWS Cloud Formation Script that must be run in the customer AWS account. This script can and should be inspected before execution. This script will produce an AWS KMS ARN. This ARN should be provided to Speedscale.
 4. Speedscale will enable CMEK for this customer using the provided ARN.
