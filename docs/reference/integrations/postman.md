@@ -15,7 +15,7 @@ speedctl export postman {SNAPSHOT_ID} {FILE} {FLAGS}
 If you have an existing Postman collection and want to import into Speedscale, simply run:
 
 ```
-speedctl import postman {SNAPSHOT_ID} {FILE} {FLAGS}
+speedctl import postman --name {SNAPSHOT_NAME} --service-name {SERVICE_NAME} --from {COLLECTION_FILE}
 ```
 
 ### Questions?
