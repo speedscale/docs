@@ -1,4 +1,4 @@
-# GoReplay
+# WireMock
 
 Speedscale can import traffic in the open source [WireMock format](https://github.com/wiremock/wiremock). This lets you jumpstart the creation of a service mock with existing WireMock mappings.
 
