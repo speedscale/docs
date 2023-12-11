@@ -28,6 +28,36 @@ The sequence of events goes like this:
 
 By adding new requests to your traffic snashot you effectively add new service mock known responses.
 
+Take the following HTTP request as an example:
+
+```
+POST /foo-platform/pdt/foo/management HTTP/1.1
+Content-Type: application/xml; charset=ISO-8859-1
+
+<my request body>
+```
+
+This HTTP request would generate a signature similar to the following:
+```json
+{
+  "host": "localhost",
+  "method": "POST",
+  "url": "/foo-platform/pdt/foo/management",
+  "sessionKey": "1",
+  "filters": {
+    "filters": [
+      {
+        "include": true,
+        "requestBodyJson": {
+          "compare": true,
+          "body": "G15IHJlcXVlc3QgYm9keT4="
+        }
+      }
+    ]
+  }
+}
+```
+
 ## What kind of dependencies can be automatically mocked?
 
 Speedscale automatically mocks any technology on our [supported technology page](../reference/technology-support.md). We've created baselines that work in most situations but you can customize as described below.
