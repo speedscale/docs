@@ -14,9 +14,31 @@ Service mocks are generally made available over the network and are accessible t
 * accurate response sequencing for non-idempotent transactions
 * continuously updated tokens like authentication, etc
 
+## How does it know which response to return?
+
+Speedscale uses a special text string called a *signature* to differentiate between different requests. When the service under test (SUT) sends a request to the Speedscale, selective nuggets of information are extracted from the request and added to the signature. Typically this includes things like HTTP Query Parameters or MySQL SQL statements. Once this signature is generated, it is matched against the library of signatures generated from the previously recorded traffic. When the incoming signature matches a previously recorded one, the related response is returned.
+
+The sequence of events goes like this:
+1. Traffic is recorded/imported to Speedscale
+2. You create a Snapshot containing traffic covering a specific timeframe and filter criteria.
+3. The Speedscale analyzer combines the traffic into a set of signtaure/response pairs. This can be viewed as a form of compression to make the service mock dataset more compact and dynamic.
+4. The Speedscale service mocking engine receives a message from the SUT and creates a signature.
+5. The request signature is compared against all known request signatures in the Snapshot.
+6. A response is returned if the signature is recognized or a 404 if it is unknown.
+
+By adding new requests to your traffic snashot you effectively add new service mock known responses.
+
 ## What kind of dependencies can be automatically mocked?
 
-Speedscale automatically mocks any technology on our [supported technology page](../reference/technology-support.md). Once traffic is recorded, it is turned into mocks via Snapshot.
+Speedscale automatically mocks any technology on our [supported technology page](../reference/technology-support.md). We've created baselines that work in most situations but you can customize as described below.
+
+## What happens if my transactions are non-idempotent (aka the response changes after each request)?
+
+Speedscale automatically handles changing responses and is smart enough to deal with many common patterns without human intervention. Speedscale incorporates a learning model that mutates based on the protocol and specific API type being monitored. Even if Speedscale has never seen your API before there is a good probability of it being able to automatically mock your dependency without training.
+
+## What if my API or Database isn't mocked correctly out of the box?
+
+The Speedscale AI model can be trained using the [store_sig](../reference/transform-traffic/transforms/store_sig/) transform. This transform will add the specified data to the signature and use it to match uniqueness.
 
 ## What if Speedscale cannot automatically mock my dependency?
 
