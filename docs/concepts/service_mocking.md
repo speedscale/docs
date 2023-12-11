@@ -38,7 +38,7 @@ Speedscale automatically handles changing responses and is smart enough to deal 
 
 ## What if my API or Database isn't mocked correctly out of the box?
 
-The Speedscale AI model can be trained using the [store_sig](../reference/transform-traffic/transforms/store_sig/) transform. This transform will add the specified data to the signature and use it to match uniqueness.
+The Speedscale AI model can be trained using the [store_sig](../reference/transform-traffic/transforms/store_sig.md) transform. This transform will add the specified data to the signature and use it to match uniqueness.
 
 ## What if Speedscale cannot automatically mock my dependency?
 
