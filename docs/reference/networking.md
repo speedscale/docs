@@ -1,4 +1,4 @@
-# Operator Networking Requirements
+# Networking Requirements
 
 import ExternalServices from './_external-services.mdx'
 
