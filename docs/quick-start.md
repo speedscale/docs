@@ -1,7 +1,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import MacOSLinuxInstall from './setup/install/_cli_macos_linux.mdx'
-import WindowsCLIInstall from './setup/install/_cli_windows.mdx'
+import MacOSLinuxInstall from './setup/install/\_cli_macos_linux.mdx'
+import WindowsCLIInstall from './setup/install/\_cli_windows.mdx'
 import ApiKey from './setup/install/api-key.png'
 
 # Quick Start
@@ -24,7 +24,7 @@ You will need to get your personal API key from your [Profile Page](https://app.
 
 <img src={ApiKey} width="600"/>
 
-## Install CLI
+## Install CLI (optional)
 
 If you are running Speedscale on a local desktop or in Docker Desktop, the CLI is required. For all other users it is highly recommended because it allows programmatic interaction with Speedscale cloud.
 
@@ -45,10 +45,10 @@ If you are running Speedscale on a local desktop or in Docker Desktop, the CLI i
 </Tabs>
 
 Run the following command. You'll need the API Key copied from the above section.
+
 ```
 speedctl init
 ```
-
 
 ## Install Speedscale
 
@@ -95,7 +95,6 @@ the service account.
 speedctl install --imgpullsecrets my-secret1,my-secret2p
 ```
 
-
 </TabItem>
 
 <TabItem value="cli_windows" label="CLI (Windows)">
@@ -130,16 +129,9 @@ helm template speedscale-operator speedscale/speedscale-operator \
 	--set clusterName=<YOUR-CLUSTER-NAME> > ./manifests
 ```
 
-or
-
-```bash
-speedctl deploy operator -e $(kubectl config current-context) --dir
-```
-
 </TabItem>
 
 </Tabs>
-
 
 ## Verify Installation
 
@@ -148,6 +140,7 @@ Make sure the operator pods are running properly:
 ```
 kubectl -n speedscale get pods
 ```
+
 Note: The Operator will start at least 2 pods (the operator itself and the Speedscale Forwarder) after it starts. On your cluster the ids of the pods will be different.
 
 ```
