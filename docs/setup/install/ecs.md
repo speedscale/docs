@@ -8,6 +8,7 @@ This workflow is currently in preview status. Please provide feedback in our [sl
 :::
 
 ## Prerequisites
+
 1. [Speedctl is installed](../../quick-start.md)
 2. [ECS Service Discovery is setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html)
 
@@ -37,6 +38,12 @@ resource "aws_ecs_task_definition" "forwarder" {
       name      = "forwarder"
       image     = "gcr.io/speedscale/forwarder:v1.2"
       essential = true
+      healthCheck = {
+        command = [
+          "CMD-SHELL",
+          "curl -v localhost:8888 2>&1 | grep Connected"
+        ]
+      }
       portMappings = [
         {
           containerPort = 8888
@@ -145,6 +152,7 @@ aws secretsmanager create-secret --name tls.key --secret-string file://tls.key
 ### Create new Task Definition
 
 In the example below, the service we want to capture is called `notifications` and it serves on port `8080`. Here are the pieces added to the task:
+
 1. An init container that populates the task volume with the TLS certs we created in Secrets Manager in the previous step.
 2. TLS configuration for the `notifications` service with the environment variables for `SSL_CERT_FILE`, `HTTP_PROXY` and `HTTPS_PROXY`. These
    variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
@@ -330,4 +338,5 @@ resource "aws_ecs_service" "notifications" {
 ```
 
 ### Verification
+
 Now if you send requests to your app as you did previously through the load balancer, they will be captured and sent to Speedscale.
