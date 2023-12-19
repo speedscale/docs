@@ -1,25 +1,26 @@
 ---
 sidebar_position: 100
 ---
+
 # Troubleshooting
 
 ## Installation Permissions
 
 No matter what deployment method you use, the following _create_ permissions are required to install Speedscale.
 
-* Cluster-wide resources:
-    * `CustomResourceDefinitions`
-    * `ClusterRole`
-    * `ClusterRoleBinding`
-    * `MutatingWebhookConfiguration`
-    * `ValidatingWebhookConfiguration`
-* Namespaced resources
-    * `ConfigMap`
-    * `Deployment`
-    * `Job`
-    * `Role`
-    * `Service`
-    * `Secret`
+- Cluster-wide resources:
+  - `CustomResourceDefinitions`
+  - `ClusterRole`
+  - `ClusterRoleBinding`
+  - `MutatingWebhookConfiguration`
+  - `ValidatingWebhookConfiguration`
+- Namespaced resources
+  - `ConfigMap`
+  - `Deployment`
+  - `Job`
+  - `Role`
+  - `Service`
+  - `Secret`
 
 You can verify you have permissions and other prerequisites by running `speedctl check operator --pre`.
 This will not modify anything within your cluster.
@@ -33,9 +34,8 @@ Additionally, the `speedscale-operator` role can create, modify, and watch confi
 
 For a full list of permissions that Speedscale is using, you may use one of the following methods:
 
-* Review the latest version of the Helm chart
-* Run `speedctl deploy operator --dir output>` and inspect `rbac.yaml` to read the manifest
-* Run `kubectl get -n speedscale clusterrole/speedscale-operator -o yaml` to see the installed manifest.
+- Review the latest version of the Helm chart
+- Run `kubectl get -n speedscale clusterrole/speedscale-operator -o yaml` to see the installed manifest.
 
 ### Using Minikube <a href="#webhook-errors" id="webhook-errors"></a>
 
@@ -56,6 +56,7 @@ SignatureDoesNotMatch: Signature expired: 20220727T233601Z is now earlier than 2
 ```
 
 The time needs to be resynced on the VM and can be done via
+
 ```
 ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i date -u $(date -u +%m%d%H%M%Y)"
 ```
@@ -102,20 +103,24 @@ After the webhook has been deleted, re-run the full operator delete command to m
 ### Istio Errors
 
 In Istio with dual proxy capture mode, the Operator creates a `Sidecar` resource that routes traffic through the Istio mesh into the Speedscale sidecar. In the case of invalid settings, you may see an error along the lines of
+
 ```
 {"L":"ERROR","T":"2022-08-05T15:36:45.149Z","M":"failed to provision envoy sidecar config, provisioning failed","reqId":"2f061731-46f0-4d33-9f37-b99c16a0dec3","op":"UPDATE","kind":"Deployment","apiVersion":"apps/v1","name":"inventory-availability","namespace":"perf1-inventory-availability","error":"resource already exists"}
 ```
+
 in the Operator logs. This usually happens if the port specified is invalid (not an integer). This can also happen if the Operator is not given permissions to create Istio Sidecar resources. This should be handled during installation but if you encounter this, try [upgrading the operator](../upgrade/operator.md).
 
 ### Leftover Certificates
+
 ```
 "error":"could not verify cert: crypto/rsa: verification error"
 ```
 
 This error usually happens when there's a fresh install after an incomplete uninstall. There are certs in the cluster that have stuck around when they shouldn't. Search for speedscale related certs and delete. The following commands may be helpful:
+
 ```bash
 kubectl delete mutatingwebhookconfigurations speedscale-operator
 kubectl delete mutatingwebhookconfigurations speedscale-operator-replay
-kubectl delete validatingwebhookconfiguration speedscale-operator-replay 
-kubectl delete ns speedscale 
+kubectl delete validatingwebhookconfiguration speedscale-operator-replay
+kubectl delete ns speedscale
 ```

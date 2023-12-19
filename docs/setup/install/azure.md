@@ -8,7 +8,9 @@ This workflow is currently in preview status. Please provide feedback in our [sl
 :::
 
 ## Prerequisites
-1. [Speedctl is installed](../../setup/install/cli.md)
+
+1. [Helm is installed](https://helm.sh/docs/intro/install/)
+2. [You have your Speedscale API Key](../../quick-start.md#retrieve-your-api-key)
 
 ## Working with Azure App Services
 
@@ -30,13 +32,18 @@ Once the cluster is created, connect to it using the instructions on the created
 
 Now that the cluster is set up, deploy the needed components by applying the provided manifests. We'll need to modify the manifests with custom values from `~/.speedctl/config`. Replace the following values in the [capture.yaml](#manifest):
 
-* `APP_LABEL`, `APP_POD_NAME`, `APP_POD_NAMESPACE` with your app name
-* `REVERSE_PROXY_HOST` with the full URL of your cloud run app
+- `APP_LABEL`, `APP_POD_NAME`, `APP_POD_NAMESPACE` with your app name
+- `REVERSE_PROXY_HOST` with the full URL of your cloud run app
 
 Then run
+
 ```
-kubectl create ns speedscale
-speedctl deploy operator -e <cluster-name>
+helm install speedscale-operator speedscale/speedscale-operator \
+	-n speedscale \
+	--create-namespace \
+	--set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
+	--set clusterName=<YOUR-CLUSTER-NAME>
+
 kubectl create ns capture
 kubectl -n speedscale get secret speedscale-certs -o json | jq -r '.data["tls.crt"]' | base64 -D >> tls.crt
 kubectl -n speedscale get secret speedscale-certs -o json | jq -r '.data["tls.key"]' | base64 -D >> tls.key
@@ -45,6 +52,7 @@ kubectl apply -f capture.yaml
 ```
 
 Now you'll need the IP of the goproxy instance you just created which you can get by running
+
 ```
 kubectl -n capture get svc goproxy
 NAME      TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                         AGE
@@ -71,7 +79,6 @@ When creating our cluster, we either used or created a Virtual Network to ensure
 ![Vnet](./azure/vnet.png)
 
 ![Vnet add](./azure/add-vnet.png)
-
 
 ### Start Capturing
 
@@ -104,7 +111,6 @@ Note that the CPU and memory graphs displayed in the report will be those for th
 Do not set the cleanup mode setting (`replay.speedscale.com/cleanup`) to `all` as this will delete the proxy container which is acting as the entrypoint and HTTP Proxy for your Cloud Run app.
 :::
 
-
 ## Manifest
 
 ```yaml
@@ -128,62 +134,62 @@ spec:
         app: goproxy-capture
     spec:
       containers:
-      - image: gcr.io/speedscale/goproxy:v1.3
-        imagePullPolicy: Always
-        name: goproxy-capture
-        env:
-        - name: APP_LABEL
-          value: payment
-        - name: APP_POD_NAME
-          value: payment
-        - name: APP_POD_NAMESPACE
-          value: payment
-        - name: CAPTURE_MODE
-          value: proxy
-        - name: FORWARDER_ADDR
-          value: speedscale-forwarder.speedscale.svc:80
-        - name: PROXY_TYPE
-          value: dual
-        - name: PROXY_PROTOCOL
-          value: http
-        - name: TLS_OUT_UNWRAP
-          value: "true"
-        - name: TLS_CERT_DIR
-          value: /etc/ssl/capture
-        - name: REVERSE_PROXY_HOST
-          value: 'https://speedscale.azurewebsites.net'
-        - name: REVERSE_PROXY_PORT
-          value: '443'
-        - name: PROXY_IN_PORT
-          value: "8080"
-        - name: PROXY_OUT_PORT
-          value: "8081"
-        - name: LOG_LEVEL
-          value: info
-        ports:
-        - containerPort: 8080
-          name: proxy-in
-          protocol: TCP
-        - containerPort: 8081
-          name: proxy-out
-          protocol: TCP
-        volumeMounts:
-        - mountPath: /etc/ssl/capture
-          name: tls-out
-          readOnly: true
-        resources: {}
-        securityContext:
-          readOnlyRootFilesystem: false
-          runAsGroup: 2102
-          runAsUser: 2102
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
+        - image: gcr.io/speedscale/goproxy:v1.3
+          imagePullPolicy: Always
+          name: goproxy-capture
+          env:
+            - name: APP_LABEL
+              value: payment
+            - name: APP_POD_NAME
+              value: payment
+            - name: APP_POD_NAMESPACE
+              value: payment
+            - name: CAPTURE_MODE
+              value: proxy
+            - name: FORWARDER_ADDR
+              value: speedscale-forwarder.speedscale.svc:80
+            - name: PROXY_TYPE
+              value: dual
+            - name: PROXY_PROTOCOL
+              value: http
+            - name: TLS_OUT_UNWRAP
+              value: "true"
+            - name: TLS_CERT_DIR
+              value: /etc/ssl/capture
+            - name: REVERSE_PROXY_HOST
+              value: "https://speedscale.azurewebsites.net"
+            - name: REVERSE_PROXY_PORT
+              value: "443"
+            - name: PROXY_IN_PORT
+              value: "8080"
+            - name: PROXY_OUT_PORT
+              value: "8081"
+            - name: LOG_LEVEL
+              value: info
+          ports:
+            - containerPort: 8080
+              name: proxy-in
+              protocol: TCP
+            - containerPort: 8081
+              name: proxy-out
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/ssl/capture
+              name: tls-out
+              readOnly: true
+          resources: {}
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsGroup: 2102
+            runAsUser: 2102
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
       volumes:
-      - name: tls-out
-        secret:
-          defaultMode: 420
-          optional: false
-          secretName: tls-certs
+        - name: tls-out
+          secret:
+            defaultMode: 420
+            optional: false
+            secretName: tls-certs
 ---
 apiVersion: v1
 kind: Service
@@ -196,14 +202,14 @@ metadata:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
   ports:
-  - name: in
-    port: 8080
-    protocol: TCP
-    targetPort: 8080
-  - name: out
-    port: 8081
-    protocol: TCP
-    targetPort: 8081
+    - name: in
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: out
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
   selector:
     app: goproxy-capture
   type: LoadBalancer

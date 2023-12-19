@@ -11,10 +11,11 @@ When a new Service-Under-Test (SUT) workload is applied to the cluster, the oper
 ## How to check if your replay is running
 
 Here are a few quick things that will help you understand if your replay is running:
+
 1. Check the operator logs, you should this message `traffic replay initiated`
 2. Check for `replay` objects in the namespace `kubectl get replay -n NAMESPACE`
-2. Check the [reports interface](https://app.speedscale.com/reports) to see if a new report has been generated
-3. Check your Service Under Test (SUT)'s namespace to see if a Speedscale generator or responder pod have been created
+3. Check the [reports interface](https://app.speedscale.com/reports) to see if a new report has been generated
+4. Check your Service Under Test (SUT)'s namespace to see if a Speedscale generator or responder pod have been created
 
 If you don't see one or all of these items, double check your operator installation and your annotations. Reminder: make sure you are running the [latest operator](https://docs.speedscale.com/setup/upgrade/operator/).
 
@@ -34,7 +35,7 @@ The following log message will indicate that the operator is aware of the new wo
 {"L":"INFO","T":"...","M":"Processing mutate","kind":"apps/v1, Kind=Deployment","name":"speedy-service"}
 ```
 
-If a log message like this is not present, it probably means that the `MutatingAdmissionWebhook` is misconfigured in your cluster and the operator is not being notified of new SUT workloads. The yaml for the `MutatingAdmissionWebhook` is created by `speedctl deploy operator`.
+If a log message like this is not present, it probably means that the `MutatingAdmissionWebhook` is misconfigured in your cluster and the operator is not being notified of new SUT workloads. The yaml for the `MutatingAdmissionWebhook` is created when the operator is installed.
 
 ## 2. Operator modifies SUT workload
 
@@ -65,22 +66,22 @@ The exact format and content of this message will vary. However, you will be abl
 
 With annotation `replay.speedscale.com/mode` is set to `full-replay` or `responder-only`, the operator will:
 
-* Add an init container to the SUT pod. This init container will stop the pod from continuing until the Speedscale responder responds to a readiness probe.
-* Add HostAlias entries to the SUT container to route traffic to the responder
+- Add an init container to the SUT pod. This init container will stop the pod from continuing until the Speedscale responder responds to a readiness probe.
+- Add HostAlias entries to the SUT container to route traffic to the responder
 
 ### 2b. (optional) Operator adds sidecar
 
 With annotation `sidecar.speedscale.com/inject` set to `"true"`, the operator will:
 
-* Add the init container sidecar to the SUT workoad
-* Add the proxy sidecar to the SUT workload
+- Add the init container sidecar to the SUT workoad
+- Add the proxy sidecar to the SUT workload
 
 ### 2c. (optional) Operator adds TLS configuration
 
 With the annotation `sidecar.speedscale.com/tls-out` set to `"true"`, the operator will:
 
-* volume mount the user-provided outbound certificates to the SUT workload
-* modify the TLS environment variables or trust store in the SUT workload
+- volume mount the user-provided outbound certificates to the SUT workload
+- modify the TLS environment variables or trust store in the SUT workload
 
 In order to add the TLS inbound configuration, supply the name of your TLS secret in the `sidecar.speedscale.com/tls-secret` annotation.
 
@@ -122,9 +123,7 @@ When the responder is present, an init container will stop the SUT workload from
 
 Also, make sure the responder services are present. If they are not, the SUT will not be able to reach the responder. They will be named `responder-http`, `responder-https`, etc
 
-
-
-The operator will wait for these steps to complete. The log message indicating it is in a wait state begins with `WAIT SUT`.  When complete, you will see a log starting with `SUT ready, updating config map`.
+The operator will wait for these steps to complete. The log message indicating it is in a wait state begins with `WAIT SUT`. When complete, you will see a log starting with `SUT ready, updating config map`.
 
 ## 4. Operator begins test
 
@@ -177,9 +176,9 @@ MESSAGE=$(kubectl get replay <REPLAY-NAME> -o jsonpath='{.status.conditions[?(@.
 
 Possible values for `RESULT` are:
 
-* `TestFailed` indicates that the test is failed for some reason
+- `TestFailed` indicates that the test is failed for some reason
   (failed to initialize, failed to start, timed out, goals are not met etc.)
-* `TestSucceeded` indicates that the replay has finished, analyzed and all the goals are met.
+- `TestSucceeded` indicates that the replay has finished, analyzed and all the goals are met.
 
 `MESSAGE` can provide more information about why the replay has failed.
 
