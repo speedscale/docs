@@ -4,7 +4,6 @@ sidebar_position: 11
 ---
 
 import ExternalServices from '../../reference/_external-services.mdx'
-import ConfiguringProxy from '../../reference/proxy_config.mdx'
 
 :::info
 Please make sure the [Speedscale Operator](../../quick-start.md) is installed before configuring Istio support.
@@ -52,45 +51,19 @@ spec:
 ```
 
 ## Speedscale Sidecar Configuration
-Istio makes use of a proxy known as [Envoy](https://www.envoyproxy.io), which it adds as a sidecar to
-workloads that reside within the mesh. Both the Istio and Speedscale sidecars act as transparent proxies: each
-must modify `iptables` routing rules in order to intercept both ingress and egress traffic. Unfortunately,
-they cannot coexist when operating in this mode since both are attempting to intercept and manage workload
-traffic.
 
-Istio **is** supported by Speedscale despite this conflict, but requires a few extra steps.
+Istio makes use of a transparent proxy known as [Envoy](https://www.envoyproxy.io), which is added as a
+sidecar to workloads that reside within the mesh. This sidecar, much like Speedscale's, also modified iptables
+rules in order to intercept traffic without any modification to a user's application.
 
-Within an Istio mesh, the Speedscale sidecar must operate as a non-transparent proxy; a reverse
-proxy for inbound traffic and a forward proxy for outbound traffic. This requires two things:
+No additional configuration is required to add the Speedscale sidecar to workloads that reside within an Istio
+mesh.
 
-1. Envoy must be configured to send ingress traffic to the Speedscale reverse proxy, which is done
-   automatically by the Speedscale Operator via an Istio
-   [Sidecar](https://istio.io/latest/docs/reference/config/networking/sidecar) resource.
-2. Your application must be configured to use an outbound proxy
+The Speedscale operator intelligently determines when Istio is present and configures workloads accordingly so
+that both transparent proxies operate in tandem. In addition, the Speedscale operator and sidecar are
+configured in such a way that they preserve the ability to use Istio mesh features such as mTLS.
 
-### Add Workload Annotations
-
-Begin by adding the following annotations to your Kubernetes workload along with any other
-[sidecar annotations](/setup/sidecar/annotations/):
-
-```yaml
-sidecar.speedscale.com/inject: "true"
-sidecar.speedscale.com/proxy-type: dual
-sidecar.speedscale.com/proxy-protocol: tcp:http
-```
-
-Note: the `proxy-protocol` annotation shown above will operate the outbound, forward proxy as an
-HTTP proxy. If your application needs so use a SOCKS4 or SOCKS5 proxy, use `tcp:socks`. See
-[proxy modes](/setup/sidecar/proxy-modes/) for more information.
-
-## Configure Outbound TLS Support
-
-Outbound TLS support for the Speedscale sidecar can be enabled with the annotation
-`sidecar.speedscale.com/tls-out: "true"`. You may be required to perform additional steps if your
-application and not Envoy is originating TLS requests. See
-[Trusting TLS Certificates](/setup/sidecar/tls/#trusting-tls-certificates) for more information.
-
-<ConfiguringProxy />
+Follow the [installation guide](../sidecar/install.md) to install the Speedscale sidecar on your Istio workloads.
 
 ## Allow Egress Speedscale Traffic (Optional)
 
