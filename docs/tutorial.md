@@ -11,6 +11,7 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 2. Clone https://github.com/speedscale/demo
 3. [Java](https://jdk.java.net/) is present
 4. Make sure `JAVA_HOME` is set correctly (on MacOS you can run `/usr/libexec/java_home` to find the correct `JAVA_HOME`)
+5. Install `jq` and `make` if not already on your desktop (`brew install jq` and `brew install make` on MacOS for example)
 
 ## The App
 

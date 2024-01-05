@@ -69,7 +69,7 @@ for all configuration options available for the Helm chart.
 
 </TabItem>
 
-<TabItem value="cli" label="CL (Mac/Linux)">
+<TabItem value="cli" label="CLI (Mac/Linux)">
 
 Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
