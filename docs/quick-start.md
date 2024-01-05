@@ -44,15 +44,9 @@ If you are running Speedscale on a local desktop or in Docker Desktop, the CLI i
 
 </Tabs>
 
-Run the following command. You'll need the API Key copied from the above section.
+## Install Speedscale Operator
 
-```
-speedctl init
-```
-
-## Install Speedscale
-
-If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./tutorial.md).
+If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./tutorial.md). The rest of this document is focused on installing a Kubernetes-based demo.
 
 If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then you can install using these instructions. If you are not running in Kubernetes, or are running with a more specialized enterprise distribution please select environment-specific [instructions](./setup/install/README.md) in this section.
 
@@ -75,7 +69,7 @@ for all configuration options available for the Helm chart.
 
 </TabItem>
 
-<TabItem value="cli" label="CLI">
+<TabItem value="cli" label="CL (Mac/Linux)">
 
 Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
