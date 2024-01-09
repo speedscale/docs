@@ -205,7 +205,7 @@ resource "aws_ecs_task_definition" "with-speedscale" {
           value = "http://localhost:4140"
         },
       ],
-      depends_on = [
+      dependsOn = [
         {
           containerName = "init",
           condition     = "SUCCESS"
@@ -236,13 +236,9 @@ resource "aws_ecs_task_definition" "with-speedscale" {
           awslogs-stream-prefix = "ecs"
         },
       },
-      depends_on = [
+      dependsOn = [
         {
-          containerName = "init-crt",
-          condition     = "SUCCESS"
-        },
-        {
-          containerName = "init-key",
+          containerName = "init",
           condition     = "SUCCESS"
         }
       ]
@@ -340,3 +336,267 @@ resource "aws_ecs_service" "notifications" {
 ### Verification
 
 Now if you send requests to your app as you did previously through the load balancer, they will be captured and sent to Speedscale.
+
+## Using Mocks
+
+After capturing traffic and creating a snapshot, we can use a snapshot to create mocks for our service. We're going to do the following:
+
+1. Setup an init container and configure our app to trust certs just like [above](#create-new-task-definition)
+2. Add a `responder` sidecar that will provide mocks for your app. This sidecar will have a set of environment variables to be filled from your `~/.speedctl/config` just like we did when setting up the `forwarder` as well as two additional ones: `SNAPSHOT_ID` which comes from the snapshot created before and a `TEST_CONFIG_ID` which specifies the behavior of your mocks.
+3. We're also adding a `redis` sidecar that's needed by the `responder`.
+
+```
+resource "aws_ecs_task_definition" "with-responder" {
+  family                   = "notifications-with-responder"
+  execution_role_arn       = aws_iam_role.exec.arn
+  task_role_arn            = aws_iam_role.exec.arn
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = 256
+  memory                   = 512
+
+  container_definitions = jsonencode([
+    {
+      entrypoint = ["bash"]
+      command    = ["-c", "aws secretsmanager get-secret-value --secret-id tls.crt --query SecretString --output text >> /etc/ssl/speedscale/tls.crt && aws secretsmanager get-secret-value --secret-id tls.key --query SecretString --output text >> /etc/ssl/speedscale/tls.key"],
+      mountPoints = [
+        {
+          containerPath = "/etc/ssl/speedscale",
+          sourceVolume  = "speedscale"
+        }
+      ],
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-create-group  = "true",
+          awslogs-group         = "ecs/init"
+          awslogs-region        = "us-east-1",
+          awslogs-stream-prefix = "ecs"
+        },
+      },
+      image     = "amazon/aws-cli:2.8.4",
+      essential = false,
+      name      = "init"
+    },
+    {
+      name      = "notifications"
+      image     = "gcr.io/speedscale-demos/notifications"
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-create-group  = "true",
+          awslogs-group         = "ecs/notifications"
+          awslogs-region        = "us-east-1",
+          awslogs-stream-prefix = "ecs"
+        },
+      },
+      environment = [
+        {
+          name  = "SSL_CERT_FILE"
+          value = "/etc/ssl/speedscale/tls.crt"
+        },
+        {
+          name  = "HTTP_PROXY"
+          value = "http://localhost:4140"
+        },
+        {
+          name  = "HTTPS_PROXY"
+          value = "http://localhost:4140"
+        },
+      ],
+      dependsOn = [
+        {
+          containerName = "init",
+          condition     = "SUCCESS"
+        }
+      ]
+      portMappings = [
+        {
+          containerPort = 8080
+        }
+      ]
+      mountPoints = [
+        {
+          containerPath = "/etc/ssl/speedscale",
+          sourceVolume  = "speedscale"
+        }
+      ],
+    },
+    {
+      name      = "responder"
+      image     = "gcr.io/speedscale/responder:v1.4"
+      essential = true
+      healthCheck = {
+        command = [
+          "CMD-SHELL",
+          "curl -v localhost:4140/speedscale/ready || exit 1"
+        ]
+      }
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-create-group  = "true",
+          awslogs-group         = "ecs/responder"
+          awslogs-region        = "us-east-1",
+          awslogs-stream-prefix = "ecs"
+        },
+      },
+      environment = [
+        {
+          name  = "SNAPSHOT_ID"
+          value = "77a8279e-79b0-4140-b585-9e36b78818bb"
+        },
+        {
+          name  = "TEST_CONFIG_ID"
+          value = "regression"
+        },
+        {
+          name  = "SPEEDSCALE_API_KEY"
+          value = "yourkey"
+        },
+        {
+          name  = "SPEEDSCALE_APP_URL"
+          value = "app.speedscale.com"
+        },
+        {
+          name  = "SUB_TENANT_NAME"
+          value = "default"
+        },
+        {
+          name  = "SUB_TENANT_STREAM"
+          value = "sstenant-tenant"
+        },
+        {
+          name  = "TENANT_BUCKET"
+          value = "sstenant-tenant"
+        },
+        {
+          name  = "TENANT_REGION"
+          value = "us-east-1"
+        },
+        {
+          name  = "SERVICE_HTTP_PORT"
+          value = "4140"
+        },
+        {
+          name  = "REDIS_SERVICE_HOST"
+          value = "localhost"
+        },
+        {
+          name  = "REDIS_SERVICE_PORT"
+          value = "6379"
+        },
+        {
+          name  = "REDIS_SERVICE_PASS"
+          value = "redis-pass"
+        },
+        {
+          name  = "PASSTHROUGH"
+          value = "true"
+        },
+      ]
+      dependsOn = [
+        {
+          containerName = "init",
+          condition     = "SUCCESS"
+        },
+      ]
+      portMappings = [
+        {
+          containerPort = 4140
+        },
+        {
+          containerPort = 8443
+        },
+        {
+          containerPort = 27017
+        },
+        {
+          containerPort = 5432
+        },
+        {
+          containerPort = 5672
+        },
+      ]
+      mountPoints = [
+        {
+          containerPath = "/etc/ssl/speedscale",
+          sourceVolume  = "speedscale"
+        }
+      ],
+    },
+    {
+      name      = "redis"
+      image     = "gcr.io/speedscale/redis"
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-create-group  = "true",
+          awslogs-group         = "ecs/redis"
+          awslogs-region        = "us-east-1",
+          awslogs-stream-prefix = "ecs"
+        },
+      },
+      portMappings = [
+        {
+          containerPort = 6379
+        }
+      ]
+      environment = [
+        {
+          name  = "ALLOW_EMPTY_PASSWORD"
+          value = "no"
+        },
+        {
+          name  = "REDIS_AOF_ENABLED"
+          value = "no"
+        },
+        {
+          name  = "REDIS_PORT"
+          value = "6379"
+        },
+        {
+          name  = "REDIS_PASSWORD"
+          value = "redis-pass"
+        }
+      ]
+    },
+    ],
+  )
+  volume {
+    name = "speedscale"
+  }
+}
+```
+
+### Modify the ECS service
+
+Now the ECS service needs to be modified to use the new task definition and the load balancer configuration needs to point to `notifications:8080` again instead of `goproxy` as it did during capture.
+
+```
+resource "aws_ecs_service" "notifications" {
+  name                 = "notifications"
+  cluster              = aws_ecs_cluster.cluster.id
+  task_definition      = aws_ecs_task_definition.with-speedscale.arn
+  force_new_deployment = true
+  desired_count        = 1
+  launch_type          = "FARGATE"
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.default.arn
+    container_name   = "notifications"
+    container_port   = 8080
+  }
+
+   network_configuration {
+    subnets         = data.aws_subnet_ids.private.ids
+    security_groups = [var.sg_id]
+  }
+}
+```
+
+### Verification
+
+Now if you send requests to your app as you did previously through the load balancer, your app will use mocks provided by Speedscale instead of making external API calls.
