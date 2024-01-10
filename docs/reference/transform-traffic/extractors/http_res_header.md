@@ -17,6 +17,8 @@
 - **name** - the case-sensitive name of the HTTP header to extract
 - **index** - (optional) array location within the header (defaults to 0)
 
+If the header does not exist it will be created.
+
 ### Example
 
 ```
