@@ -64,7 +64,7 @@ helm install speedscale-operator speedscale/speedscale-operator \
 	--set clusterName=<YOUR-CLUSTER-NAME>
 ```
 
-Navigate to the [Helm repository](https://github.com/speedscale/operator-helm)
+Navigate to the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md)
 for all configuration options available for the Helm chart.
 
 </TabItem>
