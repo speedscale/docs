@@ -337,6 +337,97 @@ resource "aws_ecs_service" "notifications" {
 
 Now if you send requests to your app as you did previously through the load balancer, they will be captured and sent to Speedscale.
 
+## Running a test
+
+After capturing traffic and creating a snapshot, we can run a test against our service. We'll do the following:
+
+1. Create a task definition for a `generator` which is the Speedscale component that will generate load against the service.
+2. Run this as a one off task.
+
+This task will have a set of environment variables to be filled from your `~/.speedctl/config` just like we did when setting up the `forwarder` as well as three additional ones: `SNAPSHOT_ID` which comes from the snapshot created with traffic, a `TEST_CONFIG_ID` which specifies the behavior of your test and `CUSTOM_URL` which will is the URL of the service to be tested. In this case it's `http://notifications.ecs.local` because we've setup ECS service discovery for our `notifications` service.
+
+```
+resource "aws_ecs_task_definition" "generator" {
+  family                   = "generator"
+  execution_role_arn       = aws_iam_role.exec.arn
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+
+  container_definitions = jsonencode([
+    {
+      name      = "generator"
+      image     = "gcr.io/speedscale/generator:v1.4"
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-create-group  = "true",
+          awslogs-group         = "ecs/generator"
+          awslogs-region        = "us-east-1",
+          awslogs-stream-prefix = "ecs"
+        },
+      },
+      environment = [
+        {
+          name  = "SNAPSHOT_ID"
+          value = "3420b3cd-35dc-4d37-8ce1-587afe0b2adb"
+        },
+        {
+          name  = "TEST_CONFIG_ID"
+          value = "regression"
+        },
+        {
+          name  = "CUSTOM_URL"
+          value = "http://notifications.ecs.local"
+        },
+        {
+          name  = "LOCAL_REPLAY_MODE"
+          value = "true"
+        },
+        {
+          name  = "SPEEDSCALE_API_KEY"
+          value = "yourkey"
+        },
+        {
+          name  = "SPEEDSCALE_APP_URL"
+          value = "dev.speedscale.com"
+        },
+        {
+          name  = "SUB_TENANT_NAME"
+          value = "default"
+        },
+        {
+          name  = "SUB_TENANT_STREAM"
+          value = "dev-sstenant-external"
+        },
+        {
+          name  = "TENANT_BUCKET"
+          value = "dev-sstenant-external"
+        },
+        {
+          name  = "TENANT_REGION"
+          value = "us-east-1"
+        },
+      ],
+    },
+  ])
+}
+```
+
+### Launch task
+
+You can launch this `generator` task from the AWS console or the CLI.
+
+![Launch Task](ecs/launch-1.png)
+
+You'll need to specify the same networking and scheduling parameters as the rest of your ECS Services through the wizard shown here.
+
+![Launch Task](ecs/launch-2.png)
+
+This will create a test reprt that you can view in the Speedscale dashboard.
+
 ## Using Mocks
 
 After capturing traffic and creating a snapshot, we can use a snapshot to create mocks for our service. We're going to do the following:
