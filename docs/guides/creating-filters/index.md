@@ -88,12 +88,12 @@ The following keywords can be used in your filter query:
 
 You can now use the following command to update your filter:
 ```bash
-speedctl push filter my_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")
+speedctl push filter my_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")'
 ```
 
 You can also create a brand new filter using the `put` command. 
 ```bash
-speedctl put filter --id my_new_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")
+speedctl put filter --id my_new_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")'
 ```
 
 ## Use your filter
