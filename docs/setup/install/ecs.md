@@ -210,6 +210,10 @@ resource "aws_ecs_task_definition" "with-speedscale" {
           containerName = "init",
           condition     = "SUCCESS"
         },
+        {
+          containerName = "goproxy",
+          condition     = "START"
+        },
       ]
       portMappings = [
         {
