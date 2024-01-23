@@ -2,7 +2,9 @@
 
 Some applications require communication between multiple services to work correctly.  For example, imagine an API server which requires an authentication token.  In production a client might make a request to an auth service to get a token, then send that token to the API server.  In this guide we will configure Speedscale to run a [replay](/reference/glossary.md#replay) simulating this example.
 
-## Select Traffic
+## Create Snapshot
+
+### Select Traffic
 
 To start we will need to create two [snapshots](/reference/glossary.md#snapshot) and merge them together.
 
@@ -14,7 +16,7 @@ The second snapshot contains traffic to the API server we want to test, `payment
 
 ![](./traffic-payment-no-login.png)
 
-## Merge Snapshots
+### Merge Snapshots
 
 From the first snapshot containing the authentication request select the menu and choose "Append snapshot".
 
@@ -38,386 +40,71 @@ $ cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/raw.jsonl | head -n 5 | jq '.res
 "payment"
 ```
 
-The first request is from `frontend` and the rest are from `payment`.
+The first request is from `frontend` and the rest are from `payment`.  The new snapshot shows the inbound and outbound [traffic](/reference/glossary.md#traffic) from both services.
 
-## Creating Transforms
+![](./frontend-payment-login-service-map.png)
 
-[Transforms](/reference/glossary.md#transform) can be created to modify traffic under the `transforms` tab of a snapshot.  Transforms here are shown in their JSON format, which can be modified under the `Advanced` sub-tab but dealing with JSON directly is not necessary.  See [where to transform traffic](/concepts/transforms/#where-to-transform-traffic) for more information.
+### Transforms
 
-### Hostname Overrides
+The snapshot now contains the `/api/payment/login` request, which means that request will be made again during the replay to retrieve a new token, but this is not enough.  We need to configure Speedscale to pass the `access_token` from the auth response to the `X-Access-Token` header in subsequent requests.
 
-By default traffic during a replay inside a cluster is routed to a single location, `some-service:8080` for example.  If we were to replay this snapshot and select a `payment` server all requests would be routed to `payment`, but the authentication request needs to be routed to `frontend` or some other location. For this we need to create transforms which use the [target hostname extractor](/reference/transform-traffic/extractors/target_hostname/) to modify each request before it is sent.
+We will create [Transforms](/reference/glossary.md#transform) to [store](/reference/transform-traffic/transforms/variable_store/) the `access_token` from the auth response body and [load](/reference/transform-traffic/transforms/variable_load/) it into the header field later. Transforms can be created for the snapshot under the `transforms` tab.
 
-This is what those transforms look like in JSON:
+Store the access token by selecting the `/api/payment/login` [RRPair](/reference/glossary.md#rrpair) and clicking the pencil by the `access_token` field.
 
-<details open><summary>JSON</summary>
-<p>
+![](./transform-login-pencil.png)
 
-```json
-{
-  "name": "my-transforms",
-  "id": "my-transforms",
-  "generator": [
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "frontend"
-          },
-          {
-            "include": true,
-            "detectedCommand": "POST"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_host"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "frontend"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "payment"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_host"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "payment"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
+Select `Store Variable` to store and enter a variable name.
 
-</p>
-</details>
+![](./transform-store-var.png)
 
+Now we can manually create a new transform by clicking `Add` at the top of the page.  The new transforms will:
 
-This will change the target hostname for a subset of the requests during replay.
+- Match all requests EXCEPT those with endpoint `/api/payment/login`
+- Target the HTTP Request Header `X-Access-Token`
+- Load the variable `access_token` into the header field at index 1, since the full header string is `Bearer [token]`
 
-### Port Overrides
+![](./transform-custom.png)
 
-It may also be necessary to change the target port, which can be done by adding [target port extractors](/reference/transform-traffic/extractors/target_port/).
-
-Add transforms to modify the target port for the requests in each service:
-
-<details open><summary>JSON</summary>
-<p>
-
-```json
-...
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "frontend"
-          },
-          {
-            "include": true,
-            "detectedCommand": "POST"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_port"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "3000"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "payment"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_port"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "3001"
-          }
-        }
-      ]
-    }
-...
-```
-
-</p>
-</details>
-
-### Store / Load Authentication Token
-
-Requests will be directed to the correct location using the above transforms, however the Speedscale load generator doesn't have all of the logic of your real client.  We still need to store the value from the auth response and load it into subsequent requests so they can authenticate properly.  This can be done with [var_store](/reference/transform-traffic/transforms/variable_store/) and [var_load](/reference/transform-traffic/transforms/variable_load/) respectively.
-
-Add an additional transform to store the `access_token` JSON value from the auth response body, and one to load that value into the `X-Access-Token` request header:
-
-<details open><summary>JSON</summary>
-<p>
-
-```json
-...
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "frontend"
-          },
-          {
-            "include": true,
-            "detectedCommand": "POST"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "res_body"
-      },
-      "transforms": [
-        {
-          "type": "json_path",
-          "config": {
-            "path": "access_token"
-          }
-        },
-        {
-          "type": "var_store",
-          "config": {
-            "name": "access_token"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "payment"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "http_req_header",
-        "config": {
-          "index": "0",
-          "name": "X-Access-Token"
-        }
-      },
-      "transforms": [
-        {
-          "type": "var_load",
-          "config": {
-            "name": "access_token"
-          }
-        }
-      ]
-    }
-...
-```
-
-</p>
-</details>
+Now during replay the `X-Access-Token` header for all requests, save the first one, will contain the `access_token` from the response of the `/api/payment/login` request which gives us the flexibility to test with our real service with real, valid authentication.
 
 ## Replay
 
-The merged snapshot now has traffic from both services and transforms to route to different locations.  Run a replay with the snapshot and iterate as necessary.
+The merged snapshot now has traffic from both services and transforms to route to different locations.  Let's replay it by clicking the `Replay` button.
 
-## Reference
+### Cluster / Namespace
 
-Here's the full transform from the sections above:
+Use the replay wizard to select the cluster and namespace where the replay will run.
 
-<details open><summary>JSON</summary>
-<p>
+![](./replay-wizard-select-cluster.png)
 
-```json
-{
-  "name": "my-transforms",
-  "id": "my-transforms",
-  "generator": [
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "frontend"
-          },
-          {
-            "include": true,
-            "detectedCommand": "POST"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_host"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "frontend"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "payment"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_host"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "payment"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "frontend"
-          },
-          {
-            "include": true,
-            "detectedCommand": "POST"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_port"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "3000"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "payment"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "target_port"
-      },
-      "transforms": [
-        {
-          "type": "constant",
-          "config": {
-            "new": "3001"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "frontend"
-          },
-          {
-            "include": true,
-            "detectedCommand": "POST"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "res_body"
-      },
-      "transforms": [
-        {
-          "type": "json_path",
-          "config": {
-            "path": "access_token"
-          }
-        },
-        {
-          "type": "var_store",
-          "config": {
-            "name": "access_token"
-          }
-        }
-      ]
-    },
-    {
-      "filters": {
-        "filters": [
-          {
-            "include": true,
-            "service": "payment"
-          }
-        ]
-      },
-      "extractor": {
-        "type": "http_req_header",
-        "config": {
-          "index": "0",
-          "name": "X-Access-Token"
-        }
-      },
-      "transforms": [
-        {
-          "type": "var_load",
-          "config": {
-            "name": "access_token"
-          }
-        }
-      ]
-    }
-  ]
-}
-```
+### Tests
 
-</p>
-</details>
+The "Tests" page shows the service map at the top and recorded traffic at the bottom.  The traffic for each service is shown on the left side of the service map and may be configured separately.  We will click the pencil to edit and select the workload where recorded `frontend` app traffic will be sent.
+
+![](./replay-wizard-select-frontend.png)
+
+Here we are selecting the `frontend` workload.
+
+![](./replay-wizard-select-workload-frontend.png)
+
+And similarly we can configure recorded `payment` app traffic to go to the `payment` workload.
+
+![](./replay-wizard-select-workload-payment.png)
+
+The replay has been configured such that `frontend` app traffic will go to the `frontend` workload and `payment` app traffic will go to the `payment` workload.
+
+![](./replay-wizard-sut-configured.png)
+
+### Test Config
+
+The [test config](/reference/glossary.md#test-config) is used to configure additional details like load and duration.  Test configs can be modified under the `Test Configs` tab.  Select an existing config.
+
+![](./replay-wizard-test-config.png)
+
+### Summary
+
+Review the details of the replay and click `Start Replay` to begin.
+
+![](./replay-wizard-summary.png)
 
