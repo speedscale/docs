@@ -49,13 +49,14 @@ IS
 NOT
 CONTAINS
 NOT CONTAINS
+REGEX
 ```
 
 between each filter criteria should be an `AND` or `OR`. Each set of filter rules should be separated with parentheses even if there's only one filter rule. If there's more than one rule for a key (`namespace`) they should be grouped together in a single set of parentheses.
 
 This is a full example of a query:
 ```
-(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")
+(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR (location REGEX "^\/users\/([0-9]*)$") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")
 ```
 
 As you can see, all `header` filters are grouped together. And even though for `timerange` we only have a single filter, we still wrap it inside parentheses.
@@ -69,7 +70,7 @@ The following keywords can be used in your filter query:
 | direction | ingress(IN) or egress (OUT) | direction IS IN
 | header[{key}] | HTTP Header Key=Value | header[User-Agent] CONTAINS "Prometheus"
 | l7protocol | protocol type | l7protocol NOT CONTAINS HTTP
-| location | location/endpoint | location IS "/healthz"
+| location | location/endpoint | location REGEX "^(.*)health$"
 | namespace | kubernetes namespace | namespace IS default
 | networkaddr | network address/host | networkaddr NOT grpc-server:80
 | req_json[{key}] | check request body against a json key/value | req_json[foo] IS bar
