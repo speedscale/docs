@@ -56,7 +56,7 @@ If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then
 
 Make sure you have [Helm 3](https://helm.sh/docs/intro/install/) installed. Then,
 
-```bash
+```
 helm install speedscale-operator speedscale/speedscale-operator \
 	-n speedscale \
 	--create-namespace \
@@ -105,6 +105,34 @@ Speedscale can also be used with [Docker](./setup/install/docker.md) and [locall
 
 </TabItem>
 
+<TabItem value="argocd" label="ArgoCD">
+
+Use the following ArgoCD manifest as an example. Make sure to use the latest `targetRevision` as shown on the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md).
+
+```
+project: default
+source:
+  repoURL: 'https://speedscale.github.io/operator-helm/'
+  targetRevision: <YOUR-VERSION>
+  helm:
+    parameters:
+      - name: apiKeySecret
+        value: speedscale-apikey
+    values: |-
+      apiKeySecret: speedscale-apikey
+      clusterName: <YOUR-CLUSTER-NAME>
+  chart: speedscale-operator
+destination:
+  namespace: speedscale
+  name: in-cluster
+syncPolicy:
+  automated: {}
+  syncOptions:
+    - CreateNamespace=true
+```
+
+</TabItem>
+
 <TabItem value="gitops" label="GitOps">
 
 :::caution
@@ -115,13 +143,15 @@ Installing via `helm install` is preferred as different GitOps engines treat Hel
 
 You can generate manifests either via Helm or our [CLI](./setup/install/cli.md).
 
-```bash
+```
 helm template speedscale-operator speedscale/speedscale-operator \
 	-n speedscale \
 	--create-namespace \
 	--set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-	--set clusterName=<YOUR-CLUSTER-NAME> > ./manifests
+	--set clusterName=<YOUR-CLUSTER-NAME> > ./speedscale-operator.yaml
 ```
+
+Then store `speedscale-operator.yaml` in git so it is deployed to your cluster.
 
 </TabItem>
 

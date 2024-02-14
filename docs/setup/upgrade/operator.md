@@ -19,55 +19,67 @@ speedctl update
 
 Your process for upgrading depends on how you manage your Kubernetes environments.
 
- * Run the Upgrade Wizard
- * GitOps
-
 <Tabs>
-<TabItem value="wizard" label="Wizard" default>
 
-If you use `speedctl` to manage your enviroment, you may begin the upgrade wizard,
-which will replace your Speedscale Operator with the latest version.
+<TabItem value="helm" label="Helm">
 
-```shell
-speedctl upgrade operator
+Upgrading the Speedscale via helm is as easy as:
+```
+helm repo update
+helm -n speedscale upgrade speedscale-operator speedscale/speedscale-operator
+```
+
+For additional details please refer to the
+[helm chart repository](https://github.com/speedscale/operator-helm/blob/main/README.md)
+for details and follow the README instructions for upgrading.
+
+</TabItem>
+
+<TabItem value="argocd" label="ArgoCD">
+
+Go to your ArgoCD manifest and update `targetRevision` to the specific version you want to upgrade to from the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md).
+
+```
+project: default
+source:
+  repoURL: 'https://speedscale.github.io/operator-helm/'
+  targetRevision: <YOUR-VERSION>
+  helm:
+    parameters:
+      - name: apiKeySecret
+        value: speedscale-apikey
+    values: |-
+      apiKeySecret: speedscale-apikey
+      clusterName: <YOUR-CLUSTER-NAME>
+  chart: speedscale-operator
+destination:
+  namespace: speedscale
+  name: in-cluster
+syncPolicy:
+  automated: {}
+  syncOptions:
+    - CreateNamespace=true
 ```
 
 </TabItem>
 
 <TabItem value="gitops" label="GitOps">
 
-If you are using a GitOps engine to manage your Kubernetes resources, you will need to update your git
-repository with the new manifests.
+If you are using a GitOps engine to manage your Kubernetes resources, you will need to update your git repository with the new manifests.
 
-1. Regardless of how your GitOps engine works, you must save the contents of
-   the Speedscale certificates in your cluster prior to upgrading. If the
-   secrets are currently in git, no action is needed. To save the secrets
-   locally, you can run `kubectl -n speedscale get secrets speedscale-certs -o
-   yaml > speedscale-certs.yaml`
-1. Generate new operator manifests, but don’t push them to git yet: `speedctl
-   deploy operator -e $(kubectl config current-context) >
-   speedscale-operator.yaml`
-1. Replace the `data` entry of the `speedscale-certs` Secrets in
-   `speedscale-operator.yaml` with the data of the certs you saved in step 1.
-1. If your workloads are stored with Speedscale annotations, **be sure to
-   review the [current list of annotations](/reference/kubernetes-annotations/) before
-   proceeding.**
-1. Commit the contents of speedscale-operator.yaml to git
+First generate a new template:
+```
+helm template speedscale-operator speedscale/speedscale-operator \
+    -n speedscale \
+    --create-namespace \
+    --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
+    --set clusterName=<YOUR-CLUSTER-NAME> > ./speedscale-operator.yaml
+```
 
-:::caution
-
-   If your GitOps engine does not delete resources when removed from git, run `kubectl delete mutatingwebhookconfiguration.admissionregistration.k8s.io speed-operator-mutating-webhook-configuration`
-:::
+Then merge this `speedscale-operator.yaml` with the one you already have in git.
 
 </TabItem>
 
-<TabItem value="helm" label="Helm">
-
-If you use helm please refer to the
-[helm chart repository](https://github.com/speedscale/operator-helm/blob/main/README.md)
-for details and follow the README instructions for upgrading.
-
-</TabItem>
 
 </Tabs>
 
