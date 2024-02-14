@@ -104,3 +104,19 @@ kubectl argo rollouts promote <rollout-name>
 </Tabs>
 
 
+## Uninstall
+
+To uninstall the sidecar on an argo rollout, do the following.
+
+Modify the following annotation to the rollout, setting it to `false`:
+
+```yaml
+annotations:
+  sidecar.speedscale.com/inject: "false"
+```
+
+Depending on how your rollout is configured, it may not immediately change. In order to force it to change, you can add an annotation like this and your should see the rollout cycle and your sidecar is removed.
+
+```
+now=$(date) && kubectl patch rollout rollouts-demo -p '{"spec": {"template": {"metadata": {"annotations": {"speedscale.com/restartedAt": "'$now'"}}}}}' --type merge
+```
