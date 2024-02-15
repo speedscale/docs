@@ -20,10 +20,25 @@ Without any resource requests or limits set for a container, Autopilot will appl
 for those that do specify resources, the value for both the request and the limit must be the same. Without
 additional configuration, the Speedscale operator will configure injected sidecars with default resource
 settings for CPU and memory in order to ensure that clusters utilitizing horizontal pod autoscaling work as
-designed. Additional workload annotations are necessary to ensure that these values are equivalent.
+designed. Ephemeral storage requests/limits must also be specified. Additional workload annotations are necessary to ensure that these values are equivalent.
 
-A complete example of the annotations necessary to inject the Speedscale sidecar into an application workload
-that listens for connections on port 8080 may look like the following:
+A complete example of the settings necessary to inject the Speedscale sidecar into an application workload
+that listens for connections on port 8080 may look like the following in the helm `values.yaml`:
+
+```
+sidecar:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 100Mi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 100Mi
+```
+
+or via annotations:
 
 ```
 sidecar.speedscale.com/inject: "true"
@@ -34,4 +49,6 @@ sidecar.speedscale.com/cpu-request: 500m
 sidecar.speedscale.com/cpu-limit: 500m
 sidecar.speedscale.com/memory-request: 1Gi
 sidecar.speedscale.com/memory-limit: 1Gi
+sidecar.speedscale.com/ephemeral-storage-request: 100Mi
+sidecar.speedscale.com/ephemeral-storage-limit: 100Mi
 ```
