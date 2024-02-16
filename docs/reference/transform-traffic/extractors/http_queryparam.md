@@ -15,7 +15,7 @@
 ```
 
 - **name** - the name of the query parameter to extract
-- **index** - (optional) array location within sequential query parameter values (defaults to 0)
+- **index** - (optional) specifies the query parameter when multiple query parameters with the same name are present. (zero indexed, defaults to 0)
 
 ### Example
 
