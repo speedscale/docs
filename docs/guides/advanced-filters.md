@@ -13,48 +13,48 @@ To create a snapshot using the CLI, follow the instructions in this section. For
 
 ```json
 {
-    "meta": {
-        "name": "my new snapshot",
-        "startTime": "2023-06-16T15:42:46Z",
-        "endTime": "2023-06-16T15:47:46.999Z",
-        "serviceName": "your-service-name"
-    },
-    "tokenConfigId": "standard",
-    "tokenizerConfig": {
-        "name": "standard",
-        "out": [
-            {
-                "type": "http_match_request_body",
-                "filters": {}
-            }
-        ],
-        "id": "standard",
-        "protected": true
-    },
-    "filter_expression": {
-        "conditions": [
-            {
-                "filters": [
-                    {
-                        "include": true,
-                        "service": "your-service-name"
-                    }
-                ]
-            },
-            {
-                "filters": [
-                    {
-                        "include": true,
-                        "timeRange": {
-                            "startTime": "2023-06-14T16:57:25Z",
-                            "endTime": "2023-06-14T17:12:25.999Z"
-                        }
-                    }
-                ]
-            },
+  "meta": {
+    "name": "my new snapshot",
+    "startTime": "2023-06-16T15:42:46Z",
+    "endTime": "2023-06-16T15:47:46.999Z",
+    "serviceName": "your-service-name"
+  },
+  "tokenConfigId": "standard",
+  "tokenizerConfig": {
+    "name": "standard",
+    "out": [
+      {
+        "type": "http_match_request_body",
+        "filters": {}
+      }
+    ],
+    "id": "standard",
+    "protected": true
+  },
+  "filter_expression": {
+    "conditions": [
+      {
+        "filters": [
+          {
+            "include": true,
+            "service": "your-service-name"
+          }
         ]
-    },
-    "disableTokenDiscovery": true
+      },
+      {
+        "filters": [
+          {
+            "include": true,
+            "timeRange": {
+              "startTime": "2023-06-14T16:57:25Z",
+              "endTime": "2023-06-14T17:12:25.999Z"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "disableTokenDiscovery": true
 }
 ```
 
@@ -76,17 +76,17 @@ Note: `reqFilter` type by default is set to JSON (`REQ_FILTER_TYPE_JSON`) but it
 1. Create a JSON document with the keys and values you want to match on. In this example, we insert the following snippet and append to the `filter_expression->criteria` section of your snapshot definition
 
 ```json
+{
+  "filters": [
     {
-      "filters": [
-        {
-          "include": true,
-          "reqFilter": {
-            "key": "user_number",
-            "value": "0"
-          }
-        }
-      ]
+      "include": true,
+      "reqFilter": {
+        "key": "user_number",
+        "value": "0"
+      }
     }
+  ]
+}
 ```
 
 2. Trigger snapshot creation (see instructions at beginning of this page)
@@ -96,17 +96,18 @@ Note: `reqFilter` type by default is set to JSON (`REQ_FILTER_TYPE_JSON`) but it
 As an example, let's filter for a single user ID stored in an HTTP request header. This would allow us to isolate a single user's API calls, store them in a snapshot, and then scale up that traffic to many users by transforming the user ID. To accomplish the first goal of filtering based on a request header value, we will use the `header` filter criteria. Modify and append the following snippet to the `filter_expression->criteria` section of your snapshot definition.
 
 ```json
-            {
-                "filters": [
-                    {
-                        "include": true,
-                        "operator": "CONTAINS",
-                        "header":{
-                            "key":"user-id","value":"0"
-                        }
-                    }
-                ]
-            }
+{
+  "filters": [
+    {
+      "include": true,
+      "operator": "CONTAINS",
+      "header": {
+        "key": "user-id",
+        "value": "0"
+      }
+    }
+  ]
+}
 ```
 
 This filter should be inserted into the snapshot creation workflow at the beginning of this page.
@@ -117,21 +118,20 @@ Speedscale decodes gRPC into a general purpose JSON format that can be worked wi
 
 For this example, let's isolate the `SELECT 1` SQL statement. For Google Spanner, the SQL statement is stored at JSONPath `fieldsMap.3.fields.0.asString`. `reqFilter` is capable of doing a key/value document comparison, so for this example we'll search requests where `fieldsMap.3.fields.0.asString=SELECT 1`. Follow the steps below to create your own filter:
 
-
 1. Create the following key/value `reqFilter` filter and append it to the `filter_expression->criteria` section of your snapshot definition
 
 ```json
+{
+  "filters": [
     {
-      "filters": [
-        {
-          "include": true,
-          "reqFilter": {
-            "key": "fieldsMap.3.fields.0.asString",
-            "value": "SELECT 1"
-          }
-        }
-      ]
+      "include": true,
+      "reqFilter": {
+        "key": "fieldsMap.3.fields.0.asString",
+        "value": "SELECT 1"
+      }
     }
+  ]
+}
 ```
 
 2. Trigger snapshot creation (see instructions at beginning of this page)
@@ -161,4 +161,3 @@ header
 uuid
 snapshotId
 ```
-
