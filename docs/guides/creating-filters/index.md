@@ -1,3 +1,5 @@
+import Tabs from '@theme/Tabs';
+
 # Creating Traffic Filters
 
 Filters can be saved from the traffic viewer and then used to prevent traffic from ever reaching Speedscale. Most users will create filters using this UI. Filter rules are stored in Speedscale cloud and applied by the Speedscale Forwarder. Once a filter is applied to the forwarder, no traffic will leave your network that is prohibited by the filter.
@@ -97,9 +99,35 @@ You can also create a brand new filter using the `put` command.
 speedctl put filter --id my_new_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")'
 ```
 
-## Use your filter
+## Apply the filter
 
-Now, to apply the filter; change the `filterRule` configured in your `values.yaml` file of the operator helm chart to the filter rule name you entered in step 4. After updating or overriding the value, then run the `helm upgrade` command for the changes to take effect. You should see `SPEEDSCALE_FILTER_RULE` is now properly set on the `speedscale-forwarder` config map in your cluster.
+The filter must be applied to take effect.
+
+<Tabs>
+
+<TabItem value="gitops" label="GitOps">
+
+Change the `filterRule` configured in your `values.yaml` file of the operator helm chart to the name of your filter. After updating or overriding the value, then run the `helm upgrade` command for the changes to take effect.
+
+</TabItem>
+
+<TabItem value="speedctl" label="speedctl">
+
+Apply your filter to one of your clusters with `speedctl infra operator patch --cluster my-cluster --filter-rule my_excellent_filter`.
+
+You can list your clusters with `speedctl infra inspectors -o pretty`.
+
+</TabItem>
+
+</Tabs>
+
+## Troubleshooting
+
+Check these items if the filter is not being applied correctly.
+
+- Ensure the filter rule exists on the [filter page](https://app.speedscale.com/filterRules) or with `speedctl get filters -o pretty`
+- If you have modified the filter rule from the CLI with `speedctl pull filter-rule` ensure it is pushed back to the Speedscale cloud with `speedctl push filter-rule`
+- Verify the setting directly in your cluster with `kubectl -n speedscale get cm speedscale-forwarder -o jsonpath='{.data.SPEEDSCALE_FILTER_RULE}'`
 
 
 
