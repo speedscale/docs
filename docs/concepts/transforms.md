@@ -4,6 +4,9 @@ sidebar_position: 9
 
 # Transforms
 
+<iframe src="https://player.vimeo.com/video/918429952?h=44c28051e7" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/918429952">Stop scripting and use AI</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
 Automatically modify traffic before it is replayed.
 
 ### Basic Principles
