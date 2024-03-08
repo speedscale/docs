@@ -35,6 +35,7 @@ metadata:
 spec:
   hosts:
   - app.speedscale.com
+  - downloads.speedscale.com
   - firehose.us-east-1.amazonaws.com
   - sqs.us-east-1.amazonaws.com
   - sns.us-east-1.amazonaws.com
