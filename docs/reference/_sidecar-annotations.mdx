@@ -211,6 +211,16 @@ sidecar.
 
 ---
 
+### `sidecar.speedscale.com/ignore-inbound-ports`
+
+Comma separated list of port numbers whose traffic should be **excluded** from the traffic captured by the
+sidecar. Inbound requests to these ports will bypass the proxy entirely and will route directly to your
+application. Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise.
+
+- Example: `sidecar.speedscale.com/ignore-inbound-ports: "443,8888"
+
+---
+
 ### `sidecar.speedscale.com/ignore-dst-ips`
 
 Comma separated list of outbound IPv4 addresses or IPv4 CIDR blocks that should be **excluded** from the
@@ -236,6 +246,17 @@ sidecar.
 :::
 
 - Example: `sidecar.speedscale.com/ignore-dst-hosts: "example.com,mysvc.internal"`
+
+---
+
+### `sidecar.speedscale.com/ignore-outbound-ports`
+
+Comma separated list of port numbers whose traffic should be **excluded** from the traffic captured by the
+sidecar. Outbound requests to these ports will bypass the proxy entirely and will route directly from your
+application to the intended destination. Only valid if `capture-mode` is `proxy` and `proxy-type` is
+`transparent`, ignored otherwise.
+
+- Example: `sidecar.speedscale.com/ignore-outbound-ports: "27017"
 
 ---
 
