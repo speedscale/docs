@@ -12,6 +12,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology | Type | Support | Notes |
 | ---------- | ---- | ------- | ----- |
+| AMQP (0.9.1) | Protocol | Capture Only | |
 | Auth0 | API | Full | |
 | Basic Auth | Auth | Full | |
 | Bearer JWT | Auth | Full | Automatic discovery and replacement|
@@ -34,6 +35,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Mutual TLS (mTLS) | Protocol | Partial | See [TLS](/setup/sidecar/tls/) |
 | MySQL | DBMS | Full | |
 | Postgres | DBMS | Partial | Active beta for full replay |
+| RabbitMQ | Protocol | Capture Only | |
 | Redis | DBMS | Capture Only | |
 | Salesforce | API | Full | |
 | SOAP | API | Full | |
