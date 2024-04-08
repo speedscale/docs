@@ -1,11 +1,15 @@
 ---
 sidebar_position: 39
-title: Identify a Session
+title: Identify a Session or ID
 ---
 
 ## Sessions
 
-Speedscale utilizes the concept of *sessions* to identify individual users or client connections. A *session* represents a stream of requests run in sequence. You can think of it like a conversation between a single client and the service. Typically, sessions are automatically discovered by Speedscale for common patterns like JWT Bearer tokens. However, this guide covers what to do when you need to do some off roading and identify a unique identifier in an usual location.
+Speedscale utilizes the concept of *sessions* to identify individual users or client connections. A *session* represents a stream of requests run in sequence. You can think of it like a conversation between a single client and the service. Typically, sessions are automatically discovered by Speedscale for common patterns like JWT Bearer tokens. However, this guide covers what to do when you need to do some off roading and identify a unique identifier in an usual location. Once Speedscale is aware of an ID a variety of features are enabled, including AI powered replacement so taking a minute to tag IDs is worth the effort.
+
+:::note
+If your app relies on JWTs you can think of sessions, JWTs or individual clients as interchangeable. If you have a human readable user ID tucked into your requests then that could also be considered a session.
+:::
 
 ## Identify a Unique ID
 
@@ -45,3 +49,23 @@ SPEEDSCALE_DLP_CONFIG=email_session
 1. Open your service in traffic viewer.
 2. Select an RRPair and look at it's Info Tab. You'll notice that the Session ID entry is populated with the email address.
 3. Create a filter for only that Session ID. All requests from that client are indentified in sequence.
+
+## (Optional) Replace During Replay
+
+:::caution
+The following instructions should be used on your snapshot during playback. Don't add them to your forwarder configuration.
+:::
+
+During playback, you may want to take the additional step of replacing the session with a new value. For instance, many testing scenarios require replacing a real email address with a test one. To do this, we'll introduce one new transform and apply it to a new transform chain.
+
+The [train](../reference/transform-traffic/transforms/train.md) tells the Speedscale AI model to replace the incoming value with a new value wherever it occurs in your traffic. For example, if you recorded a query parameter containing a user ID you may want to replace it with one that works in a test environment instead of production. Think of this transform like a very sophisticated find and replace that is able to peer deep inside payloads and parameters within your traffic. The `train` transform has no configuration because once Speedscale knows of the desired replacement it does the work of finding it embedded within fields automatically.
+
+To make `train` work you need to assign a new ID later in the transform chain. For instance, we can replace a user's login email with a new random one. In Speedscale terms that means using [rand_string](../reference/transform-traffic/transforms/rand_string.md) with an appropriate regex. It's also common to use defined test data and the [csv](../reference/transform-traffic/transforms/csv.md) transform. For this example we'll use a simple email regular expression to create a random string `^[a-zA-Z0-9._%+-]{6,14}@foobar\.com`
+
+This is what your transform chain might look like with the complete set:
+
+![train transform](./identify-session/transforms-w-train.png)
+
+The source is the session of the rrpair. If you did the first set of steps correctly then this should be populated. Keep in mind that you can pull the training data from anywhere, session is just one choice. The first transform tells Speedscale to train on the current and new values. The last transform creates a random string matching an email in the `foobar.com` domain.
+
+Moving forward, Speedscale will now replace every occurence of the recorded email address with a new one. That includers maintaining consistency, meaning that once a random email is matched to a new value it will be replaced everywhere with the same value.
