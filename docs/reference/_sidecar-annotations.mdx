@@ -192,6 +192,14 @@ will route directly to your application. Only valid if `capture-mode` is `proxy`
 
 - Example: `sidecar.speedscale.com/ignore-src-ips: "10.10.0.40,10.200.10.0/24"`
 
+:::tip
+To have *ALL* inbound traffic to your application bypass the sidecar entirely, use the following format:
+
+```
+sidecar.speedscale.com/ignore-src-ips: "*"
+```
+:::
+
 ---
 
 ### `sidecar.speedscale.com/ignore-src-hosts`
@@ -217,7 +225,7 @@ Comma separated list of port numbers whose traffic should be **excluded** from t
 sidecar. Inbound requests to these ports will bypass the proxy entirely and will route directly to your
 application. Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise.
 
-- Example: `sidecar.speedscale.com/ignore-inbound-ports: "443,8888"
+- Example: `sidecar.speedscale.com/ignore-inbound-ports: "443,8888"`
 
 ---
 
@@ -229,6 +237,14 @@ will route directly from your application to the intended destination. Only vali
 and `proxy-type` is `transparent`, ignored otherwise.
 
 - Example: `sidecar.speedscale.com/ignore-dst-ips: "10.10.0.40,10.200.10.0/24"`
+
+:::tip
+To have *ALL* outbound traffic from your application bypass the sidecar entirely, use the following format:
+
+```
+sidecar.speedscale.com/ignore-dst-ips: "*"
+```
+:::
 
 ---
 
@@ -256,7 +272,7 @@ sidecar. Outbound requests to these ports will bypass the proxy entirely and wil
 application to the intended destination. Only valid if `capture-mode` is `proxy` and `proxy-type` is
 `transparent`, ignored otherwise.
 
-- Example: `sidecar.speedscale.com/ignore-outbound-ports: "27017"
+- Example: `sidecar.speedscale.com/ignore-outbound-ports: "27017"`
 
 ---
 
