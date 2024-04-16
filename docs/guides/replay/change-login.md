@@ -37,7 +37,7 @@ Find this traffic in the traffic viewer, and then use the `Save` button to creat
 
 ### Configuration
 
-From the snapshot viewer, select the `Transforms` tab and you can see your set of `Test` transactions that will be sent to the server, and `Mock` transactions to mock out downstream calls. This is how to create this transform:
+From the snapshot viewer, select the `Transforms` tab and you can see your set of `Test` requests that will be sent to the server, and `Mock` transactions to mock out downstream calls. This is how to create this transform:
 * Select the `/login` transaction
 * Click on the `Request` tab to see the request body
 * Click on the pencil next to `username`

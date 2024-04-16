@@ -23,7 +23,7 @@ environment is instrumented via Kubernetes sidecars or proxy servers, depending 
 ![](./speedscale-data-capture.png)
 
 The proxy is picking up 2 things -- inbound traffic into your API, as well as outbound traffic to its dependencies and the resulting responses.
-We do this so we can transform inbound transactions into replayable test cases, and the backend requests/responses into mocked services to
+We do this so we can transform inbound requests into replayable test cases, and the backend requests/responses into mocked services to
 stand in for the real systems during traffic replay.
 
 The data we observe is being sent to Speedscale’s cloud data warehouse for storage and analysis.

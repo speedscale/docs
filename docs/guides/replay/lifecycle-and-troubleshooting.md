@@ -129,10 +129,10 @@ The operator will wait for these steps to complete. The log message indicating i
 
 Once the environment is prepared, the operator will run a generator job to start the test. If the generator annotation has been manually set to false (which is rare) then the operator will simply wait for a while before cleaning up the environment. The operator logs will tell you this is happening.
 
-One additional edge case occurs if there are no inbound transactions in the snapshot. This will prevent the generator from running and you will see this log message:
+One additional edge case occurs if there are no inbound traffic in the snapshot. This will prevent the generator from running and you will see this log message:
 
 ```
-{"L":"ERROR","T":"...","M":"no inbound transactions in this scenario, no test report will be generated", ... }
+{"L":"ERROR","T":"...","M":"no inbound traffic in this scenario, no test report will be generated", ... }
 ```
 
 #### 3b. (optional) Operator deploys generator

@@ -11,13 +11,13 @@ Click on one of the instances to open the Traffic Viewer which provides:
 
 * A time picker to look at trends during specific time windows
 * Throughput graphs for inbound calls to the service and outbound calls to backend systems
-* Filters for searching for specific transactions or otherwise customizing the list
+* Filters for searching for specific requests or otherwise customizing the list
 
 ![Traffic Viewer](./observe-traffic-viewer.png)
 
 ### Filtering <a href="#analyze-steps" id="analyze-steps"></a>
 
-Utilize the filters to drill down even further into a subset of transactions or to filter out unwanted traffic like heartbeats.
+Utilize the filters to drill down even further into a subset of requests or to filter out unwanted traffic like heartbeats.
 
 ![Filters](./select-filters.png)
 

@@ -12,8 +12,8 @@ The performance view gives you information at a glance about how your code is pe
 
 * **Latency** measured using both average, 95th and 99th percentile
 * **Throughput** measured as traffic over time
-  * TPS: transactions per second
-  * TPM: transactions per minute
+  * RPS: requests per second
+  * RPM: requests per minute
 * **Saturation** measured by looking at CPU and Memory from the environment
 * **Errors** there is an entire dashboard devoted to this information
 

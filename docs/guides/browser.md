@@ -149,7 +149,7 @@ It will ask you if you're sure `▸ Snapshot already exists, overwrite? [Y/n]: y
 
 ![snapshot-reversed](./browser/snapshot-reversed.png)
 
-Now you can run the replay with the following command. This uses the 100 replicas snapshot which will take the small number of calls and multiply them into a larger number of transactions.
+Now you can run the replay with the following command. This uses the 100 replicas snapshot which will take the small number of calls and multiply them into a larger number of requests.
 
 ```
 speedctl replay --custom-url en.wikipedia.org --test-config-id performance_100replicas SNAPSHOT_ID

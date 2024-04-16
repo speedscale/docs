@@ -5,7 +5,7 @@ sidebar_position: 4
 
 # Replay Traffic in a Different Cluster
 
-One great use of Speedscale is to record traffic in one cluster and replay it another cluster. For example, record real user transactions in production and then replay that traffic in a test cluster. Or, record traffic in production and use it to create realistic mocks running in [minikube](https://minikube.sigs.k8s.io/docs/start/) for local development.
+One great use of Speedscale is to record traffic in one cluster and replay it another cluster. For example, record real user requests in production and then replay that traffic in a test cluster. Or, record traffic in production and use it to create realistic mocks running in [minikube](https://minikube.sigs.k8s.io/docs/start/) for local development.
 
 #### Before you begin
 
