@@ -50,6 +50,12 @@ kubectl -n <namespace> get relicasets
 
 Note that you do not want to modify the replica set, but the error message in there may help you understand which component is missing.
 
+### Communication with the generator was lost during replay?
+
+The [generator](./glossary.md#generator) is the Speedscale component that sends requests to the [SUT](./glossary.md#sut) (your service) during replay.  Under normal circumstances the generator runs for as long as it takes to make requests according to the [snapshot](./glossary.md#snapshot) and [test config](./glossary.md#test-config), sends replay details to the Speedscale cloud and exits cleanly, but things can go sideways with this critical component in a nubmer of ways.
+
+The most common failure scenario happens when the generator runs out of memory. The generator needs to store information about requests while they are being sent to the Speedscale cloud and sending too many requests at one time can cause an [OOM](https://en.wikipedia.org/wiki/Out_of_memory) event.  Try increasing the generator's resource requirements or enabling generator [low data mode](./glossary.md#low-data-mode) in the test config.
+
 ### Not seeing traffic when using a port forward? <a href="#port-forward" id="port-forward"></a>
 
 If you are using [**port forwarding**](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) to call a service, then `goproxy` will not be able to detect the traffic. Enabling port forwarding will circumvent `goproxy` and prevent us from seeing any traffic.
