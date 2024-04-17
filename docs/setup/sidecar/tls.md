@@ -11,7 +11,7 @@ When using the annotation examples below, be sure to _add_ them to any existing 
 
 ## TLS Inbound Interception
 
-The sidecar will be listening for incoming transactions, and must present to the client the correct
+The sidecar will be listening for incoming requests, and must present to the client the correct
 certificate. Because you already have TLS configured, the cert files you are using must be provided to the
 sidecar. There are three available settings:
 

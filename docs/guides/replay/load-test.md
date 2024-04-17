@@ -50,21 +50,21 @@ the time is reached.  The **Ramp time** will ramp traffic up to the **Request
 Volume/Speed** over the duration given.
 
 The right side sets the **Request Volume/Speed** and determines fast requests
-will be made.  Selecting a **TPS** sets the number of [transactions per
-second](/reference/glossary.md/#transactions-per-second) this stage will
+will be made.  Selecting a **RPS** sets the number of [requests per
+second](/reference/glossary.md/#requests-per-second) this stage will
 target.  While the replay is running the
-[generator](/reference/glossary.md/#generator) monitors the current TPS and
+[generator](/reference/glossary.md/#generator) monitors the current RPS and
 increases or decreases load accordingly, holding load once the target is
 reached.
 
-Let's look at an example with multiple stages using TPS to control load.
+Let's look at an example with multiple stages using RPS to control load.
 
 | Stage | Ramp time | Duration  | Request Volume |
 |-------|-----------|-----------|----------------|
-| 1     | 0s        | 120s      | 50 TPS         |
-| 2     | 0s        | 180s      | 100 TPS        |
-| 3     | 30s       | 300s      | 200 TPS        |
-| 4     | 45s       | 45s       | 0 TPS          |
+| 1     | 0s        | 120s      | 50 RPS         |
+| 2     | 0s        | 180s      | 100 RPS        |
+| 3     | 30s       | 300s      | 200 RPS        |
+| 4     | 45s       | 45s       | 0 RPS          |
 
 This load pattern would result in a replay that looks like this:
 
@@ -74,22 +74,22 @@ This load pattern would result in a replay that looks like this:
      ^           ^         ^         ^           ^
      |           |         |         |           |
  stage 1         |         |         |           |
-targets 50 TPS   |         |         |           |
+targets 50 RPS   |         |         |           |
                  |         |         |           |
               stage 2      |         |           |
             immediately    |         |           |
-          targets 100 TPS  |         |           |
+          targets 100 RPS  |         |           |
                            |         |           |
                      stage 3 spends  |           |
                     30s ramping from |           |
-                     100 to 200 TPS  |           |
+                     100 to 200 RPS  |           |
                                      |           |
                                stage 3 spends    |
                                 the reamining    |
-                               270s at 200 TPS   |
+                               270s at 200 RPS   |
                                                  |
                                    stage 4 spends all of its 45s
-                                   ramping down from 200 TPS to 0
+                                   ramping down from 200 RPS to 0
 ```
 
 The graph for this load pattern might look something like this:

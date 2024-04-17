@@ -6,7 +6,7 @@ When replaying traffic, it is important to re-sign JWTs that have expired so tha
 
 * Find the location of the secret or certificate used to sign the JWTs in your Kubernetes cluster. The Speedscale Generator and your application must both use this secret for re-signing to work.
 
-#### Identify and filter transactions that need re-signing
+#### Identify and filter requests that need re-signing
 
 :::note
 If you already have your traffic selected, just open the snapshot, click View Traffic, and skip to step 3.
@@ -17,7 +17,7 @@ If you already have your traffic selected, just open the snapshot, click View Tr
 
 JWT tokens are stored in the `Authorization` HTTP request header. The token itself is prefixed with `Bearer `.
 
-2. Create a filter for the transactions containing JWT tokens. For this example, you would click on the magnifying glass next to the location to capture all transactions for endpoint `/authtoken`. There will be more than one so don't define your filter too narrowly.
+2. Create a filter for the requests containing JWT tokens. For this example, you would click on the magnifying glass next to the location to capture all requests for endpoint `/authtoken`. There will be more than one so don't define your filter too narrowly.
 
 ![New Filter](./new_filter.png)
 

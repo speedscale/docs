@@ -206,16 +206,16 @@ Speedscale UI for visualizing traffic where each line contains an [RRPair](#rrpa
 
 Traffic for each of your applications can be found on the [traffic page](https://app.speedscale.com/analyze) in the UI.
 
-### Transaction
+### Request
 
 A single request and response, for HTTP.  Like a ping which goes out to the target and
 back, a transaction consists of a single round trip, whatever that means for
 the protocol in use.
 
-### Transactions Per Second
+### Requests Per Second
 
-The number of [transactions](#transaction) completed in a single second of
-measurement.  Transactions per second (TPS) are used to describe the throughput
+The number of [requests](#requests) completed in a single second of
+measurement.  Requests per second (RPS) are used to describe the throughput
 of one endpoint or a service as a whole.
 
 ### Transform

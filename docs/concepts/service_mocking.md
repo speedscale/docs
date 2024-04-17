@@ -11,7 +11,7 @@ Most non-trivial applications rely on external systems like 3rd party APIs or da
 Service mocks are generally made available over the network and are accessible to your app in a test environment or on the local desktop. If your service mocks are working properly, your service under test (SUT) will believe it is actually running in production because the mock is convincing. A realistic service mock must simulate the following components:
 * data that is similar to production
 * realistic response time (not too fast, not too slow)
-* accurate response sequencing for non-idempotent transactions
+* accurate response sequencing for non-idempotent requests 
 * continuously updated tokens like authentication, etc
 
 ## How does it know which response to return?
@@ -62,7 +62,7 @@ This HTTP request would generate a signature similar to the following:
 
 Speedscale automatically mocks any technology on our [supported technology page](../reference/technology-support.md). We've created baselines that work in most situations but you can customize as described below.
 
-## What happens if my transactions are non-idempotent (aka the response changes after each request)?
+## What happens if my requests are non-idempotent (aka the response changes after each request)?
 
 Speedscale automatically handles changing responses and is smart enough to deal with many common patterns without human intervention. Speedscale incorporates a learning model that mutates based on the protocol and specific API type being monitored. Even if Speedscale has never seen your API before there is a good probability of it being able to automatically mock your dependency without training.
 
