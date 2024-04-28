@@ -7,10 +7,6 @@ title: Identify a Session or ID
 
 Speedscale utilizes the concept of *sessions* to identify individual users or client connections. A *session* represents a stream of requests run in sequence. You can think of it like a conversation between a single client and the service. Typically, sessions are automatically discovered by Speedscale for common patterns like JWT Bearer tokens. However, this guide covers what to do when you need to do some off roading and identify a unique identifier in an usual location. Once Speedscale is aware of an ID a variety of features are enabled, including AI powered replacement so taking a minute to tag IDs is worth the effort.
 
-:::note
-If your app relies on JWTs you can think of sessions, JWTs or individual clients as interchangeable. If you have a human readable user ID tucked into your requests then that could also be considered a session.
-:::
-
 ## Identify a Unique ID
 
 Let's use an example HTTP request where the client's email address is embedded as a query parameter. Let's not make any judgments about whether this is best practice - it definitely happens in the real world.
@@ -35,6 +31,11 @@ In the end, you will have a DLP rule that looks like this:
 ![dlp rule](./identify-session/dlp_rule_complete.png)
 
 This transform cahin will isolate the `email` HTTP Query Parameter and use it as the session identifier.
+
+:::note
+If your app relies on JWTs then you can think them as being interchangeable with sessions. However, if you have a human readable user ID tucked into the JWT claims then that could also be considered a session. To extract an ID like this you can use the [JSONPath](../reference/transform-traffic/extractors/json_path.md) extractor pointed at the claim:
+![jwt claim](./identify-session/jwt-claim.png)
+:::
 
 ## Apply to Forwarder
 
