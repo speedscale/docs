@@ -17,6 +17,7 @@ production.
 ![CI Pipeline](./cicd-flow.png)
 
 Adding anything to your CI/CD pipeline generally involves the same 3 steps:
+
 1. adding a step to your **pipeline**
 1. setting the right **environment** variables
 1. executing the right **script** to perform a desired action
@@ -42,7 +43,7 @@ Speedscale can also be run in [Docker](../setup/install/docker.md)
 Every CI system has a different way of setting the `PATH` for actions, make sure `~/.speedscale` is in the path after running the installer script.
 :::
 
-The **speedscale.sh** script can be implemented a few ways.  Choose the one that
+The **speedscale.sh** script can be implemented a few ways. Choose the one that
 makes the most sense for your environment.
 
 <Tabs>
@@ -54,13 +55,13 @@ https://support.circleci.com/hc/en-us/articles/360060789052-Unable-to-Override-P
 ---->
 
 ```yaml
-version: '2.1'
+version: "2.1"
 orbs:
   kubernetes: circleci/kubernetes@1.3.1 # <--- if using kubectl - see below
 jobs:
   speedscale:
     docker:
-      - image: 'cimg/python:3.10'
+      - image: "cimg/python:3.10"
     environment:
       SERVICE: my-service # <--- Speedscale environment variables - see below
     steps:
@@ -101,12 +102,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    # You'll probably want to build, unit test, push image, etc. here
-    - name: Build
-      run: docker build -t gcr.io/myimage:latest .  && docker push gcr.io/myimage:latest
+      # You'll probably want to build, unit test, push image, etc. here
+      - name: Build
+        run: docker build -t gcr.io/myimage:latest .  && docker push gcr.io/myimage:latest
   test:
     name: Replay
     needs: build
@@ -160,7 +161,6 @@ speedscale-replay:
   script:
     - export PATH=${PATH}:${HOME}/.speedscale
     - ./speedscale.sh # <--- Speedscale script - see below
-
 ```
 
 </TabItem>
@@ -205,47 +205,69 @@ https://learn.microsoft.com/en-us/azure/devops/pipelines/scripts/logging-command
 
 ```yaml
 trigger:
- - main
+  - main
 
 variables:
-- name: SERVICE # <--- Speedscale environment variables - see below
-  value: my-service
+  - name: SERVICE # <--- Speedscale environment variables - see below
+    value: my-service
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 steps:
   # get kubectl
   - task: KubectlInstaller@0 # <--- if using kubectl - see below
-    displayName: 'kubectl installed'
+    displayName: "kubectl installed"
     inputs:
-      kubectlVersion: 'latest'
+      kubectlVersion: "latest"
   # run replay
   - bash |
-      echo "##vso[task.prependpath]~/.speedscale"
-      export PATH=${PATH}:${HOME}/.speedscale
-      ./speedscale.sh # <--- Speedscale script - see below
+    echo "##vso[task.prependpath]~/.speedscale"
+    export PATH=${PATH}:${HOME}/.speedscale
+    ./speedscale.sh # <--- Speedscale script - see below
+```
+
+</TabItem>
+
+<TabItem value="skaffold" label="Google Cloud Deploy with Skaffold">
+
+Add the verify block to your existing Skaffold deploy.
+
+```yaml
+apiVersion: skaffold/v4beta7
+kind: Config
+manifests:
+  rawYaml:
+    - k8s-deploy.yaml
+deploy:
+  kubectl: {}
+verify:
+  - name: speedscale
+    container:
+      name: speedscale
+      image: ubuntu
+      command: ["/bin/sh"]
+      args: ["-c", "export PATH=${PATH}:${HOME}/.speedscale && ./speedscale.sh"] # <--- Speedscale script - see below
 ```
 
 </TabItem>
 
 </Tabs>
 
-
 ## The Environment
 
 Set these environment variables to configure the replay, either in the script
 or through the CI/CD platform:
 
-| Variable               | Example Value | Description |
-| ---------------------- | ------------- | ----------- |
-| CLUSTER                | my-cluster    | Name of the cluster running the Speedscale Operator. |
-| SERVICE                | my-service    | Service name as displayed at https://app.speedscale.com. |
-| NAMESPACE              | my-ns         | Kubernetes namespace where your service is running. |
-| TEST_CONFIG            | standard      | Test configuration defined at https://app.speedscale.com/config. |
-| SNAPSHOT_ID            | latest        | Use the latest snapshot for this service. |
-| TIMEOUT                | 10m           | Maximum amount of time to wait for replay to complete. |
-| BUILD_TAG              | v1.2.3        | Identifies the version of your service being tested. |
+| Variable    | Example Value | Description                                                      |
+| ----------- | ------------- | ---------------------------------------------------------------- |
+| CLUSTER     | my-cluster    | Name of the cluster running the Speedscale Operator.             |
+| SERVICE     | my-service    | Service name as displayed at https://app.speedscale.com.         |
+| NAMESPACE   | my-ns         | Kubernetes namespace where your service is running.              |
+| TEST_CONFIG | standard      | Test configuration defined at https://app.speedscale.com/config. |
+| SNAPSHOT_ID | latest        | Use the latest snapshot for this service.                        |
+| TIMEOUT     | 10m           | Maximum amount of time to wait for replay to complete.           |
+| BUILD_TAG   | v1.2.3        | Identifies the version of your service being tested.             |
 
 ## The Script
 
@@ -262,9 +284,8 @@ If you do not have cluster access the replay can be started and validated with
 In addition to the other environment variables, your speedscale API key should
 be set (securely) for authentication:
 
-
-| Variable           | Example Value | Description |
-| ------------------ | ------------- | ----------- |
+| Variable           | Example Value                                 | Description                                                            |
+| ------------------ | --------------------------------------------- | ---------------------------------------------------------------------- |
 | SPEEDSCALE_API_KEY | 2ca17dbe5b3b7a4f15f926b83d1ed567a98d38a3e47be | Service account API key created from https://app.speedscale.com/tenant |
 
 ```bash
