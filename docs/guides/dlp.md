@@ -352,3 +352,57 @@ Another example to redact passwords:
 :::caution Note
 Redaction for postgres is limited to string and character fields at this time
 :::
+
+## Replaying with Generated Data
+
+For replays to work, redacted data usually needs to be replaced with realistic test values. Fortunately, that's easy to accomplish using the following procedure:
+
+1. Export all redacted values to a CSV
+2. Assign replacement values
+3. Train Speedscale AI on replacement values during replay
+
+Let's walk through each step with examples.
+
+### Export Redacted Values
+
+Take note of the snapshot ID for the snapshot you would like to replay. Run the following command:
+
+```bash
+speedctl export dlp-redacted <snapshot id> --upload
+```
+
+This command will export all redacted fields contained within your snapshot. Redacted values are de-duplicated and their location in the traffic should not matter for discovery or replacement. At the end of the speedctl output you'll see a line similar to the following:
+
+```
+Extracted user data stored here:
+/Users/most_excellent/.speedscale/data/userdata/8b879152-9d8e-4292-8b81-90e0a8f87a95.csv
+```
+
+We'll be editing this file in the next step. Take note of the userdata ID (ex: `8b879152...`) from this statement as well.
+
+### Assign Replacement Values
+
+Open the `.csv` file created in the previous step in your favorite spreadsheet editor. You should see something like this:
+
+![example_csv](./dlp/example_csv.png)
+
+Enter replacement values into the second column. During replay, every instance of `READCTED-<...>` will be replaced with the value you enter.
+
+Save the file and push to Speedscale Cloud:
+
+```bash
+speedctl push userdata <userdata id>
+```
+
+You can find the ID in previous output of `speedctl export dlp-redacted ...`.
+
+### Train AI on Replacement Values
+
+1. Navigate to your snapshot in the Speedscale Cloud UI.
+2. Open the Transform Editor.
+3. Open the `Variables (Tests)` tab. 
+4. Create a transform chain consisting of these components `source=read_file("s3://<userdata id>") : train_csv()`. In the UI it should look like this:
+
+![example_transforms](./dlp/example_transforms.png)
+
+That's it, now all redacted fields will be replaced with new values. There are no practical limits on how many CSVs can be pre-trained. Also remember that this can be combined with Speedscale's generative AI capabilities.
