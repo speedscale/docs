@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "gzip"
 ```
 
@@ -14,7 +14,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "gzip"
 ```
 

@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "http_req_cookie",
 "config": {
     "name": "<cookie>"
@@ -17,7 +17,7 @@
 
 ### Example
 
-```
+```json
 "type": "http_req_cookie",
 "config": {
     "name": "search_index"

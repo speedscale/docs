@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "base64"
 ```
 
@@ -14,7 +14,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "base64"
 ```
 

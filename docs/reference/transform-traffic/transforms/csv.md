@@ -11,7 +11,7 @@
 
 ### Usage
 
-```
+```json
 "type": "csv",
 "config": {
     "index": "<integer>",

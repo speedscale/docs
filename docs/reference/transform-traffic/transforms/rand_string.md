@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "rand_string",
 "config": {
     "pattern": "<regular expression>"
@@ -17,7 +17,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "rand_string",
 "config": {
     "pattern": "user_[a-z0-9]{10,20}"

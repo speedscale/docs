@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "split",
 "config": {
     "index": "zero indexed integer",
@@ -23,7 +23,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "split",
 "config": {
     "index": "1",

@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "dlp_json"
 ```
 

@@ -4,7 +4,7 @@
 
 ### Usage
 
-```
+```json
 "type": "xml_path",
 "config": {
     "path": "<XPath>"
@@ -15,7 +15,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "xml_path",
 "config": {
     "path": "/feed/entry/epoch/text()"
@@ -24,7 +24,7 @@
 
 #### Input Token
 
-```
+```json
 <feed  version="1.0" hasPendingRequests="false" >
   <status>Good</status>
   <errmsg>OK</errmsg>

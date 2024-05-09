@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "var_load",
 "config": {
     "name": "<string>"
@@ -19,7 +19,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "var_load",
 "config": {
     "name": "my_variable"

@@ -8,7 +8,7 @@ Certain special cases are supported that allow deep inspection inside of certain
 
 ### Usage
 
-```
+```json
 "type": "json_path",
 "config": {
     "path": "<JSON path to data>",
@@ -23,7 +23,7 @@ Certain special cases are supported that allow deep inspection inside of certain
 
 Extract the Bearer token from the HTTP Authorization Header, then extract the `name` claim from inside the JWT:
 
-```
+```json
 "type": "json_path",
 "config": {
     "path": "http.req.headers.Authorization.0.jwt.claims.name",

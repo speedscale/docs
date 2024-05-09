@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "file",
 "config": {
     "filename": "<path to file>"
@@ -19,7 +19,7 @@
 
 Pull from a file on the local file system:
 
-```
+```json
 "type": "file",
 "config": {
     "filename": "/var/secrets/myssecret.key"
@@ -28,7 +28,7 @@ Pull from a file on the local file system:
 
 The `s3://` prefix indicates that the file is [user data](../../glossary.md#user-data).
 
-```
+```json
 "type": "file",
 "config": {
     "filename": "s3://values.csv"
