@@ -145,7 +145,7 @@ enables inbound TLS interception and unwrapping. See [TLS](/setup/sidecar/tls/) 
 
 ### `sidecar.speedscale.com/tls-in-private`
 
-Filename of the TLS private key used when `tls-in-secret` is configured. Ignored otherwise.
+If `tls-in-secret` is provided, this is the filename of the TLS private key. If it is not provided, this must be a full path to the TLS private key file already mounted in the container.
 
 - Default: `tls.key`
 
@@ -153,7 +153,7 @@ Filename of the TLS private key used when `tls-in-secret` is configured. Ignored
 
 ### `sidecar.speedscale.com/tls-in-public`
 
-Filename of the TLS public certificate used when `tls-in-secret` is configured. Ignored otherwise.
+If `tls-in-secret` is provided, this is the filename of the TLS public key. If it is not provided, this must be a full path to the TLS public key file already mounted in the container.
 
 - Default: `tls.crt`
 
@@ -169,7 +169,7 @@ Do not set this unless your application uses mutual TLS. See [TLS](/setup/sideca
 
 ### `sidecar.speedscale.com/tls-mutual-private`
 
-Filename of the TLS private key used when `tls-mutual-secret` is configured. Ignored otherwise.
+If `tls-mutual-secret` is provided, this is the filename of the TLS private key. If it is not provided, this must be a full path to the TLS private key file already mounted in the container.
 
 - Default: `tls.key`
 
@@ -177,7 +177,7 @@ Filename of the TLS private key used when `tls-mutual-secret` is configured. Ign
 
 ### `sidecar.speedscale.com/tls-mutual-public`
 
-Filename of the TLS public certificate used when `tls-mutual-secret` is configured. Ignored otherwise.
+If `tls-mutual-secret` is provided, this is the filename of the TLS public key. If it is not provided, this must be a full path to the TLS public key file already mounted in the container.
 
 - Default: `tls.crt`
 
@@ -193,11 +193,12 @@ will route directly to your application. Only valid if `capture-mode` is `proxy`
 - Example: `sidecar.speedscale.com/ignore-src-ips: "10.10.0.40,10.200.10.0/24"`
 
 :::tip
-To have *ALL* inbound traffic to your application bypass the sidecar entirely, use the following format:
+To have _ALL_ inbound traffic to your application bypass the sidecar entirely, use the following format:
 
 ```
 sidecar.speedscale.com/ignore-src-ips: "*"
 ```
+
 :::
 
 ---
@@ -239,11 +240,12 @@ and `proxy-type` is `transparent`, ignored otherwise.
 - Example: `sidecar.speedscale.com/ignore-dst-ips: "10.10.0.40,10.200.10.0/24"`
 
 :::tip
-To have *ALL* outbound traffic from your application bypass the sidecar entirely, use the following format:
+To have _ALL_ outbound traffic from your application bypass the sidecar entirely, use the following format:
 
 ```
 sidecar.speedscale.com/ignore-dst-ips: "*"
 ```
+
 :::
 
 ---
