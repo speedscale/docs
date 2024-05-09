@@ -12,7 +12,7 @@ Check the [Common Patterns](../../common-patterns/) section for practical exampl
 
 ### Usage
 
-```
+```json
 "type": "date",
 "config": {
     "layout": "<date format>",
@@ -38,7 +38,7 @@ Leave the layout blank (or set to `auto`) and Speedscale will usually figure out
 
 #### Configuration
 
-```
+```json
 "type": "date",
 "config": {
     "layout": "2006-01-02",

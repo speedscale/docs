@@ -8,7 +8,7 @@ This transform is usually used to populate variables during startup of the gener
 
 ### Usage
 
-```
+```json
 "type": "variable",
 "config": {
     "variable": "<key>"
@@ -19,7 +19,7 @@ This transform is usually used to populate variables during startup of the gener
 
 ### Example
 
-```
+```json
 "type": "variable",
 "config": {
     "variable": "bearer_value"

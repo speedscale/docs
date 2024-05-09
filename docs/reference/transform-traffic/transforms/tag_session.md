@@ -6,6 +6,6 @@
 
 ### Usage
 
-```
+```json
 "type": "tag_session"
 ```

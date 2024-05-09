@@ -15,7 +15,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "json_path",
 "config": {
     "path": "client_secret"
@@ -24,7 +24,7 @@
 
 #### Input Token
 
-```
+```json
 {
     "client_id": "srn:dev:iam:na:9999999999:sa:policy-api",
     "client_secret": "c2783a54ad41c87a3ca6bed685b285c98957e408fF7cdf7FS5c52F376ce3897d",

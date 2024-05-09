@@ -10,7 +10,7 @@
 
 ### Usage
 
-```
+```json
 "type": "jwt_resign"
 ```
 
@@ -25,12 +25,12 @@
 
 ### Example
 
-```
+```json
 "type": "jwt_resign",
 "config": {
     "iss": "new value",
     "aud": "new value",
-    "sub": new value",
+    "sub": "new value",
     "secretPath": "local path of secret mounted to generator",
     "claims": "key1=val1",
     "prefixes": "Bearer ,myBearer "

@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "session"
 ```
 
@@ -14,6 +14,6 @@ This extractor has no user configuration.
 
 ### Example
 
-```
+```json
 "type": "session"
 ```

@@ -8,12 +8,12 @@ The target hostname value does not include the port.  Modify the port with the [
 
 ### Usage
 
-```
+```json
 "type": "target_hostname"
 ```
 
 ### Example
 
-```
+```json
 "type": "target_hostname",
 ```

@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "http_queryparam",
 "config": {
     "name": "<parameter>",
@@ -19,7 +19,7 @@
 
 ### Example
 
-```
+```json
 "type": "http_queryparam",
 "config": {
     "name": "filter"

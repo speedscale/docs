@@ -8,7 +8,7 @@ Use this transform if you'd like to manually add any data items to the analysis.
 
 ### Usage
 
-```
+```json
 "type": "store_sig",
 "config": {
     "key": "<optional, name to assign this data for readability>"
@@ -21,7 +21,7 @@ Use this transform if you'd like to manually add any data items to the analysis.
 
 #### Configuration
 
-```
+```json
 "type": "store_sig",
 "config": {
     "key": "look_here"

@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "one_of",
 "config": {
     "strategy": "<sequential or random>",
@@ -18,7 +18,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "one_of",
 "config": {
     "strategy": "sequential",

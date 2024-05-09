@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "train"
 ```
 
@@ -14,6 +14,6 @@
 
 #### Configuration
 
-```
+```json
 "type": "train"
 ```

@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "http_res_header",
 "config": {
     "name": "<header>",
@@ -21,7 +21,7 @@ If the header does not exist it will be created.
 
 ### Example
 
-```
+```json
 "type": "http_res_header",
 "config": {
     "name": "Content-Type"

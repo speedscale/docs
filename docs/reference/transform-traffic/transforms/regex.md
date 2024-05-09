@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "regex",
 "config": {
     "pattern": "<regular expression>"
@@ -17,7 +17,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "regex",
 "config": {
     "pattern": "\d{4}(-\d{2}){0,2}$"

@@ -6,7 +6,7 @@
 
 ### Usage
 
-```
+```json
 "type": "constant",
 "config": {
     "new": "<string>"
@@ -19,7 +19,7 @@
 
 #### Configuration
 
-```
+```json
 "type": "constant",
 "config": {
     "new": "these are not the droids you're looking for"

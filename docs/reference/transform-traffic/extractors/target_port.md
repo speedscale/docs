@@ -6,12 +6,12 @@
 
 ### Usage
 
-```
+```json
 "type": "target_port"
 ```
 
 ### Example
 
-```
+```json
 "type": "target_port",
 ```
