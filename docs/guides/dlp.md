@@ -386,7 +386,7 @@ Open the `.csv` file created in the previous step in your favorite spreadsheet e
 
 ![example_csv](./dlp/example_csv.png)
 
-Enter replacement values into the second column. During replay, every instance of `READCTED-<...>` will be replaced with the value you enter.
+Enter replacement values into the second column. During replay, every instance of `READCTED-<...>` will be replaced with the value you enter. If you enjoy using the command line this can also be done using your default text editor with `speedctl edit user-data <userdata id>`.
 
 Save the file and push to Speedscale Cloud:
 
