@@ -6,9 +6,6 @@ sidebar_position: 9
 In this guide we will store a list of values in a file and use them to replace
 values in requests made to your application.
 
-See the [unique IDs guide](./replace-txn-ids.md) to learn how to pass values
-dynamically between requests.
-
 ## Prerequisites
 
 If these requirements do not make sense start with the [quickstart guide](/quick-start.md).
