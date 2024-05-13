@@ -15,14 +15,18 @@ If we fed this CSV into `train_csv` it would cause all future occurrences of the
 "type": "train_csv",
 "config": {
     "headers": "<boolean>",
-    "existing": "<string or number depending on the value of header>",
-    "new": "<string or number depending on the value of header>"
+    "existing": "<string>",
+    "new": "<string>",
+    "existingNum": "<number>",
+    "newNum": "<number>"
 }
 ```
 
 - **headers** - optional, set to false if no column headers are present, defaults to true
-- **existing** - optional, for headers=true: name of the column to use as the existing value to serve as key, for headers=false: zero indexed column number, defaults to 0
-- **new** - optional, for headers=true: name of the column to use as the existing value to serve as key, for headers=false: zero indexed column number, defaults to 1
+- **existing** - optional, for headers=true: name of the column to use as the existing value to serve as key, defaults to 0
+- **new** - optional, for headers=true: name of the column to use as the existing value to serve as key, defaults to 1
+- **existingNum** - optional, for headers=false: zero indexed column to use for keys
+- **newNum** - optional, for headers=false: zero indexed column to use for matching values
 
 ### Example
 
@@ -31,8 +35,8 @@ If we fed this CSV into `train_csv` it would cause all future occurrences of the
 ```json
 "type": "train_csv",
 "headers": "false",
-"existing": "2",
-"new": "5"
+"existingNum": "2",
+"newNum": "5"
 ```
 
 This will train Speedscale to replace any value found in column 2 with the corresponding value in column 5 in all future requets. Remember the column numbers are zero indexed.
