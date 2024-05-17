@@ -48,6 +48,21 @@ In addition to these details, a Service Map visually represents the inbound and 
 
 ![Service Map](../select-service-map.png)
 
+## Endpoint Grouping
+As shown in the following picture, there's an auto URL grouping mechanism to group URLs that fall in the same category. For example, all `/user/{uuid}/registration` URLs have been grouped in the Latency Summary table to give a better view of the results.
+![Auto Endpoint Grouping](../Auto-Endpoint-Grouping.png)
+
+But this grouping can also be defined manually in Snapshot definitions. For example, adding the following `endpoint_regexes` to Snapshot definitions will result in grouping all `v1` API calls into one row in the Latency Summary table.
+```json
+"endpoint_regexes":[
+   {
+     "url": "/v1/(.*)",
+     "method":"(.*)"
+   }
+]
+```
+![Endpoint Grouping](../Endpoint-Grouping.png)
+
 
 ## Transform Traffic
 
