@@ -7,7 +7,10 @@
 ### Usage
 
 ```json
-"type": "train"
+"type": "train",
+"config": {
+    "overwrite": "<boolean>",
+}
 ```
 
 ### Example
@@ -15,5 +18,8 @@
 #### Configuration
 
 ```json
-"type": "train"
+"type": "train",
+"config": {
+    "overwrite": "true",
+}
 ```
