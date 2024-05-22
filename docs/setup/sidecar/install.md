@@ -66,7 +66,7 @@ containers in the workload.
 ## Removal
 
 If you already have the sidecar installed, but you need for it to be removed,
-you may either set the `sidecare.speedscale.com/inject` annotation to `false`,
+you may either set the `sidecar.speedscale.com/inject` annotation to `false`,
 or remove it:
 
 ```yaml
