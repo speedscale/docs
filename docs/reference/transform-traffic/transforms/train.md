@@ -15,6 +15,8 @@
 
 ### Example
 
+The `train` transform forms the heart of session or request ID replacement [workflow](../../../guides/identify-session.md).
+
 #### Configuration
 
 ```json

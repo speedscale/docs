@@ -19,6 +19,8 @@ Use this transform if you'd like to manually add any data items to the analysis.
 
 ### Example
 
+The service mocking [page](../../../concepts/service_mocking.md) provides some context around service mocking and using this transform.
+
 #### Configuration
 
 ```json

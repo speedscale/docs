@@ -30,6 +30,8 @@ If we fed this CSV into `train_csv` it would cause all future occurrences of the
 
 ### Example
 
+`train_csv` is used as part of the data redaction and replacement [workflow](../../../guides/dlp.md).
+
 #### Configuration
 
 ```json
