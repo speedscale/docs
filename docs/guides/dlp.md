@@ -368,10 +368,10 @@ Let's walk through each step with examples.
 Take note of the snapshot ID for the snapshot you would like to replay. Run the following command:
 
 ```bash
-speedctl export dlp-redacted <snapshot id> --upload
+speedctl extract dlp-redacted <snapshot id> --upload
 ```
 
-This command will export all redacted fields contained within your snapshot. Redacted values are de-duplicated and their location in the traffic should not matter for discovery or replacement. At the end of the speedctl output you'll see a line similar to the following:
+This command will extract all redacted fields contained within your snapshot. Redacted values are de-duplicated and their location in the traffic should not matter for discovery or replacement. At the end of the speedctl output you'll see a line similar to the following:
 
 ```
 Extracted user data stored here:
@@ -394,7 +394,7 @@ Save the file and push to Speedscale Cloud:
 speedctl push userdata <userdata id>
 ```
 
-You can find the ID in previous output of `speedctl export dlp-redacted ...`.
+You can find the ID in previous output of `speedctl extract dlp-redacted ...`.
 
 ### Train AI on Replacement Values
 
