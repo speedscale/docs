@@ -13,6 +13,8 @@
 }
 ```
 
+- ***overwrite** - If false, the key=value mapping will be made permanently. If true, the key=value mapping will be rewritten each time `train` is called. This is helpful if you want to rotate values through a CSV continuously. For most use cases, overwrite=false (the default) is desired.
+
 ### Example
 
 The `train` transform forms the heart of session or request ID replacement [workflow](../../../guides/identify-session.md).
