@@ -6,6 +6,10 @@
 
 In all future transactions, Speedscale will replace the recorded value with the replay value. You do not need to identify each instance. Speedscale will uniquely identify each instance and will not get confused by multiple request IDs.
 
+:::caution
+Remember, Speedscale Enterprise does not use customer data for generalized model training. Each Enterprise customer has their own "base model" with a common core, but no shared access between customers - even for AI training weights.
+:::
+
 ### Usage
 
 ```json
