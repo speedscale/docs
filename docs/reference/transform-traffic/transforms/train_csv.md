@@ -9,6 +9,10 @@ As an example, let's assume the following CSV:
 
 If we fed this CSV into `train_csv` it would cause all future occurrences of the `REDACTED-...` strings to be replaced with corresponding value in the `New Value for Testing` column on the same row. It does not matter where in your recorded traffic the values occur, they will be replaced. That includes query parameters, headers, SQL parameters, request bodies, etc.
 
+:::caution
+Remember, Speedscale Enterprise does not use customer data for generalized model training. Each Enterprise customer has their own "base model" with a common core, but no shared access between customers - even for AI training weights.
+:::
+
 ### Usage
 
 ```json
