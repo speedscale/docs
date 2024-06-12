@@ -2,9 +2,9 @@
 
 ## Overview
 
-GraphQL services work automatically in the same way HTTP services should work. All functionality including Capture, Analyze and Replay work the same because of translations done by Speedscale. GraphQL introduces a couple of new concepts that may be unfamiliar to those used to REST but all of the usual Speedscale how-tos and tricks apply to GraphQL.
+GraphQL services work automatically in the same way HTTP services work. All functionality including Capture, Analyze and Replay work the same because of translations done by Speedscale. GraphQL introduces a couple of new concepts that may be unfamiliar to those used to REST but all of the usual Speedscale how-tos and tricks apply to GraphQL.
 
-GraphQL responses are supported natively without translation. Fortunately, GraphQL responses are JSON formatted and Speedscale's normal data analysis tools like [transformers](../concepts/transforms.md) should work without issue.
+GraphQL responses are supported natively without translation. Fortunately, GraphQL responses are JSON formatted and Speedscale's normal data analysis tools like [transformers](../concepts/transforms.md) will work without issue.
 
 However, GraphQL Queries are very different because they are constructed from a proprietary domain specific language called an Abstract Syntax [Tree](https://adamhannigan81.medium.com/understanding-the-graphql-ast-f7f7b8e62aa4). The topic of ASTs is beyond the scope of this document but a little bit of knowledge should make testing GraphQL straightforward.
 
@@ -14,7 +14,7 @@ Let's look at a sample snapshot to explain how Speedscale handles GraphQL querie
 
 ## AST JSON
 
-In order to be able to modify GraphQL payloads the Speedscale UI shows a JSON representation of the GraphQL query. This JSON format is not based on an industry standard because none currently exists for GraphQL Query->JSON. As a consequence, this AST is generally messy and difficult for humans to read. However, you can still see the actual GraphQL in the `raw` tab. The important thing to note is that in order to use transformers to modify your request for replay, you need to interact with the JSON representation.
+In order to be able to modify GraphQL payloads the Speedscale UI shows a JSON representation of the GraphQL query. This JSON format is not based on an industry standard because none currently exists for GraphQL Query->JSON. As a consequence, this AST is generally messy and difficult for humans to read. However, you can still see the actual GraphQL in the `raw` tab. The important thing to note is that you must modify the JSON representation and Speedscale will reconstruct it into GraphQL AST syntax at replay.
 
 The following is an example of what you will see for this mutation query:
 ```graphql
@@ -33,7 +33,9 @@ To change one of the query options, find it in the response body JSON and modify
 
 ## Testing Example (Simple)
 
-Most of the time, testers don't actually need to modify the AST query itself. Don't worry, we'll still show an example of how to do modify the query below but be aware that testers usually just need to edit the `variables` section of the query and not the AST. Developers intentionally externalize data that should be modiifed in the `variables` section. If you're modifying the AST then you're modifyinng the query itself - skip to the Advanced section below. Otherwise, focus on modifying the variables section in the Request Body. If you recorded GraphQL traffic, it will contain a request body section similar to this:
+Most of the time, testers don't actually need to modify the AST query itself. Don't worry, we'll still show an example below. However, be aware that testers usually just need to edit the `variables` section of the query and not the AST. In a perfect world, developers intentionally externalize data that should be modiifed in the `variables` section. If you are not currently in a perfect world then skip ahead to the Advanced section below.
+
+Otherwise, focus on modifying the variables section in the Request Body. If you recorded GraphQL traffic, it will contain a request body section similar to this:
 
 ```json
 "variables": {
