@@ -52,7 +52,7 @@ In the UI, you can click on the pencil icon next to value you want to change and
 
 ![example](./graphql/graphql-simple_example.png)
 
-In text from this transform chain translates into `res_body()->json_path("variables.cartValidationRequest.channel") -> constant("horse_and_buggy")`.
+In text from this transform chain translates into `req_body()->json_path("variables.cartValidationRequest.channel") -> constant("horse_and_buggy")`.
 
 Once we save this transform chain, every instance of "channel" within the GraphQL query variables will be translated into "horse and buggy". Combine this procedure with the existing how to guides for different types of transformations. We're using a constant value here for simplicity but real apps will need something more complex like a [csv](../reference/transform-traffic/transforms/csv.md).
 
