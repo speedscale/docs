@@ -93,7 +93,7 @@ For additional assistance, please refer to our [Support Page](#) or contact our 
 
 Yes, Smart Replace is designed to efficiently process large snapshot files.
 
-### Will Smart Replaace work when I create a new snapshot?
+### Will Smart Replace work when I create a new snapshot?
 
 Yes, although your new snapshot will need the same transform rules applies. This system is designed to be part of Speedscale's automatic traffic refresh system.
 

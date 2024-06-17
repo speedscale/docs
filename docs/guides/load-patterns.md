@@ -117,11 +117,13 @@ You will end up with a set of three total stages looking like the following scre
 3. Create a new stage. Set the RPS to an unreasonable amount of load (e.g., 5000).
 4. Run a replay and select this test config.
 5. Open the replay you just ran and let it run for a while.
-6. Look for either a "graph inversion" where throughput goes down while latency goes up or look for throughput to level off as a steady state.
-
-If your app has levelled off you may see a graph like the following. Note that some app "jitter" during the start of the test for a variety of reasons including cache population.
+6. If the app can handle the load, you'll see a steadily increasing throughput chart.
 
 ![steady](./load-patterns/steady.png)
+
+Note that some app "jitter" during the start of the test for a variety of reasons including cache population. If this type of jitter happens later in the test it may be a sign of the app breaking down:
+
+![soak-jitter](./load-patterns/soak-jitter.png)
 
 ### Spike Load Pattern
 
@@ -138,9 +140,15 @@ By understanding and implementing these load patterns in Speedscale, you can ens
 
 After selecting vUsers in the test config stage editor you can select from two different modes:
 
-**Full Speed** -  The generator will send requests sequentially as fast as the application can respond. Each concurrent thread (or vUser) will wait for a response from the previous request before initiating a new request. If you were to chart out the time between requests it will be variable based on how fast the app responds. Each thread runs concurrently and slowdowns in use thread should not affect other threads.
-**Multiply original latency** - The generator will send requests at the same speed they were sent by the actual user in the original recording. Requests are still run sequentially but there is effectively a "think time" sleep to mimic what happened in the original recording. If the app is responds more slowly than the original recording then requests are sent as fast as they can be handled.
+**Full Speed:** -  The generator will send requests sequentially as fast as the application can respond. Each concurrent thread (or vUser) will wait for a response from the previous request before initiating a new request. If you were to chart out the time between requests it will be variable based on how fast the app responds. Each thread runs concurrently and slowdowns in use thread should not affect other threads.
+
+
+**Multiply original latency:** - The generator will send requests at the same speed they were sent by the actual user in the original recording. Requests are still run sequentially but there is effectively a "think time" sleep to mimic what happened in the original recording. If the app is responds more slowly than the original recording then requests are sent as fast as they can be handled.
 
 ### Is there a limit on how long an overall test can run (i.e. soak for)?
 
 There is no absolute limit but at some point the amount of data in the reports become unwieldy. If you are hitting a report timeout please notify Speedscale [support](https://slack.speedscale.com) and timeouts can be increased.
+
+### Can I run a replay using only mocks and no load at all?
+
+Yes. Select the "mocks-only" option in the test config editor. The Speedscale responder can container will run for an extended period of time without a load test. This is used frequently in pure "environment replication" and passthrough modes.
