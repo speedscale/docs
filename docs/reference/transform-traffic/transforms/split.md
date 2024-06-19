@@ -31,7 +31,7 @@
 }
 ```
 
-This config will split a string into segments whenever it encouters a pipe or period and extract the second string segment.
+This config will split a string into segments whenever it encounters a pipe or period and extract the second string segment.
 
 #### Input Token
 
