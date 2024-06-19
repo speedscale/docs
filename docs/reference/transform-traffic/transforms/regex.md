@@ -2,7 +2,9 @@
 
 ### Purpose
 
-**regex** extracts the first instance of a regular expression pattern. Most regular expression patterns are supported but for edge cases check out Go's [regexp](https://pkg.go.dev/regexp) documentation.
+**regex** extracts the first instance of a regular expression pattern.
+
+Validate regex patterns at https://regex101.com using the Golang flavor.
 
 ### Usage
 
