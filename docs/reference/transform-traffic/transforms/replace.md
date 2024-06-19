@@ -15,9 +15,11 @@
 }
 ```
 
-- **old** - old value to be replaced
-- **new** - new value to insert in place of old
-- **count** - maximum number of replacements to make (default: -1 aka no limit)
+| Key         | Description |                                                                                                                                                                                          |
+| ----------- | ------------|
+| **old**     | Old value to be replaced.
+| **new**     | New value to insert in place of old.
+| **count**   | (optional) Maximum number of replacements to make. Defaults to no limit.
 
 ### Example
 
