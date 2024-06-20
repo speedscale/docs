@@ -38,7 +38,7 @@ If you are not running on Kubernetes then most of these instructions will need t
 
 - [ ] Are you utilizing a Service Mesh?
 
-Istio and its derivatives are currently supported natively. Other service meshes may be supported if you contact [support](https://slack.speedscale.com). If you are using Istio you will need to follow the instructions in this [section](../setup/install/istio/) while configuring the operator. Just save that link for later.
+Istio and its derivatives are currently supported natively. Other service meshes may be supported if you contact [support](https://slack.speedscale.com). If you are using Istio you will need to follow the instructions in this [section](../setup/install/istio.md) while configuring the operator. Just save that link for later.
 
 - [ ] Does your cluster have resources to support the extra recording workload?
 
