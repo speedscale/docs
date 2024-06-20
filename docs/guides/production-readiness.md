@@ -239,8 +239,9 @@ Here you can see only the pod called `frontend-sidecar` has `3/3` containers, an
 
 ### (optional) Istio Traffic Management
 
-Because this is highly customizable, it is recommended that the DevOps team utilize a well-known pattern for canary deployments, then split the traffic among these. This is a more sophisticated way to handle the routing and you can ensure that a specific % of the traffic is going to the pods with the sidecars.
+Because deployment is highly customizable, it is recommended that the DevOps/SRE/Platform Eng team utilize a well-known pattern for canary deployments, then split the traffic among these. This is a more sophisticated way to handle the routing and you can ensure that a specific % of the traffic is going to the pods with the sidecars. Use this instead of the manual process in the previous section.
 
+Take a look at Istio's official guide and tailor to your environment.
 [Traffic Management](https://istio.io/latest/docs/concepts/traffic-management/)
 
 ## Validation
