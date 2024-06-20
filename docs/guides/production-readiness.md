@@ -95,8 +95,8 @@ Filter rules can be used to completely block traffic from ever being sent to Spe
 
 Once this process is complete you have a Filter configuration that can be used in production. Keep in mind that this is one of the best ways to control your ingest volume and reduce network egress traffic.
 
-:::callout
-Filter rules can be tuned after deployment but if Remote Control is turned off then changes may require cluster access.
+:::note
+Filter rules can be tuned after deployment but if Remote Control is turned off it may require cluster access.
 :::
 
 ## Deployment Checklist
