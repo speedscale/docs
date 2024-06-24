@@ -127,3 +127,9 @@ kubectl patch validatingwebhookconfiguration -n ingress-nginx-admission -type='j
 With both patches applied, log in to the Speedscale UI and confirm the visibility of traffic rot the
 `ingress-nginx-controller` service that appears. You may need to manually issue a request to your cluster to
 observe any data.
+
+:::tip
+Load tests can look a lot like a Denial of Service (DDOS) to your CDN. If you are attempting to play traffic back against your production ingress you may need to add the Speedscale generator to your CDN or firewall allow list. Your specific CDN may require a support ticket or other configuration. If the header `X-Speedscale-Generator` is present then the request was initiated by Speedscale and should be allowed.
+
+Your CDN may have hints in their community similar to [CloudFlare](https://community.cloudflare.com/t/website-stress-testing/340426)
+:::
