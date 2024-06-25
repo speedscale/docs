@@ -52,7 +52,7 @@ Using `speedctl edit` or by just looking at your local filesystem you can inspec
 
 ## Replay Trace Locally
 
-Every request and response involved in that transaction will now be stored in a portable container called a [Snapshot](./glossary/#snapshot). This command will return a JSON description of the snapshot. Take note of its ID as this is the identifier used to replicate the environment. Snapshots are portable across environments and allow you to re-run the same transactions on your own machine or in a staging environment. As an example, we can replay the inbound traffic against a service running on the local desktop using a command like this:
+Every request and response involved in that transaction will now be stored in a portable container called a [Snapshot](../reference/glossary.md/#snapshot). This command will return a JSON description of the snapshot. Take note of its ID as this is the identifier used to replicate the environment. Snapshots are portable across environments and allow you to re-run the same transactions on your own machine or in a staging environment. As an example, we can replay the inbound traffic against a service running on the local desktop using a command like this:
 
 ```bash
 speedctl replay 2dff1e5a-a32f-4d73-8bb7-990924cec054 --custom-url=localhost:9000
