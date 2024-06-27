@@ -38,7 +38,7 @@ In Speedscale, you can configure various load patterns to simulate different use
     - Tests the system's ability to handle sudden bursts of high traffic.
 
 :::note
-Testers may be used to thinking in terms of vUsers as representing user flows or sessions. In this document, the term vUser is used interchangeably with "concurrent thread." Sessions are handled elsewhere and setting vUsers in Speedscale will not directly map to what you are familiar with in other traditional testing tools. If you are unfamiliar, it may be easier to think in terms of requests per second or RPS instead of vUsers. This document uses both as examples but feel free to change RPS to vUsers and vice versa. RPS may be a better measurement for stress and performance testing because it better maps to what is expected in production monitoring tools.
+Testers may be used to thinking in terms of [vUsers](/reference/glossary.md#vuser) as representing user flows or sessions. In this document, the term vUser is used interchangeably with "concurrent thread." Sessions are handled elsewhere and setting vUsers in Speedscale will not directly map to what you are familiar with in other traditional testing tools. If you are unfamiliar, it may be easier to think in terms of requests per second or RPS instead of vUsers. This document uses both as examples but feel free to change RPS to vUsers and vice versa. RPS may be a better measurement for stress and performance testing because it better maps to what is expected in production monitoring tools.
 :::
 
 :::note
