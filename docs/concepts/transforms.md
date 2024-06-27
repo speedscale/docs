@@ -42,8 +42,14 @@ Data can be transformed at several points during a replay:
 
 Variable caches store data extracted from traffic in one location and apply it in another:
 
-- **generator variables** - used to pre-load the variable cache when the generator starts up
-- **responder variables** - used to pre-load the variable cache when the responder starts up
+![generator_variables](./transform_3.png)
+
+- **Variables (Tests)** - used to pre-load the variable cache when the generator starts up
+- **Variables (Mocks)** - used to pre-load the variable cache when the responder starts up
+
+:::note
+Test variables are scoped to the [vUser](/reference/glossary.md#vuser). For example, a random string variable would be new and different for each VU, but the same for all requests within the same VU.
+:::
 
 How can the request and response both use the same transforms? Because each transform chain starts with an extractor that specifically targets the request or the response. In the generator, that means if the extractor references the HTTP Request Body, then the request will be modified before it is sent to the SUT. If an HTTP Request Body is extracted in a responder chain, then the request is modified before signature matching (response lookup) is run.
 

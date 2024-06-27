@@ -28,4 +28,4 @@
 }
 ```
 
-This config will cause the current vUser (only) to pause for 150ms before sending the current request.
+This config will cause the current [vUser](/reference/glossary.md#vuser) (only) to pause for 150ms before sending the current request.

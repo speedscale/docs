@@ -107,7 +107,7 @@ Smart Replace currently supports CSV but other file formats can be added upon re
 
 ### What is the scope of replacement?
 
-Smart Replace uses the same mappings for all vUsers within the same load generator. Mappings are not currently shared across generators and service mocking engines.
+Smart Replace uses the same mappings for all [vUsers](/reference/glossary.md#vuser) within the same load generator. Mappings are not currently shared across generators and service mocking engines.
 
 ### What if my mappings change as the snapshot is replayed?
 
