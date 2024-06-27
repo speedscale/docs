@@ -239,3 +239,9 @@ In order to simulate this behavior a cache can store a value on one request and
 retrieve it from another.  Variables may also be populated statically in the
 [transform editor](../concepts/transforms.md/#where-to-transform-traffic).
 
+### vUser
+
+A "virtual" user.  Also called a VU, these are meant to represent a single user
+session in your application.  The number of concurrent VUs to run during a
+[replay](#replay) can be defined in the [test config](#test-config).
+
