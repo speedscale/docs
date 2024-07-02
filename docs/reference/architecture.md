@@ -87,5 +87,5 @@ java-client-67bf4b4cb4-7lmkd                           1/1     Running          
 java-server-5786d56974-pv765                           2/2     Running             0          7d7h
 speedscale-collector-abstract-yucca-7fb7d8f89b-z8btv   1/1     Running             0          8s
 speedscale-generator-abstract-yucca-nlkm9              0/1     ContainerCreating   0          2s
-speedscale-responder-fortified-flavor-ffc7a8ffec-f11av   1/1     Running             0          8s
+speedscale-responder-abstract-yucca-ffc7a8ffec-f11av   1/1     Running             0          8s
 ```
