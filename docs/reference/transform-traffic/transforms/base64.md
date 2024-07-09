@@ -26,4 +26,6 @@ U3BlZWRzY2FsZSBjYW4ndCB3YWl0IHRvIGhlbHAgbWUgc2F2ZSB0aW1lIGFuZCBzdG9wIHF1YWxpdHkg
 
 #### Transformed Token
 
-`Speedscale can't wait to help me save time and stop quality issues`
+```
+Speedscale can't wait to help me save time and stop quality issues
+```
