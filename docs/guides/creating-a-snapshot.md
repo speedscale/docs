@@ -3,6 +3,9 @@ sidebar_position: 5
 title: Creating a Snapshot
 ---
 
+<iframe src="https://player.vimeo.com/video/983558864" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/983558864">Exploring Speedscale Traffic Viewer</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
 ## Observe Traffic
 
 The Traffic Viewer provides a detailed log of every transaction in the system.
