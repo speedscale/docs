@@ -241,7 +241,12 @@ retrieve it from another.  Variables may also be populated statically in the
 
 ### vUser
 
-A "virtual" user.  Also called a VU, these are meant to represent a single user
-session in your application.  The number of concurrent VUs to run during a
-[replay](#replay) can be defined in the [test config](#test-config).
+A "virtual" user, run by the [generator](#generator) during a
+[replay](#replay).  Also called a VU, these are meant to represent a single
+user session in your application.  A single VU sends a request for each
+[RRPair](#rrpair) in the [snapshot](#snapshot) once, in order. The number of
+concurrent VUs to run during a replay can be defined in the [test
+config](#test-config).
+
+See [replaying traffic](/concepts/replay.md) for more information.
 
