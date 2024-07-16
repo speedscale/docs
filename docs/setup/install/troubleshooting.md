@@ -129,7 +129,17 @@ kubectl delete ns speedscale
 ### Self Check Errors
 The Speedscale operator performs a set of self-checks during initialization. One of the common self-check errors is related to certificate verification.
 ```
-"M":"self-check failed, exiting","error":"could not verify cert: crypto/rsa: verification error"
+"M":"self-check failed, exiting"
 ```
 
 Self-check errors mostly occur due to corrupted configurations, version mismatches, permission issues, or unsuccessful previous deletions/upgrades. These issues can typically be resolved by performing a complete reinstallation.
+
+#### Cert Verficitaion Error: 
+```
+"M":"self-check failed, exiting","error":"could not verify cert: crypto/rsa: verification error"
+```
+To fix this error, ensure that:
+
+**Certificate Assignment:** After rotating certificates, verify that the new certificates are correctly assigned to the Speedscale operator.
+**Helm Chart Update:** Make sure the Helm chart is updated correctly to reflect the new certificate information.
+**Reinstallation:** If issues persist, perform a complete reinstallation of the Speedscale operator to ensure all configurations are correctly applied.
