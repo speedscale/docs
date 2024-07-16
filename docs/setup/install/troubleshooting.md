@@ -124,3 +124,12 @@ kubectl delete mutatingwebhookconfigurations speedscale-operator-replay
 kubectl delete validatingwebhookconfiguration speedscale-operator-replay
 kubectl delete ns speedscale
 ```
+
+
+### Self Check Errors
+The Speedscale operator performs a set of self-checks during initialization. One of the common self-check errors is related to certificate verification.
+```
+"M":"self-check failed, exiting","error":"could not verify cert: crypto/rsa: verification error"
+```
+
+Self-check errors mostly occur due to corrupted configurations, version mismatches, permission issues, or unsuccessful previous deletions/upgrades. These issues can typically be resolved by performing a complete reinstallation.
