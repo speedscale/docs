@@ -3,6 +3,9 @@
 
 Automatically modify traffic before it is replayed.
 
+<iframe src="https://player.vimeo.com/video/985860338" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/985860338">Stop scripting and use transforms</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
 ### Basic Principles
 
 In order to replay properly, most apps require traffic to contain up to date JWTs, timestamps and more. Speedscale provides a general purpose data transformation system very similar to Unix pipes for this purpose.
