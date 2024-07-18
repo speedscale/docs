@@ -3,8 +3,11 @@ sidebar_position: 1
 ---
 # Capturing Traffic
 
+<iframe src="https://player.vimeo.com/video/986454551?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/986454551">Bootstrapping Traffic Capture</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
 Speedscale captures [traffic](/reference/glossary.md#traffic) flowing through your application.
-This includes inbound as well as outbound, and is handled by a [proxy sidecar](/reference/glossary.md#proxy) added to your workloads.
+This includes inbound as well as outbound, and is usually handled by a [proxy sidecar](/reference/glossary.md#proxy) added to your workloads.
 
 ## Why capture traffic?
 
