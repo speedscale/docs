@@ -3,6 +3,9 @@ import TabItem from '@theme/TabItem';
 
 # Tutorial
 
+<iframe src="https://player.vimeo.com/video/984892688?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/986454551">Speedscale Installation</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
 In this guide we're going to use [this repo's](https://github.com/speedscale/demo) example app in the `java` directory to [capture](./concepts/capture.md), [transform](./concepts/transforms.md) and [replay](./concepts/replay.md) traffic with [mocks](./concepts/service_mocking.md).
 
 ## Prerequisites
