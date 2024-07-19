@@ -4,6 +4,10 @@ import Tabs from '@theme/Tabs';
 
 Filters can be saved from the traffic viewer and then used to prevent traffic from ever reaching Speedscale. Most users will create filters using this UI. Filter rules are stored in Speedscale cloud and applied by the Speedscale Forwarder. Once a filter is applied to the forwarder, no traffic will leave your network that is prohibited by the filter.
 
+:::tip
+Simple filters can be used anywhere but complex filters cannot be used in Traffic Viewer. You may notice that some filters like `HTTP Headers` are available in the Filter Rule editor but not in the traffic viewer. This is due to a temporary backend constraint that will get resolved in a future version.
+:::
+
 Here's how you create and apply them:
 
 ##  Create Filters From Dashboard
