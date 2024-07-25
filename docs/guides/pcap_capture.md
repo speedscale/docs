@@ -20,7 +20,7 @@ When the workload restarts, you will see `speedscale-goproxy` logging messages t
 
 ### Obtaining PCAPs
 
-PCAPs are all written into the `/tmp` directory in the `speedscale-goproxy` container. Each PCAP is named with the format `goproxy-capture.<IFACE>.pcap` where `<IFACE>` is the name of the network interface captured. Most installations will have the following captures:
+PCAPs are all written into the `/diagnostics` directory in the `speedscale-goproxy` container. Each PCAP is named with the format `goproxy-capture.<IFACE>.pcap` where `<IFACE>` is the name of the network interface captured. Most installations will have the following captures:
 
 - `goproxy-capture.eth0.pcap` - all inbound/outbound pod traffic
 - `goproxy-capture.lo.pcap` - all traffic observed on the pod’s loopback interface
@@ -29,7 +29,7 @@ PCAPs are all written into the `/tmp` directory in the `speedscale-goproxy` cont
 Use `kubectl cp` in order to get the capture you need:
 
 ```jsx
-kubectl cp -n <NAMESPACE> -c speedscale-goproxy <POD_NAME>:/tmp/goproxy-capture.eth0.pcap goproxy-capture.eth0.pcap
+kubectl cp -n <NAMESPACE> -c speedscale-goproxy <POD_NAME>:/diagnostics .
 ```
 
 ### Manually Enabling Capture Mode

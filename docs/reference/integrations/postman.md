@@ -7,7 +7,7 @@ Speedscale can export and import traffic in the open source Postman [collection 
 To export your snapshot into a postman collection, simply run:
 
 ```
-speedctl export postman {SNAPSHOT_ID} {FILE} {FLAGS}
+speedctl export snapshot --type postman --output collection.json {SNAPSHOT_ID}
 ```
 
 ### Import
@@ -23,7 +23,7 @@ speedctl import postman --name {SNAPSHOT_NAME} --service-name {SERVICE_NAME} --f
 Note: because new features and flags are regularly added, you can check the latest capabilities by running:
 
 ```
-speedctl export postman --help
+speedctl export snapshot --help
 speedctl import postman --help
 ```
 
