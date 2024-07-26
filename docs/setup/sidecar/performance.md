@@ -49,7 +49,7 @@ sidecar.speedscale.com/diagnostics: "true"
 
 This will cause the workload to restart with the new settings enabled.
 
-Diagnostic mode PCAPs are all written into the `/tmp` directory in the `speedscale-goproxy` container. Each
+Diagnostic mode PCAPs are all written into the `/diagnostics` directory in the `speedscale-goproxy` container. Each
 PCAP is named like `goproxy-capture.<IFACE>.pcap` where `<IFACE>` is the name of the network interface
 captured. Most installations will have the following captures:
 
@@ -63,7 +63,7 @@ these captures in Wireshark.
 To retrieve these files from the running container, you can use `kubectl cp`:
 
 ```
-kubectl cp -n <NAMESPACE> -c speedscale-goproxy <POD_NAME>:/tmp .
+kubectl cp -n <NAMESPACE> -c speedscale-goproxy <POD_NAME>:/diagnostics .
 ```
 
 ### Proxy Diagnostics API
