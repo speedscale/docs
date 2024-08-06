@@ -12,13 +12,14 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology | Type | Support | Notes |
 | ---------- | ---- | ------- | ----- |
-| AWS Athena | DBMS | Full | |
 | AMQP (0.9.1) | Protocol | Capture Only | |
 | Auth0 | API | Full | |
 | Basic Auth | Auth | Full | |
 | Bearer JWT | Auth | Full | Automatic discovery and replacement|
 | Google BigQuery | DBMS | Full | If using the Google SDK with standard pagination |
+| Google BigTable | DBMS | Full | If using the Google SDK with standard pagination |
 | Cookies | Auth | Full | |
+| AWS Athena | DBMS | Full | |
 | AWS Data Firehose | API | Full | |
 | AWS DynamoDB | DBMS | Full | |
 | AWS Redshift | DBMS | Full | |
@@ -40,7 +41,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MongoDB | DBMS | Capture Only |  |
 | Mutual TLS (mTLS) | Protocol | Partial | See [TLS](/setup/sidecar/tls/) |
 | MySQL | DBMS | Full | |
-| Postgres | DBMS | Partial | Active beta for full replay |
+| Postgres | DBMS | Full |  |
 | RabbitMQ | Protocol | Capture Only | |
 | Redis | DBMS | Capture Only | |
 | Salesforce | API | Full | |
