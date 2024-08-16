@@ -57,6 +57,8 @@ If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then
 Make sure you have [Helm 3](https://helm.sh/docs/intro/install/) installed. Then,
 
 ```
+helm repo add speedscale https://speedscale.github.io/operator-helm/
+helm repo update
 helm install speedscale-operator speedscale/speedscale-operator \
 	-n speedscale \
 	--create-namespace \
