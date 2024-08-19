@@ -20,7 +20,7 @@ At a glance you should be able to see:
 
 ![Summary](./screen-shot-2021-08-13-at-11.38.53-am.png)
 
-If you see a very low success rate, or your service displays other unusual
+If you see a very low accuracy, or your service displays other unusual
 behavior, reach out on the [Speedscale Slack
 community](https://slack.speedscale.com) or via
 [email](mailto:support@speedscale.com) because you may need to configure data

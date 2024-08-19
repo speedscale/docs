@@ -194,11 +194,11 @@ If you are already viewing the Snapshot you recorded, you can see your replay ap
 
 ![Report](./end-to-end/report.png)
 
-We can see that all the requests our app makes to third party APIs were mocked out with 100% success rate. For eg. we can see the request our app made to the Treasury API that was actually mocked out which is great for isolation during tests but we can also do this for other parts of our development cycle as detailed [here](./guides/replay/mocks/README.md#responder-only).
+We can see that all the requests our app makes to third party APIs were mocked out with 100% accuracy. For eg. we can see the request our app made to the Treasury API that was actually mocked out which is great for isolation during tests but we can also do this for other parts of our development cycle as detailed [here](./guides/replay/mocks/README.md#responder-only).
 
 ![Responder](./end-to-end/mocks.png)
 
-You can also see that the success rate isn't 100%. We can drill down into a specific assertion to see why.
+You can also see that the accuracy isn't 100%. We can drill down into a specific assertion to see why.
 
 ![JWT](./end-to-end/jwt.png)
 
@@ -247,7 +247,7 @@ In this demo we:
 5. Used auto generated mocks during the replay
 6. Transformed some snapshot traffic
 7. Edited the assertions
-8. Reanalyzed the report for a higher success rate
+8. Reanalyzed the report for a higher accuracy
 
 # Next Steps
 
@@ -288,7 +288,7 @@ If we drill down into a request, we can also see data we may not want to leave o
 
 ![Auth](./end-to-end/unredacted.png)
 
-You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low success rates because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you cna follow the instructions below.
+You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low accuracies because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you cna follow the instructions below.
 
 <Tabs>
 
