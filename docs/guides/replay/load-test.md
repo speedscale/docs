@@ -26,7 +26,7 @@ Speedscale for analysis.  This limits the number of
 with [assertions](/reference/glossary.md/#assertions), defined on the
 **Assertions** tab, but enables much higher throughput than can be achieved
 otherwise.  Status codes will be compared in low data mode which determines the
-overall success rate of the replay report.
+overall accuracy of the replay report.
 :::
 
 
