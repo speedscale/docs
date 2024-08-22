@@ -44,21 +44,11 @@ This HTTP request would generate a signature similar to the following:
 
 ```json
 {
-  "host": "localhost",
-  "method": "POST",
-  "url": "/foo-platform/pdt/foo/management",
-  "sessionKey": "1",
-  "filters": {
-    "filters": [
-      {
-        "include": true,
-        "requestBodyJson": {
-          "compare": true,
-          "body": "G15IHJlcXVlc3QgYm9keT4="
-        }
-      }
-    ]
-  }
+  "http:host": "localhost",
+  "http:method": "POST",
+  "http:url": "/foo-platform/pdt/foo/management",
+  "http:requestBodyJSON": "G15IHJlcXVlc3QgYm9keT4=",
+  "instance": "1"
 }
 ```
 
