@@ -9,22 +9,25 @@ Most non-trivial applications rely on external systems like 3rd party APIs or da
 ## How does it work?
 
 Service mocks are generally made available over the network and are accessible to your app in a test environment or on the local desktop. If your service mocks are working properly, your service under test (SUT) will believe it is actually running in production because the mock is convincing. A realistic service mock must simulate the following components:
-* data that is similar to production
-* realistic response time (not too fast, not too slow)
-* accurate response sequencing for non-idempotent requests 
-* continuously updated tokens like authentication, etc
+
+- data that is similar to production
+- realistic response time (not too fast, not too slow)
+- accurate response sequencing for non-idempotent requests
+- continuously updated tokens like authentication, etc
 
 ## How does it know which response to return?
 
-Speedscale uses a special text string called a *signature* to differentiate between different requests. When the service under test (SUT) sends a request to the Speedscale, selective nuggets of information are extracted from the request and added to the signature. Typically this includes things like HTTP Query Parameters or MySQL SQL statements. Once this signature is generated, it is matched against the library of signatures generated from the previously recorded traffic. When the incoming signature matches a previously recorded one, the related response is returned.
+Speedscale uses a special text string called a _signature_ to differentiate between different requests. When the service under test (SUT) sends a request to the Speedscale, selective nuggets of information are extracted from the request and added to the signature. Typically this includes things like HTTP Query Parameters or MySQL SQL statements. Once this signature is generated, it is matched against the library of signatures generated from the previously recorded traffic. When the incoming signature matches a previously recorded one, the related response is returned.
 
 The sequence of events goes like this:
+
 1. Traffic is recorded/imported to Speedscale
 2. You create a Snapshot containing traffic covering a specific timeframe and filter criteria.
 3. The Speedscale analyzer combines the traffic into a set of signtaure/response pairs. This can be viewed as a form of compression to make the service mock dataset more compact and dynamic.
 4. The Speedscale service mocking engine receives a message from the SUT and creates a signature.
 5. The request signature is compared against all known request signatures in the Snapshot.
 6. A response is returned if the signature is recognized or a 404 if it is unknown.
+7. If multiple requests have the same signature but different responses, Speedscale will cycle through the responses in order.
 
 By adding new requests to your traffic snashot you effectively add new service mock known responses.
 
@@ -38,6 +41,7 @@ Content-Type: application/xml; charset=ISO-8859-1
 ```
 
 This HTTP request would generate a signature similar to the following:
+
 ```json
 {
   "host": "localhost",
