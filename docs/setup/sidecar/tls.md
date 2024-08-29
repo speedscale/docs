@@ -15,9 +15,9 @@ The sidecar will be listening for incoming requests, and must present to the cli
 certificate. Because you already have TLS configured, the cert files you are using must be provided to the
 sidecar. There are three available settings:
 
-* `tls-in-secret` (required) is the name of the Kubernetes secret
-* `tls-in-private` (optional) is the filename of the private key inside the secret (default: `tls.key`)
-* `tls-in-public` (optional) is the filename of the public cert inside the secret (default: `tls.crt`)
+- `tls-in-secret` (required) is the name of the Kubernetes secret
+- `tls-in-private` (optional) is the filename of the private key inside the secret (default: `tls.key`)
+- `tls-in-public` (optional) is the filename of the public cert inside the secret (default: `tls.crt`)
 
 When your deployment is injected, the sidecar will have an extra environment variable `TLS_IN_UNWRAP=true`,
 `TLS_IN_PUBLIC_KEY`, `TLS_IN_PRIVATE_KEY` and a volume mount to access the files from the provided secret.
@@ -35,8 +35,8 @@ annotations:
 
 To unwrap outbound TLS calls there are multiple steps required:
 
-* Configure the sidecar to enable outbound TLS interception
-* Configure your application to trust the new TLS Certificates
+- Configure the sidecar to enable outbound TLS interception
+- Configure your application to trust the new TLS Certificates
 
 When your deployment is injected, the sidecar will have an extra environment variable `TLS_OUT_UNWRAP=true`
 and a volume mount to access the files from the `speedscale-certs` secret. The operator will automatically
@@ -56,9 +56,9 @@ TLS or 2-Way TLS), this requires configuring the sidecar with an additional X509
 handshake, the backend system will request a Client Certificate. This is the certificate that goproxy will
 present. There are three available settings:
 
-* `tls-mutual-secret` (required) is the name of the Kubernetes secret
-* `tls-mutual-private` (optional) is the filename of the private key inside the secret (default: `tls.key`)
-* `tls-mutual-public` (optional) is the filename of the public cert inside the secret (default: `tls.crt`)
+- `tls-mutual-secret` (required) is the name of the Kubernetes secret
+- `tls-mutual-private` (optional) is the filename of the private key inside the secret (default: `tls.key`)
+- `tls-mutual-public` (optional) is the filename of the public cert inside the secret (default: `tls.crt`)
 
 When your deployment is injected, the sidecar will have extra environment variables `TLS_MUTUAL_PUBLIC_KEY`
 and `TLS_MUTUAL_PRIVATE_KEY` and a volume mount to access the files from the provided secret. You must
@@ -165,5 +165,5 @@ spec:
             - name: JAVA_OPTS
               value: >-
                 -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
-                -Djavax.net.ssl.trustStorePassword=changeit"
+                -Djavax.net.ssl.trustStorePassword=changeit
 ```
