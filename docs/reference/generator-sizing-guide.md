@@ -37,13 +37,13 @@ observed.  The [SUT](/reference/glossary.md#sut) latency was set at 100ms and
 the observation was taken when increasing the vUser count no longer yielded higher
 RPS.
 
-| CPU Cores | Observed RPS | vUsers | 
-| --------- | ------------ | ------ | 
-| 2         | 430          | 100 | 
-| 4         | 1,300        | 100 | 
-| 8         | 8,000        | 1,050 | 
+| CPU Cores | Observed RPS | vUsers |
+| --------- | ------------ | ------ |
+| 2         | 430          | 100 |
+| 4         | 1,300        | 100 |
+| 8         | 8,000        | 1,050 |
 | 16        | 22,000       | 2,500 |
-| 30        | 30,000       | 3,600 | 
+| 30        | 30,000       | 3,600 |
 | 60        | 45,000       | 5,000 |
 
 :::note
