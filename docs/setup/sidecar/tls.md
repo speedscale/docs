@@ -140,6 +140,8 @@ as well which requires configuring your JVM to use the truststore with these set
 - `-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks`
 - `-Djavax.net.ssl.trustStorePassword=changeit`
 
+These flags are also surfaced as `SPEEDSCALE_JAVA_OPTS` for reference.
+
 Here is an example of a patch file that configures TLS Out and configures the Java app to use the mounted
 trust store. You will likely have to customize this for your environment.
 
