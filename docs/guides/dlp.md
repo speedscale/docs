@@ -1,11 +1,11 @@
 ---
 sidebar_position: 1
-title: Data Loss Prevention (DLP)
+title: Redacting PII (DLP)
 ---
 
-Speedscale can be configured to redact sensitive data and personally indentifiable information (PII) from
-traffic via it's data loss preventiion (DLP) features. This redaction happens _before_ data leaves your
-network, preventing Speedscale from seeing the data at all. However, the overall shape or structure of the
+Speedscale can be configured to redact personally identifiable (PII) or other sensitive information (PII) from
+traffic via it's data loss prevention (DLP) features. This redaction happens _before_ data leaves your
+network, preventing the Speedscale service from seeing the data at all. However, the overall shape or structure of the
 data is retained in order to facilitate useful testing against systems.
 
 :::caution Note
@@ -37,14 +37,15 @@ original value's SHA-256 hash. For example:
 - A boolean value `false` would be redacted and replaced with the string
   `REDACTED-fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa`
 
-The built-in standard behavior operates exclusively on HTTP traffic, inspecting and redacting data in the
+The built-in standard behavior operates on any traffic, inspecting and redacting data in the
 following locations:
 
 - HTTP headers
-- HTTP query paramaters
+- HTTP query parameters
 - HTTP URIs
 - HTTP forms
 - HTTP JSON bodies
+- Postgres bodies
 
 To see the keys that are redacted by default, you may view the Speedscale-maintained `standard` DLP
 configuration in the main [UI](https://app.speedscale.com/dlpConfig/standard). Or via the command line using
@@ -96,7 +97,7 @@ dlp:
 ### Enabling Manually
 
 :::caution Note
-Manually enabling DLP as described below requires access and permissions to edit ConfigMaps in your kubernetes
+Manually enabling DLP as described below requires access and permissions to edit ConfigMaps in your Kubernetes
 cluster.
 :::
 
@@ -353,7 +354,7 @@ Another example to redact passwords:
 Redaction for postgres is limited to string and character fields at this time
 :::
 
-## Replaying with Generated Data
+## Replaying with PII replaced
 
 For replays to work, redacted data usually needs to be replaced with realistic test values. Fortunately, that's easy to accomplish using the following procedure:
 
@@ -365,20 +366,18 @@ Let's walk through each step with examples.
 
 ### Export Redacted Values
 
-Take note of the snapshot ID for the snapshot you would like to replay. Run the following command:
+Take note of the snapshot ID for the snapshot you would like to replay. Open the Snapshot and click on the three dot menu. Select `Extract DLP modified tokens`. This command will extract all redacted fields contained within your snapshot. Redacted values are de-duplicated and their location in the traffic should not matter for discovery or replacement. If done through the UI, you should be automatically brought to the new user data containing the redacted tokens. It will look something like this:
 
+
+
+:::note
+Speedscale commands can be initiated via the UI or via API. Here is the equivalent command line:
 ```bash
 speedctl extract dlp-redacted <snapshot id> --upload
 ```
+:::
 
-This command will extract all redacted fields contained within your snapshot. Redacted values are de-duplicated and their location in the traffic should not matter for discovery or replacement. At the end of the speedctl output you'll see a line similar to the following:
-
-```
-Extracted user data stored here:
-/Users/most_excellent/.speedscale/data/userdata/8b879152-9d8e-4292-8b81-90e0a8f87a95.csv
-```
-
-We'll be editing this file in the next step. Take note of the userdata ID (ex: `8b879152...`) from this statement as well.
+You'll want to pull these redacted files down to your local machine. You can do this by clicking the download button the user data. You can also download manually using `speedctl pull user-data <id>`. We'll be editing this file in the next step. Take note of the user-data ID (ex: `8b879152...`) as well.
 
 ### Assign Replacement Values
 
@@ -388,15 +387,13 @@ Open the `.csv` file created in the previous step in your favorite spreadsheet e
 
 Enter replacement values into the second column. During replay, every instance of `READCTED-<...>` will be replaced with the value you enter. If you enjoy using the command line this can also be done using your default text editor with `speedctl edit user-data <userdata id>`.
 
-Save the file and push to Speedscale Cloud:
+Save the file and then push to Speedscale using the Add button in the UI or upload it via the API. When you're done you should see your CSV uploaded under User Data with the same ID.
 
 ```bash
 speedctl push userdata <userdata id>
 ```
 
-You can find the ID in previous output of `speedctl extract dlp-redacted ...`.
-
-### Train AI on Replacement Values
+### Replace PII with new values
 
 1. Navigate to your snapshot in the Speedscale Cloud UI.
 2. Open the Transform Editor.
