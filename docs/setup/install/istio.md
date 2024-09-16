@@ -64,6 +64,15 @@ The Speedscale operator intelligently determines when Istio is present and confi
 that both transparent proxies operate in tandem. In addition, the Speedscale operator and sidecar are
 configured in such a way that they preserve the ability to use Istio mesh features such as mTLS.
 
+:::danger Important
+If your Istio installation is configured to use the [Istio CNI Agent](https://istio.io/latest/docs/setup/additional-setup/cni/),
+you *must* annotate your workloads with the following annotation to maintain compatibility:
+
+```
+sidecar.speedscale.com/istio-cni: "true"
+```
+:::
+
 Follow the [installation guide](../sidecar/install.md) to install the Speedscale sidecar on your Istio workloads.
 
 ## Allow Egress Speedscale Traffic (Optional)
