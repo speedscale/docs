@@ -52,9 +52,23 @@ Note that you do not want to modify the replica set, but the error message in th
 
 ### Communication with the generator was lost during replay?
 
-The [generator](./glossary.md#generator) is the Speedscale component that sends requests to the [SUT](./glossary.md#sut) (your service) during replay.  Under normal circumstances the generator runs for as long as it takes to make requests according to the [snapshot](./glossary.md#snapshot) and [test config](./glossary.md#test-config), sends replay details to the Speedscale cloud and exits cleanly, but things can go sideways with this critical component in a nubmer of ways.
+Under normal circumstances the [generator](./glossary.md#generator) runs for as long as it takes to make requests according to the [snapshot](./glossary.md#snapshot) and [test config](./glossary.md#test-config), sends replay details to the Speedscale cloud and exits cleanly, but things can go sideways with this critical component in a number of ways.
 
 The most common failure scenario happens when the generator runs out of memory. The generator needs to store information about requests while they are being sent to the Speedscale cloud and sending too many requests at one time can cause an [OOM](https://en.wikipedia.org/wiki/Out_of_memory) event.  Try increasing the generator's resource requirements or enabling generator [low data mode](./glossary.md#low-data-mode) in the test config.
+
+### Why is the generator being CPU throttled?
+
+CPU throttling is a mechanism where the operating system intentionally slows down a process.  This can happen because there isn't enough CPU for all the processes asking for it, or when CPU quotas are exceeded and enforced.  In Kubernetes this most often happens when a container [exceeds its predefined CPU resource limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#how-pods-with-resource-limits-are-run).
+
+The maximum throughput of the [generator](./glossary.md#generator) is limited by the CPU available to it, among [other factors](./generator-sizing-guide.md/#factors-affecting-throughput). The CPU required is directly related to the number of [vUsers](./glossary.md#vuser) defined in the [test config](./glossary.md#test-config).  When the generator tries to use more CPU than is allowed or available it will be CPU throttled.
+
+:::warning
+Latency calculation is no longer reliable once the generator is being CPU throttled.
+:::
+
+CPU throttling will limit the maximum throughput the generator can achieve, but it also affects how latency for the [SUT](./glossary.md#sut) is calculated.  If the generator is denied access to the CPU it cannot accurately measure time, meaning a request that took 10ms in real time could look like it took 5000ms!
+
+See the [sizing guide](./generator-sizing-guide.md) for general recommendations on generator sizing.
 
 ### Not seeing traffic when using a port forward? <a href="#port-forward" id="port-forward"></a>
 
