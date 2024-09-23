@@ -50,14 +50,16 @@ generator, the maximum observed
 and the observation was taken when increasing the vUser count no longer yielded
 higher RPS.
 
+<!-- Speedscale editor: changes to this table MUST be reflected in the kraken tests at validation_scripts/generator_perf_sla/ -->
 | CPU Cores | Observed RPS | vUsers |
 | --------- | ------------ | ------ |
-| 2         | 430          | 100 |
-| 4         | 1,300        | 100 |
-| 8         | 8,000        | 1,050 |
-| 16        | 22,000       | 2,500 |
-| 30        | 30,000       | 3,600 |
-| 60        | 45,000       | 5,000 |
+| 2         | 800          | 100    |
+| 4         | 3,300        | 400    |
+| 8         | 8,000        | 1,100  |
+| 16        | 16,000       | 2,500  |
+| 30        | 30,000       | 3,600  |
+| 60        | 45,000       | 5,000  |
+<!-- Speedscale editor: changes to this table MUST be reflected in the kraken tests at validation_scripts/generator_perf_sla/ -->
 
 :::note
 Contact Speedscale support for solutions that scale beyond the observed RPS seen here.
