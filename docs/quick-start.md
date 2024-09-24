@@ -1,7 +1,6 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import MacOSLinuxInstall from './setup/install/\_cli_macos_linux.mdx'
-import WindowsCLIInstall from './setup/install/\_cli_windows.mdx'
+import CLIInstall from './setup/install/\_cli_install.mdx'
 import ApiKey from './setup/install/api-key.png'
 
 # Quick Start
@@ -26,23 +25,7 @@ You will need to get your personal API key from your [Profile Page](https://app.
 
 ## Install CLI (optional)
 
-If you are running Speedscale on a local desktop or in Docker Desktop, the CLI is required. For all other users it is highly recommended because it allows programmatic interaction with Speedscale cloud.
-
-<Tabs>
-
-<TabItem value="mac" label="Mac/Linux">
-
-<MacOSLinuxInstall />
-
-</TabItem>
-
-<TabItem value="windows" label="Windows">
-
-<WindowsCLIInstall />
-
-</TabItem>
-
-</Tabs>
+<CLIInstall />
 
 ## Install Speedscale Operator
 
