@@ -27,7 +27,7 @@ You will need to get your personal API key from your [Profile Page](https://app.
 
 <CLIInstall />
 
-## Install Speedscale Operator
+## Install Speedscale Operator (optional)
 
 If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./tutorial.md). The rest of this document is focused on installing a Kubernetes-based demo.
 
@@ -58,8 +58,7 @@ for all configuration options available for the Helm chart.
 
 Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
-The [install wizard](./setup/install/kubernetes-operator.md#install-wizard)
-will walk you through installing the
+The install wizard will walk you through installing the
 [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
 and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
 
@@ -78,11 +77,8 @@ speedctl install --imgpullsecrets my-secret1,my-secret2p
 
 <TabItem value="cli_windows" label="CLI (Windows)">
 
-<WindowsCLIInstall />
-
 If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
-The [install wizard](./setup/install/kubernetes-operator.md#install-wizard)
-will walk you through installing the
+The install wizard will walk you through installing the
 [Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
 and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
 
@@ -142,7 +138,7 @@ Then store `speedscale-operator.yaml` in git so it is deployed to your cluster.
 
 </Tabs>
 
-## Verify Installation
+### Verify Installation
 
 Make sure the operator pods are running properly:
 

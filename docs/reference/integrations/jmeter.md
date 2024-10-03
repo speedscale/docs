@@ -12,7 +12,7 @@ Turn your vUser settings down to one and record each test script as a separate s
 
 1. **Inventory of JMeter Scripts:** List all the JMeter scripts you intend to migrate.
 2. **Understand the Test Scenarios:** Ensure you understand the logic, parameters, and datasets used in your JMeter scripts.
-3. **Speedscale Setup:** Ensure you have [speedctl](../../quick-start.md/#install-cli-optional) installed.
+3. **Speedscale Setup:** Ensure you have [speedctl](../../quick-start.md#install-cli-optional) installed.
 
 #### Step-by-Step Migration Process
 
@@ -57,7 +57,7 @@ Speedscale automatically records the think time and pacing of transactions. No s
 
 7. **Start Speedscale Recorder:**
    - Open a terminal on your local desktop (or the machine running JMeter).
-   - Start the Speedscale recorder by running the following command. Replace <service_name> and <listener_port> to match the service JMeter will be talking to
+   - Start the Speedscale recorder by running the following command. Replace `<service_name>` and `<listener_port>` to match the service JMeter will be talking to
    - For testing purposes the command might look like this: `speedctl capture localhost 8080`
    - Ensure the service that JMeter is talking to is running.
 
