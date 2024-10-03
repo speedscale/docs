@@ -214,7 +214,7 @@ the protocol in use.
 
 ### Requests Per Second
 
-The number of [requests](#requests) completed in a single second of
+The number of [requests](#request) completed in a single second of
 measurement.  Requests per second (RPS) are used to describe the throughput
 of one endpoint or a service as a whole.
 
@@ -237,7 +237,7 @@ A bucket of values which can be shared between requests during a [replay](#repla
 Servers are often stateful, or expose stateful behavior from networked storage.
 In order to simulate this behavior a cache can store a value on one request and
 retrieve it from another.  Variables may also be populated statically in the
-[transform editor](../concepts/transforms.md/#where-to-transform-traffic).
+[transform editor](../concepts/transforms.md#where-to-transform-traffic).
 
 ### vUser
 

@@ -9,7 +9,7 @@ best ways to prepare for a point in the future when your service has more load
 than it does today.  This guide will help you configure and run a load test
 against your service.
 
-Use a [test config](/reference/glossary.md/#test-config) to define the load
+Use a [test config](/reference/glossary.md#test-config) to define the load
 pattern for your test.  Start by making a copy of the test config
 [performance-100replicas](https://app.speedscale.com/config/performance_100replicas)
 since the built in test configs cannot be modified.
@@ -17,13 +17,13 @@ since the built in test configs cannot be modified.
 ![copy-performance-100-replicas](./copy-performance-100-replicas.png)
 
 Notice the existing settings on the test config like [**low data
-mode**](/reference/glossary.md/#low-data-mode).
+mode**](/reference/glossary.md#low-data-mode).
 
 :::info
 In low data mode only sampled response data of failures will not be sent to
 Speedscale for analysis.  This limits the number of
-[RRPairs](/reference/glossary.md/#rrpair) that will be collected and processed
-with [assertions](/reference/glossary.md/#assertions), defined on the
+[RRPairs](/reference/glossary.md#rrpair) that will be collected and processed
+with [assertions](/reference/glossary.md#assertion), defined on the
 **Assertions** tab, but enables much higher throughput than can be achieved
 otherwise.  Status codes will be compared in low data mode which determines the
 overall accuracy of the replay report.
@@ -31,7 +31,7 @@ overall accuracy of the replay report.
 
 
 Now click on the **Load Pattern** tab to configure load for the
-[replay](/reference/glossary.md/#replay).  From this screen we can edit and add
+[replay](/reference/glossary.md#replay).  From this screen we can edit and add
 replay stages.
 
 ![test-config-load-pattern](./test-config-load-pattern.png)
@@ -44,16 +44,16 @@ button on stage 1.
 
 The left side sets the **Duration** and determines how long the stage will last.
 Select **One traffic set** to replay each request in the
-[snapshot](/reference/glossary.md/#snapshot) only once, per traffic copy.
+[snapshot](/reference/glossary.md#snapshot) only once, per traffic copy.
 Alternatively, set a **Fixed time** to cycle traffic from the snapshot until
 the time is reached.  The **Ramp time** will ramp traffic up to the **Request
 Volume/Speed** over the duration given.
 
 The right side sets the **Request Volume/Speed** and determines fast requests
 will be made.  Selecting a **RPS** sets the number of [requests per
-second](/reference/glossary.md/#requests-per-second) this stage will
+second](/reference/glossary.md#requests-per-second) this stage will
 target.  While the replay is running the
-[generator](/reference/glossary.md/#generator) monitors the current RPS and
+[generator](/reference/glossary.md#generator) monitors the current RPS and
 increases or decreases load accordingly, holding load once the target is
 reached.
 

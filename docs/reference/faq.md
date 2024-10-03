@@ -60,7 +60,7 @@ The most common failure scenario happens when the generator runs out of memory. 
 
 CPU throttling is a mechanism where the operating system intentionally slows down a process.  This can happen because there isn't enough CPU for all the processes asking for it, or when CPU quotas are exceeded and enforced.  In Kubernetes this most often happens when a container [exceeds its predefined CPU resource limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#how-pods-with-resource-limits-are-run).
 
-The maximum throughput of the [generator](./glossary.md#generator) is limited by the CPU available to it, among [other factors](./generator-sizing-guide.md/#factors-affecting-throughput). The CPU required is directly related to the number of [vUsers](./glossary.md#vuser) defined in the [test config](./glossary.md#test-config).  When the generator tries to use more CPU than is allowed or available it will be CPU throttled.
+The maximum throughput of the [generator](./glossary.md#generator) is limited by the CPU available to it, among [other factors](./generator-sizing-guide.md#factors-affecting-throughput). The CPU required is directly related to the number of [vUsers](./glossary.md#vuser) defined in the [test config](./glossary.md#test-config).  When the generator tries to use more CPU than is allowed or available it will be CPU throttled.
 
 :::warning
 Latency calculation is no longer reliable once the generator is being CPU throttled.

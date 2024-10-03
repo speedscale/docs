@@ -1,8 +1,10 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+import { Highlight, themes } from 'prism-react-renderer';
+
+const lightCodeTheme = themes.github;
+const darkCodeTheme = themes.dracula;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -17,9 +19,7 @@ const config = {
   organizationName: "speedscale", // Usually your GitHub org/user name.
   projectName: "docs", // Usually your repo name.
 
-  // plugins: [require.resolve('@cmfcmf/docusaurus-search-local')],
   plugins: [
-    [require.resolve("@cmfcmf/docusaurus-search-local"), { indexBlog: false }],
     [
       "docusaurus-plugin-segment",
       {
@@ -172,6 +172,13 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      // algolia: {
+      //   // The application ID provided by Algolia
+      //   appId: 'YOUR_APP_ID',
+      //   // Public API key: it is safe to commit it
+      //   apiKey: 'YOUR_SEARCH_API_KEY',
+      //   indexName: 'YOUR_INDEX_NAME',
+      // },
       hubspot: {
         accountId: 7910857,
       },
