@@ -178,18 +178,18 @@ Diagnosing a pod that never becomes ready requires a systematic approach. By fol
 
 Quick Summary of Steps:
 
-	1.	Check Pod Status
-	2.	Inspect Pod Events
-	3.	Check Container Logs
-	4.	Review Readiness/Liveness Probes
-	5.	Check Image Pulling and Compatibility
-	6.	Examine Node Resource Limits
-	7.	Validate Network Connectivity
-	8.	Investigate Resource Quotas and Limits
-	9.	Check for Node and Cluster-Wide Issues
-	10.	Review Security Context and Pod Policies
-    11. Check Istio Configuration
-    12. Check for Network Security Tools
+1.	Check Pod Status
+2.	Inspect Pod Events
+3.	Check Container Logs
+4.	Review Readiness/Liveness Probes
+5.	Check Image Pulling and Compatibility
+6.	Examine Node Resource Limits
+7.	Validate Network Connectivity
+8.	Investigate Resource Quotas and Limits
+9.	Check for Node and Cluster-Wide Issues
+10.	Review Security Context and Pod Policies
+11. Check Istio Configuration
+12. Check for Network Security Tools
 
 By following these steps, you can quickly diagnose and resolve most issues preventing a pod from becoming ready. Happy troubleshooting!
 
