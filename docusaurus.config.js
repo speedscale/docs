@@ -172,13 +172,13 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // algolia: {
-      //   // The application ID provided by Algolia
-      //   appId: 'YOUR_APP_ID',
-      //   // Public API key: it is safe to commit it
-      //   apiKey: 'YOUR_SEARCH_API_KEY',
-      //   indexName: 'YOUR_INDEX_NAME',
-      // },
+      algolia: {
+        // The application ID provided by Algolia
+        appId: 'G1CYU179LN',
+        // Public API key: it is safe to commit it
+        apiKey: '96ea3a26c0551c1f0e9729366ef87cd5',
+        indexName: 'speedscale',
+      },
       hubspot: {
         accountId: 7910857,
       },
