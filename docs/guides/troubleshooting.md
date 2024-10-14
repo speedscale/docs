@@ -166,7 +166,14 @@ Look for issues such as:
 * Incorrect or missing service account bindings.
 * NetworkPolicy configurations blocking traffic.
 
-# Step 11: (optional) Check Istio Configuration
+# Step 11: (optional) Check Istio/Envoy Configuration
+
+Istio/Envoy are deeply embedded into Kubernetes networking and may need to be configured to allow replay. The following situations are common reasons why pods fail to start with Istio:
+
+1. Firewall rules blocking cloud services. For example, if your app (or Speedscale) cannot reach AWS or GCP the pod may never start.
+2. Istio CNI Agent may require a specific annotation to allow Speedscale to run.
+
+You can find more information about how to resolve these issues in this [guide](../setup/install/istio.md).
 
 # Step 12: Check for Network Security Tools
 
