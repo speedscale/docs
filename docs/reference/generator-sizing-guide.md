@@ -91,10 +91,10 @@ See [load patterns](/guides/load-patterns/) for suggestions on simulating specif
 
 ### Why doesn't the number of TPS/RPS increase when I add more vUsers?
 
-Generally, the more vUsers the more traffic but not always. This situation arises when the application cannot respond fast enough to go any higher. Unlikely traditional load testing tools, the Speedscale Generator acts like a real client which means it waits for responses. As a result, each vUser "blocks" for a period of time waiting for the application's response before moving on to the next request. That means all vUsers are fully utilized but the app simply can't go any faster and it shows up as TPS/RPS topping out. Check the following to validate this situation:
+Generally, the more vUsers the more traffic... but not always. This situation arises when the application cannot respond fast enough to go any higher. Unlike traditional load testing tools, the Speedscale Generator acts like a real client which means it waits for responses. As a result, each vUser "blocks" for a period of time waiting for the application's response before moving on to the next request. That means it's possible for all vUsers to be fully utilized but the app simply can't go any faster. This shows up as TPS/RPS topping out at a lower number than expected. Check the following to validate this situation:
 
 * Generator is not using all available CPU/Memory
 * Generator is producing healthy log messages with increasing request counts
 * Service being tested is running out of CPU/Memory or other resources
 
-The solution to this problem is to increase the resources allocated to the service under test. If you give it more head room and the TPS/RPS go up then the app maybe CPU/Memory limited. If that doesn't work then it may be blocking on a call to a backend system like a database that is slowing down.
+The solution to this problem is usually to increase the resources allocated to the service under test. If you give it more head room and the TPS/RPS goes up then the app may be CPU/Memory limited. If that doesn't work then it may be blocking on a call to a backend system like a database that is slowing down the overall request.
