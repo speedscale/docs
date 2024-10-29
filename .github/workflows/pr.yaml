@@ -43,8 +43,15 @@ jobs:
 
     - name: Create or Update comment
       uses: peter-evans/create-or-update-comment@v2
-      with: 
+      with:
         comment-id: ${{ steps.fc.outputs.comment-id }} # This will be empty and a new comment will be made if no comment already exists
         issue-number: ${{ github.event.pull_request.number }}
         body: Preview available at 'http://docs-preview.speedscale.com.s3-website-us-east-1.amazonaws.com/pr-${{ github.event.pull_request.number }}/'
         edit-mode: replace
+
+    - name: notify on failure
+      if: failure()
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"I'm not having a good day. Build on *'${{ github.ref_name }}'* in repository *'${{ github.repository }}'* failed"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
