@@ -19,11 +19,11 @@ In this example, we have three microservices and a manual approval process.
 - The `user` service sends a `subscribe` request to the `payment` service.
 - After some time a human approves the subscription and the `payment` service sends out `approved` webhooks to the `user` and `notifications` services.
 
-![original](./asynchronous/before.png)
+![original](./triggers/before.png)
 
 During environment replication, Speedscale will mock the **payment** service with a **responder** as shown in the new sequence diagram:
 
-![new](./asynchronous/after.png)
+![new](./triggers/after.png)
 
 We will capture two snapshots, one for each of the requests.
 
