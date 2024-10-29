@@ -53,5 +53,5 @@ jobs:
       if: failure()
       run: |
         curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"I'm not having a good day. Build on *'${{ github.ref_name }}'* in repository *'${{ github.repository }}'* failed"}' \
+          --data '{"text":"I am not having a good day. Build on *'${{ github.ref_name }}'* in repository *'${{ github.repository }}'* failed"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
