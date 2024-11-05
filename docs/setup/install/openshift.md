@@ -1,5 +1,6 @@
 ---
 title: Redhat OpenShift
+description: This documentation provides a comprehensive guide on installing Speedscale in an OpenShift environment, detailing the necessary prerequisites and step-by-step instructions. Enhance your development workflow by seamlessly integrating Speedscale's capabilities into your OpenShift setup.
 sidebar_position: 10
 ---
 

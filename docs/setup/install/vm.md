@@ -1,5 +1,6 @@
 ---
 title: Virtual Machines
+description: Learn how to install Speedscale on a virtual machine with comprehensive, step-by-step instructions outlined in the official documentation. This guide covers system requirements, installation procedures, and troubleshooting tips to help you effectively set up Speedscale.
 sidebar_position: 5
 ---
 

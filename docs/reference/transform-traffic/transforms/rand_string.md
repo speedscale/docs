@@ -1,3 +1,7 @@
+---
+description: "Learn how to use Speedscale's Rand String transform to generate random string values within your traffic transformations, enhancing the flexibility and realism of your testing scenarios. This documentation provides detailed instructions and examples to help you implement this powerful feature effectively."
+---
+
 # rand_string
 
 ### Purpose

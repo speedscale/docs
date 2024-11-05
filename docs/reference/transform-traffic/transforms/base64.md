@@ -1,3 +1,7 @@
+---
+description: "Discover how to utilize Base64 transformations in Speedscale to efficiently encode and decode data in your traffic flows. This documentation provides detailed guidance on implementing Base64 encoding for your applications to enhance performance and compatibility."
+---
+
 # base64
 
 ### Purpose

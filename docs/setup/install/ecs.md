@@ -1,5 +1,6 @@
 ---
 title: AWS ECS/Fargate
+description: This documentation outlines the steps for installing Speedscale on Amazon ECS, providing a clear and comprehensive guide for users. It covers prerequisites, configuration, and verification to ensure a smooth setup process.
 sidebar_position: 4
 ---
 
