@@ -15,7 +15,7 @@ function appendMetaDescription(filePath, metaDescription) {
     const frontmatterRegex = /^(---\n[\s\S]*?---)/;
     const match = fileContent.match(frontmatterRegex); // check if frontmatter exists in the doc
 
-    if(match && match[1].includes('metaDescription:')) {
+    if(match && match[1].includes('description:')) {
       console.error('metaDescription is already provided, overriding disabled')
       return;
     }
