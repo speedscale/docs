@@ -1,4 +1,5 @@
 ---
+description: "Learn how to configure HTTP response cookies in Speedscale by utilizing various assertion options to enhance testing accuracy. This comprehensive guide provides essential details on cookie attributes, enabling developers to validate response behaviors effectively."
 sidebar_position: 5
 ---
 

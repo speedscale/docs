@@ -1,3 +1,7 @@
+---
+description: "The Speedscale documentation provides detailed guidance on transforming traffic using DLP (Data Loss Prevention) in JSON format, ensuring effective management of sensitive data within your applications. Learn how to implement these transforms to enhance your data protection strategies."
+---
+
 # dlp_json
 
 ### Purpose

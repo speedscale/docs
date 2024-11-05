@@ -1,5 +1,6 @@
 ---
 title: Enabling TLS
+description: Learn how to secure your applications with TLS by implementing best practices and configurations outlined in Speedscale's comprehensive guide. This documentation provides essential steps to enhance communication security and ensure data integrity for your services.
 sidebar_position: 7
 ---
 

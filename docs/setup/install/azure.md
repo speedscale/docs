@@ -1,5 +1,6 @@
 ---
 title: Microsoft Azure App Services
+description: This documentation provides a detailed guide for setting up Speedscale on Azure, including prerequisites and step-by-step installation instructions. Enhance your application testing and performance monitoring by integrating Speedscale seamlessly into your Azure environment.
 sidebar_position: 6
 ---
 

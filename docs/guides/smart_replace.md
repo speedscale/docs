@@ -1,3 +1,7 @@
+---
+description: "Discover how to implement Smart Replace with Speedscale to automatically shift and enhance your API designs during testing. This guide provides step-by-step instructions for configuring Smart Replace, ensuring seamless transitions and improved efficiency in your development workflows."
+---
+
 # Smart Replace
 
 ## Overview

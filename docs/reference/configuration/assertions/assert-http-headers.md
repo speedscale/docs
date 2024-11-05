@@ -1,4 +1,5 @@
 ---
+description: "Learn how to configure HTTP header assertions in Speedscale to validate the presence of specific headers in your API responses. This documentation provides detailed guidelines and examples to effectively implement and utilize these assertions for improved API performance and reliability."
 sidebar_position: 4
 ---
 

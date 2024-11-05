@@ -1,3 +1,7 @@
+---
+description: "Discover effective load patterns to optimize performance testing with Speedscale, as detailed in this comprehensive guide. Learn how to simulate real-world traffic scenarios to enhance application resilience and scalability."
+---
+
 # Load Patterns
 
 ## Overview

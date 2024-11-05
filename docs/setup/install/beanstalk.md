@@ -1,5 +1,6 @@
 ---
 title: AWS Elastic Beanstalk
+description: This documentation provides a step-by-step guide for installing Speedscale on AWS Elastic Beanstalk, focusing on configuration and deployment best practices. It ensures seamless integration and optimal performance for applications running in the cloud environment.
 sidebar_position: 7
 ---
 

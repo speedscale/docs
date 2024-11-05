@@ -1,3 +1,7 @@
+---
+description: "The Speedscale documentation outlines the Smart Replace CSV transform, which allows users to efficiently replace specific values in their traffic data by utilizing a CSV file. This feature enhances data manipulation and streamlines testing processes for improved application performance."
+---
+
 # smart_replace_csv
 
 ### Purpose
