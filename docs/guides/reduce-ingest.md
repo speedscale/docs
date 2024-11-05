@@ -2,19 +2,6 @@
 
 As a powerful replication and observability tool, Speedscale provides extensive insights into your infrastructure, applications, and logs. However, as usage scales, so can cost. To manage these expenses and create transparency around costs, this guide will outline how to optimize your Speedscale usage and establish departmental chargebacks.
 
-## Table of Contents
-
-	1.	Limiting Datadog Costs
-	•	Optimize Data Ingestion
-	•	Use Retention Policies
-	•	Adjust Sampling Rates
-	•	Implement Log Rehydration
-	•	Use Synthetic and RUM Testing Sparingly
-	2.	Implementing Departmental Chargebacks
-	•	Assigning Costs Based on Usage
-	•	Creating Datadog Monitors by Department
-	•	Setting Up Tags and Filters for Accurate Billing
-
 ## Strategies to limit visibility ingest
 
 For most customers, the vast majority of data ingest takes place while recording and observing environments. Generally this is the best place to start any analysis of usage. Speedscale provides visibility into overall tenant usage from within the [UI](https://app.speedscale.com/tenant#tenant-tab-usage).
@@ -27,7 +14,7 @@ Much of the traffic recorded in your environment probably falls into the categor
 
 ### Ignore IPs and Ports
 
-Sometimes you may have a backend like a memory cache is is very noisy but does not need to be replicated. In this case it may be better to simply filter the entire backend from the proxy. You can find instructions [here](../setup/sidecar/annotations/#sidecarspeedscalecomignore-src-ips)
+Sometimes you may have a backend like a memory cache is is very noisy but does not need to be replicated. In this case it may be better to simply filter the entire backend from the proxy. You can find instructions [here](../setup/sidecar/annotations.md#sidecarspeedscalecomignore-src-ips)
 
 ### Schedule data collection
 
@@ -35,7 +22,7 @@ Speedscale provides the ability to only apply sidecars and record data during sp
 
 ### Split deployments
 
-If your app utilizes many replicas you may also be able to split your deployment and apply the Speedscale sidecar selectively. In this model, you would create a duplicate of your existing deployment also containing the Speedscale sidecar. That way, the original deployment will run as normal but a smaller Speedscale-enabled duplicate deployment can be run to receive only a portion of the traffic. This approach typically requires manually applying the Speedscale sidecar [annotations](../setup/sidecar/annotations/#sidecarspeedscalecominject).
+If your app utilizes many replicas you may also be able to split your deployment and apply the Speedscale sidecar selectively. In this model, you would create a duplicate of your existing deployment also containing the Speedscale sidecar. That way, the original deployment will run as normal but a smaller Speedscale-enabled duplicate deployment can be run to receive only a portion of the traffic. This approach typically requires manually applying the Speedscale sidecar [annotations](../setup/sidecar/annotations.md#sidecarspeedscalecominject).
 
 ### Reduce the number of sidecars
 
