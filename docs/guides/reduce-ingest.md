@@ -2,19 +2,6 @@
 
 As a powerful replication and observability tool, Speedscale provides extensive insights into your infrastructure, applications, and logs. However, as usage scales, so can cost. To manage these expenses and create transparency around costs, this guide will outline how to optimize your Speedscale usage and establish departmental chargebacks.
 
-## Table of Contents
-
-	1.	Limiting Datadog Costs
-	•	Optimize Data Ingestion
-	•	Use Retention Policies
-	•	Adjust Sampling Rates
-	•	Implement Log Rehydration
-	•	Use Synthetic and RUM Testing Sparingly
-	2.	Implementing Departmental Chargebacks
-	•	Assigning Costs Based on Usage
-	•	Creating Datadog Monitors by Department
-	•	Setting Up Tags and Filters for Accurate Billing
-
 ## Strategies to limit visibility ingest
 
 For most customers, the vast majority of data ingest takes place while recording and observing environments. Generally this is the best place to start any analysis of usage. Speedscale provides visibility into overall tenant usage from within the [UI](https://app.speedscale.com/tenant#tenant-tab-usage).
