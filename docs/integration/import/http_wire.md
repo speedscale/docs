@@ -1,4 +1,4 @@
-# HTTP Wire Format
+# Import HTTP Wire Format
 
 Speedscale can import traffic stored in files matching the HTTP network wire format. HTTP Wire Format is the format you would see if observing an HTTP transaction via a network packet sniffing tool like WireShark. This format is also common with Service Virutalization tools. This command can be used for migration purposes.
 

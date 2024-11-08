@@ -1,5 +1,4 @@
-
-# New Relic
+# Export to New Relic
 
 Export data from your Speedscale environment to New Relic One
 
@@ -36,7 +35,7 @@ speedctl export newrelic ${SPD_REPORT_ID} --accountId ${NR_ACCOUNT_ID} --insight
 
 After you have exported the report, you should see it in the New Relic Dashboard.
 
-![](./new-relic-dashboard.png)
+![](./new-relic/new-relic-dashboard.png)
 
 ### Questions?
 

@@ -14,7 +14,7 @@ deployment with confidence.
 Run Speedscale after your build and unit tests, but before deploying to
 production.
 
-![CI Pipeline](./cicd/cicd-flow.png)
+![CI Pipeline](./cicd-flow.png)
 
 Adding anything to your CI/CD pipeline generally involves the same 3 steps:
 
@@ -34,7 +34,7 @@ In order to integrate Speedscale into your CI/CD you will need:
 Direct access to your Kubernetes cluster is optional.
 
 :::info
-Speedscale can also be run in [Docker](../setup/install/docker.md)
+Speedscale can also be run in [Docker](../../setup/install/docker.md)
 :::
 
 ## The Pipeline
@@ -279,7 +279,7 @@ implementation that makes the most sense for your environment.
 <TabItem value="speedctl" label="Without Cluster Access" default>
 
 If you do not have cluster access the replay can be started and validated with
-[speedctl](../setup/install/cli.md).
+[speedctl](../../setup/install/cli.md).
 
 In addition to the other environment variables, your speedscale API key should
 be set (securely) for authentication:

@@ -18,7 +18,7 @@ Turn your vUser settings down to one and record each test script as a separate s
 
 1. **Analyze JMeter Test Plan:**
    - Open your JMeter test plan (.jmx file) and review the test components, such as Thread Groups, HTTP Requests, Samplers, Controllers, and Listeners.
-   - Note any custom scripts, plugins, or configurations used. Ensure that any additional plug in protocols are supported in Speedscale's support [page](../technology-support.md).
+   - Note any custom scripts, plugins, or configurations used. Ensure that any additional plug in protocols are supported in Speedscale's support [page](/reference/technology-support.md).
 
 
 2. **Recreate Test Structure in Speedscale:**
@@ -28,7 +28,7 @@ Turn your vUser settings down to one and record each test script as a separate s
 
 3. **Replicate Load Patterns:**
 :::tip
-Review Speedscale's default load [patterns](../../guides/load-patterns.md) to see if one already fits your needs. You can skip over this section entirely if so.
+Review Speedscale's default load [patterns](/guides/load-patterns.md) to see if one already fits your needs. You can skip over this section entirely if so.
 :::
    - Create a new test config using the Speedscale UI. Look for the "Create Test Config" button or you can clone from an existing one like [100replicas](https://app.speedscale.com/config/performance_100replicas).
    - Modify the `Load Patterrn` section to match the vUser volume and timing of the original JMeter script.
@@ -38,7 +38,7 @@ Review Speedscale's default load [patterns](../../guides/load-patterns.md) to se
 Manual CSV import is usually not necessary in this type of migration. If JMeter iterates a CSV then the CSV data is by definition stored within the requests that are recorded. Speedscale will see every request/response and determine that there is a field with changing data within.
 :::
    - If CSV data must be manually migrated (see tip above) then upload the CSV to Speedscale using the `speedctl push userdata my_data_1 <file.csv>` command or using the Speedscale UI.
-   - Find the data field that needs replacing in your traffic and replace it using either the [smart_replace_csv](../transform-traffic/transforms/smart_replace_csv.md) or csv_iterator transforms.
+   - Find the data field that needs replacing in your traffic and replace it using either the [smart_replace_csv](../../reference/transform-traffic/transforms/smart_replace_csv.md) or csv_iterator transforms.
    - It is possible to run your JMeter script and then retroactively extract data into CSVs. This is not necessary for this workflow but it comes in handy if you're working with CSVs (see the `speedctl extract` man page for more info)
 
 5. **Assertions:**
@@ -53,7 +53,7 @@ In most cases, Speedscale's default assertions will be more than adequate and th
 :::tip
 Speedscale automatically records the think time and pacing of transactions. No special action is required if you simply want to replicate JMeter timings.
 :::
-   - Keep in mind that pacing can be altered for each load pattern step. See step 3 for information on load patterns. If you need to alter *individual* request timings beyond what is recorded from JMeter you can alter them using the [latency](../transform-traffic/extractors/latency.md) extractor.
+   - Keep in mind that pacing can be altered for each load pattern step. See step 3 for information on load patterns. If you need to alter *individual* request timings beyond what is recorded from JMeter you can alter them using the [latency](../../reference/transform-traffic/extractors/latency.md) extractor.
 
 7. **Start Speedscale Recorder:**
    - Open a terminal on your local desktop (or the machine running JMeter).

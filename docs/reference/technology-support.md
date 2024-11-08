@@ -76,7 +76,7 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | MacOS Desktop | See [CLI](../guides/cli.md) |
 | Microsoft Azure Kubernetes Service (AKS) | |
 | Microsoft Azure App Services | See [guide](../setup/install/azure.md) |
-| Postman Collections (v2+) | See [guide](../integration/import-postman.md) |
+| Postman Collections (v2+) | See [guide](../integration/import/import-postman.md) |
 | Rancher Desktop | |
 | Rancher K3S | |
 | Rancher RKE2 | Rancher Marketplace [Helm Chart](https://rancher.com/docs/rancher/v2.6/en/helm-charts/) |

@@ -1,3 +1,8 @@
+---
+title: "GCP"
+sidebar_position: 4
+---
+
 # GCP
 
 Speedscale is compatible with Google Cloud Platform editions of Kubernetes.
