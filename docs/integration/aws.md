@@ -1,3 +1,8 @@
+---
+title: "AWS"
+sidebar_position: 3
+---
+
 # AWS
 
 Speedscale is a certified member of the AWS Partner Network (APN). This includes a review with the AWS [Well Architected Framework](https://aws.amazon.com/architecture/well-architected/?wa-lens-whitepapers.sort-by=item.additionalFields.sortDate&wa-lens-whitepapers.sort-order=desc) which ensures that Speedscale runs on secure, high-performing, resilient, and efficient infrastructure.

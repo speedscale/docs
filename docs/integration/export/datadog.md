@@ -1,5 +1,5 @@
 
-# Datadog
+# Export to Datadog
 
 Export data from your Speedscale environment to Datadog.
 

@@ -3,7 +3,7 @@ title: Create a snapshot using APIs
 sidebar_position: 38
 ---
 
-In this guide we will show you how to manually create a snapshot using the Speedscale API. There are much easier ways to create traffic snapshots, such as direct [recording](https://github.com/speedscale/demo) or by [importing a Postman collection](../integration/import-postman.md). This guide is useful if you want to create an RRPair programmatically.
+In this guide we will show you how to manually create a snapshot using the Speedscale API. There are much easier ways to create traffic snapshots, such as direct [recording](https://github.com/speedscale/demo) or by [importing a Postman collection](../integration/import/import-postman.md). This guide is useful if you want to create an RRPair programmatically.
 
 The speedctl CLI tool has a local repository of snapshots that can be synchronized with Speedscale cloud. The process is similar to the `git` source control tool in that you modify snapshots locally and then push/pull them to the central repo. Editing snapshots is like working with text files full of JSON.
 

@@ -256,7 +256,7 @@ This is just a small subset of things you can do with Speedscale, other things t
 1. Capture traffic from one of your own apps
 2. [Replay traffic from one cluster into another](./guides/replay/guide_other_cluster.md)
 3. [Run a load test](./guides/replay/load-test.md)
-4. [Integrate with CI/CD](./integration/cicd.md)
+4. [Integrate with CI/CD](./integration/cicd)
 
 ## Uninstall
 

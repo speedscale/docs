@@ -1,3 +1,8 @@
+---
+title: "SUSE Rancher Labs"
+sidebar_position: 4
+---
+
 # SUSE Rancher Labs
 
 Speedscale is compatible with SUSE Rancher Kubernetes distributions, and has a helm chart available in the Rancher Marketplace which can be found in the UI console.
