@@ -14,7 +14,7 @@ deployment with confidence.
 Run Speedscale after your build and unit tests, but before deploying to
 production.
 
-![CI Pipeline](./cicd-flow.png)
+![CI Pipeline](./cicd/cicd-flow.png)
 
 Adding anything to your CI/CD pipeline generally involves the same 3 steps:
 

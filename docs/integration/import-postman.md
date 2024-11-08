@@ -31,7 +31,7 @@ A pop up will appear asking you for a snapshot name, a Postman file and a unique
 
 A traffic snapshot is created from your Postman collection. Snapshots are collections of requests that can be replayed in your cluster or from your local desktop. After import, you will be taken to the Snapshot summary screen for your postman requests.
 
-![Snapshot](./snapshot.png)
+![Snapshot](../guides/snapshot.png)
 
 If you click `View Traffic` you'll see your Postman requests ready to replay.
 
@@ -39,4 +39,4 @@ If you click `View Traffic` you'll see your Postman requests ready to replay.
 
 Postman-generated snapshots can be replayed like any other snapshot using the instructions on the Snapshot Summary page.  Remember that you will need to put in a `Custom URL` to point at the correct service during replay. This is different than replaying a recorded snapshot because Speedscale typically has an automatically discovered default that is reasonable.
 
-For more information on initiating replays, check out the full [replay guide](./replay/README.md)
+For more information on initiating replays, check out the full [replay guide](../guides/replay/README.md)

@@ -5,7 +5,7 @@ Speedscale has numerous technology integrations:
 * Kubernetes distributions
 * Observability integrations
 * API integrations
-* [CICD integrations](../../guides/cicd/) - this has it's own docs area
+* [CICD integrations](../../integration/cicd/) - this has it's own docs area
 
 ### Questions?
 
