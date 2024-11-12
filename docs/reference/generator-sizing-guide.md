@@ -44,6 +44,7 @@ the number of (virtual) CPUs available to the generator, the maximum observed
 when increasing the vUser count no longer yielded higher RPS.
 
 <!-- Speedscale editor: changes to this table MUST be reflected in the kraken tests at validation_scripts/generator_perf_sla/ -->
+
 | CPU Cores | Observed RPS | vUsers |
 | --------- | ------------ | ------ |
 | 2         | 800          | 100    |
@@ -75,22 +76,87 @@ to 10% higher throughput using vUsers instead of RPS.
 
 See [load patterns](/guides/load-patterns/) for suggestions on simulating specific load patterns.
 
+To ensure the generator has enough CPU for the task set cluster requests / limits in the test config.  This
+can be configured under the "Cluster" tab.
+
+![test config cluster tab](./generator-sizing-guide/test-config-cluster-tab.png)
+
+On the cluster tab set the "Generator Resources" to set CPU requests and limits on the Speedscale generator pod.
+
+![resource configuration](./generator-sizing-guide/resource-configuration.png)
+
+## Best Practices
+
+This section provides some best practices for setting up a high-throughput generator.
+
+### CPU
+
+Ensure the generator has ample CPU and is not saturated.  Reports will show an error if the generator is being
+CPU throttled.
+
+### Dedicated Node
+
+Dedicate a node to the generator using a Kubernetes [taint and
+toleration](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/).
+
+Taint the node so no workloads will be scheduled on it.
+
+```
+kubectl taint nodes <node1> dedicated-to=speedscale-generator:NoExecute
+```
+
+:::warning
+Nodes given the `NoExecute` taint will evict all pods.
+:::
+
+The Speedscale generator contains a toleration that will allow it to be scheduled on the tained node.
+
+Remove the taint when done.
+
+```
+kubectl taint nodes <node1> dedicated-to=speedscale-generator:NoExecute-
+```
+
+### Monitor Your Workload
+
+This is tech so it's highly unlikely that everything will work exactly as expected the first time.  Your app
+may not scale as you expect, or it may crash, or the generator won't reach the desired throughput.
+Understanding what your application is during during the load test will help guide you towards the next steps.
+Look at metrics, review logs, and monitor the environment to get the full picture.  This obviously includes
+the application being tested but also databases, caches, third party services, etc.
+
 ## FAQ
 
 ### Why doesn't the number of TPS/RPS increase when I add more vUsers?
 
-Generally, the more vUsers the more traffic... but not always. This situation arises when the application
-cannot respond fast enough to go any higher. Unlike traditional load testing tools, the Speedscale Generator
-acts like a real client which means it waits for responses. As a result, each vUser "blocks" for a period of
-time waiting for the application's response before moving on to the next request. That means it's possible for
-all vUsers to be fully utilized but the app simply can't go any faster. This shows up as TPS/RPS topping out
-at a lower number than expected. Check the following to validate this situation:
+Generally, the more vUsers the more traffic... but not always.  The best an application can hope to scale is
+linealy, as shown below.  For example, if a static webpage can handle 1000 RPS with 1 server node it will be
+able to handle 10,000 with 10 because there are no shared resources to cause bottlenecks.
 
-* Generator is not using all available CPU/Memory
-* Generator is producing healthy log messages with increasing request counts
-* Service being tested is running out of CPU/Memory or other resources
+![throughput resources linear](./generator-sizing-guide/throughput-resources-linear.png)
 
-The solution to this problem is usually to increase the resources allocated to the service under test. If you
-give it more head room and the TPS/RPS goes up then the app may be CPU/Memory limited. If that doesn't work
-then it may be blocking on a call to a backend system like a database that is slowing down the overall
-request.
+Unfortunately most applications are more complex than a static webpage and do not scale linearly.  Instead
+they tend to increase pressure on their bottlenecks as load is increased.
+
+![throughput resources stalled](./generator-sizing-guide/throughput-resources-stalled.png)
+
+
+This situation arises when the application cannot respond fast enough to go any higher. This can happen for a
+number of reasons.
+
+1. Requests are consistently slow because of some resource constraint.  The culprit here is usually a resource
+   shared by all instances of your app, like a hot database table or shared cache key.
+
+2. A few slow requests are limiting throughput. See below.
+
+Unlike traditional load testing tools, the Speedscale Generator acts like a real client which means it waits
+for responses. As a result, each vUser "blocks" for a period of time waiting for the application's response
+before moving on to the next request.  Imagine what happens to overall throughput when every request is 100
+milliseconds except one that takes 5 seconds.  Throughput will suffer severely as the next 100ms request will
+wait 5s to execute. That means it's possible for all vUsers to be fully utilized but the app simply can't go
+any faster. This shows up as TPS/RPS topping out lower number than expected.
+
+The solution to this problem is usually to increase the resources allocated to the SUT. If you give it more
+head room and the TPS/RPS goes up then the app may be CPU/Memory limited. If that doesn't work then it may be
+blocking on a call to a backend system like a database that is slowing down the overall request.
+
