@@ -10,6 +10,12 @@ Or via the install script:
 sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
+:::tip
+
+To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable.
+
+:::
+
 Install a specific version py passing it to the install script:
 
 ```shell
@@ -19,7 +25,7 @@ sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)" -s v1.4.6
 Optionally skip the install script and install manually:
 
 ```shell
-# Download speedctl binay on your machine
+# Download speedctl binary on your machine
 curl "https://downloads.speedscale.com/speedctl/speedctl-$(case $(uname -s) in  Darwin)   echo 'darwin' ;; Linux) echo 'linux';; esac)-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o speedctl
 
 # Create speedscale directory and move the binary to the directory
@@ -33,4 +39,3 @@ chmod +x ~/.speedscale/speedctl
 echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.bashrc
 
 ```
-
