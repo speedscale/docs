@@ -1,6 +1,5 @@
 ---
 title: Import from Charles Proxy
-sidebar_position: 38
 ---
 
 In this guide we will walk through importing traffic from a [Charles Proxy Session](https://www.charlesproxy.com/). These files generally have the `.chlz` file extension and represent request/response pairs recorded by the proxy.
