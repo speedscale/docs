@@ -2,17 +2,18 @@
 title: Triggers (BETA)
 sidebar_position: 6
 ---
+## Triggers (BETA)
 
-# Adding a response trigger
-
-## Overview
+:::caution
+This feature is in BETA and has rough edges. This quick guide can get you started but if you plan on using triggers please let Speedscale know on the community.
+:::
 
 Speedscale's [**Responder Triggers**](../concepts/triggers.md) feature allows you to initiate workflows in response to specific requests, ensuring faster and more accurate environment replication. This guide walks you through setting up and using Responder Triggers within the Speedscale UI for an asynchronous application. This guide assumes normal HTTP REST API calls for simplicity but the same process should be used to simulate asynchronous requests for message buses like Kafka. The central question answered in this guide is how to initiate seemingly asynchronous messages from a message broker. We will do that by allowing the client to login and then instructing the Speedscale Responder to send some data after a period of time. From the client's perspective this will appear to be an asynchronous message sent by the server.
 
 ## Prerequisites
 
 - [speedctl](../setup/install/cli.md) is installed
-- You have captured traffic and created snapshots before, [see this guide](./creating-a-snapshot.md)
+- You have captured traffic and created snapshots before, [see this guide](../guides/creating-a-snapshot.md)
 
 ## Step-by-Step Guide to Using Responder Triggers
 
