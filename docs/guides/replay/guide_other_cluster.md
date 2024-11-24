@@ -9,7 +9,7 @@ One great use of Speedscale is to record traffic in one cluster and replay it an
 
 #### Before you begin
 
-* Ensure that you hve a working version of your service under test (SUT) already running in your 2nd cluster. It is not necessary to have working versions of downstream APIs that you intend to mock with Speedscale (since it will be doing the mocking), you just need to make sure your SUT starts successfully and isn't erroring out.
+* Ensure that you have a working version of your service under test (SUT) already running in your 2nd cluster. It is not necessary to have working versions of downstream APIs that you intend to mock with Speedscale (since it will be doing the mocking), you just need to make sure your SUT starts successfully and isn't erroring out.
 
 #### Select traffic for replay
 

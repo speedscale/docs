@@ -15,7 +15,7 @@ function appendMetaDescription(filePath, metaDescription) {
     const frontmatterRegex = /^(---\n[\s\S]*?---)/;
     const match = fileContent.match(frontmatterRegex); // check if frontmatter exists in the doc
 
-    if(match && match[1].includes('metaDescription:')) {
+    if(match && match[1].includes('description:')) {
       console.error('metaDescription is already provided, overriding disabled')
       return;
     }
@@ -55,46 +55,6 @@ function appendMetaDescription(filePath, metaDescription) {
     throw error;
   }
 
-  /* fs.readFile(docPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Error reading file ${docPath}:`, err);
-      return;
-    }
-
-    // Regular expression to match frontmatter
-    fileContent = fs.readFileSync(filePath, 'utf-8');
-    const frontmatterRegex = /^(---\n[\s\S]*?---)/;
-    const match = data.match(frontmatterRegex);
-
-    // If frontmatter exists, append metaDescription if it doesn't already exist
-    if (match) {
-      const frontmatter = match[1];
-
-      if (!frontmatter.includes('metaDescription:')) {
-        const updatedFrontmatter = frontmatter.replace(
-          '---\n',
-          `---\nmetaDescription: "${metaDescription}"\n`
-        );
-
-        // check if title meta exists
-        if()
-
-        const newContent = data.replace(frontmatter, updatedFrontmatter);
-
-        fs.writeFile(docPath, newContent, 'utf8', (writeErr) => {
-          if (writeErr) {
-            console.error(`Error writing to file ${docPath}:`, writeErr);
-          } else {
-            console.log(`metaDescription added to ${docPath}`);
-          }
-        });
-      } else {
-        console.log(`metaDescription already exists in ${docPath}`);
-      }
-    } else {
-      console.error(`No frontmatter found in ${docPath}`);
-    }
-  }); */
 }
 
 const appendToDocs = (url) => {

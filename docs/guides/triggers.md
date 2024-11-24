@@ -1,3 +1,8 @@
+---
+title: Triggers (BETA)
+sidebar_position: 6
+---
+
 # Adding a response trigger
 
 ## Overview

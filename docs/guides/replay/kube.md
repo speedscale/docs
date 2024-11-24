@@ -41,7 +41,7 @@ ready to receive traffic.
 ## Starting a Replay <a href="#running-an-isolation-test" id="running-an-isolation-test"></a>
 
 Start a simple replay by applying a `TrafficReplay` in the cluster with
-`kubectl`, or check out our [CI/CD docs](../cicd.md) for more detailed
+`kubectl`, or check out our [CI/CD docs](../../integration/cicd/cicd.md) for more detailed
 instructions on scripting the replay process.
 
 ```bash
