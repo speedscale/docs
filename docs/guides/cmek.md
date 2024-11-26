@@ -2,7 +2,9 @@
 title: CMEK
 ---
 
-Customer Managed Encryption Keys (CMEK) is a feature provided by Speedscale for customers with stringent security requirements. It gives customers the ability to manage their own encryption keys, adding an extra layer of security to their data. With CMEK, customers can exercise control over the lifecycle of their encryption keys, including creation, rotation, and deletion. If a customer disables access to the encryption key then Speedscale loses access. This is especially important for businesses operating in highly regulated industries, where data compliance is a critical concern. This approach is quickly becoming the standard as it is adopted by enterprise software vendors including AWS, Clari, Clickhouse, CockroachDB, DataBricks, GCP, MongoDB, Snowflake  and many more.
+import Mermaid from '@theme/Mermaid';
+
+Customer Managed Encryption Keys (CMEK) allow customers with stringent security requirements to control the encryption keys that unlock their data at rest. CMEK gives customers the ability to manage their own encryption keys, adding an extra layer of security to their data. With CMEK, customers can exercise control over the lifecycle of their encryption keys, including creation, rotation, and deletion independent of Speedscale's involvement. If a customer disables access to the encryption key then Speedscale loses access. This is especially important for businesses operating in highly regulated industries, where data compliance is a critical concern. This approach is quickly becoming the standard as it is adopted by enterprise software vendors including AWS, Clari, Clickhouse, CockroachDB, DataBricks, GCP, MongoDB, Snowflake  and many more. For more information about CMEK/CMK as a concept please visit [AWS](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html) or [Google](https://cloud.google.com/kms/docs/cmek) for their own customer managed encryption key services.
 
 When CMEK is enabled, Speedscale still maintains the cloud infrastructure including databases, data transport and upgrades. The sole difference is that the customer has the ability to remove access completely at any time. In all other respects the Speedscale cloud service runs as another separate tenant.
 
@@ -17,6 +19,25 @@ CMEK requires customers to maintain an AWS account that can be used for key stor
 3. Speedscale will provide an AWS Cloud Formation Script that must be run in the customer AWS account. This script can and should be inspected before execution. This script will produce an AWS KMS ARN. This ARN should be provided to Speedscale.
 4. Speedscale will enable CMEK for this customer using the provided ARN.
 5. Speedscale Engineering will create the new database and other infrastructure instance using these credentials. The customer's tenant will be added to Speedscale's CMEK managed environment.
+
+Below is an example diagram describing how the process works, including a bit of insight on what happens on the Speedscale side. Your specific implementation may be different based on your enterprise's requirements.
+
+```mermaid
+sequenceDiagram
+    actor Customer
+    participant AWS KMS
+    participant AWS IAM
+    actor Speedscale
+    participant AWS Firehose
+    participant AWS S3
+
+    Customer->>AWS KMS: create key
+    Customer->>AWS IAM: create shared accounts
+    Customer->>Speedscale: share ARN
+    Speedscale->>AWS Firehose: apply customer key ARN
+    Speedscale->>AWS S3: apply customer key ARN
+    Speedscale->>...: ...
+```
 
 # Removing Access
 

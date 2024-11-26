@@ -25,7 +25,7 @@ Once the operator is restarted with these commands, the code necessary to run an
 
 ## Customer Managed Encryption Keys (CMEK)
 
-Speedscale allows the use of customer-managed encryption keys (CMEK) on a case-by-case basis. This provides a security middle ground whereby customers have complete control but Speedscale continues to maintain the infrastructure. Please [contact us](mailto:support@speedscale.com) to explore further.
+Speedscale allows the use of customer-managed encryption keys (CMEK) on a case-by-case basis. This provides a security middle ground whereby customers have complete control but Speedscale continues to maintain the infrastructure. Please see the [guide](../guides/cmek.md) to get started.
 
 ## Fully Customer Hosted
 
