@@ -1,6 +1,6 @@
 ---
 description: "Learn how to solve the problem of non-idempotent (aka POST or update), requests during load testing, regression and environment replication."
-sidebar_position: 6
+sidebar_position: 3
 title: Non-Idempotent Requests
 ---
 
