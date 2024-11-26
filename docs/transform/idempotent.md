@@ -67,7 +67,7 @@ Most complex APIs reply with a different response depending on their internal st
 
 ## Mid-session Recording
 
-Some client-server connections are very long lived. As a result, you may record a snapshot where authentication never takes place and you don't know how to log into the service. Fortunately, this problem is rare because Speedscale retains data for days and you can go back to find the login and merge it into a larger snapshot (see [example](../guides/replay/multi-service-replay/#merge-snapshots)). You also can manually build the authorization request and import from Postman in a similar workflow.
+Some client-server connections are very long lived. As a result, you may record a snapshot where authentication never takes place and you don't know how to log into the service. Fortunately, this problem is rare because Speedscale retains data for days and you can go back to find the login and merge it into a larger snapshot (see [example](../guides/replay/multi-service-replay.md#merge-snapshots)). You also can manually build the authorization request and import from Postman in a similar workflow.
 
 ## Trace-Through
 
