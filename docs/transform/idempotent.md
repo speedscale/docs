@@ -6,7 +6,7 @@ title: Non-Idempotent Requests
 
 # Non-Idempotent Requests
 
-Non-idempotent requests, or requests that change the backend database (for non-Computer Science professors), pose an almost insurmountable problem for traditional service mocking or virtualization techniques. These transactions change backend systems in some way that causes simplistic service mocks to maybe respond correctly or the first request, but not subsequent requests. Many traffic replay efforts stall at testing basic GETs because the environment can't tolerate change. Most service mocks are hard coded to return one response per request and do not attempt to interpret the logic as an actual backend system would. Fortunately, Speedscale has a set of algorithms and techniques that eliminate many of these headaches. 
+Non-idempotent requests, or requests that change the backend database (for non-Computer Science professors), pose an almost insurmountable problem for traditional service mocking or virtualization techniques. These transactions change backend systems in some way that causes simplistic service mocks to maybe respond correctly or the first request, but not subsequent requests. This creates complex test scenario requirements and an overall brittle environment that can't tolerate change. Many traffic replay efforts stall at testing basic GETs because the environment can't tolerate change. Most service mocks are hard coded to return one response per request and do not attempt to interpret the logic as an actual backend system would. Fortunately, Speedscale has a set of algorithms and techniques that eliminate many of these headaches. 
 
 ## Challenges of Change
 
@@ -27,12 +27,15 @@ The first step in creating consistent and repeatable replication is to parameter
 
 ## Trace-Through
 
-Let's imagine we have a request with an HTTP header `name=sabrina`. THe service you are working on may take that data and insert it into a database query like `SELECT balance WHERE name IS sabrina`. If you want to run the same scenario with a variety of users then the database mock must know what names are expected to be in the database and which are not. In many cases Speedscale will automatically determine the correct pattern for replication but constructing a transform chain to replace these values usually involves following a pattern like the one in this [guide](../guides/smart_replace.md).
+Let's imagine we have a request with an HTTP header `name=sabrina`. The service you are working on may take that data and insert it into a database query like `SELECT balance WHERE name IS sabrina`. If you want to run the same scenario with a variety of users then the database mock must know what names are expected to be in the database and which are not. In many cases Speedscale will automatically determine the correct pattern for replication but constructing a transform chain to replace these values usually involves following a pattern like the one in this [guide](../guides/smart_replace.md).
+
+Understanding these trace-through scenarios is easiest when you promote a particular trace data point like a JWT or username to a session. This makes it easy to follow a flow across any service Speedscale is monitoring. You can learn more about that workflow [here](../guides/identify-session.md).
 
 ## Mid-session Recording
 
-Some client-server connections are very long lived. As a result, you may record a snapshot where authentication never takes place and you don't know how to log into the service. Fortunately, this problem is rare because Speedscale retains data for days and you can go back to find the login and merge it into a larger snapshot (see [example](../guides/replay/multi-service-replay/#merge-snapshots)). You also can manually build the authorization request and import from Postman in a similar workflow.
+Some client-server connections are very long lived. As a result, you may record a snapshot where authentication never takes place and you don't know how to log into the service. Fortunately, this problem is rare because Speedscale retains data for days and you can go back to find the login and merge it into a larger snapshot (see [example](../guides/replay/multi-service-replay.md#merge-snapshots)). You also can manually build the authorization request and import from Postman in a similar workflow.
 
 ## Mutating Responses
 
 Most complex APIs reply with a different response depending on their internal state. For example, you may request a list of attendees in a database, add an attendee in the next call and then get a different response now that the table is populated. Speedscale automatically determines these flows of requests based on signature pattern and connects them. No manual configuration is required.
+
