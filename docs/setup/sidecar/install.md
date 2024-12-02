@@ -6,13 +6,24 @@ sidebar_position: 1
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+In Kubernetes, Speedscale employs a sidecar (also known as `goproxy`) to capture network level traffic for individual services. The sidecar uses two server sockets to capture traffic:
+
+- Port 4143 - used to capture inbound traffic
+- Port 4140 - used to capture outbound traffic
+
+The sidecar or init container uses these ports "intercept" traffic transparently. Here is a basic diagram that shows a client making a call to a service under test, and that service makes subsequent calls to other backend systems. Of course some calls may use an http port like 80 or 8080 (or pick your favorite port), other times the service may use https on port 443 and be using TLS traffic.
+
+![tls](./tls/sidecar.png)
 The Speedscale sidecar proxy, [goproxy](/reference/glossary.md#goproxy), is
 used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
-
 <iframe src="https://player.vimeo.com/video/986454551?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 <p><a href="https://vimeo.com/986454551">Bootstrapping Traffic Capture</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
+:::tip
+The [envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/listeners/listeners#tcp) proxy (aka Istio) uses the same architecture to redirect traffic. Your platform or security team may already be familiar with this approach.
+:::
 
 ## Installation
 
