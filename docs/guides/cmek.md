@@ -10,6 +10,9 @@ Customer Managed Encryption Keys (CMEK) allow customers with stringent security 
 
 When CMEK is enabled, Speedscale still maintains the cloud infrastructure including databases, data transport and upgrades. The sole difference is that the customer has the ability to remove access completely at any time. In all other respects the Speedscale cloud service runs as another separate tenant.
 
+<iframe src="https://player.vimeo.com/video/1035382935?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/video">CMEK</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
 # Customer Responsibilities
 
 CMEK requires customers to maintain an AWS account that can be used for key storage. It is not necessary to have deep operational knowledge of AWS and its services. Speedscale still manages the cloud environment with customer permission.
