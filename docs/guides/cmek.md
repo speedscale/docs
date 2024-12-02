@@ -6,7 +6,7 @@ import Mermaid from '@theme/Mermaid';
 
 # Customer Managed Encryption Keys (CMEK)
 
-Customer Managed Encryption Keys (CMEK) allow customers with stringent security requirements to control the encryption keys that unlock their data at rest. CMEK gives customers the ability to manage their own encryption keys, adding an extra layer of security to their data. With CMEK, customers can exercise control over the lifecycle of their encryption keys, including creation, rotation, and deletion independent of Speedscale's involvement. If a customer disables access to the encryption key then Speedscale loses access. This is especially important for businesses operating in highly regulated industries, where data compliance is a critical concern. This approach is quickly becoming the standard as it is adopted by enterprise software vendors including AWS, Clari, Clickhouse, CockroachDB, DataBricks, GCP, MongoDB, Snowflake  and many more. For more information about CMEK/CMK as a concept please visit [AWS](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html) or [Google](https://cloud.google.com/kms/docs/cmek) for their own customer managed encryption key services.
+Customer Managed Encryption Keys (CMEK) allow customers with stringent security requirements to control the encryption keys that unlock their data at rest. CMEK gives customers the ability to manage their own encryption keys, adding an extra layer of security to their data. With CMEK, customers can exercise control over the lifecycle of their encryption keys, including creation, rotation, and deletion independent of Speedscale's involvement. If a customer disables access to the encryption key then Speedscale loses access. This is especially important for businesses operating in highly regulated industries, where data compliance is a critical concern. This approach is quickly becoming the standard as it is adopted by enterprise software vendors including AWS, Clari, Clickhouse, CockroachDB, DataBricks, GCP, MongoDB, Snowflake and many more. For more information about CMEK/CMK as a concept please visit [AWS](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html) or [Google](https://cloud.google.com/kms/docs/cmek) for their own customer managed encryption key services.
 
 When CMEK is enabled, Speedscale still maintains the cloud infrastructure including databases, data transport and upgrades. The sole difference is that the customer has the ability to remove access completely at any time. In all other respects the Speedscale cloud service runs as another separate tenant.
 
@@ -42,6 +42,10 @@ sequenceDiagram
 ```
 
 # Removing Access
+
+:::caution
+We do not currently support key rotation for customer managed keys and do not recommend implementing an automatic key rotation policy on the customer managed key.
+:::
 
 Customers control KMS keys and can turn them off at any time to remove Speedscale access to their data. However, deleting KMS keys can have unintended consequences and so AWS recommends deactivating. Please see the AWS [documentation](https://docs.aws.amazon.com/kms/latest/developerguide/enabling-keys.html) for more information.
 
