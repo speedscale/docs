@@ -28,17 +28,18 @@ Below is an example diagram describing how the process works, including a bit of
 sequenceDiagram
     actor Customer
     participant AWS KMS
-    participant AWS IAM
     actor Speedscale
     participant AWS Firehose
     participant AWS S3
 
     Customer->>AWS KMS: create key
-    Customer->>AWS IAM: create shared accounts
+    Customer->>AWS KMS: give key cross account access to Speedscale
     Customer->>Speedscale: share ARN
     Speedscale->>AWS Firehose: apply customer key ARN
     Speedscale->>AWS S3: apply customer key ARN
-    Speedscale->>...: ...
+    Speedscale->>...: apply customer key ARN
+    AWS S3->>AWS KMS: use key to encrypt/decrypt
+    AWS Firehose->>AWS KMS: use key to encrypt/decrypt
 ```
 
 # Removing Access
