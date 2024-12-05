@@ -3,11 +3,18 @@ title: TLS Support
 sidebar_position: 2
 ---
 
+import Mermaid from '@theme/Mermaid';
+
+# TLS Support
+
 TLS interception and unwrapping is not enabled by default, but can be done so with annotations to your workload.
 
 :::tip Remember
-When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload.
+When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload. It's common to delete existing annotations or add the annotations in the wrong place (like on the pod instead of the deployment) in this step.
 :::
+<iframe src="https://player.vimeo.com/video/1035399678?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/1035399678">How Speedscale reads TLS requests</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
 
 ## TLS Inbound Interception
 
@@ -169,3 +176,62 @@ spec:
                 -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
                 -Djavax.net.ssl.trustStorePassword=changeit
 ```
+
+## How Does It Work?
+
+The following explanations are provided for engineers seeking a deeper understanding of how TLS unwrapping takes place. Tools like [envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/listeners/listeners#tcp) follow an almost identical procedure with their sidecars and this is not Speedscale-specific knowledge. Also keep in mind that Speedscale supports alternative ingest mechanisms including HTTP file and Postman collection import. See the [integrations](/integration/import/http_wire/) section for more information.
+
+### Inbound
+
+Your application is already presenting a public TLS certificate to clients, and the clients must trust this certificate. That means they are either “real” certificates signed by a public CA (certificate authority) or they are otherwise managed certificates using a tool like cert-manger in Kubernetes. Since the certificates are already present in the cluster and your app presents them to clients as trustworthy, Speedscale simply needs to know where the certificates are located so it can decode a copy of the traffic in the same way the service does. Conceptually, it looks like this:
+
+```mermaid
+sequenceDiagram
+  actor client
+  participant iptables
+  participant sidecar
+  participant cert_secret
+  actor service
+
+  client->>iptables: HTTP request
+  iptables->>sidecar: redirect to sidecar
+  sidecar->>cert_secret: use cluster cert
+  service->>cert_secret: use cluster cert
+  sidecar->>service: real request
+```
+
+In this mode, the sidecar is acting as a passthrough. It copies the traffic to the Speedscale forwarder, but does not modify the traffic itself.
+
+### Outbound
+
+```mermaid
+sequenceDiagram
+  actor operator
+  actor service
+  participant iptables
+  participant sidecar
+  participant local_root_ca
+  actor example.com
+
+  operator->>local_root_ca: create cluster cert
+  service->>iptables: HTTP request
+  iptables->>sidecar: redirect to sidecar
+  sidecar->>local_root_ca: use cluster cert
+  sidecar->>example.com: real request
+  example.com->>sidecar: unwrap intermediate cert
+  sidecar->>service: return request
+  service->>local_root_ca: use cluster cert
+```
+
+- The application makes it’s call as normal for instance to `https://example.com:443`
+- The iptables rule modifies the intended destination and changes the port to `4140` where the sidecar is listening, and the sidecar initiates the outbound call transparently to the application (no code change required).
+- The sidecar checks the application client request to determine if the TLS handshake is starting and finds the intended destination.
+- The sidecar generates a TLS certificate for the SNI hostname ( [`example.com`](http://example.com) in our case) that will expire in 1 hour and signs with the Cluster Root CA that was created as part of the operator installation. The certificate is stored in the sidecar local cache which it will use for the next hour.
+- As long as the application is properly configured to trust the Cluster Root CA, the certificate will match both the domain being accessed as well as be a trusted certificate.
+- After this successful handshake, the sidecar has access to all of the details of the request and the response. Note that because this is at the transport layer it works for non-HTTP protocols like databases and queue systems as well.
+
+In this mode, the sidecar is actively re-signing traffic so that your service is interacting with the Speedscale sidecar and the sidecar is then interacting with the external service. This is similar to tools like [mitmproxy](https://mitmproxy.org/).
+
+:::tip BETA
+Sidecar proxies are slowly being replaced by eBPF-based collections but platform support is not wide enough for enterprise full adoption yet. If you're interesting in an eBPF-based collector please reach out to [support](https://slack.speedscale.com).
+:::
