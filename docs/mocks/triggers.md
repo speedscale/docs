@@ -1,6 +1,7 @@
 ---
-title: Triggers (BETA)
+title: Mocks | Triggers (BETA)
 sidebar_position: 5
+canonicalUrl: 'https://docs.speedscale.com/mocks/triggers/'
 ---
 ## Triggers (BETA)
 
