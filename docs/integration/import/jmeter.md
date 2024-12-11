@@ -23,7 +23,7 @@ Turn your vUser settings down to one and record each test script as a separate s
 
 2. **Recreate Test Structure in Speedscale:**
    - Many JMeter test plans are already logically oriented and it is usually wise to create a new snapshot for each section. For example, you may want to record the authorization section once and use it over and over before each test plan. Record that as its own snapshot and then merge it into each replay.
-   - More recordings is better than larger recordings. You can always recombine sections after recording but it's harder to split sections up. 
+   - More recordings is better than larger recordings. You can always recombine sections after recording but it's harder to split sections up.
    - Make sure you use consistent service names for each snapshot you record (remember this for the `speedctl capture <service name>` below)
 
 3. **Replicate Load Patterns:**
@@ -38,7 +38,7 @@ Review Speedscale's default load [patterns](/guides/load-patterns.md) to see if 
 Manual CSV import is usually not necessary in this type of migration. If JMeter iterates a CSV then the CSV data is by definition stored within the requests that are recorded. Speedscale will see every request/response and determine that there is a field with changing data within.
 :::
    - If CSV data must be manually migrated (see tip above) then upload the CSV to Speedscale using the `speedctl push userdata my_data_1 <file.csv>` command or using the Speedscale UI.
-   - Find the data field that needs replacing in your traffic and replace it using either the [smart_replace_csv](../../reference/transform-traffic/transforms/smart_replace_csv.md) or csv_iterator transforms.
+   - Find the data field that needs replacing in your traffic and replace it using either the [smart_replace_csv](../../transform/transforms/smart_replace_csv.md) or csv_iterator transforms.
    - It is possible to run your JMeter script and then retroactively extract data into CSVs. This is not necessary for this workflow but it comes in handy if you're working with CSVs (see the `speedctl extract` man page for more info)
 
 5. **Assertions:**
@@ -70,7 +70,7 @@ speedctl capture <service_name> <listener_port>
    - Change the proxy settings in JMeter to point at the Speedscale recorder (the settings you need were outputted by the `speedctl capture` command)
    - Press the Play button for each section you would like to record.
    - Don't worry about breaking up the traffic into snapshots yet. Just record everything and you can break it up in the next section. It is helpful to put some time between each traffic set (or filter it by endpoint, etc) to make it easier to visually delineate.
-   
+
 Here is an example of adding these proxy settings for one request:
 ![jmeter_proxy](./jmeter/jmeter_proxy.png)
 

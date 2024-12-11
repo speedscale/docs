@@ -33,7 +33,7 @@ The sequence of events goes like this:
 Speedscale will automatically generate signatures for common protocols such as HTTP and Postgres. Modification of these signatures is possible and covered in this section. By adding new requests to your traffic snapshot you effectively add new service mock known responses. During environment replication, Speedscale will return the response matching what was recorded in the original environment.
 
 :::tip
-To change your service  
+To change your service
 :::
 
 Take the following HTTP request as an example:
@@ -69,7 +69,7 @@ Speedscale automatically handles changing responses and is smart enough to deal 
 
 ## What if my API or Database isn't mocked correctly out of the box?
 
-The Speedscale model can be trained using the [store_sig](../reference/transform-traffic/transforms/store_sig.md) transform. This transform will add the specified data to the signature and use it to match uniqueness. This transform allows you to add new items to check before accepting a service mock request match.
+The Speedscale model can be trained using the [store_sig](../transform/transforms/store_sig.md) transform. This transform will add the specified data to the signature and use it to match uniqueness. This transform allows you to add new items to check before accepting a service mock request match.
 
 ## What if Speedscale cannot automatically mock my dependency?
 

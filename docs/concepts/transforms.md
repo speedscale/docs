@@ -100,7 +100,7 @@ Variables can be thought of as a map of key=value pairs. Once set, they can be r
 - **[var_store](/reference/transform-traffic/transforms/variable_store.md)** - Assign a new value to a variable
 - **[var_load](/reference/transform-traffic/transforms/variable_store.md)** - Replace current value with the value of a variable
 
-This is the simplest way to interact with the variable storage system, but not necessarily the most powerful. Keep in mind that [smart replace](/reference/transform-traffic/transforms/smart_replace.md) transforms are independent of the variable cache and changes made in one will not be reflected in the other. Variables are for custom use cases. Smart replace is for more automated use cases and is a better starting place for most users.
+This is the simplest way to interact with the variable storage system, but not necessarily the most powerful. Keep in mind that [smart replace](/transform/transforms/smart_replace.md) transforms are independent of the variable cache and changes made in one will not be reflected in the other. Variables are for custom use cases. Smart replace is for more automated use cases and is a better starting place for most users.
 
 ### Scope
 
