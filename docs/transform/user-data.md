@@ -32,4 +32,4 @@ Userdata is usually referenced using a special keyword inside the transform chai
 http_header(name="name") <-> csv("${{s3://new_names.csv}})
 ```
 
-The `${{s3://<userdata>}}` syntax permits us to pull the user data (in its entirely) into the CSV transform. For a more complete example please see the [guide](../guides/smart_replace.md).
+The `${{s3://<userdata>}}` syntax permits us to pull the user data (in its entirely) into the CSV transform. For a more complete example please see the [guide](../transform/smart-replace.md).

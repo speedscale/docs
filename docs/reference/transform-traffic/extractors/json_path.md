@@ -1,3 +1,7 @@
+---
+title: Reference | JSON Path
+canonicalUrl: 'https://docs.speedscale.com/reference/transform-traffic/extractors/json_path/'
+---
 # json_path
 
 ### Purpose
