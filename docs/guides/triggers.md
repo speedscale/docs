@@ -1,6 +1,7 @@
 ---
-title: Triggers (BETA)
+title: Guides | Triggers (BETA)
 sidebar_position: 6
+canonicalUrl: 'https://docs.speedscale.com/mocks/triggers/'
 ---
 
 # Adding a response trigger
