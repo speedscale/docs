@@ -2,6 +2,9 @@
 sidebar_position: 2
 ---
 
+import ViewTagsImg from './filter/snapshot-tags.png'
+import RawSizeImg from './filter/raw-size.png'
+
 # Traffic View
 
 Speedscale replicates environments by replicating traffic. Selecting what traffic to replicate allows you to select which databases and endpoints will be included in the environment snapshot. By filtering the traffic viewer, you are selecting which set of inbound and outbound peers will be present when Speedscale replicates the environment. For instance, if Speedscale sees even one Postgres SELECT statement in traffic viewer then it will stand up a Postgres mock with that query loaded. The Speedscale traffic viewer allows you to inspect inbound and outbound transactions. The amount of data can become overwhelming and so you will want to filter down the window of visibility. When creating snapshots, the filter will also determine what parts of the environment are replicated.
@@ -55,8 +58,28 @@ Editing simple filters can be accomplished in different three ways:
 
 Certain complex filter criteria are permitted when creating a snapshot but not in the Speedscale UI. Generally this involves deep payload filtering like `requestBodyJson` or nested conditional statements. These filters are not editable in the UI but can be edited directly as the filter query string. You may also notice complex JSON representations of filters hidden in the UI. This is the internal Speedscale filter presentation and is not typically edited by users. If you're curious about complex filters you can learn more in this [guide](../guides/advanced-filters.md).
 
-## Saving <a href="#saving" id="saving"></a>
+## Saving Traffic <a href="#saving" id="saving"></a>
 
 Clicking the Save button at the top of the Traffic Viewer will cause the current view to be stored for future use. That could mean it's a section of traffic you want to replay or simply view later. Saving a snapshot does not cause additional ingest usage on your account. You should feel free to save snapshots without concern.
 
 Traffic filters can also be saved for use as forwarder filters or snapshot criteria by clicking the save button inside the filter editor dialog. The Traffic Viewer also employs URL deep links which means you can copy/paste the URL bar in your browser to share a view.
+
+## Managing Snapshot Size
+
+:::tip
+Snapshots do not have a fixed size limit but extremely large snapshots can time out because they take too much time to process. Beyond warnings in the UI, you'll know this is happening because your snapshot will process for a number of hours and suddenly stop with an error.
+:::
+
+Speedscale cloud is designed to horizontally scale analysis jobs but all systems have configuration limits. If your snapshot creation is timing out, follow the procedure below to chop it down to a more manageable size. Generally speaking, snapshot size has no limit but practically speaking snapshots over a few gigabytes become unmanageable simply because files that large take time to move. To handle snapshot creation timeouts you can follow the following procedure:
+
+1. Save a snapshot for a minimal amount of time like 15 minutes (the default)
+2. Once this is complete, open the snapshot tags and look for the raw file size.
+
+<img src={ViewTagsImg} height="300px" alt="Alt text" />
+<img src={RawSizeImg} height="300px" alt="Alt text" />
+
+3. Let's assume we want a 1 Gig snapshot since that is fairly easy to work with. We can do some basic multiplication to see that the existing file is roughly 10M and so if we captured 100x as much traffic that would be roughly 1GB. This assumes traffic size is fairly uniform which may or may not be reasonable for your application. Some apps have mid-day spikes so your mileage may vary.
+4. Run the same snapshot with 10x the timeframe (150 minutes or roughly 2.5 hours)
+5. Repeat step 2.
+6. If the snapshot is still too big then apply filters for repetitive or common issues as explained in this [guide](../guides/advanced-filters.md). Eliminating repetitive and useless heartbeats often times is all that is necessary.
+7. Repeat until snapshot runs in a reasonable time or fits in your infrastructure expectations.
