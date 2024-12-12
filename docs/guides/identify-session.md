@@ -33,7 +33,7 @@ In the end, you will have a DLP rule that looks like this:
 This transform cahin will isolate the `email` HTTP Query Parameter and use it as the session identifier.
 
 :::note
-If your app relies on JWTs then you can think them as being interchangeable with sessions. However, if you have a human readable user ID tucked into the JWT claims then that could also be considered a session. To extract an ID like this you can use the [JSONPath](../reference/transform-traffic/extractors/json_path.md) extractor pointed at the claim:
+If your app relies on JWTs then you can think them as being interchangeable with sessions. However, if you have a human readable user ID tucked into the JWT claims then that could also be considered a session. To extract an ID like this you can use the [JSONPath](../transform/extractors/json_path.md) extractor pointed at the claim:
 ![jwt claim](./identify-session/jwt-claim.png)
 :::
 
@@ -59,9 +59,9 @@ The following instructions should be used on your snapshot during playback. Don'
 
 During playback, you may want to take the additional step of replacing the session with a new value. For instance, many testing scenarios require replacing a real email address with a test one. To do this, we'll introduce one new transform and apply it to a new transform chain.
 
-The [smart replace](../reference/transform-traffic/transforms/smart_replace.md) tells the Speedscale AI model to replace the incoming value with a new value wherever it occurs in your traffic. For example, if you recorded a query parameter containing a user ID you may want to replace it with one that works in a test environment instead of production. Think of this transform like a very sophisticated find and replace that is able to peer deep inside payloads and parameters within your traffic. The `smart_replace` transform has no configuration because once Speedscale knows of the desired replacement it does the work of finding it embedded within fields automatically.
+The [smart replace](../transform/transforms/smart_replace.md) tells the Speedscale AI model to replace the incoming value with a new value wherever it occurs in your traffic. For example, if you recorded a query parameter containing a user ID you may want to replace it with one that works in a test environment instead of production. Think of this transform like a very sophisticated find and replace that is able to peer deep inside payloads and parameters within your traffic. The `smart_replace` transform has no configuration because once Speedscale knows of the desired replacement it does the work of finding it embedded within fields automatically.
 
-To make `smart_replace` work you need to assign a new ID later in the transform chain. For instance, we can replace a user's login email with a new random one. In Speedscale terms that means using [rand_string](../reference/transform-traffic/transforms/rand_string.md) with an appropriate regex. It's also common to use defined test data and the [csv](../reference/transform-traffic/transforms/csv.md) transform. For this example we'll use a simple email regular expression to create a random string `^[a-zA-Z0-9._%+-]{6,14}@foobar\.com`
+To make `smart_replace` work you need to assign a new ID later in the transform chain. For instance, we can replace a user's login email with a new random one. In Speedscale terms that means using [rand_string](../reference/transform-traffic/transforms/rand_string.md) with an appropriate regex. It's also common to use defined test data and the [csv](../transform/transforms/csv.md) transform. For this example we'll use a simple email regular expression to create a random string `^[a-zA-Z0-9._%+-]{6,14}@foobar\.com`
 
 This is what your transform chain might look like with the complete set:
 
