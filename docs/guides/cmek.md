@@ -21,7 +21,7 @@ CMEK requires customers to maintain an AWS account that can be used for key stor
 
 1. If you are a Speedscale Enterprise customer wanting to activate CMEK, please reach out to Speedscale support through normal channels to begin the process.
 2. Once initiated, Speedscale will request AWS admin contact information from the customer.
-3. Speedscale will provide an AWS Cloud Formation Script that must be run in the customer AWS account. This script can and should be inspected before execution. This script will produce an AWS KMS ARN. This ARN should be provided to Speedscale.
+3. Speedscale will provide a Terraform example that must be run in the customer AWS account. This script can and should be inspected before execution. This script will produce an AWS KMS ARN. This ARN should be provided to Speedscale.
 4. Speedscale will enable CMEK for this customer using the provided ARN.
 5. Speedscale Engineering will create the new database and other infrastructure instance using these credentials. The customer's tenant will be added to Speedscale's CMEK managed environment.
 
@@ -46,10 +46,6 @@ sequenceDiagram
 ```
 
 # Removing Access
-
-:::caution
-We do not currently support key rotation for customer managed keys and do not recommend implementing an automatic key rotation policy on the customer managed key.
-:::
 
 Customers control KMS keys and can turn them off at any time to remove Speedscale access to their data. However, deleting KMS keys can have unintended consequences and so AWS recommends deactivating. Please see the AWS [documentation](https://docs.aws.amazon.com/kms/latest/developerguide/enabling-keys.html) for more information.
 
