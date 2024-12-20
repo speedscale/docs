@@ -30,10 +30,12 @@ The sequence of events goes like this:
 6. A response is returned if the signature is recognized or a 404 if it is unknown.
 7. If multiple requests have the same signature but different responses, Speedscale will cycle through the responses in order.
 
+Fundamentally, the signature is a hash map of key=value pairs. The objective of adding transforms to the signature is to make it match with a particular response found in the response. The service mock engine will apply the transforms to the incoming request and based on those modifications it will attempt to find a match in the snapshot. So the purpose of this exercise is to modify miss or passthrough requests individually using transforms until they match an existing response in the snapshot.
+
 Speedscale will automatically generate signatures for common protocols such as HTTP and Postgres. Modification of these signatures is possible and covered in this section. By adding new requests to your traffic snapshot you effectively add new service mock known responses. During environment replication, Speedscale will return the response matching what was recorded in the original environment.
 
 :::tip
-To change your service
+You may notice an `instance` field in the signature. This is used to differentiate between multiple requests that are identical. If you modify the instance, you cause the service mock to return this response the nth time this signature is received.
 :::
 
 Take the following HTTP request as an example:
