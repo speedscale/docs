@@ -1,4 +1,4 @@
-# Speedscale Enterprise: Single Sign-On (SSO) Integration
+# Single Sign-On (SSO) Integration
 
 ## Overview
 
@@ -68,7 +68,7 @@ Client Secret
 Okta Domain
 ```
 
-## After configuring SSO:
+## Next Steps
 
 - Log out and attempt to log in via your Identity Provider.
 - Verify that users can authenticate successfully and are assigned the correct permissions within Speedscale.
@@ -78,6 +78,5 @@ Okta Domain
 
 For assistance with SSO setup or troubleshooting, contact Speedscale Support:
 - Email: support@speedscale.com
-- Documentation: Speedscale SSO Knowledge Base
 
 By integrating Single Sign-On, Speedscale helps your team maintain secure, centralized, and efficient access management, ensuring a smooth user experience while meeting enterprise security standards.
