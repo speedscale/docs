@@ -1,10 +1,12 @@
-Start by installing the Speedscale CLI-based API (`speedctl`) via [Homebrew](https://brew.sh):
+Install the `speedctl` via [Homebrew](https://brew.sh):
 
 ```shell
 brew install speedscale/tap/speedctl
 ```
 
-Or via the install script:
+That's all you need.
+
+However, if you don't use Homebrew you can use the install script:
 
 ```shell
 sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
@@ -16,13 +18,13 @@ To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` enviro
 
 :::
 
-Install a specific version by passing it to the install script:
+If you need to Install a specific version, you can do so by passing it to the install script:
 
 ```shell
 sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)" -s v1.4.63
 ```
 
-Optionally skip the install script and install manually:
+If you would rather take the steps manually to know what's going on, you can run the following:
 
 ```shell
 # Download speedctl binary on your machine
