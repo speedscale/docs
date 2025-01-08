@@ -7,7 +7,7 @@ You can get an API key by signing up for a free account at [speedscale.com](http
 
 :::warning
 * Don't put your API key in source control. Use a secret manager.
-* Don't share you API Key.
+* Don't share your API Key.
 * Non-interactive mode (like as part of a CI pipeline) requires Speedscale Enterprise. We know it's a pain, but we gotta eat too.
 * If your API key is compromised, you can rotate it [here](https://app.speedscale.com/settings/api-keys).
 :::
