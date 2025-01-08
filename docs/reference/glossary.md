@@ -77,6 +77,17 @@ Note that replay run with low data mode will not be able to run
 [assertions](#assertion) as the full RRPairs are not available, but the report
 will show when errors occur.
 
+### Mock
+
+A mock is a software component that imitates another, usually more complex or
+difficult to run, software component in limited ways.  A mock is generally used
+during local development or testing when it is impractical or impossible to run
+the real thing.
+
+In Speedscale mocks are provided by the [responder](#responder).
+
+See [Mocking and Service Virtualization](/mocks/) for more information.
+
 ### Operator
 
 A [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
