@@ -18,6 +18,12 @@ The Speedscale sidecar proxy, [goproxy](/reference/glossary.md#goproxy), is
 used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
+
+:::info
+Speedscale also supports alternate data collectors including log scraping and even a pre-GA eBPF option (contact support for more information). Envoy WASM plug-ins are not supported because of limitations in the current WASM implementation. WASM plug-ins present limitations for this use case including lack of complete data visibility, lack of support for non-HTTP protocols and a challenging configuration experience.
+:::
+
+
 <iframe src="https://player.vimeo.com/video/986454551?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 <p><a href="https://vimeo.com/986454551">Bootstrapping Traffic Capture</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
 
