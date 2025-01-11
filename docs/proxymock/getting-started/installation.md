@@ -17,46 +17,4 @@ This extension does some pretty heavy duty work and it requires the Speedscale C
 3. Search for "Speedscale Proxymock"
 4. Click Install
 
-## Install speedctl {#install-speedctl}
-
-`speedctl` used to create and manage simulation environments and will interact with the VSCode extension. Choose your platform to install the CLI.
-
-<Tabs
-  defaultValue="windows"
-  values={[
-    {label: 'Windows', value: 'windows'},
-    {label: 'Mac', value: 'mac'},
-    {label: 'Linux', value: 'linux'},
-    {label: 'Docker', value: 'docker'},
-  ]}>
-
-<TabItem value="mac">
-
-<MacCLIInstall />
-
-</TabItem>
-
-<TabItem value="linux">
-
-<MacCLIInstall />
-
-</TabItem>
-
-<TabItem value="windows">
-
-<WindowsCLIInstall />
-
-</TabItem>
-
-<TabItem value="docker">
-
-### Docker
-
-1. Pull the Speedscale CLI Docker image using `docker pull speedscale/speedscale-cli`.
-2. Run the Docker container using `docker run -it speedscale/speedscale-cli`.
-3. Verify the installation by running `speedscale --version` inside the Docker container.
-
-</TabItem>
-
-</Tabs>
-
+The extension will install an additional command line tool called `speedctl` which is used to create and manage your mock servers. You don't need to manually install this, but you can learn more about it at [here](../../setup/install/cli.md).
