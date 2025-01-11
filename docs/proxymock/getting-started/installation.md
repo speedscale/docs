@@ -30,12 +30,6 @@ This extension does some pretty heavy duty work and it requires the Speedscale C
     {label: 'Docker', value: 'docker'},
   ]}>
 
-<TabItem value="windows">
-
-<WindowsCLIInstall />
-
-</TabItem>
-
 <TabItem value="mac">
 
 <MacCLIInstall />
@@ -45,6 +39,12 @@ This extension does some pretty heavy duty work and it requires the Speedscale C
 <TabItem value="linux">
 
 <MacCLIInstall />
+
+</TabItem>
+
+<TabItem value="windows">
+
+<WindowsCLIInstall />
 
 </TabItem>
 

@@ -86,11 +86,23 @@ curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 
 You should see the request and response in the `PROXYMOCK` pane like this:
 
-![request and response](./overview.gif)
+![request and response](./quickstart/rrpairs.png)
 
 Take a look around and click on each request/response pair (RRPair) to see the details of the request and response. You should see the outbound calls in particular. These will form the basis of the service mock.
 
 Stop the current debugger session by clicking the normal debug stop button.
+
+## Create a Test {#create-a-test}
+
+Find the **Send** button by hovering over the request and response pair. Click it to instantly run a test.
+
+![send test](./quickstart/send-test.png)
+
+Any new information will be updated in the RRPair viewer, including new responses. A new tab will open showing the new request and response. Save the request to update the RRPair for future playback.
+
+:::tip
+Inbound requests can also be turned into high quality regression and load tests using Speedscale Enterprise. You can also export these as Postman Collectinos or k6 scripts.
+:::
 
 ## Create a Mock Server
 
@@ -98,7 +110,11 @@ Click on the Action Button (the three dots) at the top right of the `PROXYMOCK` 
 
 ## Running the Demo {#running-the-demo}
 
-Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by open the Command Palette and run `proxymock: Start Playback`.
+Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by opening the Command Palette and run `proxymock: Start Playback`.
+
+The app will run normally - except that it will use the mock server you created in the previous step.
+
+![debug output](./quickstart/debug-output.png)
 
 That's it! You command the superpower of running your app without it's dependent APIs and microservices.
 
