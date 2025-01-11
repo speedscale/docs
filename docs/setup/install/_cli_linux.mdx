@@ -1,0 +1,40 @@
+Linux users should install the CLI via the install script:
+
+```shell
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
+```
+
+:::caution Note
+Root permission is not required to execute this script.
+:::
+
+Install a specific version py passing it to the install script:
+
+```shell
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)" -s v2.3.86
+```
+
+:::tip
+To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable to your [API key](/quick-start#retrieve-your-api-key)
+:::
+
+Optionally skip the install script and install manually:
+
+```shell
+# Download speedctl binary on your machine
+curl "https://downloads.speedscale.com/speedctl/speedctl-linux-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o speedctl
+
+# Create speedscale directory and move the binary to the directory
+mkdir ~/.speedscale
+mv ./speedctl ~/.speedscale
+
+# Give execute permission to the binary
+chmod +x ~/.speedscale/speedctl
+
+# Add the Speedscale path to your PATH in your shell's RC file
+echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.zshrc
+```
+
+:::tip
+Replace `~/.zshrc` with whatever your shell's RC file is, like `~/.bashrc` or `~/.config/fish/config.fish`
+:::
