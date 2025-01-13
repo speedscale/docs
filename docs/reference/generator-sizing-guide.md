@@ -125,6 +125,59 @@ Understanding what your application is during during the load test will help gui
 Look at metrics, review logs, and monitor the environment to get the full picture.  This obviously includes
 the application being tested but also databases, caches, third party services, etc.
 
+## Multiple Generators
+
+If you want to get more throughput than a single generator can provide, you can run multiple generators. This will generate multiple reports within the Speedscale UI, and you can see them grouped together under the `Replays` section of your snapshot.
+
+### Running Multiple Generators
+
+First you need to copy this file and save locally, then edit the configuration section with appropriate values for your situation.
+
+:::note
+If you get an error when running the script you may need to configure permissions such as: `chmod 755 multi-gen.sh`.
+:::
+
+```
+#!/usr/bin/env bash
+
+# This script will run multiple Speedscale replays in parallel.
+
+###################
+## CONFIGURATION ##
+###################
+
+SNAPSHOT="237046ff-98a6-43a8-9f76-5a6f74f008c4"
+TEST_CONFIG="performance_100replicas"
+CLUSTER="miniken"
+NAMESPACE="default"
+WORKLOAD="nginx-deployment"
+GENERATOR_COUNT="4"
+
+############
+## SCRIPT ##
+############
+
+set -e
+
+TEST_ID=$(date +%s)
+
+for ((i=1; i<=GENERATOR_COUNT; i++))
+do
+  echo "Iteration $i of $GENERATOR_COUNT: Running snapshot $SNAPSHOT"
+  speedctl infra replay "$WORKLOAD" \
+    --namespace "$NAMESPACE" \
+    --cluster "$CLUSTER" \
+    --snapshot-id "$SNAPSHOT" \
+    --test-config-id "$TEST_CONFIG" \
+    --build-tag "TS:${TEST_ID} Replay:$i/$GENERATOR_COUNT"
+done
+
+```
+
+![multiple generators](./generator-sizing-guide/multi-gen-reports.png)
+
+Note that the output of the `speedctl infra replay` command includes the report id for each of the reports.
+
 ## FAQ
 
 ### Why doesn't the number of TPS/RPS increase when I add more vUsers?
