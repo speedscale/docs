@@ -89,8 +89,8 @@ Set proxy variables to redirect outbound traffic to the Speedscale responder and
 start your server.
 
 ```
-export http_proxy=http://localhost:4141
-export http_proxys=https://localhost:4141
+export http_proxy=http://localhost:4140
+export http_proxys=https://localhost:4140
 ./my_app
 ```
 
@@ -135,8 +135,8 @@ Just as with the replay, set proxy variables to redirect outbound traffic to
 the Speedscale responder and start your server.
 
 ```
-export http_proxy=http://localhost:4141
-export http_proxys=https://localhost:4141
+export http_proxy=http://localhost:4140
+export http_proxys=https://localhost:4140
 ./my_app
 ```
 

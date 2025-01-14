@@ -59,7 +59,7 @@ This guide will walk you through recording an environment from your local deskto
    ```
 
 :::tip
-MacOS and Linux users should also your System keychain [settings](https://support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac). You only need to do this once or it can be undone after recording is completed.
+MacOS users should add this certificate to the System keychain [settings](https://support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac). You only need to do this once or it can be undone after recording is completed.
 :::
 
 3. **Run Your Application**:

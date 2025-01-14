@@ -1,22 +1,19 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import MacOSLinuxInstall from './\_cli_macos_linux.mdx'
-import WindowsCLIInstall from './\_cli_windows.mdx'
+import MacOSInstall from './\_cli_macos.mdx'
+import LinuxInstall from './\_cli_linux.mdx'
+import WindowsInstall from './\_cli_windows.mdx'
 
 If you are running Speedscale on a local desktop or in Docker Desktop, the CLI is required. For all other users it is highly recommended because it allows programmatic interaction with Speedscale cloud.
 
 <Tabs>
-
-<TabItem value="mac" label="Mac/Linux">
-
-<MacOSLinuxInstall />
-
-</TabItem>
-
-<TabItem value="windows" label="Windows">
-
-<WindowsCLIInstall />
-
-</TabItem>
-
+  <TabItem value="mac" label="MacOS">
+    <MacOSInstall />
+  </TabItem>
+  <TabItem value="linux" label="Linux">
+    <LinuxInstall />
+  </TabItem>
+  <TabItem value="windows" label="Windows">
+    <WindowsInstall />
+  </TabItem>
 </Tabs>
