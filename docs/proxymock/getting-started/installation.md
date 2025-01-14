@@ -18,3 +18,7 @@ This extension does some pretty heavy duty work and it requires the Speedscale C
 4. Click Install
 
 The extension will install an additional command line tool called `speedctl` which is used to create and manage your mock servers. You don't need to manually install this, but you can learn more about it at [here](../../setup/install/cli.md).
+
+:::note
+The proxymock extension will re-use the existing Speedscale Enterprise installation if present.
+:::
