@@ -66,7 +66,7 @@ code .
             ],
             "env": {
                 "AWS_ACCESS_KEY_ID": "<insert if you want to use the cache>",
-                "AWS_SECRET_ACCESS_KEY": "<insert if you wnat to tuse the cahce>",
+                "AWS_SECRET_ACCESS_KEY": "<insert if you want to use the cache>",
                 "AWS_SESSION_TOKEN": "<insert if you want to use the cache>"
             }
         }
