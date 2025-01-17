@@ -30,3 +30,8 @@ Most definitely, but for that you need to consider an Enterprise subscription. B
 
 `proxymock` defaults to **passthrough** mode which means it will reach out to the real system and return the response. The request and response will then be added to the rrpair editor. You can modify the response if you like using the rrpair editor and then save. Press the `Learn` button and the mock will be updated with the new response. You thought we were going to tell you to write a script, right? We like you too much for that. To learn more about signature matching, see the [signatures](../reference/signature.md) section.
 
+## What language support is there?
+
+`proxymock` the cli supports a variety of languages including Go, Python, Node, and Java. You can see a complete list of recorded languages [here](../../reference/technology-support.md).
+
+Right now, the full automated VSCode workflow only works for golang but new languages are in development. We are currently considering Java and nodejs. Even without the fully automated VSCode debugger experience you can still record and view traffic with the cli.

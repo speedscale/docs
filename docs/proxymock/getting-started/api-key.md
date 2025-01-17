@@ -3,7 +3,9 @@ sidebar_position: 2
 ---
 # API Key
 
-You can get an API key by signing up for a free account at [speedscale.com](https://speedscale.com). This does not require anything more than a name and email address. Speedscale is a technology startup and we're not in the business of selling your information but we do need a unique identifier to enable some functionality and understand what features are most useful.
+Using **proxymock** does not require anything more than an email address. Speedscale is a technology startup and we're not in the business of selling your information but we do need a unique identifier to enable some functionality and understand what features are most useful.
+
+The first time you run the extension, you will be asked to provide an email address. In other words, you don't have to do anything more than type in a valid email address when prompted. You can view or modify your API key by editing the `~/.speedscale/config.yaml` file.
 
 :::warning
 * Don't put your API key in source control. Use a secret manager.
