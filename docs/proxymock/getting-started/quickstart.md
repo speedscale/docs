@@ -8,7 +8,7 @@ This guide provides a high-level overview of how to get a simple demo app up and
 
 ## Introduction
 
-This guide will show you how to create a realistic mock that sidesteps the rate limits of IP Stack and removes the need for a real DynamoDB instance. This is a simple app that uses the [IP Stack](https://ipstack.com/) API to get the location of an IP address and [AWS DynamoDB](https://aws.amazon.com/dynamodb/) to store and retrieve data. Once complete, you will know how to record a real application's behavior and generate a mock server and tests. This guide covers the following concepts:
+This guide will show you how to create a realistic mock that sidesteps the rate limits of IP Stack and removes the need for a real DynamoDB instance. This is a simple app that uses the [IP Stack](https://ipstack.com/) API to get the location of an IP address and [AWS DynamoDB](https://aws.amazon.com/dynamodb/) to store and retrieve data. Once complete, you will know how to record a real application's behavior and generate a mock server and tests. Think of this like a very smart caching server so if you request new IPs you still need to use IPStack. This guide covers the following concepts:
 
 * How to *observe* a real application's API calls in the debugger (inbound and outbound)
 * How to generate a mock server and tests
