@@ -8,7 +8,7 @@ import WindowsCLIInstall from './installation/\_cli_windows.mdx'
 
 # Installation
 
-This extension does some pretty heavy duty work and it requires a cli and a VSCode extension (`proxymock` is the name of both) to be installed. Using an external cli allows you to automate the creation of simulation environments if you upgrade to Speedscale Enterprise. We'd prefer to perform this level of magic without it but so far physics has gotten in the way. You only need to install the VSCode extension and it will take care of the cli. This is similar to how VSCode handles delve and other language tools.
+This extension does some pretty heavy duty work and it requires a cli and a VSCode extension (`proxymock` is the name of both) to be installed. Using an external cli allows you to automate the creation of simulation environments from the command line and use other IDEs like IntelliJ or Goland. We'd prefer to perform this level of magic without it but so far physics has gotten in the way. You only need to install the VSCode extension and it will take care of the cli. This is similar to how VSCode handles delve and other language tools.
 
 ## Install proxymock Extension {#install-proxymock-extension}
 
