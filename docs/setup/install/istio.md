@@ -3,7 +3,7 @@ title: Istio
 sidebar_position: 11
 ---
 
-import ExternalServices from '../../reference/_external-services.mdx'
+import ExternalServices from '../../reference/\_external-services.mdx'
 
 :::info
 Please make sure the [Speedscale Operator](../../quick-start.md) is installed before configuring Istio support.
@@ -34,20 +34,20 @@ metadata:
   namespace: speedscale
 spec:
   hosts:
-  - app.speedscale.com
-  - downloads.speedscale.com
-  - firehose.us-east-1.amazonaws.com
-  - sqs.us-east-1.amazonaws.com
-  - sns.us-east-1.amazonaws.com
-  - s3.us-east-1.amazonaws.com
-  - "*.s3.us-east-1.amazonaws.com"
-  - sts.amazonaws.com
-  - sts.us-east-1.amazonaws.com
+    - app.speedscale.com
+    - downloads.speedscale.com
+    - firehose.us-east-1.amazonaws.com
+    - sqs.us-east-1.amazonaws.com
+    - sns.us-east-1.amazonaws.com
+    - s3.us-east-1.amazonaws.com
+    - "*.s3.us-east-1.amazonaws.com"
+    - sts.amazonaws.com
+    - sts.us-east-1.amazonaws.com
   location: MESH_EXTERNAL
   ports:
-  - name: https
-    number: 443
-    protocol: TLS
+    - name: https
+      number: 443
+      protocol: TLS
   resolution: NONE
 ```
 
@@ -66,11 +66,12 @@ configured in such a way that they preserve the ability to use Istio mesh featur
 
 :::danger Important
 If your Istio installation is configured to use the [Istio CNI Agent](https://istio.io/latest/docs/setup/additional-setup/cni/),
-you *must* annotate your workloads with the following annotation to maintain compatibility:
+you _must_ annotate your workloads with the following annotation to maintain compatibility:
 
 ```
 sidecar.speedscale.com/istio-cni: "true"
 ```
+
 :::
 
 Follow the [installation guide](../sidecar/install.md) to install the Speedscale sidecar on your Istio workloads.
@@ -90,8 +91,8 @@ metadata:
   namespace: prod-us1
 spec:
   egress:
-  - hosts:
-    - "speedscale/*"
+    - hosts:
+        - "speedscale/*"
 ```
 
 ### Ensure VirtualService Contains Host (Optional)
@@ -100,6 +101,14 @@ If your service is accessible both outside and inside the cluster, make sure the
 `VirtualService` contains the same host. See the Istio
 [documentation](https://istio.io/latest/docs/reference/config/networking/virtual-service/) for more
 information.
+
+### Istio debug logs
+
+Apart from taking the usual debugging steps mentioned [here](../../guides/troubleshooting.md) you can also increase the log level on the Istio sidecar by running the following command.
+
+```sh
+kubectl -n {YOUR NAMESPACE} exec -it {POD NAME}-c istio-proxy  -- sh -c "curl -X POST  localhost:15000/logging?level=debug"
+```
 
 ## Get In Touch
 
