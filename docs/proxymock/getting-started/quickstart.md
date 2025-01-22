@@ -115,6 +115,21 @@ You should see the request and response in the `PROXYMOCK` pane like this:
 
 ![request and response](./quickstart/rrpairs.png)
 
+:::tip
+You can also record from the command line using the following commands. This is only necessary if you intend to run proxymock from the command line without using the VSCode extension.
+
+```bash
+# run in the same terminal as your app
+export http_proxy=http://127.0.0.1:4140
+export https_proxy=http://127.0.0.1:4140
+
+# run in a separate terminal for local storage
+proxymock capture localhost 8080 --local-capture
+```
+
+This will not directly interact with the VSCode extension and you will need to manually view the .jsonl file in your `~/.speedscale/data/snapshots` directory.
+:::
+
 ### Observe the Traffic
 
 Take a look around and click on each request/response pair (RRPair) to see the details of the request and response. You should see the outbound calls in particular. These will form the basis of the service mock.
@@ -128,6 +143,22 @@ Running your app in the debugger is now a powerful observability tool. You can s
 ### Run
 
 Start your app using the `proxymock: Debug with Proxymock` command. This will start your app in the debugger and use the mock server you created in the previous step. There's not a lot to say about this step. If you don't have mocks it won't work. If you do have mocks, it will use them.
+
+:::tip
+You can also start up a mock server manually using the following command:
+```bash
+# this will re-wire your network to talk to the mock server
+# paste this into the same terminal/environment your app runs in
+export http_proxy=socks5h://localhost:4140
+export https_proxy=socks5h://localhost:4140
+export tcp_proxy=socks5h://localhost:4140
+
+# run proxymock in a separate terminal
+proxymock run --snapshot-id <id returned by capture> --service http=8080 --service https=8443
+```
+
+Keep in mind that not all languages and frameworks support http proxy by environment variables. In this case you need to figure out the right environment variables or insert different endpoints into your code. This is not necessary when using the VSCode extension.
+:::
 
 ## Summary
 
