@@ -11,7 +11,7 @@ The first time you run the extension, you will be asked to provide an email addr
 * Don't put your API key in source control. Use a secret manager.
 * Don't share your API Key.
 * Non-interactive mode (like as part of a CI pipeline) requires Speedscale Enterprise. We know it's a pain, but we gotta eat too.
-* If your API key is compromised, you can rotate it [here](https://app.speedscale.com/settings/api-keys).
+* If your API key is compromised, you can rotate it using the proxymock `rotate` command (run `proxymock rotate -h` for instructions)
 :::
 
 :::tip

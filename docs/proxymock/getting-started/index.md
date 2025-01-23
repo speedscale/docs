@@ -26,6 +26,10 @@ This [section](./faq.md) will answer some common questions about **proxymock**.
 
 Computers are hard, but we're here to help. This [page](./help.md) details both free and paid support options.
 
+## [Reference](../reference/index.md) {#reference}
+
+Learn more about how **proxymock** works and how to use more advanced features.
+
 ## [Speedscale Enterprise](../../intro.md) {#enterprise}
 
 Learn more about connecting **proxymock** to your enterprise environment for data collection and playback. This paid tier will allow you to deploy your mocks and tests in the cloud or create them using production-grade data collectors. Learn more [here](../../intro.md). This is not science fiction and no aliens were harmed in its creation.
