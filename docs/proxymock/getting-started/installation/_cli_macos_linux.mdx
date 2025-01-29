@@ -1,43 +1,27 @@
-Install the `speedctl` via [Homebrew](https://brew.sh):
+Install the cli via [Homebrew](https://brew.sh):
 
 ```shell
-brew install speedscale/tap/speedctl
+brew install speedscale/tap/proxymock
 ```
 
-That's all you need.
+That's all you need. You can stop reading now.
 
-However, if you don't use Homebrew you can use the install script:
+---
+
+Ok, you didn't stop reading so here are some manual instructions if you don't use Homebrew:
 
 ```shell
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
+sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)"
 ```
+
+You can inspect the install script to see what it does.
 
 :::tip
-
-To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable.
-
+To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable. This is an Enterprise feature.
 :::
 
 If you need to Install a specific version, you can do so by passing it to the install script:
 
 ```shell
-sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)" -s v1.4.63
-```
-
-If you would rather take the steps manually to know what's going on, you can run the following:
-
-```shell
-# Download speedctl binary on your machine
-curl "https://downloads.speedscale.com/speedctl/speedctl-$(case $(uname -s) in  Darwin)   echo 'darwin' ;; Linux) echo 'linux';; esac)-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o speedctl
-
-# Create speedscale directory and move the binary to the directory
-mkdir ~/.speedscale
-mv ./speedctl ~/.speedscale
-
-# Give execute permission to the binary
-chmod +x ~/.speedscale/speedctl
-
-# Add the Speedscale path to your PATH, change bashrc based on your Shell
-echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.bashrc
-
+sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)" -s v1.4.63
 ```
