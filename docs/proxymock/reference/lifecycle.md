@@ -4,24 +4,7 @@ sidebar_position: 1
 
 # Snapshot Lifecycle
 
-A snapshot is a collection of request and response pairs stored in a file. Snapshots are created by recording a live environment or by importing data from another source like a Postman collection or a Wiremock configuration. On your local machine, you can find your snapshots in the `~/.speedscale/data/snapshots` directory. The recorded rrpairs are stored in the `raw.jsonl` file within the unique snapshot directory. Each line in the file is a flattened JSON object representing a single request and response pair. By editing the `raw.jsonl`, you are editing the data that is used to generate the mocks.
-
-Your currently active snapshot is shown in the `PROXYMOCK` pane. Each rrpair is shows as an entry in the tree underneath the hostname or service it belongs to.
-
-:::tip
-If you understand how the `git` tool works by pushing and pulling files locally to/from the cloud then this system will be familiar.
-:::
-
-Snapshots are stored in the `~/.speedscale/data/snapshots` directory under a sub folder named after the snapshot's unique identifier. The `raw.jsonl` file is the main file that contains the request and response pairs. The `reaction.jsonl` file is the file that contains the configuration for the mock server. The `action.jsonl` file is the file that contains the configuration for the tests that can be run against your app. There is a metadata file that contains the snapshot's name, description, and other metadata and it is stored in the root `~/.speedscale/data/snapshots` directory.
-
-```
-<snapshot UID>.json
-
-<snapshot UID>
-├── raw.jsonl
-├── action.jsonl
-└── reaction.jsonl
-```
+A snapshot is a collection of request and response pairs stored in a file. Snapshots are created by recording a live environment or by importing data from another source like a Postman collection or a Wiremock configuration. On your local machine, you can find your snapshots in the `~/.speedscale/data/snapshots` directory. See [lifecycle](./repo.md) to learn more about how **proxymock** manages snapshots.
 
 ## Mock Server Lifecycle
 
