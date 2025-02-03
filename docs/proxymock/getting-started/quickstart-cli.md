@@ -44,7 +44,7 @@ To avoid having to get an IP Stack API key or access to a live AWS DynamoDB, you
 
 1. Import the pre-made snapshot into your local [repository](../reference/repo.md).
 ```bash
-speedctl proxymock import --file snapshots/ip-lookup-demo.json
+proxymock import --file snapshots/ip-lookup-demo.json
 {"request_id":"dc8b599e-b992-441c-b7b9-886eaea599f1","action":"import","result":"processing","data":{"progress":"0","rrpairsProcessed":"0"}}
 {"request_id":"dc8b599e-b992-441c-b7b9-886eaea599f1","action":"import","result":"complete","data":{"filename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908/raw.jsonl","progress":"100","rrpairsProcessed":"2","snapshotId":"749e2d23-94fd-4e6d-86c2-5dd8ba18f908","snapshotMetaFilename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json"}}
 ```
