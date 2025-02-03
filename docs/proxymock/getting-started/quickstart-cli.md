@@ -92,16 +92,15 @@ Let's say you're trailblazing and there are no existing mocks. No problem, we'll
 
 1. Start the proxymock capture system using this command:
 ```bash
-proxymock capture localhost 8080 --local-capture
+proxymock run
+```
+You will see output like so:
+```bash
 ...
 export http_proxy=http://127.0.0.1:4140
 export https_proxy=http://127.0.0.1:4140
-export SSL_CERT_FILE=/Users/<your-username>/.speedscale/certs/tls.crt
-export REQUESTS_CA_BUNDLE=/Users/<your-username>/.speedscale/certs/tls.crt
-export GRPC_DEFAULT_SSL_ROOTS_FILE_PATH=/Users/<your-username>/.speedscale/certs/tls.crt
-export NODE_EXTRA_CA_CERTS=/Users/<your-username>/.speedscale/certs/tls.crt
 ...
-You can find your snapshot at /Users/matthewleray/.speedscale/data/snapshots/<uid>
+You can find your snapshot at /Users/<your-username>/.speedscale/data/snapshots/<uid>
 ...
 ```
 You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy/paste these directly from the CLI output and paste them into step 2.
