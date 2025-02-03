@@ -52,7 +52,7 @@ Your snapshot is now located in your local repository at the location specified 
 
 2. Turn the snapshot into a mock server using this command:
 ```bash
-proxymock analyze --snapshot-id <snapshot-id>
+proxymock analyze <snapshot-id>
 ```
 3. Start your mock server using this command:
 ```bash
