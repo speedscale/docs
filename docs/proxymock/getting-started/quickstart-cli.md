@@ -49,7 +49,24 @@ speedctl proxymock import --file snapshots/ip-lookup-demo.json
 {"request_id":"dc8b599e-b992-441c-b7b9-886eaea599f1","action":"import","result":"complete","data":{"filename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908/raw.jsonl","progress":"100","rrpairsProcessed":"2","snapshotId":"749e2d23-94fd-4e6d-86c2-5dd8ba18f908","snapshotMetaFilename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json"}}
 ```
 Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`
-1. Open a terminal and run the following command to make a request to the demo app:
+
+2. Turn the snapshot into a mock server using this command:
+```bash
+proxymock analyze --snapshot-id <snapshot-id>
+```
+3. Start your mock server using this command:
+```bash
+proxymock run --snapshot-id <snapshot-id>
+```
+The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy/paste these directly from the CLI output and paste them into step 2.
+
+3. Open a **new** terminal and paste the environment variables from the CLI output in step 1. Also, start the demo app.
+```bash
+export http_proxy=http://localhost:4140
+export https_proxy=http://localhost:4140
+go run main.go 0123456789
+```
+4.  Then run the following command to make a request to the demo app in another terminal:
 ```bash
 curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
 ```
@@ -60,10 +77,14 @@ You should see the following response to your curl from the app running in the d
 {"distance":30.042060297133386,"request1":{"city":"Tucker","connection_type":"cable","continent_code":"NA","continent_name":"North America","country_code":"US","country_name":"United States","dma":"524","ip":"50.168.198.162","ip_routing_type":"fixed","latitude":33.856021881103516,"location":{"calling_code":"1","capital":"Washington D.C.","country_flag":"https://assets.ipstack.com/flags/us.svg","country_flag_emoji":"🇺🇸","country_flag_emoji_unicode":"U+1F1FA U+1F1F8","geoname_id":4227213,"is_eu":false,"languages":[{"code":"en","name":"English","native":"English"}]},"longitude":-84.21367645263672,"msa":"12060","radius":"46.20358","region_code":"GA","region_name":"Georgia","type":"ipv4","zip":"30084"},"request2":{"city":"Alpharetta","connection_type":"cable","continent_code":"NA","continent_name":"North America","country_code":"US","country_name":"United States","dma":"524","ip":"174.49.112.125","ip_routing_type":"fixed","latitude":34.11735916137695,"location":{"calling_code":"1","capital":"Washington D.C.","country_flag":"https://assets.ipstack.com/flags/us.svg","country_flag_emoji":"🇺🇸","country_flag_emoji_unicode":"U+1F1FA U+1F1F8","geoname_id":4179574,"is_eu":false,"languages":[{"code":"en","name":"English","native":"English"}]},"longitude":-84.29633331298828,"msa":"12060","radius":"44.94584","region_code":"GA","region_name":"Georgia","type":"ipv4","zip":"30004"}}
 ```
 
-Take a look at the **RRPAIRS** pane. You should see new requests and responses in the tree. The `HIT` indicates that the mock received the request and returned the response. You can now develop locally without the need for an IP Stack API key or AWS DynamoDB.
+At this point, the demo app is running with the mock server. You can make requests to it as normal. Note that unknown IP addresses will require changes to the mocks.
 
-![rrpairs](./quickstart/rrpairs-hit.png)
 
+Check the console log for information about the requests and responses. New responses are stored in the `raw.jsonl` file inside the `snapshots` directory in your local [repository](../reference/repo.md). To update the mock, you can re-run the analysis stage:
+
+```bash
+proxymock analyze <snapshot-id>
+```
 
 ### Record with Live Systems {#record-with-live-systems}
 
@@ -98,10 +119,10 @@ Alternatively, if you have the VSCode extension installed, you should see the re
 5. Teach your mock these new responses by re-analyzing the snapshot.
 
 ```bash
-speedctl analyze <snapshot-uid>
+proxymock analyze <snapshot-id>
 ```
 
-Your snapshot now contains the new requests and responses.
+Your snapshot now contains the new requests and responses. You can now restart your mock server and make requests to it by following the instructions in [Launch using Mocks](#launch-using-mocks) and passing in your snapshot ID.
 
 ## Summary
 
