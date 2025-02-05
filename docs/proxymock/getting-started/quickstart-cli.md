@@ -114,8 +114,10 @@ curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 ```
 Look for the location of your snapshot in the local [repository](../reference/repo.md). You check see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
 Alternatively, if you have the VSCode extension installed, you should see the request and response in the `PROXYMOCK` pane like this:
+
 ![request and response](./quickstart/rrpairs.png)
-5. Teach your mock these new responses by re-analyzing the snapshot.
+
+4. Teach your mock these new responses by re-analyzing the snapshot.
 
 ```bash
 proxymock analyze <snapshot-id>
