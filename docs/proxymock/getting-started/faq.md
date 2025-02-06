@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 4
 ---
 
 # FAQ
@@ -11,10 +11,6 @@ sidebar_position: 5
 ## Does this work for Windows?
 
 Only if you run inside a container. Windows gets grumpy with it comes to networking but we're working on it.
-
-## Are IDEs other than VSCode supported?
-
-Yes, but you'll have to use `proxymock` as a CLI to create and manage your mock servers and set environment variables yourself. We are open to supporting more platforms like Goland and IntelliJ but need more requests to do so.  Join the [Speedscale Slack](https://slack.speedscale.com) to cast your vote.
 
 ## What is the difference between proxymock and Speedscale Enterprise?
 
@@ -35,3 +31,9 @@ Most definitely, but for that you need to consider an Enterprise subscription. B
 `proxymock` the cli supports a variety of languages including Go, Python, Node, and Java. You can see a complete list of recorded languages [here](../../reference/technology-support.md).
 
 Right now, the full automated VSCode workflow only works for golang but new languages are in development. We are currently considering Java and nodejs. Even without the fully automated VSCode debugger experience you can still record and view traffic with the cli.
+
+## Are IDEs other than VSCode (beta) supported?
+
+Yes, but you'll have to use `proxymock` as a CLI to create and manage your mock servers and set environment variables yourself. We 
+are open to supporting more platforms like Goland and IntelliJ but need more requests to do so.  Join the [Speedscale Slack]
+(https://slack.speedscale.com) to cast your vote.
