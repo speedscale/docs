@@ -112,7 +112,8 @@ These variables will re-route the outbound network in golang to point at the pro
 ```bash
 curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 ```
-Look for the location of your snapshot in the local [repository](../reference/repo.md). You check see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
+Look for the location of your snapshot in the local [repository](../reference/repo.md). You can see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
+
 
 4. Teach your mock these new responses by re-analyzing the snapshot.
 
