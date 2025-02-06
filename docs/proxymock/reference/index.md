@@ -1,4 +1,4 @@
-# Reference
+# How it works
 
 This section covers the reference documentation for **proxymock**. You can peruse this if you want to learn more about how **proxymock** works and how to use more advanced features.
 

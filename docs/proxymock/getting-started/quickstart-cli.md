@@ -1,10 +1,10 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 # Quickstart (CLI)
 
-This guide provides a step by step guide to creating a mock server and tests for a simple Go application using only the **proxymock** CLI. Note that this guide provides VSCode screenshots since the CLI does not have a UI (yet). These screenshots are for convenience and to provide a reference for the CLI commands.
+This guide provides a step by step guide to creating a mock server and tests for a simple Go application using only the **proxymock** CLI. 
 
 ## Introduction
 
@@ -112,10 +112,8 @@ These variables will re-route the outbound network in golang to point at the pro
 ```bash
 curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 ```
-Look for the location of your snapshot in the local [repository](../reference/repo.md). You check see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
-Alternatively, if you have the VSCode extension installed, you should see the request and response in the `PROXYMOCK` pane like this:
+Look for the location of your snapshot in the local [repository](../reference/repo.md). You can see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
 
-![request and response](./quickstart/rrpairs.png)
 
 4. Teach your mock these new responses by re-analyzing the snapshot.
 
@@ -129,9 +127,7 @@ Your snapshot now contains the new requests and responses. You can now restart y
 
 Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by opening the Command Palette and run `proxymock: Start Debugging`.
 
-The app will run normally - except that it will use the mock server you created in the previous step. If you need to update your mocks, just re-record the application's traffic. You can still run the debugger normally without **proxymock**.
-
-![debug output](./quickstart/debug-output.png)
+The app will run normally - except that it will use the mock server you created in the previous step. If you need to update your mocks, just re-record the application's traffic. 
 
 That's it! You command the superpower of running your app without it's dependent APIs and microservices.
 
