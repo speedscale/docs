@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 1
 ---
 
 # Quickstart (CLI)
@@ -24,18 +24,16 @@ You must install the **proxymock** CLI.
 
 This guide will show you how to:
 1. Use a pre-packaged recording (aka snapshot) to create a mock server
-1. Record the application's outbound traffic while it runs in the debugger to make your own custom mock server
+1. Record the application's outbound traffic while it runs in a terminal to make your own custom mock server
 
 You do not need to have an IP Stack API key or AWS DynamoDB instance to complete step one of this guide.
 
 ### Clone the Demo
 
-Clone the demo repository and open VSCode in the demo directory:
+Clone the demo repository:
 
 ```bash
 git clone https://github.com/speedscale/demo
-cd demo/go
-code .
 ```
 
 ### Launch using Mocks {#launch-using-mocks}
@@ -52,6 +50,7 @@ proxymock import --file snapshots/ip-lookup-demo.json
 ...
 Snapshot 749e2d23-94fd-4e6d-86c2-5dd8ba18f908 imported successfully
 ```
+
 Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`.
 Take note of the snapshot ID, you will need it in the next step.
 
@@ -122,6 +121,7 @@ These variables will re-route the outbound network in golang to point at the pro
 ```bash
 curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 ```
+
 Look for the location of your snapshot in the local [repository](../reference/repo.md). You can see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
 You can press CTRL+C in the proxymock terminal to stop the recording.
 
@@ -137,6 +137,7 @@ This will open a state of the art (for 1997) terminal UI that allows you to navi
 Press Enter to view details about each request. Keep in mind that your list of requests will be different than the screenshot but it will be similar. If you have the `--cache` option enabled in the demo app (and have AWS credentials), you will notice that proxymock has automatically exposed the DynamoDB command. Other protocols like gRPC and Postgres will also be converted into human readable JSON payloads with SQL statements exposed (and more).
 
 5. Teach your mock these new responses by re-analyzing the snapshot.
+
 
 ```bash
 proxymock analyze <snapshot-id>
@@ -154,6 +155,6 @@ That's it! You command the superpower of running your app without it's dependent
 
 ## Next Steps
 
-This guide only scratches the surface of what you can do with the free **proxymock** extension. Please give us feedback in our [slack](https://slack.speedscale.com)
+This guide only scratches the surface of what you can do with the free **proxymock** CLI. Please give us feedback in our [slack](https://slack.speedscale.com)
 
 Speedscale Enterprise can also record from a production Kubernetes application to generate local mocks and tests (including Postgres and other proprietary protocols). For more information on that workflow, check out [Speedscale Enterprise](../../intro.md).
