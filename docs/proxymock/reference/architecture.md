@@ -7,11 +7,11 @@ import HowItWorksSvg from './architecture/how-proxymock-works.svg';
 
 # Architecture
 
-`proxymock` is a local tool that allows you to create a mock server from a recording of your application's traffic. It is a great way to get started with traffic replay. `proxymock` is free and the UI is open source. It DOES NOT require a subscription to Speedscale Enterprise. The backend for `proxymock` is actually a local Speedscale Enterprise mock server and so it is already enterprise-grade even though it's free.
+`proxymock` is a desktop cli tool that allows you to create a mock server from a recording of your application's traffic. It is a great way to get started with traffic replay. `proxymock` is free and the VS Code UI is open source. It DOES NOT require a subscription to Speedscale Enterprise. The backend for `proxymock` is actually a local Speedscale Enterprise mock server and so it is already enterprise-grade even though it's free.
 
 <HowItWorksSvg />
 
-Ideally, `proxymock` installs a VSCode extension that modifies your debugger environment to use the `proxymock` mock server. The actual work is done by a local cli called `proxymock`. The `proxymock` cli contains most of the business logic for creating and managing mock servers with the UI acting as a layer on top of it. The `proxymock` cli is not open source but the VSCode extension is.
+Ideally, `proxymock` stands in for any backend dependencies your code needs, as mock server. `proxymock` contains most of the business logic for creating and managing mock servers with the UI acting as a layer on top of it. The `proxymock` cli is not open source but the VSCode extension is.
 
 The `proxymock` cli utilizes a proxy to redirect traffic. When it works, it's essentially fully automatic. When you have an unusual configuration, you may want to do some of the networking yourself to reach the cli.
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 1
 ---
 
 # Quickstart (CLI)
@@ -24,18 +24,16 @@ You must install the **proxymock** CLI.
 
 This guide will show you how to:
 1. Use a pre-packaged recording (aka snapshot) to create a mock server
-1. Record the application's outbound traffic while it runs in the debugger to make your own custom mock server
+1. Record the application's outbound traffic while it runs in a terminal to make your own custom mock server
 
 You do not need to have an IP Stack API key or AWS DynamoDB instance to complete step one of this guide.
 
 ### Clone the Demo
 
-Clone the demo repository and open VSCode in the demo directory:
+Clone the demo repository:
 
 ```bash
 git clone https://github.com/speedscale/demo
-cd demo/go
-code .
 ```
 
 ### Launch using Mocks {#launch-using-mocks}
@@ -48,7 +46,8 @@ proxymock import --file snapshots/ip-lookup-demo.json
 {"request_id":"dc8b599e-b992-441c-b7b9-886eaea599f1","action":"import","result":"processing","data":{"progress":"0","rrpairsProcessed":"0"}}
 {"request_id":"dc8b599e-b992-441c-b7b9-886eaea599f1","action":"import","result":"complete","data":{"filename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908/raw.jsonl","progress":"100","rrpairsProcessed":"2","snapshotId":"749e2d23-94fd-4e6d-86c2-5dd8ba18f908","snapshotMetaFilename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json"}}
 ```
-Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`
+Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is 
+`/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`
 
 2. Turn the snapshot into a mock server using this command:
 ```bash
@@ -132,6 +131,6 @@ That's it! You command the superpower of running your app without it's dependent
 
 ## Next Steps
 
-This guide only scratches the surface of what you can do with the free **proxymock** extension. Please give us feedback in our [slack](https://slack.speedscale.com)
+This guide only scratches the surface of what you can do with the free **proxymock** CLI. Please give us feedback in our [slack](https://slack.speedscale.com)
 
 Speedscale Enterprise can also record from a production Kubernetes application to generate local mocks and tests (including Postgres and other proprietary protocols). For more information on that workflow, check out [Speedscale Enterprise](../../intro.md).

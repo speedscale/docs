@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -8,12 +8,12 @@ import WindowsCLIInstall from './installation/\_cli_windows.mdx'
 
 # Installation
 
-This extension does some pretty heavy duty work and it requires a cli.Using an external cli allows you to automate the creation of simulation environments from the command line and use other IDEs like IntelliJ or Goland. We'd prefer to perform this level of magic without it but so far physics has gotten in the way. If you plan to install the VSCode extension then you only need to install the VSCode extension from the Marketplace and it will take care of the cli. This is similar to how VSCode handles delve and other language tools.
+**proxymock** does some pretty heavy duty work all from the command line.  Using the cli, you can automate the creation of simulation environments, record new traffic, modify transactions and replay. 
 
 ## Install proxymock via Command Line {#install-cli}
 
 :::warning
-The proxymock extension is currently only available for MacOS and Linux. Instructions for Windows are included below in case you want to do some offroading.
+The proxymock cli is currently only available for MacOS and Linux. Instructions for Windows are included below in case you want to do some offroading.
 :::
 
 <Tabs>
