@@ -34,27 +34,28 @@ Clone the demo repository and open VSCode in the demo directory:
 
 ```bash
 git clone https://github.com/speedscale/demo
-cd demo/go
+cd demo/goa
 code .
 ```
 
 ### Launch using Mocks {#launch-using-mocks}
+
+:::note
+This demo does not require an IPStack API key nor AWS DynamoDB instance. Instructions for using the pre-made mocks are presented first so you don't have to sign up for anything until you're ready to learn about recording.
+:::
 
 To avoid having to get an IP Stack API key or access to a live AWS DynamoDB, you can use the pre-made mocks in the repository under `demo/go/snapshots/ip-lookup-demo.json`.  You can think of this JSON file as a set of mocks provided by another engineer.
 
 1. Import the pre-made snapshot into your local [repository](../reference/repo.md).
 ```bash
 proxymock import --file snapshots/ip-lookup-demo.json
-{"request_id":"dc8b599e-b992-441c-b7b9-886eaea599f1","action":"import","result":"processing","data":{"progress":"0","rrpairsProcessed":"0"}}
-{"request_id":"dc8b599e-b992-441c-b7b9-886eaea599f1","action":"import","result":"complete","data":{"filename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908/raw.jsonl","progress":"100","rrpairsProcessed":"2","snapshotId":"749e2d23-94fd-4e6d-86c2-5dd8ba18f908","snapshotMetaFilename":"/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json"}}
+...
+Snapshot 749e2d23-94fd-4e6d-86c2-5dd8ba18f908 imported successfully
 ```
-Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`
+Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`.
+Take note of the snapshot ID, you will need it in the next step.
 
-2. Turn the snapshot into a mock server using this command:
-```bash
-proxymock analyze <snapshot-id>
-```
-3. Start your mock server using this command:
+2. Start your mock server using this command:
 ```bash
 proxymock run --snapshot-id <snapshot-id>
 ```
@@ -66,6 +67,12 @@ export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
 go run main.go 0123456789
 ```
+
+The mock has been pre-configured to accept the super-secret 0123456789 IPStack API key.
+
+:::tip
+By default, DynamoDB is not used by the demo app. If you want to use DynamoDB, you can add the `--cache` flag. Remember though that you will need AWS credentials configured in your environment.
+:::
 4.  Then run the following command to make a request to the demo app in another terminal:
 ```bash
 curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
@@ -79,7 +86,6 @@ You should see the following response to your curl from the app running in the d
 
 At this point, the demo app is running with the mock server. You can make requests to it as normal. Note that unknown IP addresses will require changes to the mocks.
 
-
 Check the console log for information about the requests and responses. New responses are stored in the `raw.jsonl` file inside the `snapshots` directory in your local [repository](../reference/repo.md). To update the mock, you can re-run the analysis stage:
 
 ```bash
@@ -89,6 +95,10 @@ proxymock analyze <snapshot-id>
 ### Record with Live Systems {#record-with-live-systems}
 
 Let's say you're trailblazing and there are no existing mocks. No problem, we'll just record some!
+
+:::note
+Now is the time to sign up for an IP Stack API key and make sure you have an AWS DynamoDB instance. Alternatively, use your own app and follow these instructions.
+:::
 
 1. Start the proxymock capture system using this command:
 ```bash
@@ -100,7 +110,7 @@ You will see output like so:
 export http_proxy=http://127.0.0.1:4140
 export https_proxy=http://127.0.0.1:4140
 ...
-You can find your snapshot at /Users/<your-username>/.speedscale/data/snapshots/<uid>
+You can find your snapshot at /Users/<your-username>/.speedscale/data/snapshots/<snapshot-id>
 ...
 ```
 You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy/paste these directly from the CLI output and paste them into step 2.
@@ -113,9 +123,20 @@ These variables will re-route the outbound network in golang to point at the pro
 curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 ```
 Look for the location of your snapshot in the local [repository](../reference/repo.md). You can see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
+You can press CTRL+C in the proxymock terminal to stop the recording.
 
+4. Take a look at your traffic using the inspect command.
+```bash
+proxymock inspect snapshot <snapshot-id>
+```
 
-4. Teach your mock these new responses by re-analyzing the snapshot.
+This will open a state of the art (for 1997) terminal UI that allows you to navigate and inspect your traffic using arrow keys and tab.
+
+![Inspect](./quickstart/snapshot-inspect.png)
+
+Press Enter to view details about each request. Keep in mind that your list of requests will be different than the screenshot but it will be similar. If you have the `--cache` option enabled in the demo app (and have AWS credentials), you will notice that proxymock has automatically exposed the DynamoDB command. Other protocols like gRPC and Postgres will also be converted into human readable JSON payloads with SQL statements exposed (and more).
+
+5. Teach your mock these new responses by re-analyzing the snapshot.
 
 ```bash
 proxymock analyze <snapshot-id>
