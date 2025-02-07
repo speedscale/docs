@@ -4,6 +4,7 @@ sidebar_position: 6
 
 # (beta) VS Code Quickstart
 
+
 This guide provides a step by step guide to creating a mock server and tests for a simple Go application.
 
 ## Introduction
