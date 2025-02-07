@@ -3,9 +3,16 @@ sidebar_position: 2
 ---
 # API Key
 
-Using **proxymock** will require an API Key. 
+Using **proxymock** requires generating an API key. Enterprise customers can skip this step.
 
-The first time you run the extension, you will be asked to provide an email address. Speedscale does not share or sell your email address. You can view or modify your API key by editing the `~/.speedscale/config.yaml` file.
+Run this command:
+```bash
+proxymock init --email <your-email>
+```
+
+That's all you need to do. You can view or modify your API key by editing the `~/.speedscale/config.yaml` file.
+
+Speedscale does not share or sell your email address, although we might send you updates or announcements if we can ever figure out this marketing thing. Engineering is more our wheelhouse.
 
 :::warning
 * Don't put your API key in source control. Use a secret manager.
@@ -15,5 +22,5 @@ The first time you run the extension, you will be asked to provide an email addr
 :::
 
 :::tip
-This extension does not send your recorded data to any third party. All data is stored on your local desktop unless you connect to Speedscale Enterprise. Don't worry, that won't happen unless you explicitly start a trial or buy a license.
+proxymock does not send your recorded data to any third party. All data is stored on your local desktop unless you connect to Speedscale Enterprise. Don't worry, that won't happen unless you explicitly start a trial or buy a license.
 :::
