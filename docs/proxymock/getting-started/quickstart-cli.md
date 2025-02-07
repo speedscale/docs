@@ -34,7 +34,7 @@ Clone the demo repository and open VSCode in the demo directory:
 
 ```bash
 git clone https://github.com/speedscale/demo
-cd demo/goa
+cd demo/go
 code .
 ```
 
