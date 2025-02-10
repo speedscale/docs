@@ -98,8 +98,6 @@ Do NOT export proxy environment variables in this terminal window.
 curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
 ```
 
-Now the demo app is listening on port `8080` but you will notice cURL is calling port `4143` instead.  Since we specified `--app-port 8080` requests to proxymock on port `4143` will be captured and redirected to the demo app on port `8080`.
-
 You should see the following response to your curl from the app running in the debugger:
 
 ```json
