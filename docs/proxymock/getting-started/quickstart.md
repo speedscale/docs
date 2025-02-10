@@ -24,8 +24,8 @@ You must install either the **proxymock** VSCode extension or the CLI. Most user
 ## How-to Steps {#how-to-steps}
 
 This guide will show you how to:
-1. Use a pre-packaged recording (aka snapshot) to create a mock server
-1. Record the application's outbound traffic while it runs in the debugger to make your own custom mock server
+1. Use a pre-packaged recording (aka [snapshot](reference/glossary.md#snapshot)) to create a [mock](reference/glossary.md#mock) server
+1. Record the application's outbound [traffic](reference/glossary.md#traffic) while it runs in a terminal to make your own custom mock server
 
 You do not need to have an IP Stack API key or AWS DynamoDB instance to complete step one of this guide. Instructions will be provided for both the VSCode UI and the CLI
 
@@ -88,19 +88,14 @@ You should see the request and response in the `PROXYMOCK` pane like this:
 The next time you run the same request, the mock will return the response you just recorded.
 
 :::tip
-You can also record from the command line using the following commands. This is only necessary if you intend to run proxymock from the command line without using the VSCode extension.
-
-```bash
-# run in the same terminal as your app
-export http_proxy=http://127.0.0.1:4140
-export https_proxy=http://127.0.0.1:4140
-
-# run in a separate terminal for local storage
-speedctl capture localhost 8080 --local-capture
-```
-
-This will not directly interact with the VSCode extension and you will need to manually view the .jsonl file in your `~/.speedscale/data/snapshots` directory.
+You can also record and mock from the command line to get support outside of VSCode. See the [CLI Quickstart](./quickstart-cli.md) for more information.
 :::
+
+### Capturing Inbound Traffic
+
+Up to this point we have only seen outbound requests, the requests from the demo app to external resources, but we can capture inbound requests as well.
+
+This functionality is currently only supported for the CLI.  See the [CLI Quickstart](./quickstart-cli.md#capturing-inbound-traffic) for more information.
 
 ## Summary
 

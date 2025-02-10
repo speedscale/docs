@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Quickstart (CLI)
 
-This guide provides a step by step guide to creating a mock server and tests for a simple Go application using only the **proxymock** CLI. 
+This guide provides a step by step guide to creating a mock server and tests for a simple Go application using only the **proxymock** CLI.
 
 ## Introduction
 
@@ -23,8 +23,8 @@ You must install the **proxymock** CLI.
 ## How-to Steps {#how-to-steps}
 
 This guide will show you how to:
-1. Use a pre-packaged recording (aka snapshot) to create a mock server
-1. Record the application's outbound traffic while it runs in a terminal to make your own custom mock server
+1. Use a pre-packaged recording (aka [snapshot](reference/glossary.md#snapshot)) to create a [mock](reference/glossary.md#mock) server
+1. Record the application's outbound [traffic](reference/glossary.md#traffic) while it runs in a terminal to make your own custom mock server
 
 You do not need to have an IP Stack API key or AWS DynamoDB instance to complete step one of this guide.
 
@@ -51,16 +51,17 @@ proxymock import --file snapshots/ip-lookup-demo.json
 Snapshot 749e2d23-94fd-4e6d-86c2-5dd8ba18f908 imported successfully
 ```
 
-Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `/Users/<your-username>/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`.
+Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `~/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`.
 Take note of the snapshot ID, you will need it in the next step.
 
 2. Start your mock server using this command:
 ```bash
 proxymock run --snapshot-id <snapshot-id>
 ```
-The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy/paste these directly from the CLI output and paste them into step 2.
 
-3. Open a **new** terminal and paste the environment variables from the CLI output in step 1. Also, start the demo app.
+The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy these directly from the CLI output and paste them into step 2.
+
+3. Open a **new** terminal and paste the environment variables from the CLI output in step 1. Then start the demo app.
 ```bash
 export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
@@ -72,6 +73,7 @@ The mock has been pre-configured to accept the super-secret 0123456789 IPStack A
 :::tip
 By default, DynamoDB is not used by the demo app. If you want to use DynamoDB, you can add the `--cache` flag. Remember though that you will need AWS credentials configured in your environment.
 :::
+
 4.  Then run the following command to make a request to the demo app in another terminal:
 ```bash
 curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
@@ -109,13 +111,13 @@ You will see output like so:
 export http_proxy=http://127.0.0.1:4140
 export https_proxy=http://127.0.0.1:4140
 ...
-You can find your snapshot at /Users/<your-username>/.speedscale/data/snapshots/<snapshot-id>
+You can find your snapshot at ~/.speedscale/data/snapshots/<snapshot-id>
 ...
 ```
-You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy/paste these directly from the CLI output and paste them into step 2.
+You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy paste these directly from the CLI output and paste them into step 2.
 
 2. Open a **new** terminal and export the environment variables from the CLI output in step 1.
-These variables will re-route the outbound network in golang to point at the proxymock "smart proxy" server. It's ok that both HTTP and HTTPs are being routed to the same port. The other environment variables are for SSL/TLS.
+These variables will re-route the outbound network in Golang to point at the proxymock "smart proxy" server.
 
 3. Run the following command to make a request to the demo app:
 ```bash
@@ -123,9 +125,9 @@ curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 ```
 
 Look for the location of your snapshot in the local [repository](../reference/repo.md). You can see your requests appear in the `raw.jsonl` file as it updates (or after completing your recording).
-You can press CTRL+C in the proxymock terminal to stop the recording.
+You can press Ctrl+C in the proxymock terminal to stop the recording.
 
-4. Take a look at your traffic using the inspect command.
+4. Take a look at your traffic using the `inspect` command.
 ```bash
 proxymock inspect snapshot <snapshot-id>
 ```
@@ -138,18 +140,52 @@ Press Enter to view details about each request. Keep in mind that your list of r
 
 5. Teach your mock these new responses by re-analyzing the snapshot.
 
-
 ```bash
 proxymock analyze <snapshot-id>
 ```
 
 Your snapshot now contains the new requests and responses. You can now restart your mock server and make requests to it by following the instructions in [Launch using Mocks](#launch-using-mocks) and passing in your snapshot ID.
 
+### Capturing Inbound Traffic
+
+Up to this point we have only seen outbound requests, the requests from the demo app to external resources, but we can capture inbound requests as well.
+
+1. Start proxymock like before, but with the additional `--app-port` flag.  We'll use `8080` because that's the port the demo app listens on:
+
+```bash
+proxymock run \
+  --snapshot-id <snapshot-id> \
+  --app-port 8080
+```
+
+2. If the demo app is not running already open a **new** terminal and start it like before:
+
+```bash
+export http_proxy=http://localhost:4140
+export https_proxy=http://localhost:4140
+go run main.go 0123456789
+```
+
+3. Then run the following command to make a request to the demo app in another terminal:
+
+```bash
+curl "localhost:4143/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
+```
+
+You will notice cURL is calling port `4143` instead of `8080` where the demo app is listening.  Since we specified `--app-port 8080` requests to proxymock on port `4143` will be captured and redirected to the demo app on port `8080`.
+
+4. Like before you can see your traffic with the `inspect` command:
+```bash
+proxymock inspect snapshot <snapshot-id>
+```
+
+Inbound traffic in the inspect UI will show the DIRECTION as "in".
+
 ## Summary
 
 Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by opening the Command Palette and run `proxymock: Start Debugging`.
 
-The app will run normally - except that it will use the mock server you created in the previous step. If you need to update your mocks, just re-record the application's traffic. 
+The app will run normally - except that it will use the mock server you created in the previous step. If you need to update your mocks, just re-record the application's traffic.
 
 That's it! You command the superpower of running your app without it's dependent APIs and microservices.
 
