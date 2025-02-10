@@ -38,7 +38,7 @@ If you click on an operator you will see a list of tabs with different cluster a
 
 This tab shows the configuration of the operator itself. The operator provides a deprecated mechanism for altering remote configuration that will show up in the *overrides* column. When populate, the override value is used over the main value. This feature will be removed at later date.
 
-Operator configuration is explained in greater detail in the ![installation](../setup/install/kubernetes-operator.md) guides.
+Operator configuration is explained in greater detail in the [installation](../setup/install/kubernetes-operator.md) guides.
 
 # Workloads
 
