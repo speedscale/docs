@@ -88,7 +88,7 @@ You should see the request and response in the `PROXYMOCK` pane like this:
 The next time you run the same request, the mock will return the response you just recorded.
 
 :::tip
-You can also record from the command line using the following commands. This is only necessary if you intend to run proxymock from the command line without using the VSCode extension. See the [CLI Quickstart](./quickstart-cli.md) for more information.
+You can also record and mock from the command line to get support outside of VSCode. See the [CLI Quickstart](./quickstart-cli.md) for more information.
 :::
 
 ### Capturing Inbound Traffic
