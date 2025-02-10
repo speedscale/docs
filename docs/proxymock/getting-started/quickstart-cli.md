@@ -56,7 +56,7 @@ Take note of the snapshot ID, you will need it in the next step.
 
 2. Start your mock server using this command:
 ```bash
-proxymock run  --snapshot-id <snapshot-id>
+proxymock run --snapshot-id <snapshot-id>
 ```
 
 The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy these directly from the CLI output and paste them into step 2.
