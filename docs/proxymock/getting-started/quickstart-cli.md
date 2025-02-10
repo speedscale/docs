@@ -66,7 +66,7 @@ Imported snapshot 9fc2efac-ed44-41b3-9031-d6a0cc5b128b
 2. Open a 2nd terminal window where you are going to run **proxymock**. You can start your mock server using this command, but use your own snapshot id:
 
 ```bash
-proxymock run --snapshot-id <snapshot-id>
+proxymock run  --snapshot-id <snapshot-id>
 ```
 
 The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. You can use these environment variables from the CLI output and paste them into step 3.
@@ -97,6 +97,8 @@ Do NOT export proxy environment variables in this terminal window.
 ```bash
 curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
 ```
+
+Now the demo app is listening on port `8080` but you will notice cURL is calling port `4143` instead.  Since we specified `--app-port 8080` requests to proxymock on port `4143` will be captured and redirected to the demo app on port `8080`.
 
 You should see the following response to your curl from the app running in the debugger:
 
