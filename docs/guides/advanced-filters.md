@@ -93,7 +93,7 @@ Note: `reqFilter` type by default is set to JSON (`REQ_FILTER_TYPE_JSON`) but it
 
 ## Filter by HTTP Header Value
 
-As an example, let's filter for a single user ID stored in an HTTP request header. This would allow us to isolate a single user's API calls, store them in a snapshot, and then scale up that traffic to many users by transforming the user ID. To accomplish the first goal of filtering based on a request header value, we will use the `header` filter criteria. Modify and append the following snippet to the `filter_expression->criteria` section of your snapshot definition.
+As an example, let's filter for a single user ID stored in an HTTP request header. This would allow us to isolate a single user's API calls, store them in a snapshot, and then scale up that traffic to many users by transforming the user ID. To accomplish the first goal of filtering based on a request header value, we will use the `header` filter criteria. Modify and append the following snippet to the `filter_expression->criteria` section of your snapshot definition. am
 
 ```json
 {
