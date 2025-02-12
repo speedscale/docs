@@ -185,7 +185,7 @@ Inbound traffic in the inspect UI will show the DIRECTION as "in".
 
 ### Modifying Mocks
 
-Let's imagine you want to make your IP Stack mock return a location for one of the IP addresses in the request. No problem, open `inspect` on your snapshot and navigate to the request you want to change.
+Let's imagine you want to make your IP Stack mock return a different location for one of the requests. No problem, open `inspect` on your snapshot and navigate to the request you want to change.
 
 ```bash
 proxymock inspect snapshot <snapshot-id>
