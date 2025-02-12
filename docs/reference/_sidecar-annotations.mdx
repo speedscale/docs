@@ -389,6 +389,7 @@ Set this annotation to `true` if your Kubernetes cluster has Istio installed and
 ### `sidecar.speedscale.com/extra-container-env-vars`
 
 Allows adding arbitrary environment variables into OTHER containers in a workload.
+These will be applied to your workload containers, NOT to the goproxy sidecar container.
 Each environment variable should be on a separate line.
 
 - Example to set multiple environment variables:
