@@ -135,6 +135,17 @@ viewable in the Speedscale UI. See [TLS](/setup/sidecar/tls/) for more informati
 
 ---
 
+### `sidecar.speedscale.com/tls-java-tool-options`
+
+Configures the operator to add `JAVA_TOOL_OPTIONS` with TLS certificate overrides as additional
+container env vars. This setting is only used when `tls-out` is enabled.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
 ### `sidecar.speedscale.com/tls-in-secret`
 
 Kubernetes [TLS secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets) containing
@@ -372,3 +383,18 @@ Set this annotation to `true` if your Kubernetes cluster has Istio installed and
 - Accepted Values:
   - `true`
   - `false` (default)
+
+--- 
+
+### `sidecar.speedscale.com/extra-container-env-vars`
+
+Allows adding arbitrary environment variables into OTHER containers in a workload.
+These will be applied to your workload containers, NOT to the goproxy sidecar container.
+Each environment variable should be on a separate line.
+
+- Example to set multiple environment variables:
+```
+    sidecar.speedscale.com/extra-container-env-vars: |-
+      GRPC_GO_LOG_VERBOSITY_LEVEL=99
+      GRPC_GO_LOG_SEVERITY_LEVEL=info
+```
