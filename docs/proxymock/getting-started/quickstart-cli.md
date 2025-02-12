@@ -199,8 +199,7 @@ proxymock inspect snapshot <snapshot-id>
 1. Insert `10.12345678` into the `latitude` field.
 1. Copy the entire body into the clipboard again.
 1. Go back to the inspect UI and paste the new body back in by pressing `p`.
-
-Run `proxymock analyze <snapshot-id>` to update the snapshot with your changes. When you re-run the demo it will calculate a new distance with the new location from the same curl command.
+1. Press `a` to re-analyze the snapshot and update your mocks (this is the same as running `proxymock analyze <snapshot-id>` on the command line).
 
 ## Summary
 
