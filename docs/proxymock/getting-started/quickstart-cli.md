@@ -16,10 +16,10 @@ The purpose of this app is to accept two IP addresses, look up their geographic 
 
 ## Prerequisites
 
-You must install the **proxymock** CLI.
+You must install the **proxymock** CLI and have a valid API key.
 
 * [proxymock CLI](./installation.md#install-cli)
-
+* [API Key](./api-key.md)
 ## How-to Steps {#how-to-steps}
 
 This guide will show you how to:
