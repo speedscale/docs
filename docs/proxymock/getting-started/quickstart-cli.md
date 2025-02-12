@@ -179,7 +179,28 @@ You will notice cURL is calling port `4143` instead of `8080` where the demo app
 proxymock inspect snapshot <snapshot-id>
 ```
 
+This will open the inspect UI.  You can navigate to the request you want to change and press `Enter` to open the request in the editor.
+
 Inbound traffic in the inspect UI will show the DIRECTION as "in".
+
+### Modifying Mocks
+
+Let's imagine you want to make your IP Stack mock return a location for one of the IP addresses in the request. No problem, open `inspect` on your snapshot and navigate to the request you want to change.
+
+```bash
+proxymock inspect snapshot <snapshot-id>
+```
+
+![ipstack-response](./quickstart/ipstack-response1.png)
+
+1. Navigate to the Response Body panel using the tab key.
+1. Press the `c` key to copy the contents to the clipboard.
+1. Open a text editor and paste the contents.
+1. Insert `10.12345678` into the `latitude` field.
+1. Copy the entire body into the clipboard again.
+1. Go back to the inspect UI and paste the new body back in by pressing `p`.
+
+Run `proxymock analyze <snapshot-id>` to update the snapshot with your changes. When you re-run the demo it will calculate a new distance with the new location from the same curl command.
 
 ## Summary
 
