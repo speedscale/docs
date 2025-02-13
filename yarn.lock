@@ -2067,25 +2067,6 @@
   dependencies:
     langium "3.0.0"
 
-"@ndhoule/each@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@ndhoule/each/-/each-2.0.1.tgz#bbed372a603e0713a3193c706a73ddebc5b426a9"
-  integrity sha512-wHuJw6x+rF6Q9Skgra++KccjBozCr9ymtna0FhxmV/8xT/hZ2ExGYR8SV8prg8x4AH/7mzDYErNGIVHuzHeybw==
-  dependencies:
-    "@ndhoule/keys" "^2.0.0"
-
-"@ndhoule/keys@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@ndhoule/keys/-/keys-2.0.0.tgz#3d64ae677c65a261747bf3a457c62eb292a4e0ce"
-  integrity sha512-vtCqKBC1Av6dsBA8xpAO+cgk051nfaI+PnmTZep2Px0vYrDvpUmLxv7z40COlWH5yCpu3gzNhepk+02yiQiZNw==
-
-"@ndhoule/map@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@ndhoule/map/-/map-2.0.1.tgz#f5ca0a47424ea67f46e2a6d499b9e9bc886aefa8"
-  integrity sha512-WOEf2An9mL4DVY6NHgaRmFC82pZGrmzW4I0hpPPdczDP4Gp5+Q1Nny77x3w0qzENA8+cbgd9+Lx2ClSTLvkB0g==
-  dependencies:
-    "@ndhoule/each" "^2.0.1"
-
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -2132,13 +2113,6 @@
   version "1.0.0-next.28"
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.28.tgz#d45e01c4a56f143ee69c54dd6b12eade9e270a73"
   integrity sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==
-
-"@segment/snippet@^4.13.2":
-  version "4.16.2"
-  resolved "https://registry.yarnpkg.com/@segment/snippet/-/snippet-4.16.2.tgz#22b71737ce9ab56036aeae90208a9bbca31e8522"
-  integrity sha512-2fgsrt4U+vKv14ohOAsViCEzeZotaawF2Il7YUbmYVrhPn8Hq7xuGznHKRdZeoxScQ87X36xDX2Fzh5bAYRN7g==
-  dependencies:
-    "@ndhoule/map" "^2.0.1"
 
 "@sideway/address@^4.1.5":
   version "4.1.5"
@@ -4499,13 +4473,6 @@ docusaurus-plugin-hubspot@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/docusaurus-plugin-hubspot/-/docusaurus-plugin-hubspot-1.0.1.tgz#a68d09e048dd686ddeda97a53eb3d48cd9beaac8"
   integrity sha512-sX/6dMQ1nkh5sneNLIdOqrZdzFDlxBGcFwGjiQBS3z3JH87UinlSSVWpzCHU/PFKCAX3cqQSTjZwA/JP5dLPzQ==
-
-docusaurus-plugin-segment@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-segment/-/docusaurus-plugin-segment-1.0.4.tgz#4b405c47b424d87abbc4bc23a7983146111a2bf1"
-  integrity sha512-kJT0wvhlursmjHNrrQDs7Ce6vAB+yjflr8P6T0s6LE87BPA2+KQ8ifyNb4PwSdX91OJ5bBYyb4V0T8EI8MtGWQ==
-  dependencies:
-    "@segment/snippet" "^4.13.2"
 
 dom-converter@^0.2.0:
   version "0.2.0"

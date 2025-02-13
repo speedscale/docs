@@ -1,7 +1,7 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-import { Highlight, themes } from 'prism-react-renderer';
+import { themes } from 'prism-react-renderer';
 
 const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
@@ -24,13 +24,6 @@ const config = {
   themes: ['@docusaurus/theme-mermaid'],
 
   plugins: [
-    [
-      "docusaurus-plugin-segment",
-      {
-        apiKey: "GdKpBTA5Bb5u7fUJcMgWS8dHMPwM92wo",
-        // Add other options here.
-      },
-    ],
     "docusaurus-plugin-hubspot",
     [
       '@docusaurus/plugin-google-tag-manager',
