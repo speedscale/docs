@@ -3,9 +3,9 @@ sidebar_position: 3
 ---
 # API Key
 
-Using **proxymock** requires generating an API key. Enterprise customers should skip ahead to [Enterprise Customers](#enterprise-customers).
+Using **proxymock** requires generating an API key. Existing Enterprise customers should skip ahead to [Enterprise Customers](#enterprise-customers).
 
-Run this command:
+Free users should run this command:
 ```bash
 proxymock init --email <your-email>
 ```
@@ -33,16 +33,26 @@ If you want to sign up for Speedscale Enterprise and your organization does not 
 
 ### Automatic Tenant Assignment
 
-For most tenants, you can automatically join the tenant by following these steps:
+For most tenants, you can automatically join the tenant doing **one** of the following:
 
 1. Log into https://app.speedscale.com using your corporate email address. You will automatically be added to the tenant after some validation.
-1. Click "Settings" in the left hand navigation (near the bottom).
-1. Click the "Components"
-1. Download your personalized *config.yaml* file to your local machine at `~/.speedscale/config.yaml`
+1. Dial a friend. Have your friend click the "Invite" button in the Speedscale UI and enter your email address. Check your email and sign in.
 
-That's all you need.
+### Initialize the CLI
 
-### Manual Tenant Assignment
+You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key to your clipboard..
 
-The easiest way to manually join a tenant is to dial a friend. Have your friend click the "Invite" button in the Speedscale UI and enter your email address. Check your email and then download your *config.yaml* file to your local machine at `~/.speedscale/config.yaml`. It can be downloaded under Settings->Components->Config.
+![API Key](../../setup/install/api-key.png)
 
+Run the following command:
+```bash
+proxymock init --api-key <your-api-key>
+```
+
+That's all you need to do. You can view or modify your API key by editing the `~/.speedscale/config.yaml` file.
+
+If you get stuck you can always reach us on [slack](https://slack.speedscale.com).
+
+:::tip
+Did you log into your tenant but it looks empty? This usually happens because your organization's email domain is not configured. Speedscale Support can fix this if you ping us on [slack](https://slack.speedscale.com) or at [support@speedscale.com](mailto:support@speedscale.com).
+:::
