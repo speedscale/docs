@@ -147,34 +147,30 @@ as well which requires configuring your JVM to use the truststore with these set
 - `-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks`
 - `-Djavax.net.ssl.trustStorePassword=changeit`
 
-These flags are also surfaced as `SPEEDSCALE_JAVA_OPTS` for reference.
+These can be automatically applied by adding to your JVM by setting `JAVA_TOOL_OPTIONS`. This can be set
+on your workload by adding the `sidecar.speedscale.com/tls-java-tool-options: "true"` annotation. Read more
+about this setting here.
 
 Here is an example of a patch file that configures TLS Out and configures the Java app to use the mounted
 trust store. You will likely have to customize this for your environment.
 
 :::caution
-Applying patches that set `JAVA_OPTS`, like the ones below, are **not** additive. If your workload already has
-`JAVA_OPTS` environment settings, be sure to include those as well or they will be overwritten.
+Applying patches that set `JAVA_TOOL_OPTIONS`, like the ones below, are **not** additive. If your workload already has
+`JAVA_TOOL_OPTIONS` environment settings, be sure to include those as well or they will be overwritten.
 :::
+
+These flags are also surfaced as an environment variable `SPEEDSCALE_JAVA_OPTS` if you need to merge with
+your own existing sets of Java flags.
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sprint-boot-app
+  name: spring-boot-app
   annotations:
     sidecar.speedscale.com/inject: "true"
     sidecar.speedscale.com/tls-out: "true"
-spec:
-  template:
-    spec:
-      containers:
-        - name: sprint-boot-app
-          env:
-            - name: JAVA_OPTS
-              value: >-
-                -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
-                -Djavax.net.ssl.trustStorePassword=changeit
+    sidecar.speedscale.com/tls-java-tool-options: "true"
 ```
 
 ## How Does It Work?
