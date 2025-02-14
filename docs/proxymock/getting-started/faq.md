@@ -6,7 +6,7 @@ sidebar_position: 4
 
 ## What protocols are supported?
 
-`proxymock` can record a variety of protocols including HTTP, gRPC, and Postgres. Most AWS and GCP services will work out of the box because they utilize HTTP/2. You can see a complete list of recorded protocols [here](../../reference/technology-support.md). Keep in mind that the "automatic" aspect may not be as automatic depending on how unusual the protocol is. Usually this can be resolved with environment variables or by using proxymock as a CLI. Join the [Speedscale Slack](https://slack.speedscale.com) for help.
+`proxymock` can record a variety of protocols including HTTP, gRPC, and Postgres. Most AWS and GCP services will work out of the box because they utilize HTTP/2. You can see a complete list of recorded protocols [here](../../reference/technology-support.md). Keep in mind that the "automatic" aspect may not be as automatic depending on how unusual the protocol is. Usually this can be resolved with environment variables or by using proxymock as a CLI. Join the [Speedscale Slack](https://slack.speedscale.com) for help.am
 
 ## Does this work for Windows?
 
