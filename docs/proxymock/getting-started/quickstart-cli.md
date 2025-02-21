@@ -114,7 +114,7 @@ You will see output like so:
 export http_proxy=http://127.0.0.1:4140
 export https_proxy=http://127.0.0.1:4140
 ...
-You can find your snapshot at ~/.speedscale/data/snapshots/<snapshot-id>
+proxymock is capturing and mocking snapshot <snapshot-id>
 ...
 ```
 You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy paste these directly from the CLI output and paste them into step 2.
