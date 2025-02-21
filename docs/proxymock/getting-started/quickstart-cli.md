@@ -34,6 +34,8 @@ Clone the demo repository:
 
 ```bash
 git clone https://github.com/speedscale/demo
+cd demo/go
+go mod tidy
 ```
 
 ### Launch using Mocks {#launch-using-mocks}
@@ -47,34 +49,35 @@ To avoid having to get an IP Stack API key or access to a live AWS DynamoDB, you
 1. Import the pre-made snapshot into your local [repository](../reference/repo.md).
 ```bash
 proxymock import --file snapshots/ip-lookup-demo.json
-...
-Snapshot 749e2d23-94fd-4e6d-86c2-5dd8ba18f908 imported successfully
 ```
 
 Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `~/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`.
-Take note of the snapshot ID, you will need it in the next step.
 
-2. Start your mock server using this command:
+2. Start your mock server using this command (the import step above has copied the snapshot ID to the clipboard for you):
 ```bash
 proxymock run --snapshot-id <snapshot-id>
 ```
 
 The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy these directly from the CLI output and paste them into step 2.
 
-3. Open a **new** terminal and paste the environment variables from the CLI output in step 1. Then start the demo app.
+3. Open a **new terminal** and paste the environment variables from the CLI output in step 1. Then start the demo app.
 ```bash
 export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
-go run main.go 0123456789
+IPSTACK_API_KEY=0123456789
+go run main.go "$IPSTACK_API_KEY"
 ```
 
-The mock has been pre-configured to accept the super-secret 0123456789 IPStack API key.
+The mock has been pre-configured to accept the super-secret 1234567890 IPStack API key.
 
-:::tip
-By default, DynamoDB is not used by the demo app. If you want to use DynamoDB, you can add the `--cache` flag. Remember though that you will need AWS credentials configured in your environment.
+By default the real DynamoDB is not used by the demo app. If you want to use DynamoDB, you can add the `--cache` flag, as long as you have AWS credentials configured in your environment.
+
+4.  Then open a **new terminal** and make a request to the demo app:
+
+:::warning
+Do NOT export proxy environment variables in this terminal window.
 :::
 
-4.  Then run the following command to make a request to the demo app in another terminal:
 ```bash
 curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
 ```
@@ -163,7 +166,7 @@ proxymock run \
 ```bash
 export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
-go run main.go 0123456789
+go run main.go 1234567890
 ```
 
 3. Then run the following command to make a request to the demo app in another terminal:
