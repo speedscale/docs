@@ -10,7 +10,7 @@ sidebar_position: 2
 1. Remote Repository (optional) – Exists in the cloud. This is only applicable if you are using Speedscale Enterprise. The free **proxymock** extension does not use this unless you have an enterprise API key.
 
 How **proxymock** Manages the Local Repository
-* When you run `proxymock init` (or start the IDE extension), proxymock creates a .speedscale directory in your home directly, initializing a local repository.
+* When you run `proxymock init` (or start the IDE extension), proxymock creates a `.speedscale` directory in your home directly, initializing a local repository.
 * Your local repository consists of:
     * Working Snapshots: The actual traffic recordings you are working with.
     * Reports: Analysis reports generated from running the snapshots (requires Speedscale Enterprise).
