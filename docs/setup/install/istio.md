@@ -72,6 +72,10 @@ you _must_ annotate your workloads with the following annotation to maintain com
 sidecar.speedscale.com/istio-cni: "true"
 ```
 
+Please be aware that Istio installations that leverage the CNI agent come with an inherent race condition
+where a pod may be scheduled and started on a node prior to the CNI Daemonset pod being ready. This is
+outlined in the [Istio documentation](https://istio.io/latest/docs/setup/additional-setup/cni/#race-condition--mitigation).
+
 :::
 
 Follow the [installation guide](../sidecar/install.md) to install the Speedscale sidecar on your Istio workloads.
