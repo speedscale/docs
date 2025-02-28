@@ -45,11 +45,11 @@ go mod tidy
 This demo does not require an IPStack API key nor AWS DynamoDB instance. Instructions for using the pre-made mocks are presented first so you don't have to sign up for anything until you're ready to learn about recording.
 :::
 
-To avoid having to get an IP Stack API key or access to a live AWS DynamoDB, you can use the pre-made mocks in the repository under `demo/go/snapshots/ip-lookup-demo.json`.  You can think of this JSON file as a set of mocks provided by another engineer.
+To avoid having to get an IP Stack API key or access to a live AWS DynamoDB, you can use the pre-made mocks in the repository under `demo/go/snapshots/ip-lookup-demo.jsonl`.  You can think of this multi-line JSON file as a set of mocks provided by another engineer.
 
 1. Import the pre-made snapshot into your local [repository](../reference/repo.md).
 ```bash
-proxymock import --file snapshots/ip-lookup-demo.json
+proxymock import --file snapshots/ip-lookup-demo.jsonl
 ```
 
 Your snapshot is now located in your local repository at the location specified by the CLI output. In this example, it is `~/.speedscale/data/snapshots/749e2d23-94fd-4e6d-86c2-5dd8ba18f908.json`.
