@@ -15,7 +15,7 @@ If you want to deploy any of these mocks or tests in the cloud, you can sign up 
 
 Learn how to install the **proxymock** CLI [here](./installation.md).
 
-## [Quickstart](./quickstart.md) {#quickstart}
+## [Quickstart](./quickstart-cli.md) {#quickstart}
 
 Get started with **proxymock** by following the [quickstart guide](./quickstart-cli.md). You will learn how to create mocks using a demo application built on top of [AWS DynamoDB](https://aws.amazon.com/dynamodb/) and [IP Stack](https://ipstack.com/). IP Stack is very generous with their free tier, but you still need to sign up for an account and are rate limited to 100 requests per day. This guide will show you how to create a realistic mock that sidesteps these limitations.
 
