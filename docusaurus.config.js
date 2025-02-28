@@ -35,7 +35,7 @@ const config = {
       "@docusaurus/plugin-client-redirects",
       {
         redirects: [
-          { from: '/proxymock/getting-started/api-key/', to: 'proxymock/getting-started/initialize/'},
+          { from: '/proxymock/getting-started/api-key/', to: '/proxymock/getting-started/initialize/'},
           { from: '/analyze/create-snapshot/', to: '/guides/creating-a-snapshot/' },
           { from: '/analyze/traffic-viewer/', to: '/guides/tls/' },
           { from: '/analyze/traffic-viewer/transform-snapshot/', to: '/reference/transform-traffic/' },
