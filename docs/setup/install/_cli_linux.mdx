@@ -5,10 +5,10 @@ sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
 ```
 
 :::caution Note
-Root permission is not required to execute this script.
+You can inspect the install script to see what it does. Root permission is *not* required to execute this script.
 :::
 
-Install a specific version py passing it to the install script:
+Install a specific version by passing it to the install script:
 
 ```shell
 sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)" -s v2.3.86
@@ -30,11 +30,13 @@ mv ./speedctl ~/.speedscale
 
 # Give execute permission to the binary
 chmod +x ~/.speedscale/speedctl
-
-# Add the Speedscale path to your PATH in your shell's RC file
-echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.zshrc
 ```
 
-:::tip
-Replace `~/.zshrc` with whatever your shell's RC file is, like `~/.bashrc` or `~/.config/fish/config.fish`
+:::warning Reminder
+Don't forget to add `speedctl` to your `$PATH` variable in your shell's rcfile:
+
+```shell
+# substitute your shell's rcfile
+echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.zshrc
+```
 :::
