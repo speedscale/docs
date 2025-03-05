@@ -13,8 +13,8 @@ import WindowsCLIInstall from './installation/\_cli_windows.mdx'
 
 ## Install proxymock via Command Line {#install-cli}
 
-:::warning
-The proxymock cli is currently only available for MacOS and Linux. Instructions for Windows are included below in case you want to do some offroading.
+:::warning Note
+To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable. This is an [Enterprise feature](https://docs.speedscale.com/quick-start/).
 :::
 
 <Tabs>

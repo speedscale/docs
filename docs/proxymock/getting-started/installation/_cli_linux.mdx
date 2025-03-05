@@ -6,11 +6,7 @@ sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)
 ```
 
 :::caution Note
-You can inspect the install script to see what it does. Root permission is not required to execute this script.
-:::
-
-:::tip
-To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable. This is an [Enterprise feature](https://docs.speedscale.com/quick-start/).
+You can inspect the install script to see what it does. Root permission is *not* required to execute this script.
 :::
 
 If you need to Install a specific version, you can do so by passing it to the install script:
@@ -31,11 +27,13 @@ mv ./proxymock ~/.speedscale
 
 # Give execute permission to the binary
 chmod +x ~/.speedscale/proxymock
-
-# Add the Speedscale path to your PATH in your shell's RC file
-echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.zshrc
 ```
 
-:::tip
-Replace `~/.zshrc` with whatever your shell's RC file is, like `~/.bashrc` or `~/.config/fish/config.fish`
+:::warning Reminder
+Don't forget to add `proxymock` to your `$PATH` variable in your shell's rcfile:
+
+```shell
+# substitute your shell's rcfile
+echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.zshrc
+```
 :::

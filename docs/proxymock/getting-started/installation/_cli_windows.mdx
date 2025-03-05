@@ -1,1 +1,44 @@
-The *proxymock* cli is available for Windows, but does not support native traffic capture. These instructions are included in case you know what you are doing and want to install the cli manually.
+The `proxymock` cli is available for and can run on Windows, but *does not* support native traffic capture. These instructions are included in case you know what you are doing and want to install `proxymock` manually.
+
+Open PowerShell and create a Speedscale directory.
+
+```
+mkdir -f $env:userprofile\.speedscale
+```
+
+Download `proxymock` into the Speedscale directory.
+
+```
+curl.exe -L "https://downloads.speedscale.com/proxymock/proxymock.exe" -o $env:userprofile\.speedscale\proxymock.exe
+```
+
+If this is your first time using `proxymock` you may need to add the Speedscale
+directory to your Path environment variable so it is accessible without knowing
+the full path.
+
+To add the Speedscale directory to your path, right click on the Windows button and click **System**.
+
+![](./windows_add_path-system.png)
+
+Click **Advanced system settings** on the right.
+
+![](./windows_add_path-advanced_system_settings.png)
+
+Click **Environment Variables**.
+
+![](./windows_add_path-environment_variables.png)
+
+Under **System variables** select **Path** and click **Edit**.
+
+![](./windows_add_path-edit_path.png)
+
+Create a **New** entry in the list with the Speedscale directory.  If you are
+unsure of the exact path run this command from PowerShell.
+
+```
+echo $env:userprofile\.speedscale
+```
+
+![](./windows_add_path-new_entry.png)
+
+Click **OK** and restart PowerShell.

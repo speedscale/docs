@@ -29,6 +29,11 @@ This guide will show you how to:
 
 You do not need to have an IP Stack API key or AWS DynamoDB instance to complete step one of this guide.
 
+:::warning Note
+These steps focus on Go application, so you will need to have installed on your machine. Follow the
+installation instructions on the [Go website](https://go.dev/).
+:::
+
 ### Clone the Demo
 
 Clone the demo [repository](https://github.com/speedscale/demo):
