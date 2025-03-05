@@ -3,7 +3,8 @@ sidebar_position: 2
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import MacCLIInstall from './installation/\_cli_macos_linux.mdx'
+import MacCLIInstall from './installation/\_cli_macos.mdx'
+import LinuxCLIInstall from './installation/\_cli_linux.mdx'
 import WindowsCLIInstall from './installation/\_cli_windows.mdx'
 
 # Installation
@@ -17,13 +18,15 @@ The proxymock cli is currently only available for MacOS and Linux. Instructions 
 :::
 
 <Tabs>
-<TabItem value="MacOS/Linux">
-<MacCLIInstall />
-</TabItem>
-<TabItem value="Windows"> 
-The *proxymock* cli is available for Windows, but does not support native traffic capture. These instructions are included in case you know what you are doing and want to install the cli manually.
-<WindowsCLIInstall />
-</TabItem>
+  <TabItem value="mac" label="MacOS">
+    <MacCLIInstall />
+  </TabItem>
+  <TabItem value="linux" label="Linux">
+    <LinuxCLIInstall />
+  </TabItem>
+  <TabItem value="windows" label="Windows">
+    <WindowsCLIInstall />
+  </TabItem>
 </Tabs>
 
 ## Install proxymock via VSCode (beta) {#install-vscode-extension}
