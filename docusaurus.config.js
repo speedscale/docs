@@ -24,6 +24,14 @@ const config = {
   themes: ['@docusaurus/theme-mermaid'],
 
   plugins: [
+    [
+    "posthog-docusaurus",
+      {
+        apiKey: "phc_X3ripZa8FVGT7seoXRlTES7u4I5xwBLU7E9pRkcm61p",
+        appUrl: "https://us.i.posthog.com", // optional, defaults to "https://us.i.posthog.com"
+        enableInDevelopment: false, // optional
+      },
+    ],
     "docusaurus-plugin-hubspot",
     [
       '@docusaurus/plugin-google-tag-manager',
