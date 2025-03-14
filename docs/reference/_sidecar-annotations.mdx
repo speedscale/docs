@@ -1,0 +1,400 @@
+### `sidecar.speedscale.com/inject`
+
+Add the sidecar to your: deployment, job, stateful set or daemon set.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/insert-init-first`
+
+Add Speedscale's init container as the first in the list on the target workload.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/capture-mode`
+
+Sidecar capture mode. The only supported value is `proxy` (default)
+
+- Accepted Values
+  - `proxy` (default)
+
+---
+
+### `sidecar.speedscale.com/capture-node-traffic`
+
+Configure inbound traffic originating from underlying Kubernetes node on which a pod is running to be routed
+through the proxy. The default behavior is to ignore inbound Kubernetes node traffic (e.g. readiness and
+liveness checks). Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored
+otherwise.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/host-resolution`
+
+Configure how the sidecar determines a hostname for requests to IP addresses for which there is no clear way
+to determine the target host, such as undecrypted TLS and unknown protocols. By default, the sidecar uses a
+`smart` host resolution mode that maps IP addresses to hostnames based on observed DNS A record requests.
+Alternatively, if set to `standard`, host resolution is done with a DNS PTR record query. Setting this to
+`none` will disable automatic host resolution.
+
+:::caution Important
+Using `standard` mode host resolution is not guaranteed to discover a hostname for an IP address nor is
+it guaranteed to be accurate if it does, as it requires a PTR record to exist for the address.
+:::
+
+- Accepted Values:
+  - `smart` (default)
+  - `standard`
+  - `none`
+
+---
+
+### `sidecar.speedscale.com/proxy-type`
+
+Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `proxy`, ignored otherwise. See
+[proxy modes](/setup/sidecar/proxy-modes/) for more information on how each mode functions.
+
+- Accepted Values:
+  - `transparent` (default)
+  - `reverse`
+  - `forward`
+  - `dual`
+
+---
+
+### `sidecar.speedscale.com/proxy-protocol`
+
+Set the protocol clients should use when connecting to the sidecar when operating in one of `reverse`,
+`forward`, or `dual` proxy types. This setting is ignored if `proxy-type` is `transparent`. See
+[proxy modes](/setup/sidecar/proxy-modes/) for more information.
+
+- Accepted Values:
+  - `tcp` (only valid for `reverse` proxies)
+  - `http` (default)
+  - `socks`
+  - `tcp:http` (only valid for `dual` proxies)
+  - `tcp:socks` (only valid for `dual` proxies)
+
+---
+
+### `sidecar.speedscale.com/proxy-host`
+
+Sets the host to where the sidecar should forward inbound traffic. This is only valid when `capture-mode` is
+set to `proxy` and if `proxy-type` is either `reverse` or `dual`. Ignored otherwise.
+
+- Default: `localhost`
+
+---
+
+### `sidecar.speedscale.com/proxy-port`
+
+Sets the port to where the sidecar should forward inbound traffic. This is only valid when `capture-mode` is
+set to `proxy` and if `proxy-type` is either `reverse` or `dual`. Ignored otherwise.
+
+- Default: `80`
+
+---
+
+### `sidecar.speedscale.com/proxy-in-port`
+
+Sets the listening port exposed by the sidecar for proxying inbound traffic. Only valid when operating as a
+reverse proxy with proxy types `transparent`, `reverse`, and `dual`.
+
+- Default: `4143`
+
+---
+
+### `sidecar.speedscale.com/proxy-out-port`
+
+Sets the listening port exposed by the sidecar for proxying outbound traffic. Only valid when operating as a
+forward proxy with proxy types `transparent`, `forward`, and `dual`.
+
+- Default: `4140`
+
+---
+
+### `sidecar.speedscale.com/tls-out`
+
+Enables or disables TLS outbound interception and unwrapping. If disabled, encrypted traffic will not be
+viewable in the Speedscale UI. See [TLS](/setup/sidecar/tls/) for more information.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/tls-java-tool-options`
+
+Configures the operator to add `JAVA_TOOL_OPTIONS` with TLS certificate overrides as additional
+container env vars. This setting is only used when `tls-out` is enabled.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/tls-in-secret`
+
+Kubernetes [TLS secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets) containing
+the TLS private key and public certificate that should be used for inbound client requests. Setting this
+enables inbound TLS interception and unwrapping. See [TLS](/setup/sidecar/tls/) for more information.
+
+---
+
+### `sidecar.speedscale.com/tls-in-private`
+
+If `tls-in-secret` is provided, this is the filename of the TLS private key. If it is not provided, this must be a full path to the TLS private key file already mounted in the container.
+
+- Default: `tls.key`
+
+---
+
+### `sidecar.speedscale.com/tls-in-public`
+
+If `tls-in-secret` is provided, this is the filename of the TLS public key. If it is not provided, this must be a full path to the TLS public key file already mounted in the container.
+
+- Default: `tls.crt`
+
+---
+
+### `sidecar.speedscale.com/tls-mutual-secret`
+
+Kubernetes [TLS secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets) containing the
+client TLS private key and public certificate that should be used for outbound requests requiring mutual TLS.
+Do not set this unless your application uses mutual TLS. See [TLS](/setup/sidecar/tls/) for more information.
+
+---
+
+### `sidecar.speedscale.com/tls-mutual-private`
+
+If `tls-mutual-secret` is provided, this is the filename of the TLS private key. If it is not provided, this must be a full path to the TLS private key file already mounted in the container.
+
+- Default: `tls.key`
+
+---
+
+### `sidecar.speedscale.com/tls-mutual-public`
+
+If `tls-mutual-secret` is provided, this is the filename of the TLS public key. If it is not provided, this must be a full path to the TLS public key file already mounted in the container.
+
+- Default: `tls.crt`
+
+---
+
+### `sidecar.speedscale.com/ignore-src-ips`
+
+Comma separated list of inbound IPv4 addresses or IPv4 CIDR blocks that should be **excluded** from the
+traffic captured by the sidecar. Inbound requests from these sources will bypass the proxy entirely and
+will route directly to your application. Only valid if `capture-mode` is `proxy` and `proxy-type` is
+`transparent`, ignored otherwise.
+
+- Example: `sidecar.speedscale.com/ignore-src-ips: "10.10.0.40,10.200.10.0/24"`
+
+:::tip
+To have _ALL_ inbound traffic to your application bypass the sidecar entirely, use the following format:
+
+```
+sidecar.speedscale.com/ignore-src-ips: "*"
+```
+
+:::
+
+---
+
+### `sidecar.speedscale.com/ignore-src-hosts`
+
+Comma separated list of hostnames whose traffic should be **excluded** from the traffic captured by the
+sidecar. Inbound requests from these sources will bypass the proxy entirely and will route directly to
+your application. Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored
+otherwise.
+
+:::caution
+`iptables` performs a DNS lookup when adding hostnames to rules and only does so **once** when the rule is
+added. DNS changes that modify a host's source IP address will cause its traffic to no longer bypass the
+sidecar.
+:::
+
+- Example: `sidecar.speedscale.com/ignore-src-hosts: "example.com,mysvc.internal"`
+
+---
+
+### `sidecar.speedscale.com/ignore-inbound-ports`
+
+Comma separated list of port numbers whose traffic should be **excluded** from the traffic captured by the
+sidecar. Inbound requests to these ports will bypass the proxy entirely and will route directly to your
+application. Only valid if `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise.
+
+- Example: `sidecar.speedscale.com/ignore-inbound-ports: "443,8888"`
+
+---
+
+### `sidecar.speedscale.com/ignore-dst-ips`
+
+Comma separated list of outbound IPv4 addresses or IPv4 CIDR blocks that should be **excluded** from the
+traffic captured by the sidecar. Outbound requests to these destinations will bypass the proxy entirely and
+will route directly from your application to the intended destination. Only valid if `capture-mode` is `proxy`
+and `proxy-type` is `transparent`, ignored otherwise.
+
+- Example: `sidecar.speedscale.com/ignore-dst-ips: "10.10.0.40,10.200.10.0/24"`
+
+:::tip
+To have _ALL_ outbound traffic from your application bypass the sidecar entirely, use the following format:
+
+```
+sidecar.speedscale.com/ignore-dst-ips: "*"
+```
+
+:::
+
+---
+
+### `sidecar.speedscale.com/ignore-dst-hosts`
+
+Comma separated list of hostnames whose traffic should be **excluded** from the outbound traffic captured by
+the sidecar. Outbound requests to these destinations will bypass the proxy entirely and will route directly
+from your application to the intended destination. Only valid if `capture-mode` is `proxy` and `proxy-type` is
+`transparent`, ignored otherwise.
+
+:::caution
+`iptables` performs a DNS lookup when adding hostnames to rules and only does so **once** when the rule is
+added. DNS changes that modify a host's source IP address will cause its traffic to no longer bypass the
+sidecar.
+:::
+
+- Example: `sidecar.speedscale.com/ignore-dst-hosts: "example.com,mysvc.internal"`
+
+---
+
+### `sidecar.speedscale.com/ignore-outbound-ports`
+
+Comma separated list of port numbers whose traffic should be **excluded** from the traffic captured by the
+sidecar. Outbound requests to these ports will bypass the proxy entirely and will route directly from your
+application to the intended destination. Only valid if `capture-mode` is `proxy` and `proxy-type` is
+`transparent`, ignored otherwise.
+
+- Example: `sidecar.speedscale.com/ignore-outbound-ports: "27017"`
+
+---
+
+### `sidecar.speedscale.com/ignore-loopback`
+
+If set to `true`, any traffic whose target is the loopback interface `lo`. This has the effect of discarding
+pod-local traffic **AND** [port forwarded](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)
+traffic. Only valid when `capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/track-loopback`
+
+If set to `true`, instructs the sidecar to track and redirect outbound traffic based on its destination
+interface, specifically the loopback interface `lo`. Outbound traffic on `lo` will be redirected to
+`proxy-in-port`, while all other traffic is redirected to `proxy-out-port` as normal. Only valid when
+`capture-mode` is `proxy` and `proxy-type` is `transparent`, ignored otherwise.
+
+:::tip
+Enable this setting if you need to capture [port forwarded](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)
+traffic.
+:::
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/cpu-limit`
+
+CPU resource limit value for the sidecar container. Refer to
+[CPU resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu)
+for more information about resource limits.
+
+- Default: unset
+- Recommended Value: `2`
+
+---
+
+### `sidecar.speedscale.com/cpu-request`
+
+CPU resource request value for the sidecar container. Refer to
+[CPU resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu)
+for more information about resource limits.
+
+- Default: 10m
+- Recommended Value: `10m`
+
+---
+
+### `sidecar.speedscale.com/memory-limit`
+
+Memory resource limit value for the sidecar container. Refer to
+[Memory resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory)
+for more information about resource limits.
+
+- Default: unset
+- Recommended value: `1Gi`
+
+---
+
+### `sidecar.speedscale.com/memory-request`
+
+Memory resource request value for the sidecar container. Refer to
+[Memory resource units](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory)
+for more information about resource limits.
+
+- Default: 32Mi
+- Recommended value: `32Mi`
+
+---
+
+### `sidecar.speedscale.com/kube-api-support`
+
+When set to `true`, the sidecar will be configured to proxy and capture requests to the Kubernetes API. This
+feature is disabled by default and requires that `tls-out` is enabled. Use this if your application makes
+requests to the Kubernetes API that you want to observe and/or replay.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+--- 
+
+### `sidecar.speedscale.com/istio-cni`
+
+Set this annotation to `true` if your Kubernetes cluster has Istio installed and configured to use the
+[Istio CNI Agent](https://istio.io/latest/docs/setup/additional-setup/cni/).
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+--- 
+
+### `sidecar.speedscale.com/extra-container-env-vars`
+
+Allows adding arbitrary environment variables into OTHER containers in a workload.
+These will be applied to your workload containers, NOT to the goproxy sidecar container.
+Each environment variable should be on a separate line.
+
+- Example to set multiple environment variables:
+```
+    sidecar.speedscale.com/extra-container-env-vars: |-
+      GRPC_GO_LOG_VERBOSITY_LEVEL=99
+      GRPC_GO_LOG_SEVERITY_LEVEL=info
+```

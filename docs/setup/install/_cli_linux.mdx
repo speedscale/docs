@@ -1,0 +1,42 @@
+Linux users should install the CLI via the install script:
+
+```shell
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)"
+```
+
+:::caution Note
+You can inspect the install script to see what it does. Root permission is *not* required to execute this script.
+:::
+
+Install a specific version by passing it to the install script:
+
+```shell
+sh -c "$(curl -Lfs https://downloads.speedscale.com/speedctl/install)" -s v2.3.86
+```
+
+:::tip
+To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable to your [API key](/quick-start#retrieve-your-api-key)
+:::
+
+Optionally skip the install script and install manually:
+
+```shell
+# Download speedctl binary on your machine
+curl "https://downloads.speedscale.com/speedctl/speedctl-linux-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o speedctl
+
+# Create speedscale directory and move the binary to the directory
+mkdir ~/.speedscale
+mv ./speedctl ~/.speedscale
+
+# Give execute permission to the binary
+chmod +x ~/.speedscale/speedctl
+```
+
+:::warning Reminder
+Don't forget to add `speedctl` to your `$PATH` variable in your shell's rcfile:
+
+```shell
+# substitute your shell's rcfile
+echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.zshrc
+```
+:::
