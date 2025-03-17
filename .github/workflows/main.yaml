@@ -12,7 +12,7 @@ permissions:
 env:
   AWS_ROLE: ${{ secrets.AWS_ROLE }}
   AWS_REGION: us-east-1
-  DOWNLOADS_BUCKET: downloads.speedscale.com
+  DOCS_BUCKET: docs.speedscale.com
   DIST_ID: ${{ secrets.DIST_ID }}
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
       run: yarn build
 
     - name: upload main
-      run: aws s3 sync --delete  build s3://${{ env.DOWNLOADS_BUCKET }} && aws cloudfront create-invalidation --distribution-id ${{ env.DIST_ID }} --paths '/*'
+      run: aws s3 sync --delete  build s3://${{ env.DOCS_BUCKET }} && aws cloudfront create-invalidation --distribution-id ${{ env.DIST_ID }} --paths '/*'
 
     - name: notify on failure
       if: failure()
