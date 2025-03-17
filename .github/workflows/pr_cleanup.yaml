@@ -5,13 +5,24 @@ on:
     types: [closed] # merging a PR closes it
     branches: [main]
 
+permissions:
+  id-token: write # This is required for requesting the AWS JWT
+  contents: read # This is required for checkout
+
+env:
+  AWS_ROLE: ${{ secrets.AWS_ROLE }}
+  AWS_REGION: us-east-1
+  DOWNLOADS_PREVIEW_BUCKET: docs-preview.speedscale.com
+
 jobs:
   cleanup_docs:
     runs-on: ubuntu-latest
     steps:
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ env.AWS_ROLE }}
+        aws-region: ${{ env.AWS_REGION }}
+
     - name: Delete PR preview
-      run: aws s3 rm --recursive s3://docs-preview.speedscale.com/pr-${{ github.event.pull_request.number }}
-      env:
-        AWS_DEFAULT_REGION: us-east-1
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: aws s3 rm --recursive s3://${{ env.DOWNLOADS_PREVIEW_BUCKET }}/pr-${{ github.event.pull_request.number }}
