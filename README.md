@@ -1,3 +1,5 @@
+[![Build](https://github.com/speedscale/docs/actions/workflows/main.yaml/badge.svg)](https://github.com/speedscale/docs/actions/workflows/main.yaml)
+
 # Website
 
 This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
