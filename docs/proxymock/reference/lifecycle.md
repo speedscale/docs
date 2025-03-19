@@ -18,7 +18,7 @@ When you edit the rrpairs in the tree pane and save a particular rrpair, the `ra
 
 The rrpair format is not explicitly documented (yet) but it's fairly easy to pick our fields you might want to change. Just make sure to change each occurrence of the field if it appears more than once  in the data.
 
-For example, if you want to change the URL of a single rrpair, you can simply edit the `location`, `http.req.url` and `http.req.uri` fields on a single line in the `raw.jsonl` file. Future versions of proxymock will( likely have a UI for editing the rrpair. Speedscale Enterprise provides a data modification engine called [transforms](../../transform/overview.md) that can be used to modify the rrpair data using automation. Nothing stops you from manually modifying the raw.jsonl in `proxymock`.
+For example, if you want to change the URL of a single rrpair, you can simply edit the `location`, `http.req.url` and `http.req.uri` fields on a single line in the `raw.jsonl` file. Future versions of proxymock will( likely have a UI for editing the rrpair. Speedscale Enterprise provides a data modification engine called [transforms](../../transform/overview.md) that can be used to modify the rrpair data using automation. Nothing stops you from manually modifying the raw.jsonl in **proxymock**.
 
 :::tip
 The `Learn` button is only available when you have an active snapshot.
@@ -36,4 +36,4 @@ Combining snapshots is useful if you want to create a mock server that combines 
 
 ## Sharing Snapshots
 
-Snapshots are just files and if you copy/paste the entire directory and metadata to another machine it will work. `proxymock` does not support being embedded into a CI/CD pipeline but Speedscale Enterprise does. You can learn more about `proxymock push` and `proxymock pull` in the [Speedscale Enterprise](../../intro.md) documentation.
+Snapshots are just files and if you copy/paste the entire directory and metadata to another machine it will work. **proxymock** does not support being embedded into a CI/CD pipeline but Speedscale Enterprise does. You can learn more about `proxymock push` and `proxymock pull` in the [Speedscale Enterprise](../../intro.md) documentation.

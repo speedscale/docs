@@ -1,18 +1,20 @@
-The `proxymock` cli is available for and can run on Windows, but *does not* support native traffic capture. These instructions are included in case you know what you are doing and want to install `proxymock` manually.
+import WindowsWarning from './_windows_warning.mdx'
 
-Open PowerShell and create a Speedscale directory.
+<WindowsWarning />
+
+Open PowerShell and create a Speedscale directory:
 
 ```
 mkdir -f $env:userprofile\.speedscale
 ```
 
-Download `proxymock` into the Speedscale directory.
+Download **proxymock** into the Speedscale directory:
 
 ```
 curl.exe -L "https://downloads.speedscale.com/proxymock/proxymock.exe" -o $env:userprofile\.speedscale\proxymock.exe
 ```
 
-If this is your first time using `proxymock` you may need to add the Speedscale
+If this is your first time using **proxymock** you may need to add the Speedscale
 directory to your Path environment variable so it is accessible without knowing
 the full path.
 

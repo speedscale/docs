@@ -45,3 +45,8 @@ If you are using GitHub pages for hosting, this command is a convenient way to b
 ### Partials
 
 `.mdx` files beginning with a `_` character are partials. These are useful for including a piece of content in multiple locations, such as tables of annotations that can be inserted both in their relevant section, as well as stored in a single reference location.
+
+### Dead Links
+
+If you delete a page you should create a redirect for it so that it doesn't break links.  This configuration is located in the [docusaurus config](./docusaurus.config.js)
+
