@@ -517,7 +517,7 @@ const config = {
           { from: "/guides/openshift/", to: "/setup/install/openshift/" },
           {
             from: "/proxymock/reference/repo.md",
-            to: "/proxymock/getting-started/index.md",
+            to: "/proxymock/getting-started/",
           },
         ],
       },
