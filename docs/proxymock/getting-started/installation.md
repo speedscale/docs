@@ -6,6 +6,7 @@ import TabItem from '@theme/TabItem';
 import MacCLIInstall from './installation/\_cli_macos.mdx'
 import LinuxCLIInstall from './installation/\_cli_linux.mdx'
 import WindowsCLIInstall from './installation/\_cli_windows.mdx'
+import BinaryCLIInstall from './installation/\_cli_binary.mdx'
 
 # Installation
 
@@ -18,7 +19,7 @@ To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` enviro
 :::
 
 <Tabs>
-  <TabItem value="mac" label="MacOS">
+  <TabItem value="mac" label="macOS">
     <MacCLIInstall />
   </TabItem>
   <TabItem value="linux" label="Linux">
@@ -27,17 +28,8 @@ To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` enviro
   <TabItem value="windows" label="Windows">
     <WindowsCLIInstall />
   </TabItem>
+  <TabItem value="binary" label="Binary">
+    <BinaryCLIInstall />
+  </TabItem>
 </Tabs>
 
-## Install proxymock via VSCode (beta) {#install-vscode-extension}
-
-1. Go to the Extensions view (Ctrl+Shift+X on Windows or Command+Shift+X on MacOS/Linux) in Visual Studio Code
-1. Search for `proxymock`
-1. Click install 
-
-The extension will install an additional command line tool called `proxymock` which is used to create and manage your mock 
-servers. You don't need to manually install this, but you can learn more about it by checking out the manual instructions below.
-
-:::note
-The proxymock extension will re-use the existing Speedscale Enterprise installation if present.
-:::

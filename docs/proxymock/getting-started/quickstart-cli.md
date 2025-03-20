@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Quickstart (CLI)
+# Quickstart
 
 This guide provides a step by step guide to creating a mock server and tests for a simple Go application using only the **proxymock** CLI.
 
@@ -222,7 +222,7 @@ proxymock inspect snapshot <snapshot-id>
 
 ## Summary
 
-Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by opening the Command Palette and run `proxymock: Start Debugging`.
+Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by running `proxymock run --snapshot-id <snapshot-id>`.
 
 The app will run normally - except that it will use the mock server you created in the previous step. If you need to update your mocks, just re-record the application's traffic.
 

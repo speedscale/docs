@@ -1,0 +1,28 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import WindowsWarning from './_windows_warning.mdx'
+
+Some of us are control freaks, or just hackers who like to mess with all of the knobs and switches.  You can download the **proxymock** binary directly if that's your jam.
+
+<Tabs>
+  <TabItem value="mac" label="MacOS">
+```shell
+curl "https://downloads.speedscale.com/proxymock/proxymock-darwin-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o proxymock
+```
+  </TabItem>
+  <TabItem value="linux" label="Linux">
+```shell
+curl "https://downloads.speedscale.com/proxymock/proxymock-linux-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o proxymock
+```
+  </TabItem>
+  <TabItem value="windows" label="Windows">
+<WindowsWarning />
+
+```
+curl.exe -L "https://downloads.speedscale.com/proxymock/proxymock.exe" -o $env:userprofile\.speedscale\proxymock.exe
+```
+  </TabItem>
+</Tabs>
+
+Additional tasks associated usually assocated with standalone binaries, like permissions and $PATH, are up to you.  If you're here we assume you know what you're doing.
+

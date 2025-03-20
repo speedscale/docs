@@ -1,39 +1,12 @@
-Linux users should install `proxymock` via the install script:
-
+Run the install script:
 
 ```shell
 sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)"
 ```
 
-:::caution Note
-You can inspect the install script to see what it does. Root permission is *not* required to execute this script.
-:::
-
-If you need to Install a specific version, you can do so by passing it to the install script:
+Optionally, install a [specific version](/reference/release-notes/) by passing it to the install script:
 
 ```shell
-sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)" -s v2.3.267
+sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)" -s v2.3.456
 ```
 
-Optionally skip the install script and install manually:
-
-```shell
-# Download proxymock binary on your machine
-curl "https://downloads.speedscale.com/proxymock/proxymock-linux-$(case $(uname -m) in x86_64) echo 'amd64';; arm | arm64 | aarch64) echo 'arm64';; esac)" -o proxymock
-
-# Create speedscale directory and move the binary to the directory
-mkdir ~/.speedscale
-mv ./proxymock ~/.speedscale
-
-# Give execute permission to the binary
-chmod +x ~/.speedscale/proxymock
-```
-
-:::warning Reminder
-Don't forget to add `proxymock` to your `$PATH` variable in your shell's rcfile:
-
-```shell
-# substitute your shell's rcfile
-echo "export PATH=\$PATH:$HOME/.speedscale" >> ~/.zshrc
-```
-:::

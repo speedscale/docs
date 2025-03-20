@@ -64,6 +64,20 @@ A Speedscale component that executes actions on your behalf in your cluster.
 Actions like adding a sidecar proxy to your workload, or starting a
 [replay](#replay).
 
+### Load Generator
+
+A load generator is a software component used to simulate a client workload.
+A load generator is itself a client, like [cURL](https://curl.se/), but with features
+designed to 
+
+"Test" is a fairly general and often overloaded term in tech, but in the context
+of Speedscale it describes a request sent to the [SUT](#sut) from a Speedscale
+component.  They are called tests because they are meant to exercise some
+behavior of your application.
+
+In Speedscale tests are sent by either [proxymock](/proxymock/getting-started)
+on your local machine or by the [generator](#generator) in a cluster.
+
 ### Low Data Mode
 
 A [replay](#replay) mode of operation which does not collect
@@ -79,12 +93,26 @@ will show when errors occur.
 
 ### Mock
 
-A mock is a software component that imitates another, usually more complex or
-difficult to run, software component in limited ways.  A mock is generally used
-during local development or testing when it is impractical or impossible to run
-the real thing.
+A mock is an artifact that can be used to imitate a real service, API, or
+database. [proxymock](/proxymock/getting-started) is built to create mock
+definitions from application traffic and then use them with a [mock
+server](#mock-server) to simulate the services, APIs, and databases your
+application depends on.
 
-In Speedscale mocks are provided by the [responder](#responder).
+The difference between a mock and a [test](#test) is that tests are inbound
+traffic (from the client to your app), and mocks are outbound traffic
+(from your app to external resources).
+
+### Mock Server
+
+A mock server is a software component that imitates another, usually more
+complex or difficult to run, software component in limited ways.  A mock server
+is generally used during local development or testing when it is impractical or
+impossible to run the real thing.
+
+In Speedscale mock servers are provided by either
+[proxymock](/proxymock/getting-started) on your local machine or by the
+[responder](#responder) in a cluster.
 
 See [Mocking and Service Virtualization](/mocks/) for more information.
 
@@ -190,6 +218,20 @@ See [cli setup](../setup/install/cli.md) for more information.
 System under test.  Whenever Speedscale documentation mentions a SUT, we're
 talking about your application.  Your app/service is the system Speedscale is
 testing and this is a generic way to refer to it.
+
+### Test
+
+A test is an artifact that can be used to imitate a real client workload.
+[proxymock](/proxymock/getting-started) is built to create test definitions from
+application traffic and then use them with a [load generator](#load-generator)
+to simulate the client workloads that make requests to your application.
+
+The difference between a test and a [mock](#mock) is that tests are inbound
+traffic (from the client to your app), and mocks are outbound traffic (from your
+app to external resources).
+
+In Speedscale tests are sent by either [proxymock](/proxymock/getting-started)
+on your local machine or by the [generator](#generator) in a cluster.
 
 ### Test Config
 

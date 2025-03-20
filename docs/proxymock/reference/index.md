@@ -1,6 +1,8 @@
 # How it works
 
-This section covers the reference documentation for **proxymock**. You can peruse this if you want to learn more about how **proxymock** works and how to use more advanced features.
+**proxymock** works by capturing real traffic through a proxy that listens to the API and database calls coming into, and going out of, your application. Once **proxymock** has captured the requests and responses you can automagically turn them into [mocks](/reference/glossary.md#mock) and [tests](/reference/glossary.md#test).
+
+Because **proxymock** uses a proxy there is no need to change your code, environment variables, database connections, or anything else about your application. **proxymock** is a passive listener.
 
 ## [Architecture](./architecture.md) {#architecture}
 
