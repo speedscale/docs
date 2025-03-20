@@ -7,11 +7,10 @@ sidebar_position: 11
 
 We take data security and privacy seriously. **proxymock** is designed to handle
 your data responsibly, ensuring that all interactions comply with strict
-security and privacy best practices.  Traffic captured by **proxymock** will not
-be shared with anyone, not even us, unless you explicitly authorize.   See the
+security and privacy best practices. Traffic captured by **proxymock** will not
+be shared with anyone, not even us, unless you explicitly authorize. See the
 [license](./license.md) for more detailed information.
 
 # Telemetry
 
-**proxymock** sends telemetry data to speedscale to help us improve the product and know what features are important. It does not send any information about the specific nature of your traffic (like URLs, ports or other sensitive data). If you don't believe us feel free to sniff the traffic (you could do that with **proxymock**) and see for yourself.
-
+**proxymock** sends telemetry data to Speedscale to help us improve the product and know what features are important. It does not send any information about the specific nature of your traffic (like URLs, ports or other sensitive data). If you don't believe us feel free to sniff the traffic (you could do that with **proxymock**) and see for yourself.

@@ -6,7 +6,7 @@ sidebar_position: 4
 
 ## What protocols are supported?
 
-**proxymock** can record a variety of protocols including HTTP, gRPC, and Postgres. Most AWS and GCP services will work out of the box because they utilize HTTP/2. You can see a complete list of recorded protocols [here](../../reference/technology-support.md). Keep in mind that the "automatic" aspect may not be as automatic depending on how unusual the protocol is. Usually this can be resolved with environment variables or by using proxymock as a CLI. Join the [Speedscale Slack](https://slack.speedscale.com) for help.
+**proxymock** can record a variety of protocols including HTTP, gRPC, and Postgres. Most AWS and GCP services will work out of the box because they communicate over HTTP. You can see a complete list of recorded protocols [here](../../reference/technology-support.md). Keep in mind that the "automatic" aspect may not be as automatic depending on how unusual the protocol is. Usually this can be resolved with environment variables or by using proxymock as a CLI. Join the [Speedscale Slack](https://slack.speedscale.com) for help.
 
 ## Does this work for Windows?
 
@@ -24,7 +24,7 @@ Most definitely, but for that you need to consider an Enterprise subscription. B
 
 ## What happens if the mock server doesn't have a response for a request?
 
-**proxymock** defaults to **passthrough** mode which means it will reach out to the real system and return the response. The request and response will then be added to the rrpair editor. You can modify the response if you like using the rrpair editor and then save. Press the `Learn` button and the mock will be updated with the new response. You thought we were going to tell you to write a script, right? We like you too much for that. To learn more about signature matching, see the [signatures](../reference/signature.md) section.
+**proxymock** defaults to **passthrough** mode which means it will reach out to the real system and return the response. The request and response will then be added to the `./proxymock` directory. You can modify the response if you like using the RRPair editor and then save. Run `proxymock analyze` to process mocks so they will be used when **proxymock** is run. You thought we were going to tell you to write a script, right? We like you too much for that. To learn more about signature matching, see the [signatures](../reference/signature.md) section.
 
 ## What language support is there?
 
@@ -34,6 +34,6 @@ Right now, the full automated VSCode workflow only works for golang but new lang
 
 ## Are IDEs other than VSCode (beta) supported?
 
-Yes, but you'll have to use **proxymock** as a CLI to create and manage your mock servers and set environment variables yourself. We 
-are open to supporting more platforms like Goland and IntelliJ but need more requests to do so.  Join the [Speedscale Slack]
+Yes, but you'll have to use **proxymock** as a CLI to create and manage your mock servers and set environment variables yourself. We
+are open to supporting more platforms like Goland and IntelliJ but need more requests to do so. Join the [Speedscale Slack]
 (https://slack.speedscale.com) to cast your vote.

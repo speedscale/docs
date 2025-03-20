@@ -24,7 +24,7 @@ The sequence of events goes like this:
 
 1. Traffic is recorded/imported to **proxymock**
 2. You create a Snapshot containing traffic covering a specific timeframe and filter criteria.
-3. The **proxymock** analyzer combines the traffic into a set of signature/response pairs. This can be viewed as a form of compression to make the service mock dataset more compact and dynamic.
+3. The **proxymock** analyzer combines the traffic into a set of signature/response pairs. This is like a compiler which builds source files into a working program.
 4. The **proxymock** service mocking engine receives a message from the SUT and creates a signature.
 5. The request signature is compared against all known request signatures in the Snapshot.
 6. A response is returned if the signature is recognized or a 404 if it is unknown.
