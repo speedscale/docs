@@ -36,3 +36,4 @@ Right now, the full automated VSCode workflow only works for golang but new lang
 
 Yes, but you'll have to use **proxymock** as a CLI to create and manage your mock servers and set environment variables yourself. We
 are open to supporting more platforms like Goland and IntelliJ but need more requests to do so. Join the [Speedscale Slack]
+(https://slack.speedscale.com) to cast your vote.
