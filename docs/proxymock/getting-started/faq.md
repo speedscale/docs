@@ -30,6 +30,6 @@ Most definitely, but for that you need to consider an Enterprise subscription. B
 
 **proxymock** the cli supports a variety of languages including Go, Python, Node, and Java. You can see a complete list of recorded languages [here](../../reference/technology-support.md).
 
-## Are IDEs integrations supported?
+## Can I use **proxymock** with my favorite IDE?
 
-Not directly, but you can use the **proxymock** along with your favorite IDE as long as you can set the `http_proxy` and `https_proxy` environment variables to route traffic through **proxymock**.
+You can use the **proxymock** CLI along with your favorite IDE as long as you can set the `http_proxy` and `https_proxy` environment variables to route traffic through **proxymock**.
