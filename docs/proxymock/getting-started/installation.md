@@ -10,13 +10,9 @@ import BinaryCLIInstall from './installation/\_cli_binary.mdx'
 
 # Installation
 
-**proxymock** does some pretty heavy duty work all from the command line.  Using the cli, you can automate the creation of simulation environments, record new traffic, modify transactions and replay. 
+**proxymock** does some pretty heavy duty work all from the command line.  Using the cli, you can automate the creation of simulation environments, record new traffic, modify transactions and replay.
 
 ## Install proxymock via Command Line {#install-cli}
-
-:::warning Note
-To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable. This is an [Enterprise feature](https://docs.speedscale.com/quick-start/).
-:::
 
 <Tabs>
   <TabItem value="mac" label="macOS">
@@ -32,4 +28,8 @@ To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` enviro
     <BinaryCLIInstall />
   </TabItem>
 </Tabs>
+
+:::info CI/CD
+To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable. This is an [Enterprise](/quick-start/) feature.
+:::
 
