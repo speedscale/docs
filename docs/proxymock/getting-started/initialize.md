@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 ---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -21,7 +22,7 @@ Speedscale does not share or sell your email address, although we might send you
 - Don't put your API key in source control. Use a secret manager.
 - Don't share your API Key.
 - Non-interactive mode (like as part of a CI pipeline) requires proxymock Pro or Speedscale Enterprise.
-:::
+  :::
 
 :::tip
 proxymock does not send your recorded data to any third party. All data is stored on your local desktop unless you connect to Speedscale Enterprise. Don't worry, that won't happen unless you explicitly start a trial or buy a license.
@@ -38,23 +39,18 @@ proxymock init --api-key <Your API Key>
 ### Getting an API Key
 
 <Tabs>
+  <TabItem value="Existing Enterprise Customer">
+So you already have a Speedscale account.  You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile).
 
-<TabItem value="Existing Enterprise Customer">
-
-You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key to your clipboard.
+Copy the API key to your clipboard:
 
 ![API Key](../../setup/install/api-key.png)
-
 </TabItem>
 
-<TabItem value="New User">
-
+  <TabItem value="New User">
 [Signup for an API Key](https://app.speedscale.com/proxymock/signup)
-
-</TabItem>
-
+  </TabItem>
 </Tabs>
-
 
 ## Troubleshooting for Enterprise Customers
 

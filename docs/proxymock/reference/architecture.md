@@ -37,7 +37,7 @@ artifacts in a local directory.
 
 Once the necessary env vars are set in the environment where "your app" is
 running outbound traffic from your app is routed through **proxymock** and
-captured in the process.  Is is **not** necessary to modify your app.
+captured in the process. Is is **not** necessary to modify your app.
 
   </TabItem>
   <TabItem value="proxymock-capturing-inbound" label="Record Tests">
@@ -50,7 +50,7 @@ directory.
 
 Requests from the client are routed through **proxymock** and captured in the
 process, but unlike outbound traffic where we can just set env vars the client
-will need to target the proxy port instead of the app port.  In this case that
+will need to target the proxy port instead of the app port. In this case that
 means making requests to `localhost:4143` instead of `localhost:8080`.
 
   </TabItem>
@@ -65,7 +65,7 @@ mock artifacts captured earlier.
 
 While dependencies can be fully replace by **proxymock**, there is a dotted line
 to indicate "passthrough", which is what happens when a request to the mock
-server does not match a [signature](/proxymock/reference/signature/).  In that case the
+server does not match a [signature](/proxymock/reference/signature/). In that case the
 request is forwarded to the real resource.
 
   </TabItem>
@@ -82,4 +82,3 @@ requests to your app on port `8080`.
 
   </TabItem>
 </Tabs>
-
