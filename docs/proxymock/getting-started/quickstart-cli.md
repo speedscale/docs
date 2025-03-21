@@ -37,6 +37,12 @@ These steps focus on Go application, so you will need to have Go installed on yo
 installation instructions on the [Go website](https://go.dev/).
 :::
 
+This demo will use 3 terminal windows in total for different contexts:
+
+- one terminal to run **proxymock**
+- one terminal to run the demo application
+- one terminal to run cURL as an HTTP client
+
 ### Clone the Demo
 
 The demo [repository](https://github.com/speedscale/demo) has the snapshot file we need:
@@ -51,7 +57,7 @@ go mod download
 
 You can use the pre-made mocks in the repository under `demo/go/snapshots/ip-lookup-demo.jsonl`. You can think of this multi-line JSON file as a set of mocks provided by another engineer.
 
-1. Import the pre-made snapshot:
+1. Open the **1st terminal** and import the pre-made snapshot:
 
 ```bash
 proxymock import --file snapshots/ip-lookup-demo.jsonl
@@ -60,9 +66,9 @@ proxymock import --file snapshots/ip-lookup-demo.jsonl
 
 The mocks from the snapshot have been written to individual files in a local directory, `./proxymock` by default.
 
-2. Open a **2nd terminal** window where we can work with **proxymock**. Since the imported mocks were written to `./proxymock` in the first terminal you will need the second terminal to use the same directory.
+2. Open a **2nd terminal** window where we can work with **proxymock**. Since the imported mocks were written to `./proxymock` in the first terminal you will need the second terminal to use the same directory or change the `--dir` flag.
 
-3. Now run the mock server with the imported mocks:
+3. Run the mock server with the imported mocks in the **2nd terminal**:
 
 ```bash
 proxymock run --dir ./proxymock
@@ -87,11 +93,7 @@ The output should look something like this:
 
 Note that the mock has been pre-configured to accept the super-secret 1234567890 IPStack API key. This lets you see how the mock works even if you've never used IP Stack before.
 
-5.  Then open a **third terminal** and make a request to the demo app using curl:
-
-:::warning
-Do NOT export proxy environment variables in this terminal window.
-:::
+5.  Then open a **3rd terminal** and make a request to the demo app using `curl`:
 
 ```bash
 curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
@@ -163,7 +165,7 @@ You should see the following response:
 }
 ```
 
-You've done it! At this point the demo app is running with the mock server. The API key `1234567890` is invalid so a request to IPStack will fail, but the mock server is replying with the recorded response from the mocks. Note that unknown IP addresses will require changes to the mocks.
+You've done it! At this point the demo app is running with the mock server. The API key `1234567890` is not valid so a real request to IPStack will fail, but the mock server is replying with the recorded response from the mocks. Note that unknown IP addresses will require changes to the mocks.
 
 Each request you make passes through the mock server and creates a new mock in the `./proxymock` directory. Running `proxymock import` automatically analyzes new mocks but you will need to analyze again if you want to include these new mocks in the mock server:
 
