@@ -3,6 +3,7 @@ title: TLS Support
 sidebar_position: 2
 ---
 
+import LanguageSpecificTLSConfiguration from './\_language_specific_tls_config.mdx';
 import Mermaid from '@theme/Mermaid';
 
 # TLS Support
@@ -12,9 +13,9 @@ TLS interception and unwrapping is not enabled by default, but can be done so wi
 :::tip Remember
 When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload. It's common to delete existing annotations or add the annotations in the wrong place (like on the pod instead of the deployment) in this step.
 :::
+
 <iframe src="https://player.vimeo.com/video/1035399678?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 <p><a href="https://vimeo.com/1035399678">How Speedscale reads TLS requests</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
-
 
 ## TLS Inbound Interception
 
@@ -81,97 +82,19 @@ annotations:
   sidecar.speedscale.com/tls-mutual-public: "tls.crt"
 ```
 
-## Trusting TLS Certificates
+### Trusting TLS Certificates
 
-Now that TLS outbound calls are intercepted by goproxy, you must configure your application to trust the
-speedscale-certs from your cluster. If you skip this step you will get errors in your application.
+Now that TLS outbound calls are intercepted by [goproxy](/reference/glossary.md#goproxy), you must configure your application to trust the speedscale-certs from your cluster or goproxy will report errors and TLS traffic will not be decrypted.
 
 Speedscale will attempt to use the Root CA Cert in the `speedscale-certs` secret. Intercepted TLS calls will
 have a new cert that is generated from this Root CA. So your application needs to trust this Root CA for TLS
 calls to be handled automatically.
 
 :::danger
-Configuring TLS trust is, in most cases, language specific. Every runtime language has different characteristics and if you do
-not configure this correctly you will get TLS/SSL errors. Always configure this in a controlled environment
-first.
+Configuring TLS trust is, in most cases, language specific. Every runtime language has different characteristics and if you do not configure this correctly you will get TLS/SSL errors. Always configure this in a controlled environment first.
 :::
 
-### TLS Trust for macOS
-
-For desktop capture and replay add the Speedscale TLS certificate to your
-macOS keychain to allow your applications to make TLS requests to Speedscale
-components.
-
-After using [speedctl](/reference/glossary.md#speedctl) certificates will be
-created in your home directory. Use [this Apple user
-guide](https://support.apple.com/guide/keychain-access/add-certificates-to-a-keychain-kyca2431/mac)
-to add the certificate located at `~/.speedscale/certs/tls.crt` to your
-keychain.
-
-Once added double click the **Speedscale** certificate, expand the **Trust** section,
-and set **When using this certificate:** to **Always Trust**.
-
-### TLS Trust for golang
-
-Go applications honor the environment variable `SSL_CERT_FILE` which is automatically injected by the
-operator. This will point to the location where the speedscale cert volume mount is placed.
-
-### TLS Trust for NodeJS
-
-NodeJS applications newer than v7.3.0 can be customized with an environment variable `NODE_EXTRA_CA_CERTS`
-which is automatically injected by the operator. This will point to the location where the speedscale cert
-volume mount is placed.
-
-### TLS Trust for Ruby
-
-Ruby applications honor the environment variable `SSL_CERT_FILE` which is automatically injected by the
-operator. This will point to the location where the speedscale cert volume mount is placed.
-
-### TLS Trust for .NET
-
-.NET applications honor the environment variable `SSL_CERT_FILE` which is automatically injected by the
-operator. This will point to the location where the speedscale cert volume mount is placed.
-
-:::info
-.NET Core uses OpenSSL on Linux and Mac which respects these default settings. The default Microsoft .NET Docker base images are Linux based which means these settings apply, however running Windows based workloads may require additional configuration
-:::
-
-### TLS Trust for Java
-
-Java applications utilize a truststore to determine which certificates will be trusted. During Operator
-installation a secret called `speedscale-jks` will be created that contains the `speedscale-certs` root CA
-along with a standard set of CA certs used by `openjdk`. This secret is automatically mounted when the
-`tls-out` setting is configured as shown below. The Java app itself needs to be configured to use this secret
-as well which requires configuring your JVM to use the truststore with these settings:
-
-- `-Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks`
-- `-Djavax.net.ssl.trustStorePassword=changeit`
-
-These can be automatically applied by adding to your JVM by setting `JAVA_TOOL_OPTIONS`. This can be set
-on your workload by adding the `sidecar.speedscale.com/tls-java-tool-options: "true"` annotation. Read more
-about this setting here.
-
-Here is an example of a patch file that configures TLS Out and configures the Java app to use the mounted
-trust store. You will likely have to customize this for your environment.
-
-:::caution
-Applying patches that set `JAVA_TOOL_OPTIONS`, like the ones below, are **not** additive. If your workload already has
-`JAVA_TOOL_OPTIONS` environment settings, be sure to include those as well or they will be overwritten.
-:::
-
-These flags are also surfaced as an environment variable `SPEEDSCALE_JAVA_OPTS` if you need to merge with
-your own existing sets of Java flags.
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: spring-boot-app
-  annotations:
-    sidecar.speedscale.com/inject: "true"
-    sidecar.speedscale.com/tls-out: "true"
-    sidecar.speedscale.com/tls-java-tool-options: "true"
-```
+<LanguageSpecificTLSConfiguration />
 
 ## How Does It Work?
 
