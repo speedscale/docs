@@ -515,6 +515,10 @@ const config = {
           { from: "/upgrade/operator/", to: "/setup/upgrade/operator/" },
           { from: "/guides/istio/", to: "/setup/install/istio/" },
           { from: "/guides/openshift/", to: "/setup/install/openshift/" },
+          {
+            from: "/proxymock/reference/repo.md",
+            to: "/proxymock/getting-started/",
+          },
         ],
       },
     ],
