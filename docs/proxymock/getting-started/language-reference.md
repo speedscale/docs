@@ -5,9 +5,11 @@ title: Language Configuration
 
 Some language-specific environment configuration may be necessary but you should not need to modify your application code to use **proxymock**.
 
-### Trusting TLS Certificates
+### Decrypting TLS
 
-**proxymock** can automatically decrypt outbound TLS requests from your app allowing you to view, mock, and modify request details. This can feel magical but requires that your system trusts an intermediate cert used by **proxymock**. Know that your [data and privacy](../reference/data_and_privacy.md) are very important to us.
+**proxymock** attempts to automatically configure TLS on the desktop so manual configuration is only necessary in special environments like CI/CD or when TLS decryption does not work out of the box.
+
+Commands and flags should be run in the environment where your application is running.
 
 import LanguageSpecificTLSConfiguration from '../../setup/sidecar/\_language_specific_tls_config.mdx';
 
