@@ -167,12 +167,6 @@ You should see the following response:
 
 You've done it! At this point the demo app is running with the mock server. The API key `1234567890` is not valid so a real request to IPStack will fail, but the mock server is replying with the recorded response from the mocks. Note that unknown IP addresses will require changes to the mocks.
 
-Each request you make passes through the mock server and creates a new mock in the `./proxymock` directory. Running `proxymock import` automatically analyzes new mocks but you will need to analyze again if you want to include these new mocks in the mock server:
-
-```bash
-proxymock analyze --dir ./proxymock
-```
-
 ### Record with Live Systems {#record-with-live-systems}
 
 Let's say you're trailblazing and there are no existing mocks. No problem, we'll just record some!
@@ -181,10 +175,10 @@ Let's say you're trailblazing and there are no existing mocks. No problem, we'll
 Now is the time to sign up for an IP Stack API key and make sure you have an AWS DynamoDB instance. Alternatively, use your own app and follow these instructions.
 :::
 
-1. Start the proxymock capture system using this command:
+1. Start recording requests and responses:
 
 ```bash
-proxymock run
+proxymock record
 ```
 
 You will see output like so:
@@ -194,14 +188,19 @@ You will see output like so:
 export http_proxy=http://127.0.0.1:4140
 export https_proxy=http://127.0.0.1:4140
 ...
-captured tests / mocks are being written to ./proxymock
+recorded tests / mocks are being written to ./proxymock
 ...
 ```
 
-You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. Copy paste these directly from the CLI output and paste them into step 2.
+You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy". Copy paste these directly from the CLI output and paste them into step 2.
 
-2. Open a **new terminal** and export the environment variables from the CLI output in step 1.
-   These variables will re-route the outbound network in Golang to point at the proxymock "smart proxy" server.
+2. Open a **new terminal** and export the environment variables from the CLI output in step 1. These variables will re-route the outbound network in Golang to point at the proxymock "smart proxy". This will require a real IPStack API key.
+
+```bash
+export http_proxy=http://localhost:4140
+export https_proxy=http://localhost:4140
+go run main.go "$REAL_IPSTACK_API_KEY"
+```
 
 3. Run the following command to make a request to the demo app:
 
@@ -209,8 +208,7 @@ You'll notice that the CLI will output a set of environment variables that you c
 curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
 ```
 
-Tests and mocks will be written to the `./proxymock` directory as they are captured.
-When you are done press Ctrl+C in the proxymock terminal to stop capturing.
+Tests and mocks will be written to the `./proxymock` directory as they are recorded and organized by hostname. When you are done press Ctrl+C in the proxymock terminal to stop capturing.
 
 4. Take a look at your traffic using the `inspect` command.
 
@@ -235,7 +233,7 @@ Up to this point we have only seen outbound requests, the requests from the demo
 1. Start proxymock like before, but with the additional `--app-port` flag. We'll use `8080` because that's the port the demo app listens on:
 
 ```bash
-proxymock run \
+proxymock record \
   --dir ./proxymock \
   --app-port 8080
 ```
@@ -245,7 +243,8 @@ proxymock run \
 ```bash
 export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
-go run main.go 1234567890
+IPSTACK_API_KEY=1234567890
+go run main.go "$IPSTACK_API_KEY"
 ```
 
 3. Then run the following command to make a request to the demo app in another terminal:
@@ -282,7 +281,7 @@ proxymock inspect --dir ./proxymock
 1. Insert `10.12345678` into the `latitude` field.
 1. Copy the entire body into the clipboard again.
 1. Go back to the inspect UI and paste the new body back in by pressing `p`.
-1. Press `a` to re-analyze the snapshot and update your mocks (this is the same as running `proxymock analyze` on the command line).
+1. Restart the mock server with `proxymock run` and make a request to the demo app. You will notice the modified response.
 
 ## Summary
 
