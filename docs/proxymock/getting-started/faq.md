@@ -10,7 +10,7 @@ sidebar_position: 4
 
 ## Does this work for Windows?
 
-The **proxymock** cli is available for Windows but functionality is limited. We highly recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/) for **proxymock** on Windows and look for future versions with full compatibility.
+Yes. The **proxymock** cli is available as a native Windows executable. Alternatively, the **proxymock** linux binary can be used via [WSL](https://learn.microsoft.com/en-us/windows/wsl/).
 
 ## What is the difference between proxymock and Speedscale Enterprise?
 
