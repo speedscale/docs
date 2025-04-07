@@ -71,7 +71,7 @@ The mocks from the snapshot have been written to individual files in a local dir
 3. Run the mock server with the imported mocks in the **2nd terminal**:
 
 ```bash
-proxymock run --dir ./proxymock
+proxymock mock --dir ./proxymock
 ```
 
 The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. You can use these environment variables from the CLI output and paste them into step 3.
@@ -281,11 +281,11 @@ proxymock inspect --dir ./proxymock
 1. Insert `10.12345678` into the `latitude` field.
 1. Copy the entire body into the clipboard again.
 1. Go back to the inspect UI and paste the new body back in by pressing `p`.
-1. Restart the mock server with `proxymock run` and make a request to the demo app. You will notice the modified response.
+1. Restart the mock server with `proxymock mock` and make a request to the demo app. You will notice the modified response.
 
 ## Summary
 
-Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by running `proxymock run`.
+Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by running `proxymock mock`.
 
 The app will run normally - except that it will use the mock server you created in the previous step. If you need to update your mocks, just re-record the application's traffic.
 
