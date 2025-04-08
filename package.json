@@ -59,7 +59,8 @@
     "node": ">=18.0"
   },
   "resolutions": {
-    "cheerio": "1.0.0-rc.12"
+    "cheerio": "1.0.0-rc.12",
+    "image-size": "1.2.1"
   },
   "browserslist": {
     "production": [
