@@ -16,7 +16,6 @@ The purpose of this app is to accept two IP addresses, look up their geographic 
 
 ## Prerequisites
 
-- Have [proxymock CLI](./installation.md#install-cli) installed
 - Optionally, have a valid [API Key](./initialize.md) if you plan to make calls to the real IPStack
 
 :::note
@@ -32,20 +31,19 @@ This guide will show you how to:
 
 You do not need to have an IP Stack API key or AWS DynamoDB instance to complete step one of this guide.
 
-:::warning Note
-These steps focus on Go application, so you will need to have Go installed on your machine. Follow the
-installation instructions on the [Go website](https://go.dev/).
-:::
-
 This demo will use 3 terminal windows in total for different contexts:
 
 - one terminal to run **proxymock**
 - one terminal to run the demo application
 - one terminal to run cURL as an HTTP client
 
-### Clone the Demo
+### Setup the Environment
 
-The demo [repository](https://github.com/speedscale/demo) has the snapshot file we need:
+The easiest way to create a working environment is to use Github Codespaces. Simply navigate to he demo [repository](https://github.com/speedscale/demo) and create a new Codespace:
+
+![Codespaces](./quickstart/codespaces.png)
+
+Alternatively you can clone the repo locally and setup the environment locally
 
 ```bash
 git clone https://github.com/speedscale/demo
@@ -57,26 +55,19 @@ go mod download
 
 You can use the pre-made mocks in the repository under `demo/go/snapshots/ip-lookup-demo.jsonl`. You can think of this multi-line JSON file as a set of mocks provided by another engineer.
 
-1. Open the **1st terminal** and import the pre-made snapshot:
+1. Open the **1st terminal** and import the pre-made snapshot and run the mock server:
 
 ```bash
+proxymock init
 proxymock import --file snapshots/ip-lookup-demo.jsonl
-✔ 2 test / mock files written to ./proxymock
+proxymock run --dir ./proxymock
 ```
 
 The mocks from the snapshot have been written to individual files in a local directory, `./proxymock` by default.
 
-2. Open a **2nd terminal** window where we can work with **proxymock**. Since the imported mocks were written to `./proxymock` in the first terminal you will need the second terminal to use the same directory or change the `--dir` flag.
+The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. You can use these environment variables from the CLI output and paste them into step 2.
 
-3. Run the mock server with the imported mocks in the **2nd terminal**:
-
-```bash
-proxymock mock --dir ./proxymock
-```
-
-The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. You can use these environment variables from the CLI output and paste them into step 3.
-
-4. In the **1st terminal**, paste the environment variables from the CLI output and this fake API key. Then start the demo app:
+2. Open a **2nd terminal** window (`cmd + \`), paste the environment variables from the CLI output and this fake API key. Then start the demo app:
 
 ```bash
 export http_proxy=http://localhost:4140
