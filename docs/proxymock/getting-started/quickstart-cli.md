@@ -60,10 +60,19 @@ You can use the pre-made mocks in the repository under `demo/go/snapshots/ip-loo
 ```bash
 proxymock init
 proxymock import --file snapshots/ip-lookup-demo.jsonl
-proxymock run --dir ./proxymock
 ```
 
-The mocks from the snapshot have been written to individual files in a local directory, `./proxymock` by default.
+The mocks from the snapshot have been written to individual files in a local directory, `./proxymock/imported-ip-lookup-demo` by default.  Run the mock server which will source mocks from this directory:
+
+```bash
+proxymock mock --in ./proxymock/imported-ip-lookup-demo
+```
+
+:::note
+Here we are explicitly specifying the `--in` directory to source test and mock
+files from, but **proxymock** will look in the `./proxymock` directory by
+default and directory searches are recursive, meaning this flag is optional.
+:::
 
 The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. You can use these environment variables from the CLI output and paste them into step 2.
 
@@ -179,7 +188,7 @@ You will see output like so:
 export http_proxy=http://127.0.0.1:4140
 export https_proxy=http://127.0.0.1:4140
 ...
-recorded tests / mocks are being written to ./proxymock
+recorded tests / mocks are being written to proxymock/recorded-2025-04-15_15-56-02.200913Z
 ...
 ```
 
@@ -204,7 +213,7 @@ Tests and mocks will be written to the `./proxymock` directory as they are recor
 4. Take a look at your traffic using the `inspect` command.
 
 ```bash
-proxymock inspect --dir ./proxymock
+proxymock inspect --in ./proxymock
 ```
 
 This will open a state of the art (for 1997) terminal user interface (TUI) that allows you to navigate and inspect your traffic using arrow keys and tab.
@@ -224,9 +233,7 @@ Up to this point we have only seen outbound requests, the requests from the demo
 1. Start proxymock like before, but with the additional `--app-port` flag. We'll use `8080` because that's the port the demo app listens on:
 
 ```bash
-proxymock record \
-  --dir ./proxymock \
-  --app-port 8080
+proxymock record --app-port 8080
 ```
 
 2. If the demo app is not running already open a **new** terminal and start it like before:
@@ -249,7 +256,7 @@ You will notice cURL is calling port `4143` instead of `8080` where the demo app
 4. Like before you can see your traffic with the `inspect` command:
 
 ```bash
-proxymock inspect --dir ./proxymock
+proxymock inspect --in ./proxymock
 ```
 
 This will open the inspect UI. You can navigate to the request you want to change and press `Enter` to open the request in the editor.
@@ -261,7 +268,7 @@ Inbound traffic in the inspect UI will show the DIRECTION as "in".
 Let's imagine you want to make your IP Stack mock return a different location for one of the requests. No problem, open `inspect` on the `./proxymock` directory and navigate to the request you want to change.
 
 ```bash
-proxymock inspect --dir ./proxymock
+proxymock inspect --in ./proxymock
 ```
 
 ![ipstack-response](./quickstart/ipstack-response1.png)
