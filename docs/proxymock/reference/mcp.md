@@ -1,6 +1,13 @@
-# Model Context Protocol (MCP) Server
+---
+sidebar_position: 6
+---
 
-**proxymock** provides a set of commands for Agent-based LLM tools like (Cursor)[https://cursor.com], (Claude Desktop)[https://claude.ai/download] or (GitHub Copilot)[https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp]. Once installed, you will be able to interact with proxymock using your normal chat interface. This is made possible by the (Model Context Protocol)[https://modelcontextprotocol.io].
+# Model Context Protocol (MCP)
+
+**proxymock** provides a set of commands for Agent-based LLM tools like [Cursor](https://cursor.com), 
+[Claude Desktop](https://claude.ai/download), [VSCode](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) or [GitHub Copilot](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp). 
+Once installed, you will be able to interact with proxymock using your normal chat interface. 
+This is made possible by the [Model Context Protocol](https://modelcontextprotocol.io).
 
 ## Installing ProxyMock MCP Server
 
