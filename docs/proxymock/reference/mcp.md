@@ -5,7 +5,7 @@ sidebar_position: 6
 # Model Context Protocol (MCP)
 
 :::tip
-MCP support requires proxymock be installed. Instructions are [here](https://docs.speedscale.com/proxymock/getting-started/installation/).
+MCP support requires proxymock be installed. **It's free.** Instructions are [here](https://docs.speedscale.com/proxymock/getting-started/installation/).
 :::
 
 **proxymock** records API/Database calls going into and out of an app running on your local desktop.
