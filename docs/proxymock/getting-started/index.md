@@ -2,8 +2,11 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import ForLeaders from './\_value_for_leaders.mdx'
 import ForDevelopers from './\_value_for_developers.mdx'
+import ProxymockHero from './index/proxymock_hero.jpg';
 
 # Getting Started
+
+<center><img src={ProxymockHero} width="300" /></center>
 
 **proxymock** is a free to use command-line tool that records your application's behavior and generates [mocks](/reference/glossary.md#mock) and [tests](/reference/glossary.md#test). Out-of-the-box functionality is **free forever** for local development. No strings attached.
 
