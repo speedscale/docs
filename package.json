@@ -69,7 +69,6 @@
     "prismjs": "^1.30.0",
     "dompurify": "^3.2.4",
     "katex": "^0.16.21"
-    "http-proxy-middleware": "^2.0.9"
   },
   "browserslist": {
     "production": [
