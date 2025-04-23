@@ -63,9 +63,11 @@
   "engines": {
     "node": ">=18.0"
   },
+
   "resolutions": {
     "cheerio": "1.0.0-rc.12",
-    "image-size": "1.2.1"
+    "image-size": "1.2.1",
+    "http-proxy-middleware": "^2.0.9"
   },
   "browserslist": {
     "production": [
