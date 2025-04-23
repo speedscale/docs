@@ -67,7 +67,12 @@
   "resolutions": {
     "cheerio": "1.0.0-rc.12",
     "image-size": "1.2.1",
-    "http-proxy-middleware": "^2.0.9"
+    "http-proxy-middleware": "^2.0.9",
+    "@babel/runtime-corejs3": "^7.26.10",
+    "@babel/helpers": "^7.26.10",
+    "prismjs": "^1.30.0",
+    "dompurify": "^3.2.4",
+    "katex": "^0.16.21"
   },
   "browserslist": {
     "production": [
