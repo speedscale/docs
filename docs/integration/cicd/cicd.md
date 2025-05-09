@@ -305,6 +305,7 @@ REPORT_ID=$(speedctl infra replay "$SERVICE" \
   --namespace "$NAMESPACE" \
   --test-config-id "$TEST_CONFIG" \
   --snapshot-id "$SNAPSHOT_ID" \
+  --id-only \
   --build-tag "$BUILD_TAG")
 
 echo "waiting for replay with report ID $REPORT_ID to complete"
