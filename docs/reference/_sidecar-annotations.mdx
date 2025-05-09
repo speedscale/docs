@@ -373,7 +373,7 @@ requests to the Kubernetes API that you want to observe and/or replay.
   - `true`
   - `false` (default)
 
---- 
+---
 
 ### `sidecar.speedscale.com/istio-cni`
 
@@ -384,7 +384,7 @@ Set this annotation to `true` if your Kubernetes cluster has Istio installed and
   - `true`
   - `false` (default)
 
---- 
+---
 
 ### `sidecar.speedscale.com/extra-container-env-vars`
 
@@ -393,8 +393,20 @@ These will be applied to your workload containers, NOT to the goproxy sidecar co
 Each environment variable should be on a separate line.
 
 - Example to set multiple environment variables:
+
 ```
     sidecar.speedscale.com/extra-container-env-vars: |-
       GRPC_GO_LOG_VERBOSITY_LEVEL=99
       GRPC_GO_LOG_SEVERITY_LEVEL=info
 ```
+
+---
+
+### `sidecar.speedscale.com/mount-known-ca`
+
+Mounts the Speedscale cert to a list of well known locations for implicit trust for eg.
+`/etc/ssl/certs/ca-certificates.crt`. Note that existing files or mounts to these locations can cause conflicts and the use of environment variables is preferred.
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
