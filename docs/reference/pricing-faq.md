@@ -48,7 +48,7 @@ Speedscale provides various usage metrics for visibility, but only data ingest i
 Here are several strategies to avoid surprises:
 
 ### ✅ 1. Use traffic filters
-Apply [traffic filters](/guides/creating-filters) to only capture data from specific endpoints, headers, or service patterns. This reduces noise and focuses ingest on meaningful interactions. The most common "noisy" traffic patterns include heartbeats, monitoring systems and database keepalives. Common systems like Datadog and New Relic are filtered out in the default `standard` filter set (for example).
+Apply [traffic filters](/guides/creating-filters) to only capture data from specific endpoints, headers, or service patterns. This reduces noise and focuses ingest on meaningful interactions. The most common "noisy" traffic patterns include heartbeats, monitoring systems and database keepalives. Common systems like Datadog and New Relic are filtered out in the default `standard` filter set (for example). To do that, check out the [ignore-src-ips](/setup/sidecar/annotations/#sidecarspeedscalecomignore-src-ips) and [ignore-src-hosts](/setup/sidecar/annotations/#sidecarspeedscalecomignore-src-hosts) annotations.
 
 ### 🛑 2. Turn off the sidecar during idle periods
 You can disable the Speedscale sidecar dynamically via your deployment configuration or control plane. Use automation to stop ingesting traffic outside of business hours or test windows.
