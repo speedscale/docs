@@ -519,6 +519,10 @@ const config = {
             from: "/proxymock/reference/repo.md",
             to: "/proxymock/getting-started/",
           },
+          {
+            from: "/guides/reduce-ingest/",
+            to: "/reference/pricing-faq/",
+          },
         ],
       },
     ],
