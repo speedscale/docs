@@ -515,3 +515,29 @@ Never hesitate to reach out to Speedscale support if you need help. We work hard
 Speedscale typically releases new customer-side components weekly or more. By default, the Speedscale [helm](https://github.com/speedscale/operator-helm/blob/main/README.md) chart uses a pinned patch version that will not automatically upgrade. However, if you would like to always use the latest version you can instead pin to the minor version and set your image pull policy to pull more frequently. This will ensure you have the latest non-breaking version installed.
 
 If you plan to manually upgrade, we recommend doing so at least monthly.
+
+### Does Speedscale support sampling traffic?
+
+Yes, but maybe not in the way you expect.
+
+Sampling is a technique for capturing a subset of application traffic.  This is
+an effective way to reduce the amount of data that is sent to Speedscale or
+limit the blast radius of an infrasructure change when validating the Speedscale
+sidecar proxy, called [goproxy](/reference/glossary/#goproxy).
+
+Speedscale does not support capturing a subset of traffic from a single goproxy
+instance, but you can run goproxy on less of your nodes.  See [pod
+sampling](/guides/production-readiness/#pod-sampling).
+
+"But why doesn't Speedscale let me add the sidecar to all pods and choose a
+percentage of traffic to sample?"  Glad you asked.  That's a valid question
+considering this is how other types of data (like
+[tracing](https://en.wikipedia.org/wiki/Tracing_(software))) handle sampling.
+Unfortunately, this approach doesn't work well for traffic capture.  Network
+traffic is sent as part of a connection between a client and server, between the
+user and your application, and having only part of that user's session doesn't
+make sense.  Let's say you have an online store.  Your customer looks at a
+product, links to a similar product from that page, adds to the cart, and then
+checks out.  If Speedscale only captures the "add to cart" request the data is
+incomplete, out of context, and not very useful.
+
