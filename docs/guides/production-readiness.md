@@ -141,6 +141,8 @@ In addition to the resources, there are numerous other ways to customize the sid
 
 ## Pod Sampling
 
+See the [sampling FAQ](/reference/faq/#does-speedscale-support-sampling-traffic) for motivation.
+
 Sampling or "canary deployment" is an effective way to limit the blast radius of any change. There are multiple ways to configure sampling for pods that are built into Kubernetes. Here are 2 options:
 
 1. Additional Deployments with same label
