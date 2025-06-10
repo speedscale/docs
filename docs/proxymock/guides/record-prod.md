@@ -1,5 +1,5 @@
 ---
-title: Snapshot Production Traffic
+title: Record Production Traffic
 ---
 
 # Tests and Mocks from Production Traffic

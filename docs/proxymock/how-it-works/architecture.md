@@ -69,16 +69,20 @@ server does not match a [signature](/proxymock/reference/signature/). In that ca
 request is forwarded to the real resource.
 
   </TabItem>
-  <TabItem value="proxymock-load-generating" label="Load Generator">
+  <TabItem value="proxymock-load-generating" label="Replay / Load Generator">
 Once **proxymock** has created [tests](/reference/glossary.md#test) from inbound
-traffic it can be used as a  [load
-generator](/reference/glossary.md#load-generator) to send one or many requests
-to your app. Requests are generated from the test artifacts captured earlier.
+traffic it can replay those requests back to your app. Requests are
+generated from the test artifacts captured earlier.
 
     <AppWithLoadGenerator />
 
 In this configuration the client is fully replaced by **proxymock** which makes
 requests to your app on port `8080`.
+
+Send enough requests and this replay becomes a full [load
+generator](/reference/glossary.md#load-generator).  See the **proxymock** flags
+for to increase the number of [VUs](/reference/glossary.md#vuser), run for a
+period of time, skip writing new files from replayed requests, etc.
 
   </TabItem>
 </Tabs>
