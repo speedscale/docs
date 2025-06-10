@@ -65,7 +65,7 @@ mock artifacts captured earlier.
 
 While dependencies can be fully replace by **proxymock**, there is a dotted line
 to indicate "passthrough", which is what happens when a request to the mock
-server does not match a [signature](/proxymock/reference/signature/). In that case the
+server does not match a [signature](/proxymock/how-it-works/signature/). In that case the
 request is forwarded to the real resource.
 
   </TabItem>
