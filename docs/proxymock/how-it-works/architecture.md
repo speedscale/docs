@@ -58,27 +58,31 @@ means making requests to `localhost:4143` instead of `localhost:8080`.
 Once **proxymock** has created [mocks](/reference/glossary.md#mock) from
 outbound traffic it can be used as a [mock
 server](/reference/glossary.md#mock-server) to respond to requests from your
-app.  Mock [signatures](/proxymock/reference/signature/) are generated from the
+app.  Mock [signatures](/proxymock/how-it-works/signature/) are generated from the
 mock artifacts captured earlier.
 
     <AppWithMocks />
 
 While dependencies can be fully replace by **proxymock**, there is a dotted line
 to indicate "passthrough", which is what happens when a request to the mock
-server does not match a [signature](/proxymock/reference/signature/). In that case the
+server does not match a [signature](/proxymock/how-it-works/signature/). In that case the
 request is forwarded to the real resource.
 
   </TabItem>
-  <TabItem value="proxymock-load-generating" label="Load Generator">
+  <TabItem value="proxymock-load-generating" label="Replay / Load Generator">
 Once **proxymock** has created [tests](/reference/glossary.md#test) from inbound
-traffic it can be used as a  [load
-generator](/reference/glossary.md#load-generator) to send one or many requests
-to your app. Requests are generated from the test artifacts captured earlier.
+traffic it can replay those requests back to your app. Requests are
+generated from the test artifacts captured earlier.
 
     <AppWithLoadGenerator />
 
 In this configuration the client is fully replaced by **proxymock** which makes
 requests to your app on port `8080`.
+
+Send enough requests and this replay becomes a full [load
+generator](/reference/glossary.md#load-generator).  See the **proxymock** flags
+for to increase the number of [VUs](/reference/glossary.md#vuser), run for a
+period of time, skip writing new files from replayed requests, etc.
 
   </TabItem>
 </Tabs>

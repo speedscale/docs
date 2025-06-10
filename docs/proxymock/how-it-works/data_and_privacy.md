@@ -13,4 +13,9 @@ be shared with anyone, not even us, unless you explicitly authorize. See the
 
 # Telemetry
 
-**proxymock** sends telemetry data to Speedscale to help us improve the product and know what features are important. It also contacts the Speedscale API to validate your API key on each run. It does **not** send any information about the specific nature of your traffic (like URLs, ports, content or other sensitive data). If you don't believe us feel free to sniff the traffic (you could do that with **proxymock**) and see for yourself.
+**proxymock** sends telemetry data to Speedscale to help us improve the product
+and know what features are important. It also contacts the Speedscale API to
+validate your API key on each run. It does **not** send any information about
+the specific nature of your traffic (like URLs, ports, content or other
+sensitive data). If you don't believe us feel free to sniff the traffic (you
+could do that with **proxymock**) and see for yourself.

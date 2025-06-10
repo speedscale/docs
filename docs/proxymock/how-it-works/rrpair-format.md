@@ -1,8 +1,13 @@
-# RRPair Markdown Format Specification
+---
+title: File Format
+---
+
+
+# Markdown Format Specification
 
 ## Overview
 
-The RRPair (Request-Response Pair) markdown format is a human-readable representation of API traffic data used by Speedscale for traffic capture, replay, and testing. This format allows developers and LLMs to easily read, understand, and modify API request/response data while maintaining all necessary technical details for accurate replay.
+**proxymock** creates files as artifacts when recording, replaying, and mocking. The [RRPair](/reference/glossary.md#rrpair) markdown format is a human-readable representation of API traffic data used by Speedscale. This format allows developers and LLMs to easily read, understand, and modify API request/response data while maintaining all necessary technical details for accurate replay.
 
 ## Key Benefits
 

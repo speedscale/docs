@@ -251,7 +251,7 @@ go run main.go "$IPSTACK_API_KEY"
 curl "localhost:4143/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
 ```
 
-You will notice cURL is calling port `4143` instead of `8080` where the demo app is listening. Since we specified `--app-port 8080` requests to proxymock on port `4143` will be captured and redirected to the demo app on port `8080`. See [architecture](../reference/architecture.md) for more details on the communication between components.
+You will notice cURL is calling port `4143` instead of `8080` where the demo app is listening. Since we specified `--app-port 8080` requests to proxymock on port `4143` will be captured and redirected to the demo app on port `8080`. See [architecture](../how-it-works/architecture.md) for more details on the communication between components.
 
 4. Like before you can see your traffic with the `inspect` command:
 
