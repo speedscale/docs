@@ -23,7 +23,7 @@ Speedscale's [mock server](/reference/glossary.md#mock-server) uses the outbound
 (egress) traffic of your application to create a mock server.
 
 Each request received by the mock server is translated into a
-[signature](/proxymock/reference/signature/) to make it quickly identifiable.
+[signature](/proxymock/how-it-works/signature/) to make it quickly identifiable.
 This is visible in mock files and can be modified to change the matching
 criteria.
 

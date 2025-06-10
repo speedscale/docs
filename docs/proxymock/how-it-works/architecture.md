@@ -58,7 +58,7 @@ means making requests to `localhost:4143` instead of `localhost:8080`.
 Once **proxymock** has created [mocks](/reference/glossary.md#mock) from
 outbound traffic it can be used as a [mock
 server](/reference/glossary.md#mock-server) to respond to requests from your
-app.  Mock [signatures](/proxymock/reference/signature/) are generated from the
+app.  Mock [signatures](/proxymock/how-it-works/signature/) are generated from the
 mock artifacts captured earlier.
 
     <AppWithMocks />
