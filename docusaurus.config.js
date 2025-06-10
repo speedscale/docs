@@ -516,6 +516,10 @@ const config = {
           { from: "/guides/istio/", to: "/setup/install/istio/" },
           { from: "/guides/openshift/", to: "/setup/install/openshift/" },
           {
+            from: "/proxymock/reference/architecture/",
+            to: "/proxymock/how-it-works/architecture/",
+          },
+          {
             from: "/proxymock/reference/repo.md",
             to: "/proxymock/getting-started/",
           },
