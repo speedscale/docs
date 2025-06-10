@@ -19,7 +19,7 @@ import ProxymockHero from './index/proxymock_hero.jpg';
   </TabItem>
 </Tabs>
 
-**proxymock** is a backend service emulator that lets you run your app as if it were in a live environment (like production) even when APIs and databases are unavailable. See [how it works](../reference/index.md) for more.
+**proxymock** is a backend service emulator that lets you run your app as if it were in a live environment (like production) even when APIs and databases are unavailable. See [how it works](../how-it-works/index.md) for more.
 
 If you want to deploy any of these [mocks](/reference/glossary.md#mock) or [tests](/reference/glossary.md#test) in the cloud or CI/CD, you can sign up for a **free** account [here](https://app.speedscale.com/signup) for our enterprise service.
 
@@ -41,9 +41,9 @@ Find [answers](./faq.md) to common questions about **proxymock**.
 
 Computers are hard, but we're here to [help](./help.md) with details both free and paid support options.
 
-## [Reference](../reference/index.md) {#reference}
+## [Reference](../how-it-works/index.md) {#reference}
 
-See the [reference](../reference/index.md) for details on more advanced features.
+See the [reference](../how-it-works/index.md) for details on more advanced features.
 
 ## [Speedscale Enterprise](../../intro.md) {#enterprise}
 
