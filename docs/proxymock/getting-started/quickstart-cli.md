@@ -10,16 +10,16 @@ This guide provides a step by step guide to creating a [mock server](reference/g
 
 ![Architecture Overview](./quickstart/ip-lookup-demo-architecture.png)
 
-This demo app is written in go and makes calls to IPStack and (optionally) AWS DynamoDB.
+This demo app is written in go and makes calls to IPstack and (optionally) AWS DynamoDB.
 
 The purpose of this app is to accept two IP addresses, look up their geographic locations using [IP Stack](https://ipstack.com/) and calculate the distance between them.
 
 ## Prerequisites
 
-- Optionally, have a valid [API Key](./initialize.md) if you plan to make calls to the real IPStack
+- Optionally, have a valid [API Key](./initialize.md) if you plan to make calls to the real IPstack
 
 :::note
-This demo does not require an IPStack API key. Instructions for using the pre-made mocks are presented first so you can see a real example of running mocks from a previous recording. Once you have seen this working you can record your own calls to other APIs.
+This demo does not require an IPstack API key. Instructions for using the pre-made mocks are presented first so you can see a real example of running mocks from a previous recording. Once you have seen this working you can record your own calls to other APIs.
 :::
 
 ## How-to Steps {#how-to-steps}
@@ -53,19 +53,12 @@ go mod download
 
 ### Launch using Mocks {#launch-using-mocks}
 
-You can use the pre-made mocks in the repository under `demo/go/snapshots/ip-lookup-demo.jsonl`. You can think of this multi-line JSON file as a set of mocks provided by another engineer.
+You can use the pre-made mocks in the repository under `demo/go/snapshots/api.ipstack.com`.
 
-1. Open the **1st terminal** and import the pre-made snapshot and run the mock server:
-
-```bash
-proxymock init
-proxymock import --file snapshots/ip-lookup-demo.jsonl
-```
-
-The mocks from the snapshot have been written to individual files in a local directory, `./proxymock/imported-ip-lookup-demo` by default.  Run the mock server which will source mocks from this directory:
+1. Open the **1st terminal** and start the mock server, pointing to the existing mock files:
 
 ```bash
-proxymock mock --in ./proxymock/imported-ip-lookup-demo
+proxymock mock --in ./snapshots/api.ipstack.com
 ```
 
 :::note
@@ -81,7 +74,7 @@ The CLI will output a set of environment variables that you can use to route you
 ```bash
 export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
-IPSTACK_API_KEY=1234567890
+export IPSTACK_API_KEY=1234567890
 go run main.go "$IPSTACK_API_KEY"
 ```
 
@@ -91,7 +84,7 @@ The output should look something like this:
 2025/02/28 17:18:39 Listening on port 8080
 ```
 
-Note that the mock has been pre-configured to accept the super-secret 1234567890 IPStack API key. This lets you see how the mock works even if you've never used IP Stack before.
+Note that the mock has been pre-configured to accept the super-secret 1234567890 IPstack API key. This lets you see how the mock works even if you've never used IP Stack before.
 
 5.  Then open a **3rd terminal** and make a request to the demo app using `curl`:
 
@@ -103,35 +96,41 @@ You should see the following response:
 
 ```json
 {
-  "distance": 30.042060297133386,
+  "distance": 1056.4301458905202,
   "request1": {
-    "city": "Tucker",
+    "city": "Mount Laurel",
     "connection_type": "cable",
     "continent_code": "NA",
     "continent_name": "North America",
     "country_code": "US",
     "country_name": "United States",
-    "dma": "524",
+    "dma": "504",
     "ip": "50.168.198.162",
     "ip_routing_type": "fixed",
-    "latitude": 33.856021881103516,
+    "latitude": 39.957000732421875,
     "location": {
       "calling_code": "1",
       "capital": "Washington D.C.",
       "country_flag": "https://assets.ipstack.com/flags/us.svg",
       "country_flag_emoji": "🇺🇸",
       "country_flag_emoji_unicode": "U+1F1FA U+1F1F8",
-      "geoname_id": 4227213,
+      "geoname_id": 4503136,
       "is_eu": false,
-      "languages": [{ "code": "en", "name": "English", "native": "English" }]
+      "languages": [
+        {
+          "code": "en",
+          "name": "English",
+          "native": "English"
+        }
+      ]
     },
-    "longitude": -84.21367645263672,
-    "msa": "12060",
-    "radius": "46.20358",
-    "region_code": "GA",
-    "region_name": "Georgia",
+    "longitude": -74.91622924804688,
+    "msa": "37980",
+    "radius": "54.05969",
+    "region_code": "NJ",
+    "region_name": "New Jersey",
     "type": "ipv4",
-    "zip": "30084"
+    "zip": "08054"
   },
   "request2": {
     "city": "Alpharetta",
@@ -143,7 +142,7 @@ You should see the following response:
     "dma": "524",
     "ip": "174.49.112.125",
     "ip_routing_type": "fixed",
-    "latitude": 34.11735916137695,
+    "latitude": 34.08958053588867,
     "location": {
       "calling_code": "1",
       "capital": "Washington D.C.",
@@ -152,9 +151,15 @@ You should see the following response:
       "country_flag_emoji_unicode": "U+1F1FA U+1F1F8",
       "geoname_id": 4179574,
       "is_eu": false,
-      "languages": [{ "code": "en", "name": "English", "native": "English" }]
+      "languages": [
+        {
+          "code": "en",
+          "name": "English",
+          "native": "English"
+        }
+      ]
     },
-    "longitude": -84.29633331298828,
+    "longitude": -84.29045867919922,
     "msa": "12060",
     "radius": "44.94584",
     "region_code": "GA",
@@ -165,7 +170,7 @@ You should see the following response:
 }
 ```
 
-You've done it! At this point the demo app is running with the mock server. The API key `1234567890` is not valid so a real request to IPStack will fail, but the mock server is replying with the recorded response from the mocks. Note that unknown IP addresses will require changes to the mocks.
+You've done it! At this point the demo app is running with the mock server. The API key `1234567890` is not valid so a real request to IPstack will fail, but the mock server is replying with the recorded response from the mocks. Note that unknown IP addresses will require changes to the mocks.
 
 ### Record with Live Systems {#record-with-live-systems}
 
@@ -194,7 +199,11 @@ recorded tests / mocks are being written to proxymock/recorded-2025-04-15_15-56-
 
 You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy". Copy paste these directly from the CLI output and paste them into step 2.
 
-2. Open a **new terminal** and export the environment variables from the CLI output in step 1. These variables will re-route the outbound network in Golang to point at the proxymock "smart proxy". This will require a real IPStack API key.
+2. Open a **new terminal** and export the environment variables from the CLI output in step 1. These variables will re-route the outbound network in Golang to point at the proxymock "smart proxy". This will require a real IPstack API key.
+
+:::note
+Don't want to go get an IPstack key?  Just record from your own app and skip the rest of this section!
+:::
 
 ```bash
 export http_proxy=http://localhost:4140
