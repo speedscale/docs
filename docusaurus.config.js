@@ -547,6 +547,18 @@ const config = {
             from: "/proxymock/reference/lifecycle/",
             to: "/proxymock/how-it-works/lifecycle/",
           },
+          {
+            from: "/mocks/mocks/",
+            to: "/mocks/",
+          },
+          {
+            from: "/setup/",
+            to: "/setup/install/",
+          },
+          {
+            from: "/transform/",
+            to: "/transform/transforms/",
+          },
         ],
       },
     ],
