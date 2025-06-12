@@ -125,7 +125,7 @@ const config = {
           },
           {
             from: "/configuration/tokenizers-1/http-regex/",
-            to: "/transform/transforms/regex/",
+            to: "/transform/transforms/regex",
           },
           {
             from: "/configuration/tokenizers-1/httpauthorization/",
@@ -379,7 +379,7 @@ const config = {
           },
           {
             from: "/reference/tokenizers-1/http-regex/",
-            to: "/transform/transforms/regex/",
+            to: "/transform/transforms/regex",
           },
           {
             from: "/reference/tokenizers-1/httpauthorization/",
@@ -451,7 +451,7 @@ const config = {
           },
           {
             from: "/reference/transform-traffic/transforms/regex/",
-            to: "/transform/transforms/regex/",
+            to: "/transform/transforms/regex",
           },
           {
             from: "/reference/transform-traffic/transforms/train/",
@@ -463,7 +463,7 @@ const config = {
           },
           {
             from: "/reference/transform-traffic/transforms/dataframe",
-            to: "transform/transforms/dataframe/",
+            to: "/transform/transforms/dataframe",
           },
           {
             from: "/reference/transform-traffic/transforms/train_csv/",
@@ -526,6 +526,26 @@ const config = {
           {
             from: "/guides/reduce-ingest/",
             to: "/reference/pricing-faq/",
+          },
+          {
+            from: "/proxymock/reference/mcp/",
+            to: "/proxymock/how-it-works/mcp/",
+          },
+          {
+            from: "/proxymock/reference/rrpair-format/",
+            to: "/proxymock/how-it-works/rrpair-format/",
+          },
+          {
+            from: "/proxymock/reference/signature/",
+            to: "/proxymock/how-it-works/signature/",
+          },
+          {
+            from: "/proxymock/reference/",
+            to: "/proxymock/how-it-works/",
+          },
+          {
+            from: "/proxymock/reference/lifecycle/",
+            to: "/proxymock/how-it-works/lifecycle/",
           },
         ],
       },
