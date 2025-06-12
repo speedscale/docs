@@ -57,8 +57,8 @@ The screenshots in this section demonstrate:
 
 - [Capture Traffic](/observe/traffic)
 - [Transform Data](/transform/overview)
-- [Service Mocking](/mocks/mocks)
+- [Service Mocking](/mocks/)
 - [Test Configuration](/reference/configuration/)
 - [Reports & Analysis](/guides/reports/)
 
-For detailed implementation guides, see the specific sections for [Setup](/setup/), [Transform](/transform/), and [Replay](/guides/replay/).
+For detailed implementation guides, see the specific sections for [Setup](/setup/install/), [Transform](/transform/transforms/), and [Replay](/guides/replay/).
