@@ -282,12 +282,10 @@ proxymock inspect --in ./proxymock
 
 ![ipstack-response](./quickstart/ipstack-response1.png)
 
-1. Navigate to the Response Body panel using the tab key.
-1. Press the `c` key to copy the contents to the clipboard.
-1. Open a text editor and paste the contents.
-1. Insert `10.12345678` into the `latitude` field.
-1. Copy the entire body into the clipboard again.
-1. Go back to the inspect UI and paste the new body back in by pressing `p`.
+1. Naviagate to the [RRPair](/reference/glossary.md#rrpair) you want to modify.
+1. Press the `e` key to open the request in your favorite text editor.
+1. Insert `10.12345678` into the `latitude` field in the response body.
+1. Save the file.
 1. Restart the mock server with `proxymock mock` and make a request to the demo app. You will notice the modified response.
 
 ## Summary

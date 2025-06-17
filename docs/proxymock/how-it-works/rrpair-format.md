@@ -2,7 +2,6 @@
 title: File Format
 ---
 
-
 # Markdown Format Specification
 
 ## Overview
@@ -19,14 +18,45 @@ title: File Format
 
 ## File Structure
 
-RRPair markdown files use section headers with the pattern `### SECTION_NAME ###` to organize content. The section ordering may change based on inbound or outbound traffic but that is only a convention and not a requirement:
+RRPair markdown files use section headers with the pattern `### SECTION_NAME ###` to organize content. Each section's content is wrapped in triple backticks (```). The section ordering may change based on inbound or outbound traffic but that is only a convention and not a requirement:
 
-```markdown
+````markdown
 ### REQUEST (TEST) ###
+```
+METHOD PROTOCOL://HOST:PORT/PATH?QUERY HTTP/VERSION
+Header-Name: Header-Value
+```
+
+```
+BODY
+```
+
 ### RESPONSE ###
+```
+Header-Name: Header-Value
+Status-Header: status-value
+```
+
+```
+{
+  "response": "body content here"
+}
+```
+
 ### METADATA ###
+```
+direction: IN|OUT
+uuid: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+ts: YYYY-MM-DDTHH:MM:SS.nnnnnnnnnZ
+duration: DURATION
+tags: key1=value1, key2=value2
+```
+
 ### INTERNAL - DO NOT MODIFY ###
 ```
+json: {"msgType":"rrpair","ts":"YYYY-MM-DDTHH:MM:SS.nnnnnnnnnZ",...}
+```
+````
 
 ## Section Specifications
 
@@ -35,8 +65,9 @@ RRPair markdown files use section headers with the pattern `### SECTION_NAME ###
 The REQUEST section represents the HTTP request made to an API endpoint.
 
 #### Format
-```markdown
+````markdown
 ### REQUEST (TEST) ###
+```
 METHOD PROTOCOL://HOST:PORT/PATH?QUERY HTTP/VERSION
 Header-Name: Header-Value
 Another-Header: value1, value2
@@ -44,11 +75,14 @@ Trailer: T1, T2, T3
 T1: trailer-value-1
 T2: trailer-value-2
 T3: trailer-value-3
+```
 
+```
 {
   "request": "body content here"
 }
 ```
+````
 
 #### Rules
 - **First Line**: HTTP request line with method, full URL, and protocol version
@@ -56,37 +90,45 @@ T3: trailer-value-3
 - **Multi-value Headers**: Joined with `, ` (comma-space)
 - **Trailer Headers**: Listed after `Trailer:` header
 - **Content-Length**: Automatically calculated, excluded from display
-- **Body Separation**: Empty line separates headers from body
+- **Section Wrapping**: Headers and body are wrapped in separate backtick blocks
 - **Body Formatting**: JSON is pretty-printed, HTML is formatted
 
 #### Example
-```markdown
+````markdown
 ### REQUEST (TEST) ###
+```
 POST https://api.example.com/v1/users HTTP/2.0
 Authorization: Bearer eyJ0eXAiOiJKV1Q...
 Content-Type: application/json
 User-Agent: MyApp/1.0
+```
 
+```
 {
   "username": "john_doe",
   "email": "john@example.com"
 }
 ```
+````
 
 ### RESPONSE Section
 
 The RESPONSE section represents the HTTP response from an API endpoint.
 
 #### Format
-```markdown
+````markdown
 ### RESPONSE ###
+```
 Header-Name: Header-Value
 Status-Header: status-value
+```
 
+```
 {
   "response": "body content here"
 }
 ```
+````
 
 #### Rules
 - **Headers Only**: No status line (status code stored in internal JSON)
@@ -96,12 +138,15 @@ Status-Header: status-value
 - **Empty Bodies**: Represented as empty section
 
 #### Example
-```markdown
+````markdown
 ### RESPONSE ###
+```
 Content-Type: application/json
 Location: /users/12345
 X-Request-ID: abc123
+```
 
+```
 {
   "id": 12345,
   "username": "john_doe",
@@ -109,20 +154,25 @@ X-Request-ID: abc123
   "created_at": "2024-01-15T14:30:22Z"
 }
 ```
+````
 
 ### RESPONSE (MOCK) Section
 
 Used for outgoing traffic where the response is mocked.
 
 #### Format
-```markdown
+````markdown
 ### RESPONSE (MOCK) ###
+```
 Content-Type: application/json
+```
 
+```
 {
   "mock": "response data"
 }
 ```
+````
 
 #### Rules
 - Same formatting rules as RESPONSE section
@@ -133,12 +183,14 @@ Content-Type: application/json
 The SIGNATURE section defines matching criteria for request replay.
 
 #### Format
-```markdown
+````markdown
 ### SIGNATURE ###
+```
 key1 is value1
 key2 is value2
 key3 is -NONE-
 ```
+````
 
 #### Rules
 - **Format**: `key is value`
@@ -152,28 +204,32 @@ key3 is -NONE-
   - `instance` - Instance number for disambiguation
 
 #### Example
-```markdown
+````markdown
 ### SIGNATURE ###
+```
 http:host is api.example.com
 http:method is POST
 http:queryparams is -NONE-
 http:url is /v1/users
 instance is 0
 ```
+````
 
 ### METADATA Section
 
 Contains essential metadata about the request-response pair.
 
 #### Format
-```markdown
+````markdown
 ### METADATA ###
+```
 direction: IN|OUT
 uuid: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ts: 2024-01-15T14:30:22.123456789Z
 duration: 150ms
 tags: key1=value1, key2=value2
 ```
+````
 
 #### Fields
 - **direction**: Traffic direction (`IN` for incoming, `OUT` for outgoing)
@@ -183,24 +239,29 @@ tags: key1=value1, key2=value2
 - **tags**: Comma-separated key=value pairs for categorization
 
 #### Example
-```markdown
+````markdown
 ### METADATA ###
+```
 direction: IN
 uuid: f3ead946-90b1-43ab-a7d6-be3f799e8e83
 ts: 2024-01-15T14:30:22.489942Z
 duration: 155ms
 tags: environment=staging, service=user-api, test_case=registration
 ```
+````
 
 ### INTERNAL Section
 
-Contains the complete JSON representation of the RRPair for system use.
+Contains the complete JSON representation of the RRPair for system use.  This is
+not intended for humans.
 
 #### Format
-```markdown
+````markdown
 ### INTERNAL - DO NOT MODIFY ###
+```
 json: {"msgType":"rrpair","ts":"2024-01-15T14:30:22.489942Z",...}
 ```
+````
 
 #### Rules
 - **Single Line**: Entire JSON object on one line
@@ -237,24 +298,31 @@ json: {"msgType":"rrpair","ts":"2024-01-15T14:30:22.489942Z",...}
 ## Complete Examples
 
 ### Incoming API Request Example
-```markdown
+````markdown
 ### REQUEST (TEST) ###
+```
 POST https://api.payment.com/v1/charges HTTP/2.0
 Authorization: Bearer sk_test_123456789
 Content-Type: application/json
 Idempotency-Key: charge_12345
+```
 
+```
 {
   "amount": 2000,
   "currency": "usd",
   "source": "tok_visa",
   "description": "Test charge"
 }
+```
 
 ### RESPONSE ###
+```
 Content-Type: application/json
 Request-ID: req_abc123def456
+```
 
+```
 {
   "id": "ch_1234567890",
   "amount": 2000,
@@ -262,24 +330,32 @@ Request-ID: req_abc123def456
   "status": "succeeded",
   "created": 1642176622
 }
+```
 
 ### METADATA ###
+```
 direction: IN
 uuid: f3ead946-90b1-43ab-a7d6-be3f799e8e83
 ts: 2024-01-15T14:30:22.489942Z
 duration: 155ms
 tags: service=payment, environment=test
-
-### INTERNAL - DO NOT MODIFY ###
-json: {"msgType":"rrpair","ts":"2024-01-15T14:30:22.489942Z","l7protocol":"http","duration":155,"tags":{"service":"payment","environment":"test"},"uuid":"8+rZRpCxQ6un1r4/eZ6Ogw==","direction":"IN","http":{"req":{"url":"/v1/charges","uri":"/v1/charges","version":"2.0","method":"POST","host":"api.payment.com","headers":{"Authorization":["Bearer sk_test_123456789"],"Content-Type":["application/json"],"Idempotency-Key":["charge_12345"]}},"res":{"contentType":"application/json","statusCode":200,"statusMessage":"200 OK","headers":{"Content-Type":["application/json"],"Request-ID":["req_abc123def456"]},"bodyBase64":"eyJpZCI6ImNoXzEyMzQ1Njc4OTAiLCJhbW91bnQiOjIwMDAsImN1cnJlbmN5IjoidXNkIiwic3RhdHVzIjoic3VjY2VlZGVkIiwiY3JlYXRlZCI6MTY0MjE3NjYyMn0="}}}
 ```
 
+### INTERNAL - DO NOT MODIFY ###
+```
+json: {"msgType":"rrpair","ts":"2024-01-15T14:30:22.489942Z","l7protocol":"http","duration":155,"tags":{"service":"payment","environment":"test"},"uuid":"8+rZRpCxQ6un1r4/eZ6Ogw==","direction":"IN","http":{"req":{"url":"/v1/charges","uri":"/v1/charges","version":"2.0","method":"POST","host":"api.payment.com","headers":{"Authorization":["Bearer sk_test_123456789"],"Content-Type":["application/json"],"Idempotency-Key":["charge_12345"]}},"res":{"contentType":"application/json","statusCode":200,"statusMessage":"200 OK","headers":{"Content-Type":["application/json"],"Request-ID":["req_abc123def456"]},"bodyBase64":"eyJpZCI6ImNoXzEyMzQ1Njc4OTAiLCJhbW91bnQiOjIwMDAsImN1cnJlbmN5IjoidXNkIiwic3RhdHVzIjoic3VjY2VlZGVkIiwiY3JlYXRlZCI6MTY0MjE3NjYyMn0="}}}
+```
+````
+
 ### Outgoing API Request Example
-```markdown
+````markdown
 ### RESPONSE (MOCK) ###
+```
 Content-Type: application/json
 X-API-Version: v1
+```
 
+```
 {
   "users": [
     {
@@ -295,29 +371,42 @@ X-API-Version: v1
   ],
   "total": 2
 }
+```
 
 ### SIGNATURE ###
+```
 http:host is internal-api.company.com
 http:method is GET
 http:queryparams is limit=10&offset=0
 http:url is /v1/users
 instance is 0
+```
 
 ### REQUEST ###
+```
 GET http://internal-api.company.com/v1/users?limit=10&offset=0 HTTP/1.1
 Authorization: Bearer internal_token_123
 User-Agent: MyService/2.1.0
+```
+
+```
+
+```
 
 ### METADATA ###
+```
 direction: OUT
 uuid: ba659889-6d94-40f1-b49f-d78f38df7dbd
 ts: 2024-01-15T14:31:25.250965Z
 duration: 42ms
 tags: service=user-api, call_type=internal
+```
 
 ### INTERNAL - DO NOT MODIFY ###
+```
 json: {"msgType":"rrpair","ts":"2024-01-15T14:31:25.250965Z","l7protocol":"http","duration":42,"tags":{"service":"user-api","call_type":"internal"},"uuid":"umWYiW2UQPG0n9ePON99vQ==","direction":"OUT","http":{"req":{"url":"/v1/users","uri":"/v1/users?limit=10&offset=0","version":"1.1","method":"GET","host":"internal-api.company.com","headers":{"Authorization":["Bearer internal_token_123"],"User-Agent":["MyService/2.1.0"]}},"res":{"contentType":"application/json","statusCode":200,"statusMessage":"200 OK","headers":{"Content-Type":["application/json"],"X-API-Version":["v1"]},"bodyBase64":"eyJ1c2VycyI6W3siaWQiOjEsIm5hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obkBleGFtcGxlLmNvbSJ9LHsiaWQiOjIsIm5hbWUiOiJKYW5lIFNtaXRoIiwiZW1haWwiOiJqYW5lQGV4YW1wbGUuY29tIn1dLCJ0b3RhbCI6Mn0="}},"signature":{"http:host":"aW50ZXJuYWwtYXBpLmNvbXBhbnkuY29t","http:method":"R0VU","http:queryparams":"bGltaXQ9MTAmb2Zmc2V0PTA=","http:url":"L3YxL3VzZXJz","instance":"MA=="}}
 ```
+````
 
 ## Usage Guidelines
 
@@ -353,3 +442,4 @@ json: {"msgType":"rrpair","ts":"2024-01-15T14:31:25.250965Z","l7protocol":"http"
 5. **Metadata Accuracy**: Ensure timestamps and UUIDs are valid
 6. **Tag Organization**: Use consistent tag naming conventions
 7. **Signature Completeness**: Include all necessary matching criteria
+

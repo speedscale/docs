@@ -15,7 +15,7 @@ cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/action.jsonl
 
 ### Assertion
 
-A validation applied to each individual RRPair captured in a [report](#report),
+A validation applied to each individual [RRPair](#rrpair) captured in a [report](#report),
 used to confirm your application behavior during [replay](#replay). Use a
 [filter](#filter) to narrow the scope of assertions. Assertions are defined in
 [test configs](#test-config). Assertions have no effect when running in [low
@@ -190,6 +190,9 @@ The RRPair, short for request / response pair, is the Speedscale internal
 representation in which all traffic is stored. The RRPair is segregated into a
 request and a response, but also may contain just part of a request or
 response like when representing part of a data stream.
+
+See the [markdown file format](/proxymock/how-it-works/rrpair-format) for the
+easiest way to view and modify RRPairs on your local machine.
 
 ### Schedule
 
