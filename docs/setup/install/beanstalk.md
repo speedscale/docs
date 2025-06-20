@@ -109,7 +109,7 @@ services:
     volumes:
       - ./certs:/etc/ssl/capture
   goproxy:
-    image: gcr.io/speedscale/goproxy:v1.2
+    image: gcr.io/speedscale/goproxy:v2.3.586
     ports:
       - 80:4143
     volumes:
@@ -129,17 +129,16 @@ services:
       - APP_POD_NAME=notifications
       - APP_POD_NAMESPACE=notifications
   forwarder:
-    image: gcr.io/speedscale/forwarder:v1.2
+    image: gcr.io/speedscale/forwarder:v2.3.586
     env_file:
       - .env
     environment:
       - CLUSTER_NAME=beanstalk
-```
 
 generator snippet
 ```yaml
   generator:
-    image: gcr.io/speedscale/generator:v1.2
+    image: gcr.io/speedscale/generator:v2.3.586
     restart: "no"
     env_file:
       - .env
