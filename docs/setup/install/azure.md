@@ -135,7 +135,7 @@ spec:
         app: goproxy-capture
     spec:
       containers:
-        - image: gcr.io/speedscale/goproxy:v1.3
+        - image: gcr.io/speedscale/goproxy:v2.3.586
           imagePullPolicy: Always
           name: goproxy-capture
           env:

@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "forwarder" {
   container_definitions = jsonencode([
     {
       name      = "forwarder"
-      image     = "gcr.io/speedscale/forwarder:v1.2"
+      image     = "gcr.io/speedscale/forwarder:v2.3.586"
       essential = true
       healthCheck = {
         command = [
@@ -230,7 +230,7 @@ resource "aws_ecs_task_definition" "with-speedscale" {
     },
     {
       name      = "goproxy"
-      image     = "gcr.io/speedscale/goproxy:v1.2"
+      image     = "gcr.io/speedscale/goproxy:v2.3.586"
       essential = true
       logConfiguration = {
         logDriver = "awslogs",
@@ -363,7 +363,7 @@ resource "aws_ecs_task_definition" "generator" {
   container_definitions = jsonencode([
     {
       name      = "generator"
-      image     = "gcr.io/speedscale/generator:v1.4"
+      image     = "gcr.io/speedscale/generator:v2.3.586"
       essential = true
       logConfiguration = {
         logDriver = "awslogs",
@@ -521,7 +521,7 @@ resource "aws_ecs_task_definition" "with-responder" {
     },
     {
       name      = "responder"
-      image     = "gcr.io/speedscale/responder:v1.4"
+      image     = "gcr.io/speedscale/responder:v2.3.586"
       essential = true
       healthCheck = {
         command = [
