@@ -95,5 +95,14 @@ export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
 C++ applications using OpenSSL will respect the `SSL_CERT_FILE` environment variable to locate trusted root certificates. This environment variable will be automatically populated by the Speedscale operator.
 
 </TabItem>
+<TabItem value="python" label="Python">
+
+```shell
+export REQUESTS_CA_BUNDLE="${HOME}/.speedscale/certs/tls.crt"
+```
+
+Python applications (including the popular requests library and many others) will use the `REQUESTS_CA_BUNDLE` environment variable to locate trusted root certificates.
+
+</TabItem>
 </Tabs>
 

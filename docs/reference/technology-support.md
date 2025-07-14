@@ -8,49 +8,82 @@ Protocol Support
 
 Speedscale replays involve three distinct steps that are supported separately: **Capture**, **Analyze**, and **Playback**. It is possible to have observability (Capture) into one protocol without necessarily having full replay support. Please reach out if you need support for a technology not in this list.
 
-### Supported Protocols <a href="#protocols" id="protocols"></a>
+### Supported Languages
 
-| Technology | Type | Support | Notes |
-| ---------- | ---- | ------- | ----- |
-| AMQP (0.9.1) | Protocol | Capture Only | |
-| Auth0 | API | Full | |
-| Basic Auth | Auth | Full | |
-| Bearer JWT | Auth | Full | Automatic discovery and replacement|
-| Google BigQuery | DBMS | Full | If using the Google SDK with standard pagination |
-| Google BigTable | DBMS | Full | If using the Google SDK with standard pagination |
-| Cookies | Auth | Full | |
-| AWS Athena | DBMS | Full | |
-| AWS Data Firehose | API | Full | |
-| AWS DynamoDB | DBMS | Full | |
-| AWS Redshift | DBMS | Full | |
-| AWS S3 / minio | API | Full |  |
-| AWS SNS | API | Full | |
-| AWS SQS | API | Full | |
-| Elasticsearch | DBMS | Full |  |
-| Kubernetes (1.19+) | Environment | Full |  |
-| Gmail | API | Full |  |
-| GraphQL | Protocol | Full |  |
-| gRPC | Protocol | Full |  |
-| HTTP 1.1 / 2.0 | Protocol | Full |  |
-| HTTP/S inbound | Protocol | Full | See [TLS](/setup/sidecar/tls/) |
-| JSON | Protocol | Full |  |
-| IMAP | Protocol | Capture Only |  |
-| Istio (1.12+) | Environment | Full | |
-| Kafka | Protocol | Capture Only | Active beta for full replay |
-| Microsoft Outlook 365 | API | Full |  |
-| MongoDB | DBMS | Capture Only |  |
-| Mutual TLS (mTLS) | Protocol | Partial | See [TLS](/setup/sidecar/tls/) |
-| MySQL | DBMS | Full | |
-| Postgres | DBMS | Full |  |
-| RabbitMQ | Protocol | Capture Only | |
-| Redis | DBMS | Capture Only | |
-| Salesforce | API | Full | |
-| SOAP | API | Full | |
-| Stripe | API | Full |  |
-| Twilio | API | Full |  |
-| XML | Protocol | Full |  |
-| Zapier | API | Full | |
-| C++ | Language | Full | |
+| Technology | Type     | Support | Notes                        |
+|------------|----------|---------|------------------------------|
+| .NET       | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+| C++        | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+| Go         | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+| Java       | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+| Node.js    | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+| Python     | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+| Ruby       | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+
+### Supported Protocols
+
+| Technology           | Type      | Support      | Notes                                                                 |
+|---------------------|-----------|--------------|-----------------------------------------------------------------------|
+| AMQP                | Protocol  | Capture Only | 0.9.1 or newer                                                       |
+| Form URL Encoded    | Protocol  | Full         |                                                                       |
+| Google PubSub       | Protocol  | Capture Only |                                                                       |
+| GraphQL             | Protocol  | Full         | See [GraphQL guide](/guides/graphql.md). See [details](/observe/bodies.md#graphql) |
+| gRPC                | Protocol  | Full         | See [details](/observe/bodies.md#grpc)                               |
+| HTTP 1.1            | Protocol  | Full         |                                                                       |
+| HTTP 2.0            | Protocol  | Full         |                                                                       |
+| HTTP/S TLS          | Protocol  | Full         | See [TLS](/setup/sidecar/tls/)                                       |
+| IMAP                | Protocol  | Capture Only |                                                                       |
+| JSON                | Protocol  | Full         |                                                                       |
+| Kafka               | Protocol  | Capture Only | Active beta for full replay. See [details](/observe/bodies.md#kafka) |
+| Mutual TLS (mTLS)   | Protocol  | Partial      | See [TLS](/setup/sidecar/tls/)                                       |
+| Protobuf            | Protocol  | Full         |                                                                       |
+| RabbitMQ            | Protocol  | Capture Only |                                                                       |
+| SOAP                | Protocol  | Full         |                                                                       |
+| XML                 | Protocol  | Full         |                                                                       |
+| YAML                | Protocol  | Full         |                                                                       |
+
+### Supported Auth
+
+| Technology              | Type | Support | Notes                                                                                  |
+|-------------------------|------|---------|----------------------------------------------------------------------------------------|
+| AWS Signature (SigV4)   | Auth | Full    | Automatic discovery and replacement. See [aws_auth transform](/transform/transforms/aws_auth.md) |
+| Basic Auth              | Auth | Full    |                                                                                        |
+| Bearer JWT              | Auth | Full    | Automatic discovery and replacement. See [JWT guide](/reference/transform-traffic/common-patterns/guide-jwt.md) |
+| Cookies                 | Auth | Full    |                                                                                        |
+
+### Supported DBMS
+
+| Technology              | Type | Support      | Notes                                                      |
+|-------------------------|------|--------------|------------------------------------------------------------|
+| AWS Athena              | DBMS | Full         |                                                            |
+| AWS DynamoDB            | DBMS | Full         |                                                            |
+| AWS RDS                 | DBMS | Full         | Supported for Postgres and MySQL engines.                  |
+| AWS Redshift            | DBMS | Full         |                                                            |
+| Elasticsearch           | DBMS | Full         | For the REST API                                           |
+| Google BigQuery         | DBMS | Full         | If using the Google SDK with standard pagination           |
+| Google BigTable         | DBMS | Full         | If using the Google SDK with standard pagination           |
+| Google Spanner          | DBMS | Full         | If using the Google SDK with standard pagination           |
+| Microsoft Outlook 365   | API  | Full         |                                                            |
+| MongoDB                 | DBMS | Capture Only |                                                            |
+| MySQL                   | DBMS | Full         |                                                            |
+| Postgres                | DBMS | Full         | See [details](/observe/bodies.md#postgres)                 |
+| Redis                   | DBMS | Capture Only | See [details](/observe/bodies.md#redis)                    |
+
+### Supported APIs
+
+| Technology              | Type | Support | Notes                                         |
+|-------------------------|------|---------|-----------------------------------------------|
+| Auth0                   | API  | Full    |                                               |
+| AWS Data Firehose       | API  | Full    |                                               |
+| AWS S3 / minio          | API  | Full    |                                               |
+| AWS SNS                 | API  | Full    |                                               |
+| AWS SQS                 | API  | Full    |                                               |
+| Gmail                   | API  | Full    |                                               |
+| Microsoft Outlook 365   | API  | Full    |                                               |
+| Salesforce              | API  | Full    | Both the legacy SOAP and new REST APIs        |
+| Stripe                  | API  | Full    |                                               |
+| Twilio                  | API  | Full    |                                               |
+| Zapier                  | API  | Full    |                                               |
 
 ### Environments <a href="#environments" id ="environments"></a>
 
@@ -90,3 +123,33 @@ Speedscale control plane, sidecar and replay system are compatible with all curr
 ### Questions?
 
 If there are other protocols that are integral to your organization, please let us know at [support@speedscale.com](mailto:support@speedscale.com) or join our [slack community](https://slack.speedscale.com).
+
+### Supported Observability & Tracing
+
+| Technology                        | Type          | Notes                         |
+|------------------------------------|---------------|-------------------------------|
+| APM Agent                         | Observability | Should be filtered by default. |
+| AWS Cloudwatch Monitoring          | Observability | Should be filtered by default. |
+| Azure Application Insights         | Observability | Should be filtered by default. |
+| Azure Live Diagnostics             | Observability | Should be filtered by default. |
+| calico-node-metrics                | Observability | Should be filtered by default. |
+| Cisco Appdynamics                  | Observability | Should be filtered by default. |
+| Datadog                            | Observability | Should be filtered by default. |
+| DDTracing                          | Observability | Should be filtered by default. |
+| Dynatrace                          | Observability | Should be filtered by default. |
+| Elastic APM                        | Observability | Should be filtered by default. |
+| ELB HealthChecker                  | Observability | Should be filtered by default. |
+| Google Cloudtrace                  | Observability | Should be filtered by default. |
+| GoogleHC                           | Observability | Should be filtered by default. |
+| Java Hystrix                       | Observability | Should be filtered by default. |
+| kube-probe                         | Observability | Should be filtered by default. |
+| LightStep                          | Observability | Should be filtered by default. |
+| New Relic                          | Observability | Should be filtered by default. |
+| newrelic.com                       | Observability | Should be filtered by default. |
+| OpenTelemetry                      | Observability | Should be filtered by default. |
+| OpenTracing                        | Observability | Should be filtered by default. |
+| Prometheus                         | Observability | Should be filtered by default. |
+| Sentry                             | Observability | Should be filtered by default. |
+| Signoz                             | Observability | Should be filtered by default. |
+| Tealeaf                            | Observability | Should be filtered by default. |
+| Zipkin                             | Observability | Should be filtered by default. |
