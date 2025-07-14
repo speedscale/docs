@@ -50,6 +50,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Twilio | API | Full |  |
 | XML | Protocol | Full |  |
 | Zapier | API | Full | |
+| C++ | Language | Full | |
 
 ### Environments <a href="#environments" id ="environments"></a>
 
