@@ -8,6 +8,8 @@ import TabItem from '@theme/TabItem';
 export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
 ```
 
+Go applications using OpenSSL will respect the `SSL_CERT_FILE` environment variable to locate trusted root certificates. This environment variable will be automatically populated by the Speedscale operator.
+
 </TabItem>
 <TabItem value="nodejs" label="Node.js">
 
@@ -23,6 +25,8 @@ For Node.js applications newer than `v7.3.0`.
 ```shell
 export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
 ```
+
+Ruby applications using OpenSSL will respect the `SSL_CERT_FILE` environment variable to locate trusted root certificates. This environment variable will be automatically populated by the Speedscale operator.
 
 </TabItem>
 <TabItem value="dotnet" label=".NET">
@@ -80,6 +84,24 @@ metadata:
     sidecar.speedscale.com/tls-out: "true"
     sidecar.speedscale.com/tls-java-tool-options: "true"
 ```
+
+</TabItem>
+<TabItem value="cpp" label="C++">
+
+```shell
+export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
+```
+
+C++ applications using OpenSSL will respect the `SSL_CERT_FILE` environment variable to locate trusted root certificates. This environment variable will be automatically populated by the Speedscale operator.
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```shell
+export REQUESTS_CA_BUNDLE="${HOME}/.speedscale/certs/tls.crt"
+```
+
+Python applications (including the popular requests library and many others) will use the `REQUESTS_CA_BUNDLE` environment variable to locate trusted root certificates.
 
 </TabItem>
 </Tabs>
