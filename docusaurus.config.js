@@ -181,7 +181,7 @@ const config = {
           },
           {
             from: "/configuration/transform-traffic/transforms/json_path/",
-            to: "/reference/transform-traffic/transforms/json_path/",
+            to: "/transform/transforms/json_path/",
           },
           {
             from: "/configuration/transform-traffic/transforms/variable_load/",
@@ -429,10 +429,7 @@ const config = {
             from: "/reference/transform-traffic/transforms/grpc_field/",
             to: "/transform/extractors/json_path/",
           },
-          {
-            from: "/reference/transform-traffic/transforms/json_path/",
-            to: "/transform/extractors/json_path/",
-          },
+
           {
             from: "/reference/transform-traffic/transforms/json_selector/",
             to: "/transform/transforms/json_selector/",

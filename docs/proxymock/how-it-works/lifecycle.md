@@ -12,7 +12,7 @@ wherever proxymock was run.
 Traffic going to (tests), and coming from (mocks), your app can be recorded.
 The recorded traffic that went to your app can be replayed with `proxymock
 replay`.  The recorded traffic that went from your app to external resources can
-be used to create a [mock server](#mock-server) with `proxymock mock`.
+be used to create a [mock server](/reference/glossary/#mock-server) with `proxymock mock`.
 
 When running `proxymock replay` or `proxymock mock` new requests are also
 recorded to the `proxymock` directory, unless disabled with a CLI flag.
