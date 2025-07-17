@@ -397,7 +397,7 @@ resource "aws_ecs_task_definition" "generator" {
         },
         {
           name  = "SPEEDSCALE_APP_URL"
-          value = "dev.speedscale.com"
+          value = "app.speedscale.com"
         },
         {
           name  = "SUB_TENANT_NAME"
@@ -405,11 +405,11 @@ resource "aws_ecs_task_definition" "generator" {
         },
         {
           name  = "SUB_TENANT_STREAM"
-          value = "dev-sstenant-external"
+          value = "sstenant-ZZZZZZ"
         },
         {
           name  = "TENANT_BUCKET"
-          value = "dev-sstenant-external"
+          value = "sstenant-ZZZZZZ"
         },
         {
           name  = "TENANT_REGION"
