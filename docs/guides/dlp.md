@@ -94,58 +94,44 @@ dlp:
     config: "standard"
 ```
 
-### Enabling Manually
-
-:::caution Note
-Manually enabling DLP as described below requires access and permissions to edit ConfigMaps in your Kubernetes
-cluster.
-:::
-
-Using `speedctl` as previously shown is the recommended method for enabling DLP. However, it is still possible
-to enable DLP manually. In the `speedscale-operator` ConfigMap located in the `speedscale` namespace, set the
-key `WITH_DLP: "true"`:
-
-```shell
-kubectl patch -n speedscale configmap speedscale-operator -p '{"data":{"WITH_DLP":"true"}}'
-```
-
-After patching the ConfigMap, the operator must be restarted in order to receive the change:
-
-```shell
-kubectl rollout restart deployment speedscale-operator -n speedscale
-```
-
 
 ## Configuring
 
 DLP configurations consist of a set of redaction rules or instructions that will be applied to specific fields
-or attributes of recorded traffic. Each configuration follows the same structure:
+or attributes of recorded traffic. Each configuration follows the same structure using the [transform rules format](../concepts/transforms.md)
 
 ```json
 {
   "id": "my-custom-dlp-config",
-  "redactlist": {
-    "entries": {}
-  }
-}
-```
-
-The `entries` key contains a mapping of protocol to a list of rules to be applied only for that protocol. For
-example, a configuration that redacts the values for HTTP headers `Authorization` and `X-Auth-Token`:
-
-```json
-{
-  "id": "my-custom-dlp-config",
-  "redactlist": {
-    "entries": {
-      "http": [
-        "authorization",
-        "x-auth-token"
-      ]
+  "transforms": [
+    {
+      "filters": {
+        "filters": [
+          {
+            "operator": "CONTAINS",
+            "detectedLocation": "login"
+          }
+        ]
+      },
+      "extractor": {
+        "type": "json_path",
+        "config": {
+          "path": "http.req.http.headers[\"Authorization\"][0].jwt.claims.name"
+        }
+      },
+      "transforms": [
+        {
+          "type": "tag_session"
+        }
+      ],
+      "tags": {
+        "source": "dashboard"
+      }
     }
-  }
+  ]
 }
 ```
+
 
 To create a new DLP configuration, navigate to the `DLP Rules` section listed on the UI sidebar (shown below).
 
@@ -166,6 +152,7 @@ speedctl get dlp-config my-config > my-config.json
 # upload
 speedctl put dlp-config my-config.json
 ```
+
 
 ### Configuration Caveats
 
@@ -397,7 +384,7 @@ speedctl push userdata <userdata id>
 
 1. Navigate to your snapshot in the Speedscale Cloud UI.
 2. Open the Transform Editor.
-3. Open the `Variables (Tests)` tab. 
+3. Open the `Variables (Tests)` tab.
 4. Create a transform chain consisting of these components `source=read_file("s3://<userdata id>") : train_csv()`. In the UI it should look like this:
 
 ![example_transforms](./dlp/example_transforms.png)

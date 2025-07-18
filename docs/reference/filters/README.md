@@ -30,8 +30,26 @@ UI.
 ## Advanced
 
 Filters can be [created in the Speedscale
-app](https://dev.speedscale.com/filterRules/) but the UI does not provide
+app](https://app.speedscale.com/filterRules/) but the UI does not provide
 access to the full expressiveness of the filters.  If you're looking to do
-something advanced it's best to get as far as you can in the UI and then modify
-the JSON manually.
+something advanced it's best to use the advanced filter query strings [for eg](https://app.speedscale.com/filterRules/standard#filter-rule-tab-advanced).
 
+### Filter all
+
+If you'd like to filter all traffic by default you can use the advanced filter query strings and create a filter that looks something like this:
+
+```
+(location CONTAINS "")
+```
+
+This will filter all traffic. You can then progressively add endpoints that you do want to capture for eg.
+
+```
+(location NOT CONTAINS "/login")
+```
+
+to only capture the login endpoint. When we add another endpoint, we use the `AND` operator.
+
+```
+(location NOT CONTAINS "/login" AND location NOT CONTAINS "/signup")
+```
