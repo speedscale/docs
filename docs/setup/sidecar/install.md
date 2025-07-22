@@ -99,3 +99,42 @@ count decrease by one and the sidecar is no longer attached.
 
 Use `speedctl uninstall` to remove all Speedscale components.
 
+
+## Permissions
+
+When deploying the Speedscale sidecar and its init container, certain Kubernetes permissions are required to ensure proper functionality. Below are the permissions needed for both the init container and the sidecar.
+
+### Sidecar Permissions
+
+The sidecar itself requires the following permissions:
+```yaml
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - NET_RAW
+        - NET_ADMIN
+      privileged: false
+      runAsNonRoot: false
+      runAsUser: 0
+```
+
+### Init Container Permissions
+
+The init container requires the following security context settings:
+
+```yaml
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - NET_RAW
+        - NET_ADMIN
+      privileged: false
+      runAsNonRoot: false
+      runAsUser: 0
+```
+
+### Cluster RBAC
+
+You can find the cluster RBAC settings by looking at the latest version of the Speedscale [helm chart](https://github.com/speedscale/operator-helm) in this file `/operator-helm/charts/<version>/templates/rbac.yaml`. The location of this file changes based on the version you are using but here is an [example](https://github.com/speedscale/operator-helm/blob/main/charts/2.3.636/templates/rbac.yaml) of the file for version 2.3.636.
