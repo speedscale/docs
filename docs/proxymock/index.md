@@ -32,6 +32,6 @@ Computers are hard, but we're here to [help](./getting-started/help.md) with det
 
 See the [reference](./how-it-works/index.md) for details on more advanced features.
 
-## [Speedscale Enterprise](/intro) {#enterprise}
+## [Speedscale Enterprise](https://speedscale.com) {#enterprise}
 
-Once you start capturing traffic **proxymock** can provision these in shared cloud environments. This requires [Speedscale Pro or Enterprise](https://speedscale.com/pricing) which will allow you to deploy your mocks and tests in the cloud or create them using production-grade listeners (think agents). Learn more [here](/intro). This is not science fiction and no aliens were harmed in its creation. 
+Once you start capturing traffic **proxymock** can provision these in shared cloud environments. This requires [Speedscale Pro or Enterprise](https://speedscale.com/pricing) which will allow you to deploy your mocks and tests in the cloud or create them using production-grade listeners (think agents). Learn more [here](https://speedscale.com). This is not science fiction and no aliens were harmed in its creation. 

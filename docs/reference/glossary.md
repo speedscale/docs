@@ -75,7 +75,7 @@ of Speedscale it describes a request sent to the [SUT](#sut) from a Speedscale
 component. They are called tests because they are meant to exercise some
 behavior of your application.
 
-In Speedscale tests are sent by either [proxymock](/proxymock/getting-started)
+In Speedscale tests are sent by either [proxymock](/proxymock/)
 on your local machine or by the [generator](#generator) in a cluster.
 
 ### Low Data Mode
@@ -94,7 +94,7 @@ will show when errors occur.
 ### Mock
 
 A mock is an artifact that can be used to imitate a real service, API, or
-database. [proxymock](/proxymock/getting-started) is built to create mock
+database. [proxymock](/proxymock/) is built to create mock
 definitions from application traffic and then use them with a [mock
 server](#mock-server) to simulate the services, APIs, and databases your
 application depends on.
@@ -111,7 +111,7 @@ is generally used during local development or testing when it is impractical or
 impossible to run the real thing.
 
 In Speedscale mock servers are provided by either
-[proxymock](/proxymock/getting-started) on your local machine or by the
+[proxymock](/proxymock/) on your local machine or by the
 [responder](#responder) in a cluster.
 
 See [Mocking and Service Virtualization](/mocks/) for more information.
@@ -225,7 +225,7 @@ testing and this is a generic way to refer to it.
 ### Test
 
 A test is an artifact that can be used to imitate a real client workload.
-[proxymock](/proxymock/getting-started) is built to create test definitions from
+[proxymock](/proxymock/) is built to create test definitions from
 application traffic and then use them with a [load generator](#load-generator)
 to simulate the client workloads that make requests to your application.
 
@@ -233,7 +233,7 @@ The difference between a test and a [mock](#mock) is that tests are inbound
 traffic (from the client to your app), and mocks are outbound traffic (from your
 app to external resources).
 
-In Speedscale tests are sent by either [proxymock](/proxymock/getting-started)
+In Speedscale tests are sent by either [proxymock](/proxymock/)
 on your local machine or by the [generator](#generator) in a cluster.
 
 ### Test Config
