@@ -518,7 +518,7 @@ const config = {
           },
           {
             from: "/proxymock/reference/repo.md",
-            to: "/proxymock/getting-started/",
+            to: "/proxymock/",
           },
           {
             from: "/guides/reduce-ingest/",
