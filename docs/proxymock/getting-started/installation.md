@@ -29,7 +29,7 @@ import BinaryCLIInstall from './installation/\_cli_binary.mdx'
   </TabItem>
 </Tabs>
 
-:::info CI/CD
-To install non interactively (like in CI/CD) set the `SPEEDSCALE_API_KEY` environment variable. This is an [Enterprise](/quick-start/) feature.
+:::info Coding with AI Tools?
+Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp --install`.
 :::
 

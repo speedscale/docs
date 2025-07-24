@@ -27,7 +27,7 @@ If you want to deploy any of these [mocks](/reference/glossary.md#mock) or [test
 
 ## [Installation](./installation.md) {#installation}
 
-Learn how to [install](./installation.md) the **proxymock** CLI.
+Start by [installing](./installation.md) the **proxymock** CLI.
 
 ## [Quickstart](./quickstart-cli.md) {#quickstart}
 
