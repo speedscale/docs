@@ -36,6 +36,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/proxymock/getting-started/",
+            to: "/proxymock/",
+          },
+          {
             from: "/proxymock/getting-started/api-key/",
             to: "/proxymock/getting-started/initialize/",
           },
@@ -518,7 +522,7 @@ const config = {
           },
           {
             from: "/proxymock/reference/repo.md",
-            to: "/proxymock/getting-started/",
+            to: "/proxymock/",
           },
           {
             from: "/guides/reduce-ingest/",
