@@ -36,6 +36,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/proxymock/getting-started/",
+            to: "/proxymock/",
+          },
+          {
             from: "/proxymock/getting-started/api-key/",
             to: "/proxymock/getting-started/initialize/",
           },
