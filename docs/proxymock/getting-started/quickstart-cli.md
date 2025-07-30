@@ -47,7 +47,7 @@ Use Github Codespaces if you'd rather use a packaged environment and not install
 
 Need another OS like Windows or are you having issues? See advanced [installation](../getting-started/installation.md).
 
-## Step 2: Initialize proxymock
+## Step 2: Initialize proxymock {#initializing}
 
 Run the following command to obtain an API key:
 
@@ -57,7 +57,7 @@ proxymock init
 
 Don't worry, we don't sell marketing data or give your email address to any bot nets.
 
-## Step 3: Install the demo app and start recording
+## Step 3: Install the demo app and start recording {#recording}
 
 ```shell
 git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record -- go run main.go
@@ -81,7 +81,7 @@ Press ctrl-c to interrupt
 2025/07/30 15:19:13 Starting gRPC server on :50053
 ```
 
-## Step 4: Run test transactions
+## Step 4: Run test transactions {#run-tests}
 
 Start a *new* terminal and run the following command.
 
@@ -115,7 +115,7 @@ You will also see some additional output in the original proxymock terminal wind
 ...
 ```
 
-## Step 5: View recording results
+## Step 5: View recording results {#view-recording}
 
 There should be a new directory in the `proxymock` subdirectory inside `outerspace-go`.
 
@@ -140,7 +140,7 @@ User-Agent: curl/8.7.1
 ```
 
 
-## Step 6: Run mock server and tests
+## Step 6: Run mock server and tests {#run-mocks}
 
 Go back to your original terminal (running `proxymock record`), stop proxymock by running CTRL-C and then start a mock server:
 
