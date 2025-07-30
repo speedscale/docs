@@ -1,26 +1,112 @@
 ---
 sidebar_position: 2
 ---
+import ArchitectureOverview from './quickstart/outerspace-go.png'
+import ProxymockRecord from './quickstart/proxymock-record.png'
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import MacCLIInstall from '../index/\_cli_macos_minified.mdx'
+import LinuxCLIInstall from '../index/\_cli_linux_minified.mdx'
 
 # Quickstart
 
+Welcome to proxymock!
+
 This guide provides a step by step guide to creating a [mock server](reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
 
-## Introduction
+## Before you begin
 
-![Architecture Overview](./quickstart/ip-lookup-demo-architecture.png)
+Make sure you have:
 
-This demo app is written in go and makes calls to IPstack and (optionally) AWS DynamoDB.
+- A terminal or command prompt open to run proxymock
+- A separate terminal or command prompt open to run the demo app
+- [go version 1.23.1](https://go.dev/doc/install) or newer installed
 
-The purpose of this app is to accept two IP addresses, look up their geographic locations using [IP Stack](https://ipstack.com/) and calculate the distance between them.
+## Step 1: Install proxymock
 
-## Prerequisites
+<Tabs>
+  <TabItem value="mac" label="macOS">
+    <MacCLIInstall />
+  </TabItem>
+  <TabItem value="linux" label="Linux">
+    <LinuxCLIInstall />
+  </TabItem>
+  <TabItem value="binary" label="Other (Detailed)">
+    For other operating systems and more detailed instructions, see the [installation](../getting-started/installation.md) instructions.
+  </TabItem>
+</Tabs>
 
-- Optionally, have a valid [API Key](./initialize.md) if you plan to make calls to the real IPstack
+Need another OS like Windows or are you having issues? See advanced [installation](../getting-started/installation.md).
 
-:::note
-This demo does not require an IPstack API key. Instructions for using the pre-made mocks are presented first so you can see a real example of running mocks from a previous recording. Once you have seen this working you can record your own calls to other APIs.
-:::
+## Step 2: Initialize proxymock
+
+Run the following command to obtain an API key:
+
+```shell
+proxymock init
+```
+
+Don't worry, we don't sell marketing data or give your email address to any bot nets.
+
+## Step 3: Install the demo app and record traffic
+
+```shell
+git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record
+```
+
+proxymock is now listening on port 4343 for incoming traffic. This traffic will be forwarded to the demo app at 8080.
+
+```sh
+$  git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record
+Cloning into 'outerspace-go'...
+remote: Enumerating objects: 780, done.
+remote: Counting objects: 100% (780/780), done.
+remote: Compressing objects: 100% (360/360), done.
+remote: Total 780 (delta 338), reused 715 (delta 287), pack-reused 0 (from 0)
+Receiving objects: 100% (780/780), 736.18 KiB | 267.00 KiB/s, done.
+Resolving deltas: 100% (338/338), done.
+recording outbound traffic on proxy port 4140
+recording inbound traffic sent to port 4143 (forwarded to your app on port 8080)
+Paste the following environment variables into your app's terminal to record outbound HTTP-only traffic:
+  export http_proxy=http://localhost:4140
+  export https_proxy=http://localhost:4140
+  export grpc_proxy=http://$(hostname):4140
+Paste the following environemnt variables into your app's terminal to record outbound non-HTTP traffic:
+  export http_proxy=socks5h://localhost:4140
+  export https_proxy=socks5h://localhost:4140
+  export tcp_proxy=socks5h://localhost:4140
+  export grpc_proxy=http://$(hostname):4140
+recorded test / mock files are being written to proxymock/recorded-2025-07-30_14-12-47.24325Z
+Press ctrl-c to interrupt
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+```
+
+<img src={ProxymockRecord} alt="Recording" width="900" style={{ display: 'block', margin: '0 auto' }} />
+
+
+## Step 4: Run the demo app
+
+Start a new terminal and run the following command. Keep the `proxymock record` in the previous step running in the separate terminal.
+
+```shell jsx title="Run in new terminal window"
+cd outerspace-go
+export http_proxy=http://localhost:4140
+export https_proxy=http://localhost:4140
+export grpc_proxy=http://$(hostname):4140
+go run main.go
+```
+
+The environment variables make sure that proxymock records the outbound requests that will be turned into a mock.
+
+<img src={ArchitectureOverview} alt="Architecture Overview" width="600" style={{ display: 'block', margin: '0 auto' }} />
+
+This demo app is written in go and makes calls to both encrypted and non-encrypted APIs.
+
+```shell jsx title="Run tests in new terminal window"
+cd outerspace-go
+./tests/run_demo
+```
 
 ## How-to Steps {#how-to-steps}
 
