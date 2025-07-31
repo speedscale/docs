@@ -1,303 +1,165 @@
 ---
 sidebar_position: 2
 ---
+import ArchitectureOverview from './quickstart/outerspace-go.png'
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import MacCLIInstall from '../index/\_cli_macos_minified.mdx'
+import LinuxCLIInstall from '../index/\_cli_linux_minified.mdx'
 
 # Quickstart
 
+Welcome to proxymock!
+
 This guide provides a step by step guide to creating a [mock server](reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
 
-## Introduction
+## Before you begin
 
-![Architecture Overview](./quickstart/ip-lookup-demo-architecture.png)
+Make sure you have:
 
-This demo app is written in go and makes calls to IPstack and (optionally) AWS DynamoDB.
+- A terminal or command prompt open to run proxymock
+- A separate terminal or command prompt open to run the demo app
+- [go version 1.23.1](https://go.dev/doc/install) or newer installed
 
-The purpose of this app is to accept two IP addresses, look up their geographic locations using [IP Stack](https://ipstack.com/) and calculate the distance between them.
+<img src={ArchitectureOverview} alt="Architecture Overview" width="500" style={{ display: 'block', margin: '0 auto' }} />
 
-## Prerequisites
-
-- Optionally, have a valid [API Key](./initialize.md) if you plan to make calls to the real IPstack
+For this example we'll be using a simple demo app that accepts an API request, calls two downstream APIs and returns the results.
 
 :::note
-This demo does not require an IPstack API key. Instructions for using the pre-made mocks are presented first so you can see a real example of running mocks from a previous recording. Once you have seen this working you can record your own calls to other APIs.
-:::
-
-## How-to Steps {#how-to-steps}
-
-This guide will show you how to:
-
-1. Use a pre-packaged recording (aka [snapshot](reference/glossary.md#snapshot)) to create a [mock server](reference/glossary.md#mock-server)
-1. Record the application's outbound [traffic](reference/glossary.md#traffic) while it runs in a terminal to make your own custom [mock server](reference/glossary.md#mock-server)
-
-You do not need to have an IP Stack API key or AWS DynamoDB instance to complete step one of this guide.
-
-This demo will use 3 terminal windows in total for different contexts:
-
-- one terminal to run **proxymock**
-- one terminal to run the demo application
-- one terminal to run cURL as an HTTP client
-
-### Setup the Environment
-
-The easiest way to create a working environment is to use Github Codespaces. Simply navigate to he demo [repository](https://github.com/speedscale/demo) and create a new Codespace:
+Use Github Codespaces if you'd rather use a packaged environment and not install locally. Simply navigate to the demo [repository](https://github.com/speedscale/demo) and create a new Codespace:
 
 ![Codespaces](./quickstart/codespaces.png)
-
-Alternatively you can clone the repo locally and setup the environment locally
-
-```bash
-git clone https://github.com/speedscale/demo
-cd demo/go
-go mod download
-```
-
-### Launch using Mocks {#launch-using-mocks}
-
-You can use the pre-made mocks in the repository under `demo/go/snapshots/api.ipstack.com`.
-
-1. Open the **1st terminal** and start the mock server, pointing to the existing mock files:
-
-```bash
-proxymock mock --in ./snapshots/api.ipstack.com
-```
-
-:::note
-Here we are explicitly specifying the `--in` directory to source test and mock
-files from, but **proxymock** will look in the `./proxymock` directory by
-default and directory searches are recursive, meaning this flag is optional.
 :::
 
-The CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy" server. You can use these environment variables from the CLI output and paste them into step 2.
+## Step 1: Install proxymock
 
-2. Open a **2nd terminal** window (`cmd + \`), paste the environment variables from the CLI output and this fake API key. Then start the demo app:
+<Tabs>
+  <TabItem value="mac" label="macOS">
+    <MacCLIInstall />
+  </TabItem>
+  <TabItem value="linux" label="Linux">
+    <LinuxCLIInstall />
+  </TabItem>
+  <TabItem value="binary" label="Other (Detailed)">
+    For other operating systems and more detailed instructions, see the [installation](../getting-started/installation.md) instructions.
+  </TabItem>
+</Tabs>
 
-```bash
-export http_proxy=http://localhost:4140
-export https_proxy=http://localhost:4140
-export IPSTACK_API_KEY=1234567890
-go run main.go "$IPSTACK_API_KEY"
+Need another OS like Windows or are you having issues? See advanced [installation](../getting-started/installation.md).
+
+## Step 2: Initialize proxymock {#initializing}
+
+Run the following command to obtain an API key:
+
+```shell
+proxymock init
 ```
 
-The output should look something like this:
+Don't worry, we don't sell marketing data or give your email address to any bot nets.
 
-```bash
-2025/02/28 17:18:39 Listening on port 8080
+## Step 3: Install the demo app and start recording {#recording}
+
+```shell
+git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record -- go run main.go
 ```
 
-Note that the mock has been pre-configured to accept the super-secret 1234567890 IPstack API key. This lets you see how the mock works even if you've never used IP Stack before.
+proxymock is now listening on port 4343 for incoming traffic. This traffic will be forwarded to the demo app running at 8080.
 
-5.  Then open a **3rd terminal** and make a request to the demo app using `curl`:
-
-```bash
-curl "localhost:8080/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
+```shell jsx title="Output"
+$ git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record -- go run main.go
+Cloning into 'outerspace-go'...
+remote: Enumerating objects: 780, done.
+remote: Counting objects: 100% (780/780), done.
+remote: Compressing objects: 100% (360/360), done.
+remote: Total 780 (delta 338), reused 715 (delta 287), pack-reused 0 (from 0)
+Receiving objects: 100% (780/780), 736.18 KiB | 229.00 KiB/s, done.
+Resolving deltas: 100% (338/338), done.
+proxymock output will be redirected to proxymock/recorded-2025-07-30_15-19-11.417616Z/proxymock.log
+Press ctrl-c to interrupt
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025/07/30 15:19:12 Starting HTTP server on :8080
+2025/07/30 15:19:13 Starting gRPC server on :50053
 ```
 
-You should see the following response:
+## Step 4: Run test transactions {#run-tests}
 
-```json
-{
-  "distance": 1056.4301458905202,
-  "request1": {
-    "city": "Mount Laurel",
-    "connection_type": "cable",
-    "continent_code": "NA",
-    "continent_name": "North America",
-    "country_code": "US",
-    "country_name": "United States",
-    "dma": "504",
-    "ip": "50.168.198.162",
-    "ip_routing_type": "fixed",
-    "latitude": 39.957000732421875,
-    "location": {
-      "calling_code": "1",
-      "capital": "Washington D.C.",
-      "country_flag": "https://assets.ipstack.com/flags/us.svg",
-      "country_flag_emoji": "🇺🇸",
-      "country_flag_emoji_unicode": "U+1F1FA U+1F1F8",
-      "geoname_id": 4503136,
-      "is_eu": false,
-      "languages": [
-        {
-          "code": "en",
-          "name": "English",
-          "native": "English"
-        }
-      ]
-    },
-    "longitude": -74.91622924804688,
-    "msa": "37980",
-    "radius": "54.05969",
-    "region_code": "NJ",
-    "region_name": "New Jersey",
-    "type": "ipv4",
-    "zip": "08054"
-  },
-  "request2": {
-    "city": "Alpharetta",
-    "connection_type": "cable",
-    "continent_code": "NA",
-    "continent_name": "North America",
-    "country_code": "US",
-    "country_name": "United States",
-    "dma": "524",
-    "ip": "174.49.112.125",
-    "ip_routing_type": "fixed",
-    "latitude": 34.08958053588867,
-    "location": {
-      "calling_code": "1",
-      "capital": "Washington D.C.",
-      "country_flag": "https://assets.ipstack.com/flags/us.svg",
-      "country_flag_emoji": "🇺🇸",
-      "country_flag_emoji_unicode": "U+1F1FA U+1F1F8",
-      "geoname_id": 4179574,
-      "is_eu": false,
-      "languages": [
-        {
-          "code": "en",
-          "name": "English",
-          "native": "English"
-        }
-      ]
-    },
-    "longitude": -84.29045867919922,
-    "msa": "12060",
-    "radius": "44.94584",
-    "region_code": "GA",
-    "region_name": "Georgia",
-    "type": "ipv4",
-    "zip": "30004"
-  }
-}
+Start a *new* terminal and run the following command.
+
+```shell jsx title="Run in new terminal window"
+cd outerspace-go && ./tests/run_http_tests.sh --recording
 ```
 
-You've done it! At this point the demo app is running with the mock server. The API key `1234567890` is not valid so a real request to IPstack will fail, but the mock server is replying with the recorded response from the mocks. Note that unknown IP addresses will require changes to the mocks.
+You will now see a set of output from the tests:
 
-### Record with Live Systems {#record-with-live-systems}
-
-Let's say you're trailblazing and there are no existing mocks. No problem, we'll just record some!
-
-:::note
-Now is the time to sign up for an IP Stack API key and make sure you have an AWS DynamoDB instance. Alternatively, use your own app and follow these instructions.
-:::
-
-1. Start recording requests and responses:
-
-```bash
-proxymock record
+```shell jsx title="Test output"
+$ cd outerspace-go && ./tests/run_http_tests.sh -recording
+Using default port 8080
+Testing http://localhost:8080/... OK (200)
+Testing http://localhost:8080/api/numbers... OK (200)
+Testing http://localhost:8080/api/latest-launch... OK (200)
+Testing http://localhost:8080/api/rockets... OK (200)
+Testing http://localhost:8080/api/rocket?id=5e9d0d96eda699382d09d1ee... OK (200)
+Http tests passed.
 ```
 
-You will see output like so:
+You can now press CTRL-C in the `proxymock record` terminal window to show down recording.
 
-```bash
-...
-export http_proxy=http://127.0.0.1:4140
-export https_proxy=http://127.0.0.1:4140
-...
-recorded tests / mocks are being written to proxymock/recorded-2025-04-15_15-56-02.200913Z
+You will also see some additional output in the original proxymock terminal window showing requests were handled by the demo app:
+
+```shell jsx title="proxymock recording output"
+2025-07-30T15:31:57-04:00 INF Inbound latency=0.080292 method=GET path=/ query=
+2025-07-30T15:31:57-04:00 INF X-Header found header=X-Numbers-Api-Type values=["math"]
+2025-07-30T15:31:57-04:00 INF X-Header found header=X-Powered-By values=["Express"]
+2025-07-30T15:31:57-04:00 INF X-Header found header=X-Numbers-Api-Number values=["1804"]
+2025-07-30T15:31:57-04:00 INF Outbound host=numbersapi.com latency=64.452875 method=GET status=200
 ...
 ```
 
-You'll notice that the CLI will output a set of environment variables that you can use to route your traffic through the proxymock "smart proxy". Copy paste these directly from the CLI output and paste them into step 2.
+## Step 5: View recording results {#view-recording}
 
-2. Open a **new terminal** and export the environment variables from the CLI output in step 1. These variables will re-route the outbound network in Golang to point at the proxymock "smart proxy". This will require a real IPstack API key.
+There should be a new directory in the `proxymock` subdirectory inside `outerspace-go`.
+
+```shell
+ls proxymock
+...
+recorded-2025-07-30_15-31-43.701537Z
+```
+
+The traffic you just recorded is contained in the most recent directory. In this case that's `recorded-2025-07-30_15-31-43.701537Z` but it will change based on the date of recording. Each API request can be inspected as a markdown file:
+
+```shell
+$ cat proxymock/recorded-2025-07-30_15-31-43.701537Z/localhost/2025-07-30_19-56-08.410226Z.md
+
+### REQUEST (TEST) ###
+``
+GET http://localhost:4143/ HTTP/1.1
+Accept: */*
+Host: localhost:4143
+User-Agent: curl/8.7.1
+...
+```
+
+
+## Step 6: Run mock server and tests {#run-mocks}
+
+Go back to your original terminal (running `proxymock record`), stop proxymock by running CTRL-C and then start a mock server:
+
+```shell
+proxymock mock -- go run main.go
+```
+
+Your demo app will now start using the local mock server.
 
 :::note
-Don't want to go get an IPstack key?  Just record from your own app and skip the rest of this section!
+When running `proxymock mock` your app no longer requires access to backend systems. The app will talk locally to proxymock instead of outside APIs.
 :::
 
-```bash
-export http_proxy=http://localhost:4140
-export https_proxy=http://localhost:4140
-go run main.go "$REAL_IPSTACK_API_KEY"
+Now exercise your demo app by running the same tests we ran before - except using the recording instead of a script. proxymock takes the recorded inbound requests and re-uses them as tests.
+
+Open your second terminal window and run the following:
+
+```shell
+proxymock replay --test-against http://localhost:8080
 ```
 
-3. Run the following command to make a request to the demo app:
-
-```bash
-curl "localhost:8080/get-ip-info?ip1=52.94.236.248&ip2=74.6.143.25"
-```
-
-Tests and mocks will be written to the `./proxymock` directory as they are recorded and organized by hostname. When you are done press Ctrl+C in the proxymock terminal to stop capturing.
-
-4. Take a look at your traffic using the `inspect` command.
-
-```bash
-proxymock inspect --in ./proxymock
-```
-
-This will open a state of the art (for 1997) terminal user interface (TUI) that allows you to navigate and inspect your traffic using arrow keys and tab.
-
-![Inspect](./quickstart/snapshot-inspect.png)
-
-Press Enter to view details about each request. Keep in mind that your list of requests will be different than the screenshot but it will be similar. If you have the `--cache` option enabled in the demo app (and have AWS credentials), you will notice that proxymock has automatically exposed the DynamoDB command. Other protocols like gRPC and Postgres will also be converted into human readable JSON payloads with SQL statements exposed (and more).
-
-5. Teach your mock these new responses by re-analyzing the snapshot with the `a` key in the inspect TUI.
-
-Your snapshot now contains the new requests and responses. You can now restart your mock server and make requests to it by following the instructions in [Launch using Mocks](#launch-using-mocks) and passing in your snapshot ID.
-
-### Capturing Inbound Traffic
-
-Up to this point we have only seen outbound requests, the requests from the demo app to external resources, but we can capture inbound requests as well.
-
-1. Start proxymock like before, but with the additional `--app-port` flag. We'll use `8080` because that's the port the demo app listens on:
-
-```bash
-proxymock record --app-port 8080
-```
-
-2. If the demo app is not running already open a **new** terminal and start it like before:
-
-```bash
-export http_proxy=http://localhost:4140
-export https_proxy=http://localhost:4140
-IPSTACK_API_KEY=1234567890
-go run main.go "$IPSTACK_API_KEY"
-```
-
-3. Then run the following command to make a request to the demo app in another terminal:
-
-```bash
-curl "localhost:4143/get-ip-info?ip1=50.168.198.162&ip2=174.49.112.125"
-```
-
-You will notice cURL is calling port `4143` instead of `8080` where the demo app is listening. Since we specified `--app-port 8080` requests to proxymock on port `4143` will be captured and redirected to the demo app on port `8080`. See [architecture](../how-it-works/architecture.md) for more details on the communication between components.
-
-4. Like before you can see your traffic with the `inspect` command:
-
-```bash
-proxymock inspect --in ./proxymock
-```
-
-This will open the inspect UI. You can navigate to the request you want to change and press `Enter` to open the request in the editor.
-
-Inbound traffic in the inspect UI will show the DIRECTION as "in".
-
-### Modifying Mocks
-
-Let's imagine you want to make your IP Stack mock return a different location for one of the requests. No problem, open `inspect` on the `./proxymock` directory and navigate to the request you want to change.
-
-```bash
-proxymock inspect --in ./proxymock
-```
-
-![ipstack-response](./quickstart/ipstack-response1.png)
-
-1. Naviagate to the [RRPair](/reference/glossary.md#rrpair) you want to modify.
-1. Press the `e` key to open the request in your favorite text editor.
-1. Insert `10.12345678` into the `latitude` field in the response body.
-1. Save the file.
-1. Restart the mock server with `proxymock mock` and make a request to the demo app. You will notice the modified response.
-
-## Summary
-
-Your local environment no longer requires the IP Stack API key or AWS DynamoDB. You can run the demo app simply by running `proxymock mock`.
-
-The app will run normally - except that it will use the mock server you created in the previous step. If you need to update your mocks, just re-record the application's traffic.
-
-That's it! You command the superpower of running your app without it's dependent APIs and microservices.
-
-## Next Steps
-
-This guide only scratches the surface of what you can do with the free **proxymock** CLI. Please give us feedback in our [slack](https://slack.speedscale.com)
-
-Speedscale Enterprise can also record from a production Kubernetes application to generate local mocks and tests (including Postgres and other proprietary protocols). For more information on that workflow, check out [Speedscale Enterprise](../../intro.md).
+proxymock will now run the original recorded. The demo app no longer requires downstream systems for these tests as they are being simulated by proxymock.

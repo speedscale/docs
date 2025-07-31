@@ -60,6 +60,24 @@ it guaranteed to be accurate if it does, as it requires a PTR record to exist fo
 
 ---
 
+### `sidecar.speedscale.com/prometheus-port`
+
+Determines the port that the sidecar will expose for Prometheus scraping.
+This tells the operator to add a containerPort to the sidecar's pod and configure goproxy's
+environemnt variables. This is not the same thing as prometheus.io/port because
+that may be pre-existing and/or be merged with our value.
+
+---
+
+### `sidecar.speedscale.com/prometheus-enable-scrape-annotations`
+
+
+If true, tells the operator to add Prometheus scrape annotations to the sidecar's pod. This is not the
+same thing as prometheus.io/scrape because that tells Prometheus what to do. This tells the Speedscale
+ operator what to do.
+
+---
+
 ### `sidecar.speedscale.com/proxy-type`
 
 Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `proxy`, ignored otherwise. See

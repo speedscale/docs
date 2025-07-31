@@ -4,7 +4,7 @@ title: Mock gRPC APIs
 
 # Mock gRPC APIs
 
-**proxymock** can be used with most gRPC services simply by running your app and recording traffic. Making a new mock is very easy and you can learn more about it in the [create your own mocks](../getting-started/quickstart-cli.md#record-with-live-systems) section. A list of known supported technologies can be found [here](../../reference/technology-support.md). However, your API or Database may just work so you should try it out.
+**proxymock** can be used with most gRPC services simply by running your app and recording traffic. Making a new mock is very easy and you can learn more about it in the [create your own mocks](../getting-started/quickstart-cli.md#recording) section. A list of known supported technologies can be found [here](../../reference/technology-support.md). However, your API or Database may just work so you should try it out.
 
 Check out this video for a walkthrough of gRPC observability and mocking on the local desktop:
 <iframe src="https://player.vimeo.com/video/1062574345?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
