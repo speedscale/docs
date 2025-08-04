@@ -565,7 +565,7 @@ const config = {
     ],
   ],
 
-  clientModules: [require.resolve("./plugins/koala.js")],
+  clientModules: [],
 
   presets: [
     [
