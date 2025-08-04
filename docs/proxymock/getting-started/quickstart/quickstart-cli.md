@@ -24,7 +24,7 @@ Make sure you have:
 For this example we'll be using a simple demo app that accepts an API request, calls two downstream APIs and returns the results.
 
 :::note
-Use Github Codespaces if you'd rather use a packaged environment and not install locally. Simply navigate to the demo [repository](https://github.com/speedscale/demo) and create a new Codespace:
+Use Github Codespaces if you'd rather use a packaged environment and not install locally. Simply navigate to the demo [repository](https://github.com/speedscale/outerspace-go) and create a new Codespace:
 
 ![Codespaces](./codespaces.png)
 :::
