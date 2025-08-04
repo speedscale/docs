@@ -1,13 +1,13 @@
 ---
-sidebar_position: 3
+sidebar_position: 8
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Initialize
+# Initialize API Key
 
-Run the following command and follow the prompts
+To initialize proxymock, run the following command and follow the prompts
 
 ```bash
 proxymock init
