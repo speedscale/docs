@@ -40,6 +40,10 @@ const config = {
             to: "/proxymock/",
           },
           {
+            from: "/proxymock/getting-started/quickstart-cli/",
+            to: "/proxymock/getting-started/quickstart/quickstart-cli/",
+          },
+          {
             from: "/proxymock/getting-started/api-key/",
             to: "/proxymock/getting-started/installation/",
           },
