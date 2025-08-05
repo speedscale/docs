@@ -41,7 +41,7 @@ const config = {
           },
           {
             from: "/proxymock/getting-started/api-key/",
-            to: "/proxymock/getting-started/initialize/",
+            to: "/proxymock/getting-started/installation/",
           },
           {
             from: "/analyze/create-snapshot/",

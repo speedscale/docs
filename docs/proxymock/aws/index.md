@@ -4,7 +4,7 @@ title: Mock AWS Services
 
 # Mock AWS Services
 
-Speedscale can be used with most AWS services simply by running your app and recording traffic. As a convenience, we also provide some pre-made mocks for easy of use purposes. Making a new mock is very easy and you can learn more about it in the [create your own mocks](../getting-started/quickstart-cli.md#recording) section.
+Speedscale can be used with most AWS services simply by running your app and recording traffic. As a convenience, we also provide some pre-made mocks for easy of use purposes. Making a new mock is very easy and you can learn more about it in the [create your own mocks](../getting-started/quickstart) section.
 
 A list of known supported technologies can be found [here](../../reference/technology-support.md). However, your API or Database may just work so you should try it out.
 

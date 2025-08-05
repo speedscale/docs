@@ -1,17 +1,15 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
-import ArchitectureOverview from './quickstart/outerspace-go.png'
+import ArchitectureOverview from './outerspace-go.png'
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import MacCLIInstall from '../index/\_cli_macos_minified.mdx'
-import LinuxCLIInstall from '../index/\_cli_linux_minified.mdx'
+import MacCLIInstall from '../../index/_cli_macos_minified.mdx'
+import LinuxCLIInstall from '../../index/_cli_linux_minified.mdx'
 
-# Quickstart
+# Quickstart (CLI)
 
-Welcome to proxymock!
-
-This guide provides a step by step guide to creating a [mock server](reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
+This guide provides a step-by-step approach to creating a [mock server](reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
 
 ## Before you begin
 
@@ -26,12 +24,12 @@ Make sure you have:
 For this example we'll be using a simple demo app that accepts an API request, calls two downstream APIs and returns the results.
 
 :::note
-Use Github Codespaces if you'd rather use a packaged environment and not install locally. Simply navigate to the demo [repository](https://github.com/speedscale/demo) and create a new Codespace:
+Use Github Codespaces if you'd rather use a packaged environment and not install locally. Simply navigate to the demo [repository](https://github.com/speedscale/outerspace-go) and create a new Codespace:
 
-![Codespaces](./quickstart/codespaces.png)
+![Codespaces](./codespaces.png)
 :::
 
-## Step 1: Install proxymock
+## Step 1: Install proxymock {#install}
 
 <Tabs>
   <TabItem value="mac" label="macOS">
@@ -41,11 +39,11 @@ Use Github Codespaces if you'd rather use a packaged environment and not install
     <LinuxCLIInstall />
   </TabItem>
   <TabItem value="binary" label="Other (Detailed)">
-    For other operating systems and more detailed instructions, see the [installation](../getting-started/installation.md) instructions.
+    For other operating systems and more detailed instructions, see the [installation](../installation.md) instructions.
   </TabItem>
 </Tabs>
 
-Need another OS like Windows or are you having issues? See advanced [installation](../getting-started/installation.md).
+Need another OS like Windows or are you having issues? See advanced [installation](../installation.md).
 
 ## Step 2: Initialize proxymock {#initializing}
 
@@ -102,7 +100,7 @@ Testing http://localhost:8080/api/rocket?id=5e9d0d96eda699382d09d1ee... OK (200)
 Http tests passed.
 ```
 
-You can now press CTRL-C in the `proxymock record` terminal window to show down recording.
+You can now press CTRL-C in the `proxymock record` terminal window to shut down recording.
 
 You will also see some additional output in the original proxymock terminal window showing requests were handled by the demo app:
 
@@ -139,7 +137,6 @@ User-Agent: curl/8.7.1
 ...
 ```
 
-
 ## Step 6: Run mock server and tests {#run-mocks}
 
 Go back to your original terminal (running `proxymock record`), stop proxymock by running CTRL-C and then start a mock server:
@@ -162,4 +159,4 @@ Open your second terminal window and run the following:
 proxymock replay --test-against http://localhost:8080
 ```
 
-proxymock will now run the original recorded. The demo app no longer requires downstream systems for these tests as they are being simulated by proxymock.
+proxymock will now run the original recorded. The demo app no longer requires downstream systems for these tests as they are being simulated by proxymock. 
