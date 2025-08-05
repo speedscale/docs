@@ -6,6 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import MacCLIInstall from '../../index/_cli_macos_minified.mdx'
 import LinuxCLIInstall from '../../index/_cli_linux_minified.mdx'
+import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@site/src/components/Cards';
 
 # Quickstart (CLI)
 
@@ -159,4 +160,10 @@ Open your second terminal window and run the following:
 proxymock replay --test-against http://localhost:8080
 ```
 
-proxymock will now run the original recorded. The demo app no longer requires downstream systems for these tests as they are being simulated by proxymock. 
+proxymock will now run the original recorded. The demo app no longer requires downstream systems for these tests as they are being simulated by proxymock.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+  <EditingTestsCard />
+  <CICDIntegrationCard />
+  <RemoteRecordersCard />
+</div>
