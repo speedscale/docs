@@ -15,10 +15,10 @@ const RemoteRecordersCard = () => {
         <h3 style={{ margin: 0, marginBottom: '1rem' }}>🌐 Remote Recorders</h3>
       </CardHeader>
       <CardBody className="padding-vert--md">
-        Deploy <a href="./setup/sidecar/annotations">remote recorders</a> in your infrastructure to capture traffic from production environments and distributed systems.
+        Deploy <a href="/quick-start">remote recorders</a> in your infrastructure to capture traffic from production environments and distributed systems.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./setup/sidecar/annotations" className="button button--secondary">Install Recorders</a>
+        <a href="/quick-start" className="button button--secondary">Install Recorders</a>
       </CardFooter>
     </Card>
   );
