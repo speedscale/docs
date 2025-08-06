@@ -15,10 +15,10 @@ const EditingTestsCard = () => {
         <h3 style={{ margin: 0, marginBottom: '1rem' }}>✏️ Editing Tests and Mocks</h3>
       </CardHeader>
       <CardBody className="padding-vert--md">
-        Learn how to <a href="./replay/mocks/edit-sig">edit and customize</a> your recorded tests and mocks to fit your specific testing needs.
+        Learn how to <a href="/proxymock/guides/modify-rrpairs">edit and customize</a> your recorded tests and mocks to fit your specific testing needs.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./replay/mocks/edit-sig" className="button button--secondary">Edit Mocks</a>
+        <a href="/proxymock/guides/modify-rrpairs" className="button button--secondary">Edit Mocks</a>
       </CardFooter>
     </Card>
   );
