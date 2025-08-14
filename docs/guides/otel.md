@@ -18,13 +18,19 @@ A Span ID is a unique identifier that marks a single unit of work within a trace
 
 ---
 
-## Creating a Snapshot of a Trace ID
+## Finding traces in traffic viewer
 
-Speedscale allows you to take snapshots of specific traces for deeper analysis. With a traditional production monitoring solution this would involve crafting requests and building service mocks based on the limited information available in the log or event stream. Speedscale works differently because it replicates the API calls (including downstream responses) with complete fidelity. 
+Speedscale allows you to search for any substring of data, anywhere in your API requests, across all services. You can find any trace ID or span ID using this capability. Here is a video showing how the feature works for general filtering:
 
-For this guide, we'll focus on replicating only a specific Trace. Virtually any criteria can be used by modifying the filter criteria, OpenTelemetry is just a simple example.  Using this method, you can filter out everything except the specific trace ID and watch the requests go into and out of the specified service. This technique can be used with the merge Snapshot feature to construct a single snapshot for the entire transaction lifecycle.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/SxZ7DFSM89Y" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Below are the steps to create a snapshot for a specific Trace ID using Speedscale:
+Here are the steps for filtering for an OpenTelemetry trace:
+1. Create a Notebook from the traffic viewer
+1. Add a filter for Request Header *Traceparent* with a CONTAINS of only the middle section of the Traceparent. For example, if the full header is `Traceparent=00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00` then you only need to include 4bf92f3577b34da6a3ce929d0e0e4736 because that is the Trace ID. The Span ID will chagne between services so it isn't a good target.
+
+## Creating a Trace Snapshot (CLI)
+
+For this guide, we'll focus on replicating only a specific Trace. Virtually any criteria can be used by modifying the filter criteria, OpenTelemetry is just a simple example.  
 
 ### Step 1: Identify OpenTelemetry ID in Traffic Viewer
 
