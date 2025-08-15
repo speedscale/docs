@@ -87,3 +87,24 @@ How can the request and response both use the same transforms? Because each tran
 
 A complete set of traffic transformation configuration is stored as a Traffic Transform Template (TTT). You can view and edit these in the main [UI](https://app.speedscale.com/trafficTransforms). Although TTT's can be edited graphically, they are stored as JSONs for easy portability.
 
+## Traffic Transform Templates
+
+Traffic Transform Templates allow you to save transform configurations from one snapshot and reuse them in subsequent snapshots. This enables you to:
+
+- **Save Time**: Once you've perfected transforms for a particular API or service, save them as a template to apply instantly to future recordings
+- **Ensure Consistency**: Apply the same data modifications across multiple test scenarios without manual reconfiguration
+- **Share Knowledge**: Export templates as JSON files to share with team members or across environments
+
+### How to Use Transform Templates
+
+<iframe src="https://player.vimeo.com/video/1109642612" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
+1. **Create a Template**: After configuring transforms in a snapshot that achieve your desired accuracy, save them as a template
+2. **Apply to New Snapshots**: When working with new traffic recordings, select and apply your saved template
+3. **Customize as Needed**: Templates provide a starting point - you can further modify transforms for specific test scenarios
+
+Templates are particularly useful for:
+- APIs with consistent authentication patterns
+- Services that require similar data sanitization
+- Test scenarios that need identical transform chains across multiple snapshots
+
