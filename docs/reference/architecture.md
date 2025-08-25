@@ -66,6 +66,10 @@ kubectl -n speedscale get pods java-server-5786d56974-pv765 -o jsonpath='{.spec.
 speedscale-goproxy java-server
 ```
 
+:::tip
+Speedscale can dynamically prevent PII data from leaving your environment during ingest. Learn more in our [Data Loss Prevention Guide](../guides/dlp.md)
+:::
+
 ## Replay Only
 
 ![replay](./architecture/replay.png)
@@ -89,3 +93,7 @@ speedscale-collector-abstract-yucca-7fb7d8f89b-z8btv   1/1     Running          
 speedscale-generator-abstract-yucca-nlkm9              0/1     ContainerCreating   0          2s
 speedscale-responder-abstract-yucca-ffc7a8ffec-f11av   1/1     Running             0          8s
 ```
+
+## Data Security
+
+To learn more about Speedscale's overall approach to data security, please visit our security [hub](../../security/security_).

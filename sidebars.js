@@ -73,6 +73,10 @@ const sidebars = {
     {
       type: "category",
       label: "GUIDES",
+      link: {
+        type: "doc",
+        id: "guides/index"
+      },
       items: [
         // if you have a directory with a single file, autogeneration won't pick it up
         // unless you specify that directory as the root for generation
