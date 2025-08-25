@@ -35,6 +35,11 @@ eBPF programs attach to various kernel hook points to intercept network traffic:
 - **kprobes/kretprobes**: Trace specific kernel functions
 - **tracepoints**: Use predefined kernel instrumentation points
 
+#### User-Space Instrumentation
+- **uprobes/uretprobes**: Instrument user-space functions for TLS visibility
+- **USDT (User Statically Defined Tracing)**: Application-specific tracing points
+- **Library function hooking**: Monitor SSL/TLS library calls
+
 ### Data Collection Process
 
 1. **Program Loading**: eBPF programs are compiled to bytecode and loaded into the kernel
@@ -64,6 +69,63 @@ For TCP traffic specifically, eBPF enables deep inspection capabilities:
 - Retransmission detection
 - Bandwidth utilization
 
+### TLS Traffic Visibility
+
+One of the most powerful capabilities of eBPF for API testing is the ability to inspect encrypted TLS traffic without requiring certificate management or SSL termination.
+
+#### User-Space uprobes for TLS Decryption
+
+eBPF uprobes (user-space probes) can instrument SSL/TLS library functions to capture plaintext data before encryption and after decryption:
+
+**OpenSSL Instrumentation**
+- **SSL_write()**: Capture outbound plaintext data before encryption
+- **SSL_read()**: Capture inbound plaintext data after decryption  
+- **SSL_write_ex() / SSL_read_ex()**: Support for newer OpenSSL APIs
+- **BIO_write() / BIO_read()**: Low-level I/O operations for comprehensive coverage
+
+**Library Detection and Compatibility**
+- Automatic detection of OpenSSL, BoringSSL, and LibreSSL versions
+- Dynamic symbol resolution for different library versions
+- Support for statically linked applications through binary analysis
+- Fallback mechanisms for custom TLS implementations
+
+#### Benefits for Encrypted Traffic Analysis
+
+**Complete API Visibility**
+- Full HTTP/HTTPS request and response bodies
+- Headers, cookies, and authentication tokens
+- JSON, XML, and binary payload inspection
+- GraphQL queries and responses over HTTPS
+
+**Zero Configuration**
+- No certificate installation or management required
+- No application code modifications needed
+- No proxy deployment or traffic redirection
+- Transparent operation with existing infrastructure
+
+**Production Safety**
+- Read-only access to application memory
+- No modification of encryption keys or certificates
+- Minimal performance impact (typically &lt;2% overhead)
+- Fail-safe operation prevents application crashes
+
+#### Implementation Considerations for TLS
+
+**Memory Layout Compatibility**
+- Handle different SSL library versions and memory layouts
+- Adapt to compiler optimizations and inlining
+- Support for containerized applications with varying library versions
+
+**Data Correlation**
+- Match encrypted network packets with decrypted payloads
+- Maintain connection state across SSL sessions
+- Handle connection multiplexing and HTTP/2 streams
+
+**Security Boundaries**
+- Respect process isolation and user permissions
+- Audit logging for compliance requirements  
+- Optional data masking for sensitive information
+
 ### Security and Safety
 
 eBPF's design ensures safe execution within the kernel:
@@ -76,7 +138,7 @@ eBPF's design ensures safe execution within the kernel:
 ## Implementation Considerations
 
 ### Kernel Requirements
-- Linux kernel 4.4+ (5.0+ recommended for advanced features)
+- Linux kernel 5.1+
 - eBPF-enabled kernel configuration
 - Sufficient kernel memory for program loading
 
