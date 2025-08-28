@@ -87,10 +87,28 @@ Select the three dot menu in the top right of the snapshot summary and select "V
 
 ![snapshot tags](./pricing-faq/snapshot-tags.png)
 
-
 ## 🚨 Can I set usage limits?
 
-Speedscale does not currently supports **usage caps** or **budget alerts**. Contact us on the [Speedscale Community](https://slack.speedscale.com) to discuss thresholds and options for alerting.
+Speedscale now supports setting a **monthly usage limit** to help you control ingest costs proactively. When your usage exceeds the threshold you set, Speedscale will automatically send an email alert. Here’s how it works:
+
+- **Monthly reset**: The usage counter resets on the first day of each month.
+- **Single alert recipient**: Only one email address can be entered for usage alerts. The email must match the domain of the admin user who sets the threshold.
+- **One threshold per tenant**: Each tenant can have only one usage alert and one threshold level at a time. You can update or remove the threshold at any time using the same process.
+- **Alert delivery**: When your monthly usage exceeds the set threshold, an email is sent to the configured address.
+
+You can set or modify your usage threshold in two ways:
+
+### Using the Speedscale Dashboard
+
+Go to **Settings > [Usage](https://app.speedscale.com/tenant#tenant-tab-usage)** and scroll down to set your monthly usage threshold and alert email.
+
+### Using the Command Line (`speedctl`)
+
+You can also configure the usage alert via the `speedctl` CLI:
+
+```bash
+speedctl config set-usage-threshold
+```
 
 ## 🧠 Are there best practices for managing ingest-based pricing?
 
