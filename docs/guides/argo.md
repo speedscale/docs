@@ -15,6 +15,16 @@ requires special consideration when used in conjunction with Speedscale.
 Please ensure the [Kubernetes Operator](/setup/install/kubernetes-operator.md)
 is running in your cluster before moving on.
 
+:::important Inspector Restart Required
+If you install Argo Rollouts after Speedscale is already running in your cluster, you must restart the Speedscale inspector pod for it to detect and watch Argo Rollouts resources:
+
+```bash
+kubectl rollout restart deployment/speedscale-inspector -n speedscale
+```
+
+This restart is necessary because the inspector only creates watchers for Argo Rollouts if they're detected at startup.
+:::
+
 One of the primary selling points of a rollout is the ability to perform a
 partial deployment, promote it forward, or roll it back if it doesn't work. We
 respect your choice to maintain this control and for that reason all rollout
