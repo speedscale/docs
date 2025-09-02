@@ -1,7 +1,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<Tabs>
+<Tabs groupId="language">
 <TabItem value="golang" label="Go">
 
 ```shell
@@ -84,6 +84,36 @@ metadata:
     sidecar.speedscale.com/tls-out: "true"
     sidecar.speedscale.com/tls-java-tool-options: "true"
 ```
+
+**If you already have a custom JKS**
+
+Sometimes your code is already using a Custom JKS, so you need to merge your current JKS with the one from Speedscale. In that case what you can do is import the Speedscale TLS cert into your existing JKS. Here is how to do that:
+
+```shell
+# 1) Make a copy of your existing keystore
+cp custom.jks custom-with-speedscale.jks
+
+# 2) Import Speedscale Root CA into the copy (non-interactive)
+keytool -importcert \
+  -noprompt \
+  -alias speedscale-root \
+  -file "$HOME/.speedscale/certs/tls.crt" \
+  -keystore custom-with-speedscale.jks \
+  -storepass changeit
+
+# 3) Verify the Speedscale cert is present
+keytool -list -keystore custom-with-speedscale.jks -storepass changeit | grep -i speedscale
+
+# 4) Use the merged truststore when running your app
+java \
+  -Djavax.net.ssl.trustStore=custom-with-speedscale.jks \
+  -Djavax.net.ssl.trustStorePassword=changeit \
+  -jar app.jar
+```
+
+Notes:
+- If your truststore is PKCS12 instead of JKS, add `-storetype pkcs12` to the `keytool` commands.
+- If the alias already exists, either choose a different alias (e.g., `-alias speedscale-root-2`) or remove the old one with: `keytool -delete -alias speedscale-root -keystore "$KEYSTORE_OUT" -storepass "$KEYSTORE_PASS"`.
 
 </TabItem>
 <TabItem value="cpp" label="C++">

@@ -19,7 +19,7 @@ As the name implies, **proxymock** is a proxy which works by routing traffic fro
 
 Record inbound traffic by setting the `--app-port` flag and making requests to port `4143` instead of your application's port.
 
-<Tabs>
+<Tabs groupId="language">
 <TabItem value="golang" label="Go">
 
 Go respects proxy environment variables.
