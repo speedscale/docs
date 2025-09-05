@@ -36,6 +36,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/reference/transform-traffic/common-patterns/guide-jwt/",
+            to: "/guides/replay/resign-jwt/",
+          },
+          {
             from: "/proxymock/getting-started/",
             to: "/proxymock/",
           },
@@ -218,7 +222,7 @@ const config = {
           },
           {
             from: "/guides/resign_jwt_mocks/",
-            to: "/guides/replay/mocks/resign-jwt-mocks/",
+            to: "/guides/replay/resign-jwt/",
           },
           {
             from: "/guides/import-charles/",
@@ -688,7 +692,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ['bash', 'powershell'],
+        additionalLanguages: ["bash", "powershell"],
       },
     }),
 };
