@@ -204,7 +204,7 @@ You can also see that the accuracy isn't 100%. We can drill down into a specific
 
 ### Transform
 
-The JWT we get from the login request is different which is expected. If we were replaying in a different environment, we might need different credentials entirely for the login request. Another pattern might be a set of traffic where we don't have a login request and instead we need to [resign the JWT](./reference/transform-traffic/common-patterns/guide-jwt.md) from our captured traffic. This is where [Transforms](./concepts/transforms.md) come into play and we can edit our captured data to parameterize parts of it. As an example, we can transform our snapshot to edit the password.
+The JWT we get from the login request is different which is expected. If we were replaying in a different environment, we might need different credentials entirely for the login request. Another pattern might be a set of traffic where we don't have a login request and instead we need to [resign the JWT](./guides/replay/resign-jwt.md) from our captured traffic. This is where [Transforms](./concepts/transforms.md) come into play and we can edit our captured data to parameterize parts of it. As an example, we can transform our snapshot to edit the password.
 
 ![Transform](./end-to-end/login-transform.png)
 

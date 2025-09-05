@@ -18,6 +18,6 @@ If you look through your recorded data, you're likely to see one of the followin
 How you replace these tokens depends on what you're trying to accomplish:
 
 - **One Time Use** - This is the fastest way to get your replay working, but it will stop working when your token expires. In this scenario you provide a new token and Speedscale inserts it everywhere it is used. This works well if you have an auth endpoint you can curl to receive a new auth token manually. You curl the authorization service manually and receive a new token. Once you have the new token, insert it using a [constant](../reference/transform-traffic/transforms/constant.md) transform.
-- **Automated CI Pipeline** - Speedscale will use the same secret your app uses to re-sign the JWT token. This is a little bit more work but is more durable over time. You can find detailed instructions [here](../reference/transform-traffic/common-patterns/guide-jwt.md)
+- **Automated CI Pipeline** - Speedscale will use the same secret your app uses to re-sign the JWT token. This is a little bit more work but is more durable over time. You can find detailed instructions [here](../guides/replay/resign-jwt.md)
 
 As always, please reach out to Speedscale on our slack if we can help. This is a very common request and we've many different types of applications.

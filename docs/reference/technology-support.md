@@ -48,7 +48,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 |-------------------------|------|---------|----------------------------------------------------------------------------------------|
 | AWS Signature (SigV4)   | Auth | Full    | Automatic discovery and replacement. See [aws_auth transform](/transform/transforms/aws_auth.md) |
 | Basic Auth              | Auth | Full    |                                                                                        |
-| Bearer JWT              | Auth | Full    | Automatic discovery and replacement. See [JWT guide](/reference/transform-traffic/common-patterns/guide-jwt.md) |
+| Bearer JWT              | Auth | Full    | Automatic discovery and replacement. See [JWT guide](../guides/replay/resign-jwt.md) |
 | Cookies                 | Auth | Full    |                                                                                        |
 
 ### Supported DBMS
