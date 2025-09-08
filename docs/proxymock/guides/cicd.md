@@ -42,31 +42,6 @@ your application.
 
 <Tabs>
 
-<TabItem value="circleci" label="CircleCI">
-
-```yaml
-version: 2.1
-
-jobs:
-  speedscale:
-    docker:
-      - image: "golang:1.25"
-    steps:
-      - checkout
-      - run:
-          name: Build Go application
-          command: go build -o myapp .
-      - run:
-          name: Run proxymock tests
-          command: ./proxymock.sh # <--- proxymock script - see below
-```
-
-See a full
-[config.yml](https://github.com/kenahrens/spd-replay/blob/main/.circleci/config.yml)
-for more context.
-
-</TabItem>
-
 <TabItem value="github" label="GitHub">
 
 ```yaml
@@ -254,6 +229,31 @@ object Build : BuildType({
     }
 })
 ```
+
+</TabItem>
+
+<TabItem value="circleci" label="CircleCI">
+
+```yaml
+version: 2.1
+
+jobs:
+  speedscale:
+    docker:
+      - image: "golang:1.25"
+    steps:
+      - checkout
+      - run:
+          name: Build Go application
+          command: go build -o myapp .
+      - run:
+          name: Run proxymock tests
+          command: ./proxymock.sh # <--- proxymock script - see below
+```
+
+See a full
+[config.yml](https://github.com/kenahrens/spd-replay/blob/main/.circleci/config.yml)
+for more context.
 
 </TabItem>
 
