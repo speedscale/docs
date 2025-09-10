@@ -9,7 +9,12 @@ sidebar_position: 2
 
 Smart Replace is a powerful tool designed to streamline the process of updating hidden data fields within recorded API traffic. By using an existing snapshot and a set of mappings (like a CSV), Smart Replace efficiently finds and replaces the specified data within your recorded API and Database traffic. Note that Smart Replace works even with encoded fields like JWT claims, XML payloads and HTTP query parameters. Think of this feature like an AI powered find/replace that lets you avoid scripting. This feature is designed to reduce your reliance on transform chains by automatically hunting down and replacing known data.
 
-In this section we'll work through a use case of replacing each user ID in a snapshot with a new test user ID. This is a common use case when user names or other IDs need to be replaced with test IDs to work in lower environments. Keep in mind that if you need to alter your data in other ways, you can use the [transform](../reference/transform-traffic/README.md) system.
+In this section we'll work through a use case of replacing each user ID in a snapshot with a new test user ID. This is a common use case when user names or other IDs need to be replaced with test IDs to work in lower environments. Keep in mind that if you need to alter your data in other ways, you can use the [transform](../reference/transform-traffic/README.md) system. If you're looking to do things like replacing JWT tokens through your traffic you may want to check out this video instead:
+
+<iframe src="https://player.vimeo.com/video/1117518907?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p><a href="https://vimeo.com/986454551">smart_replace_recorded example</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+
+Now let's get started with the multiple-email replacement use case.
 
 :::note
 Remember, Speedscale Enterprise ensures data separation for AI models. Speedscale's shared models are not built by training on your private Enterprise customer data.
