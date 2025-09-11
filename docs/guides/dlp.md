@@ -8,10 +8,11 @@ traffic via it's data loss prevention (DLP) features. This redaction happens _be
 network, preventing the Speedscale service from seeing the data at all. However, the overall shape or structure of the
 data is retained in order to facilitate useful testing against systems.
 
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/1117962434?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Feature Spotlight: Configuring Data Loss Prevention"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
 :::caution Note
-Speedscale's DLP engine is focused mostly on HTTP traffic at this time. If you find that this is inadequate
-for your needs, get in touch with us on the [community Slack](https://slack.speedscale.com) to discuss your
-specific requirements.
+If you find that the DLP configuration is inadequate for your needs, get in touch with us
+on the [community Slack](https://slack.speedscale.com) to discuss your specific requirements.
 :::
 
 ## Prerequisites
