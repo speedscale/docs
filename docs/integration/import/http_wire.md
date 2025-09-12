@@ -1,6 +1,6 @@
 # Import HTTP Wire Format
 
-Speedscale can import traffic stored in files matching the HTTP network wire format. HTTP Wire Format is the format you would see if observing an HTTP transaction via a network packet sniffing tool like WireShark. This format is also common with Service Virutalization tools. This command can be used for migration purposes.
+Speedscale can import traffic stored in files matching the HTTP network wire format. HTTP Wire Format is the format you would see if observing an HTTP transaction via a network packet sniffing tool like Wireshark. This format is also common with Service Virutalization tools. This command can be used for migration purposes.
 
 Each request should be in a file titled `Req{val}.txt` and each response should be in a file called `Res{val}.txt`. Note: `{val}` should be an increasing integer (ex: Req1.txt/Res1.txt, Req2.txt/Res2.txt, etc). There is no limit on the number of request/response file pairs can be imported at once.
 

@@ -49,14 +49,11 @@ Content-Type: application/xml; charset=ISO-8859-1
 
 This HTTP request would generate a signature similar to the following:
 
-```json
-{
-  "http:host": "localhost",
-  "http:method": "POST",
-  "http:url": "/foo-platform/pdt/foo/management",
-  "http:requestBodyJSON": "G15IHJlcXVlc3QgYm9keT4=",
-  "instance": "1"
-}
+```markdown
+  http:host: localhost
+  http:method: POST
+  http:url: /foo-platform/pdt/foo/management,
+  http:requestBodyJSON: G15IHJlcXVlc3QgYm9keT4=,
 ```
 
 Signatures are essentially hash maps of key=value pairs.
@@ -67,9 +64,37 @@ Signatures are essentially hash maps of key=value pairs.
 
 ## What happens if my requests are non-idempotent (aka the response changes after each request)?
 
-**proxymock** is capable of handling non-idempotent responses but it will require you to copy/paste an rrpair and modify the response. **proxymock** will return each response in order based on the order of the responses in the raw.jsonl. Make sure the signature stays the same.
+**proxymock** is capable of handling non-idempotent responses but it will require you to copy/paste an [RRPair](/reference/glossary.md#rrpair) and modify the response. **proxymock** will return each response in order based on the order of the responses in the raw.jsonl. Make sure the signature stays the same.
 
 Speedscale Enterprise automatically handles changing responses and is smart enough to deal with many common patterns without human intervention. The fancypants Speedscale Enterprise product incorporates a learning model that mutates based on the protocol and specific API type being monitored. Even if Speedscale has never seen your API before there is a good probability of it being able to automatically mock your dependency without training. Yes that is technically a plug for the paid product but handling this use case without automation is likely to make you sad so don't say we didn't warn you.
+
+## How do I change the signature of a request?
+
+The signature of a request can be changed directly in the [RRPair](/reference/glossary.md#rrpair) file.
+
+For example, let's say you have this signature:
+
+```markdown
+http:host is api.example.com
+http:method is POST
+http:queryparams is limit=10
+http:url is /v1/users
+```
+
+But you would like to mock a request being sent to the mock server with the query parameters `limit=50&offset=10`. You can change the signature in the file to:
+
+```markdown
+http:host is api.example.com
+http:method is POST
+http:queryparams is limit=50&offset=10
+http:url is /v1/users
+```
+
+Now when that request is sent to the mock server the response from this file will be returned.
+
+:::tip
+After modifying the request section of an RRPair file use the `proxymock files update-mocks` command to reset the signature to match.
+:::
 
 ## What if **proxymock** cannot automatically mock my dependency?
 

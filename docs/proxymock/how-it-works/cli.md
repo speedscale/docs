@@ -317,6 +317,7 @@ proxymock files [command]
 **Available Commands:**
 - `compare`: Compare proxymock files
 - `convert`: Convert RRPair files between formats
+- `update-mocks`: Update mock signatures for RRPair files
 
 #### files compare
 
@@ -367,6 +368,36 @@ proxymock files convert --in file.json
 
 # Convert markdown files to JSON
 proxymock files convert --in proxymock --out-format json
+```
+
+#### files update-mocks
+
+Update the mock signatures for all RRPair files, resetting the signature to match the contents of the RRPair. This is useful when you have modified the contents of an RRPair file and the signature no longer matches.
+
+The mock signature of an RRPair determines whether a request sent to the mock server will return a matching response. For a markdown RRPair file the signature is listed under the `### SIGNATURE ###` section.
+
+**Usage:**
+```bash
+proxymock files update-mocks [flags]
+```
+
+**Flags:**
+- `--in strings`: Directories or files to process
+- `-o, --output string`: Output format [pretty, json] (default "json")
+
+**Examples:**
+```bash
+# Reset signatures for files in the current directory
+proxymock files update-mocks
+
+# Reset the signature for a single RRPair file
+proxymock files update-mocks --in file.md
+
+# Reset signatures for files in multiple directories
+proxymock files update-mocks --in recorded/ --in replayed/
+
+# Reset signatures for a JSONL file (one RRPair per line)
+proxymock files update-mocks --in rrs.jsonl
 ```
 
 ## Cloud Integration Commands

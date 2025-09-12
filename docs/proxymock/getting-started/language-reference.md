@@ -59,6 +59,12 @@ Bypass proxy for specific hosts:
 -Dhttp.nonProxyHosts="localhost|127.0.0.1|*.internal.domain"
 ```
 
+:::warning
+Support across runtimes or libraries may vary.  For example,
+[Maven](https://maven.apache.org/) requires that `-D` flags are set through
+`-Dspring-boot.run.jvmArguments`.
+:::
+
 :::note
 These options include the `-D` flags for TLS. See the Decrypting-TLS section below.
 :::
