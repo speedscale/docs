@@ -26,13 +26,41 @@ Certain special cases are supported that allow deep inspection inside of certain
 
 ### Example
 
-Extract the Bearer token from the HTTP Authorization Header, then extract the `name` claim from inside the JWT:
+### Before and After Example
+
+#### Configuration
 
 ```json
-"type": "json_path",
-"config": {
-    "path": "http.req.headers.Authorization.0.jwt.claims.name",
-    "regex": "^(?i)Bearer (.*)(?-i)"
+{
+   "type": "json_path",
+   "config": {
+       "path": "http.req.headers.Authorization.0",
+       "regex": "^(?i)Bearer (.*)(?-i)"
+   }
 }
 ```
+
+#### Example Chains
+
+```
+req_body() -> json_path(path="user.email")
+```
+
+This will extract the email field from the user object in the request body.
+
+```
+res_body() -> json_path(path="data.items[0].id")
+```
+
+This will extract the ID from the first item in a data array from the response body.
+
+#### Before (Original Values)
+
+- **Request Body User Email**: `{"user": {"email": "john.doe@example.com", "id": 123}}`
+- **Response Data Array**: `{"data": {"items": [{"id": "item-001", "name": "Product A"}]}}`
+
+#### After (JSON Path Extracted)
+
+- **Request Body User Email**: `john.doe@example.com`
+- **Response Data Array (first item ID)**: `item-001`
 

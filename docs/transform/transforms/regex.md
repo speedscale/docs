@@ -25,49 +25,51 @@ Validate regex patterns at https://regex101.com using the Golang flavor.
 | **pattern**      | Regular expression pattern to match against.
 | **captureGroup** | (optional) Capture group to use when capture groups are defined.  Capture groups start at 1.  By default capture groups may be used but no one group will be selected.
 
-### Example 1
+### Example
+
+### Before and After Example
 
 #### Configuration
 
 ```json
-"type": "regex",
-"config": {
-    "pattern": "\d{4}(-\d{2}){0,2}$"
+{
+   "type": "regex",
+   "config": {
+       "pattern": "\\d{4}(-\\d{2}){0,2}$"
+   }
 }
 ```
 
-:::note
-Notice how capture groups are used in the regex pattern but no specific capture group is selected since `captureGroup` is omitted.
-:::
-
-#### Input Token
+#### Example Chains
 
 ```
-filter=(contains(subject, 'order') and ReceivedDateTime ge 2021-04-19
+req_body() -> json_path(path="filter") -> regex(pattern="\\d{4}(-\\d{2}){0,2}$")
 ```
 
-#### Transformed Token
-
-`2021-04-19`
-
-### Example 2
-
-#### Configuration
-
-```json
-"type": "regex",
-"config": {
-    "pattern": "location/(.*)/info"
-    "captureGroup": 1
-}
-```
-
-#### Input Token
+This will extract the filter field from the request body and extract the date pattern from it.
 
 ```
-/location/Miami/info
+http_req_header(header="User-Agent") -> regex(pattern="Chrome/([0-9.]+)", captureGroup=1)
 ```
 
-#### Transformed Token
+This will extract the Chrome version number from the User-Agent header.
 
-`Miami`
+```
+res_body() -> json_path(path="url") -> regex(pattern="location/(.*)/info", captureGroup=1)
+```
+
+This will extract the location name from a URL path in the response body.
+
+#### Before (Original Values)
+
+- **Filter String**: `filter=(contains(subject, 'order') and ReceivedDateTime ge 2021-04-19`
+- **User-Agent**: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36`
+- **URL Path**: `/location/Miami/info`
+- **Email Pattern**: `Contact us at support@example.com for help`
+
+#### After (Regex Extracted)
+
+- **Filter String (date extracted)**: `2021-04-19`
+- **User-Agent (Chrome version)**: `91.0.4472.124`
+- **URL Path (location name)**: `Miami`
+- **Email Pattern (email extracted)**: `support@example.com`

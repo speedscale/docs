@@ -21,11 +21,37 @@ The incoming token must be a current valid AWS signature because the SignedHeade
 
 ### Example
 
+### Before and After Example
+
+#### Configuration
+
 ```json
-"type": "aws_auth",
-"config": {
-    "secretPath": "${{secret:awscreds/secretkey}}",
-    "idPath": "${{secret:awscreds/id}}",
+{
+    "type": "aws_auth",
+    "config": {
+        "secretPath": "${{secret:awscreds/secretkey}}",
+        "idPath": "${{secret:awscreds/id}}"
+    }
 }
+```
+
+#### Example Chains
+
+```
+http_req_header(name="Authorization") -> aws_auth(secretPath="${{secret:awscreds/staging}}", idPath="${{secret:awscreds/id}}")
+```
+
+This will extract the existing AWS Authorization header and re-sign it with new credentials.
+
+#### Before (Original Authorization Header)
+
+```
+Authorization: AWS4-HMAC-SHA256 Credential=AKIAIOSFODNN7EXAMPLE/20240115/us-east-1/s3/aws4_request, SignedHeaders=host;range;x-amz-date, Signature=fe5f80f77d5fa3beca038a248ff027d0445342fe2855ddc963176630326f1024
+```
+
+#### After (AWS Auth Transformed)
+
+```
+Authorization: AWS4-HMAC-SHA256 Credential=AKIAI44QH8DHBEXAMPLE/20240115/us-east-1/s3/aws4_request, SignedHeaders=host;range;x-amz-date, Signature=28a9d1de97c8bc3c5e0e5b3f6d8f2b9a7c4e6a5b8d3f1e9c2a7b4f6d8e1c3a5b
 ```
 
