@@ -53,7 +53,7 @@ When interacting with agentic tools or IDE assistants via MCP, you can use both 
 
 - **Slash Commands**: These are structured commands that usually start with a `/` (for example, `/start_mock` or `/record_traffic`). Slash commands are directly mapped to specific MCP tools or actions. They are precise, unambiguous, and ideal for quickly invoking a known capability. Many chat-based IDEs and agentic tools (like Cursor or Claude Desktop) support slash commands for tool discovery and execution.
 
-  - *Example*:  
+  - *Example*:
     ```
     /replay_traffic
     ```
@@ -61,7 +61,7 @@ When interacting with agentic tools or IDE assistants via MCP, you can use both 
 
 - **Prompting**: This involves using natural language to describe what you want the tool or agent to do (for example, "run a mock server" or "please record all API calls"). Prompts are flexible and can be more conversational, allowing the agent to interpret your intent and choose the appropriate tool or sequence of actions. This is especially useful for more complex or multi-step tasks.
 
-  - *Example*:  
+  - *Example*:
     ```
     Please start recording all API calls and generate a test for the latest traffic using proxymock
     ```
@@ -100,6 +100,6 @@ If the `proxymock init` command fails or you are using an unknown IDE, you can m
     }
 }
 
-Additionally, you can re-detect and install by running `proxymock mcp --install`.
+Additionally, you can re-detect and install by running `proxymock mcp install`.
 ```
 :::

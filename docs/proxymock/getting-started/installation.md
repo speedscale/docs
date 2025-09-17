@@ -30,6 +30,6 @@ import BinaryCLIInstall from './installation/\_cli_binary.mdx'
 </Tabs>
 
 :::info Coding with AI Tools?
-Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp --install`.
+Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp install`.
 :::
 
