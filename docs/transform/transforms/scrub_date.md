@@ -2,7 +2,7 @@ import ScrubDateExample from './scrub_date/scrub-date-example.png'
 
 # scrub_date
 
-**scrub_date** searches for all dates within a JSON payload and replaces them with "*". This is useful for eliminating "flaky" responder requests containing dynamic timestamps. For instance, the request may have a request timestamp that needs to be blanked out. Here is an example of what this transform does:
+**scrub_date** searches for all dates within a JSON payload and replaces them with "*". This is useful for eliminating "flaky" mock requests containing dynamic timestamps. For instance, the request may have a request timestamp that needs to be blanked out. Here is an example of what this transform does:
 
 <img src={ScrubDateExample} width="600"/>
 
