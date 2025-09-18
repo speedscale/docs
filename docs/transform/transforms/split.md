@@ -21,25 +21,51 @@
 
 ### Example
 
+### Before and After Example
+
 #### Configuration
 
 ```json
-"type": "split",
-"config": {
-    "index": "1",
-    "separator": "|,."
+{
+   "type": "split",
+   "config": {
+       "index": 1,
+       "separator": "|,."
+   }
 }
 ```
 
-This config will split a string into segments whenever it encounters a pipe or period and extract the second string segment.
-
-#### Input Token
+#### Example Chains
 
 ```
-string.splitting|is|fun
+req_body() -> json_path(path="tags") -> split(index=0, separator=",")
 ```
 
-#### Transformed Token
+This will extract the tags field from the request body and get the first tag from a comma-separated list.
 
-`splitting`
+```
+http_req_header(header="Accept-Language") -> split(index=0, separator=",;")
+```
+
+This will extract the Accept-Language header and get the primary language preference.
+
+```
+res_body() -> json_path(path="path") -> split(index=2, separator="/")
+```
+
+This will extract a path field from the response body and get the third segment from a forward-slash separated path.
+
+#### Before (Original Values)
+
+- **Tags List**: `javascript,react,frontend,typescript`
+- **Accept-Language**: `en-US,en;q=0.9,fr;q=0.8`
+- **File Path**: `/api/v1/users/profile`
+- **Pipe Delimited**: `string.splitting|is|fun`
+
+#### After (Split Transformed)
+
+- **Tags List (first tag)**: `javascript`
+- **Accept-Language (primary language)**: `en-US`
+- **File Path (third segment)**: `users`
+- **Pipe Delimited (second segment)**: `splitting`
 

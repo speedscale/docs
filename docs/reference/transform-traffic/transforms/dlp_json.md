@@ -6,7 +6,7 @@ description: "The Speedscale documentation provides detailed guidance on transfo
 
 ### Purpose
 
-**dlp_json** accepts a JSON input and redacts sensitive keys. The keys to be redcated are controlled by the DLP configuration used by the generator, analyzer or responder. See more information on configuring the DLP [here](../../../guides/dlp.md).
+**dlp_json** accepts a JSON input and redacts sensitive keys. This transform operates on specific JSON keys defined in the DLP configuration - it does not walk through all JSON keys automatically. The keys to be redacted are controlled by the DLP configuration used by the generator, analyzer or responder. See more information on configuring the DLP [here](../../../guides/dlp.md).
 
 ### Usage
 

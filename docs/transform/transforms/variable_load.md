@@ -25,11 +25,3 @@
     "name": "my_variable"
 }
 ```
-
-#### Input Token
-
-`R2D2`
-
-#### Transformed Token
-
-`value_of_my_variable`

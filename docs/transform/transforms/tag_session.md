@@ -13,3 +13,35 @@ Depending on your app, session identification and mutation can be complex topic 
 ```json
 "type": "tag_session"
 ```
+
+### Configuration
+
+```json
+{
+   "type": "tag_session"
+}
+```
+
+### Example Chains
+
+```
+req_body() -> json_path(path="sessionId") -> tag_session()
+```
+
+This will extract the sessionId field from the request body and tag it as a session identifier for grouping requests.
+
+```
+http_req_header(header="Authorization") -> regex(pattern="Bearer (.+)", captureGroup=1) -> tag_session()
+```
+
+This will extract the Bearer token from the Authorization header and use it as a session identifier.
+
+```
+res_body() -> json_path(path="user.id") -> tag_session()
+```
+
+This will extract the user ID from the response body and tag it as a session identifier to group all requests for that user.
+
+:::note
+After tagging, these values become session identifiers in Speedscale's AI model. All requests containing the same session identifier will be grouped together for analysis, filtering, and replay scenarios.
+:::
