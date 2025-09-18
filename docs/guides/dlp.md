@@ -56,6 +56,47 @@ configuration in the main [UI](https://app.speedscale.com/dlpConfig/standard). O
 speedctl get dlp-config standard
 ```
 
+## Automatic Data Pattern Detection
+
+In addition to key-based redaction rules, Speedscale's DLP engine automatically identifies and can redact common sensitive data patterns regardless of their field names. The engine recognizes the following data types:
+
+### Personal Information
+- **Email addresses** - Standard email format validation
+- **Social Security Numbers (SSN)** - US SSN format patterns
+- **Phone numbers** - E.164 international phone number format
+
+### Financial Data
+- **Credit card numbers** - Major credit card number patterns
+
+### Technical Identifiers
+- **UUIDs** - Various UUID formats including:
+  - UUID v3 (MD5-based)
+  - UUID v4 (random)
+  - UUID v5 (SHA1-based)
+  - RFC4122 compliant formats
+- **Hash values** - Common cryptographic hash formats:
+  - MD4, MD5
+  - SHA-256, SHA-384, SHA-512
+  - RIPEMD-128
+  - TIGER-128, TIGER-160, TIGER-192
+- **JWT tokens** - JSON Web Token format
+- **Trace and Span IDs** - Distributed tracing identifiers
+
+### Network and Location Data
+- **IP addresses** - IPv4 and IPv6 addresses
+- **URLs and URIs** - Web addresses and resource identifiers
+- **Geographic coordinates** - Latitude and longitude values
+
+### Database Content
+- **SQL statements** - SQL query patterns
+- **SQL statement names** - Prepared statement identifiers
+- **SQL portal names** - Database connection identifiers
+
+### Temporal Data
+- **Date/time values** - Various datetime format patterns
+
+These automatic patterns work alongside your custom redaction rules, providing comprehensive coverage for sensitive data that might be missed by field-name-based rules alone.
+
 :::tip
 Including the SHA-256 hash of a value in its final redacted form, you can identify differences in datasets
 without needing any access to the original unredacted data. This could be very useful if you need to validate
