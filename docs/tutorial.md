@@ -116,15 +116,15 @@ This should start generating traffic that you can see in the Speedscale UI withi
 
 After a few minutes you should be able to see your traffic in the [Speedscale dashboard](https://app.speedscale.com). Make sure to select the the same service name that you entered in `speedctl install` from the traffic dropdown. You should be able to see the inbound and outbound calls for this app as shown below.
 
-![Traffic](./end-to-end/traffic.png)
+![Traffic](./guides/end-to-end/traffic.png)
 
 You can also drill down into specific requests-response pairs (RRPairs). For eg. we see the request we make to our app to get the max interest rate for treasuries.
 
-![Server](./end-to-end/server-request.png)
+![Server](./guides/end-to-end/server-request.png)
 
 And we can also see the outbound request our app makes to the Treasury API to fulfill this request.
 
-![Treasury](./end-to-end/out-request.png)
+![Treasury](./guides/end-to-end/out-request.png)
 
 You can and inspect it further or you can skip ahead to running a replay which will also create a snapshot as a side effect.
 
@@ -192,29 +192,29 @@ speedctl replay SNAPSHOT_ID --test-config-id=standard  --custom-url='http://loca
 
 If you are already viewing the Snapshot you recorded, you can see your replay appear in the `Replay` tab. Alternatively, you can find a report for your Replay in the [dashboard](https://app.speedscale.com/reports). It should look something like this.
 
-![Report](./end-to-end/report.png)
+![Report](./guides/end-to-end/report.png)
 
 We can see that all the requests our app makes to third party APIs were mocked out with 100% accuracy. For eg. we can see the request our app made to the Treasury API that was actually mocked out which is great for isolation during tests but we can also do this for other parts of our development cycle as detailed [here](./guides/replay/mocks/README.md#responder-only).
 
-![Responder](./end-to-end/mocks.png)
+![Responder](./guides/end-to-end/mocks.png)
 
 You can also see that the accuracy isn't 100%. We can drill down into a specific assertion to see why.
 
-![JWT](./end-to-end/jwt.png)
+![JWT](./guides/end-to-end/jwt.png)
 
 ### Transform
 
 The JWT we get from the login request is different which is expected. If we were replaying in a different environment, we might need different credentials entirely for the login request. Another pattern might be a set of traffic where we don't have a login request and instead we need to [resign the JWT](./guides/replay/resign-jwt.md) from our captured traffic. This is where [Transforms](./concepts/transforms.md) come into play and we can edit our captured data to parameterize parts of it. As an example, we can transform our snapshot to edit the password.
 
-![Transform](./end-to-end/login-transform.png)
+![Transform](./guides/end-to-end/login-transform.png)
 
 When you find the request in the transform editor, you can click the pencil icon next to the field you want to edit which in our case is the password.
 
-![Transform](./end-to-end/login-transform-modal.png)
+![Transform](./guides/end-to-end/login-transform-modal.png)
 
 For now we'll just replace it with a constant but there are all sorts of options that can be chained together.
 
-![Changed](./end-to-end/login-new.png)
+![Changed](./guides/end-to-end/login-new.png)
 
 We just did a transform for the traffic coming into our app during a replay. We can also use transforms for mocks in case we have to parameterize fields like session ids, dates, etc. Check out [this guide](./guides/replay/mocks/edit-sig.md) for a deep dive.
 
@@ -222,19 +222,19 @@ We just did a transform for the traffic coming into our app during a replay. We 
 
 Another assertion that failed in our report is for the `/spacex/ship` endpoint.
 
-![Ship Endpoint](./end-to-end/random.png)
+![Ship Endpoint](./guides/end-to-end/random.png)
 
 Our app returns a different ship ID every time we make a request so this is an expected failure. We can edit the test config for our Report to account for this.
 
-![Edit Test Config](./end-to-end/report-tc.png)
+![Edit Test Config](./guides/end-to-end/report-tc.png)
 
 Click the pencil next to the `HTTP Response Body` assertion and we can add `ship_id` as a json path to ignore.
 
-![Edited](./end-to-end/report-ignore.png)
+![Edited](./guides/end-to-end/report-ignore.png)
 
 After saving, we can reanalyze the report and we see much better results!
 
-![Success](./end-to-end/report-success.png)
+![Success](./guides/end-to-end/report-success.png)
 
 ## Overview
 
@@ -286,7 +286,7 @@ docker compose -f speedscale-docker-capture.yaml down
 
 If we drill down into a request, we can also see data we may not want to leave our environment.
 
-![Auth](./end-to-end/unredacted.png)
+![Auth](./guides/end-to-end/unredacted.png)
 
 You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low accuracies because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you cna follow the instructions below.
 
@@ -326,6 +326,6 @@ Run the `speedctl capture` command with the additional flag `--dlp-config standa
 
 Now we see the authorization header is redacted and never makes it to Speedscale.
 
-![Redacted](./end-to-end/redacted.png)
+![Redacted](./guides/end-to-end/redacted.png)
 
 For more complex DLP configuration you can use [this guide](./guides/dlp.md).

@@ -1,3 +1,8 @@
+---
+sidebar_position: 15
+---
+
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -16,15 +21,15 @@ Here's how you create and apply them:
 1. Open the Traffic Viewer and select your service
 2. Apply filters to narrow down the traffic to only the request/response pairs that you want to allow.
 
-![Filters](./select-filters.png)
+![Filters](./creating-filters/select-filters.png)
 
 3. Click the **Create Filter** button in the top right of the filter section:
 
-![Create Filter](./create-filter.png)
+![Create Filter](./creating-filters/create-filter.png)
 
 4. Give the filter a unique ID (no spaces) - make sure to remember it.
 
-![Filter Name](./filter_name.png)
+![Filter Name](./creating-filters/filter_name.png)
 
 
 ## Create Filters with the CLI

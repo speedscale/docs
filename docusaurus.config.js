@@ -36,6 +36,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/end-to-end/",
+            to: "/guides/end-to-end/",
+          },
+          {
             from: "/reference/transform-traffic/common-patterns/guide-jwt/",
             to: "/guides/replay/resign-jwt/",
           },

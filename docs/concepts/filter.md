@@ -15,7 +15,7 @@ Traffic is selected using the Subset selector at the top of the [traffic viewer]
 
 ## Filtering before capture
 
-When viewing traffic in the Traffic Viewer, you can also [create a filter](../guides/creating-filters/index.md) that can be [applied](/guides/creating-filters/#apply-the-filter) to the forwarder to prevent data matching that criteria from being sent to Speedscale. Common uses of this feature are filtering out montoring heartbeats, PINGs and other noise.
+When viewing traffic in the Traffic Viewer, you can also [create a filter](../guides/creating-filters.md) that can be [applied](/guides/creating-filters/#apply-the-filter) to the forwarder to prevent data matching that criteria from being sent to Speedscale. Common uses of this feature are filtering out montoring heartbeats, PINGs and other noise.
 
 :::info
 If you need to redact certain fields such as authorization headers or PII, you can do this using the [Data Loss Prevention](../guides/dlp.md). This is useful for when you still want to capture the traffic and replay it but not let API keys or other sensitive information leave your cluster.

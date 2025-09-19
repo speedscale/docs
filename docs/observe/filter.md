@@ -12,7 +12,7 @@ Speedscale replicates environments by replicating traffic. Selecting what traffi
 Keep in mind that the Traffic Viewer continually refreshes. In logging tools this is called a "live tail" and means by default new traffic will appear at the top of the list. Traffic Viewer is not perfectly real time but generally observed requests show in the UI within a minute or less.
 
 :::tip
-A filter query string determines which traffic is included in a view (or snapshot). The filter query string follows a fairly straightforward filter syntax that you can learn about in the [guide](../guides/creating-filters/index.md). As the traffic viewer view changes, the underlying filter query string also changes.
+A filter query string determines which traffic is included in a view (or snapshot). The filter query string follows a fairly straightforward filter syntax that you can learn about in the [guide](../guides/creating-filters.md). As the traffic viewer view changes, the underlying filter query string also changes.
 :::
 
 ### Request Response (RRPair) Details <a href="#rrpairs" id="rrpairs"></a>
