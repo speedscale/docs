@@ -38,7 +38,7 @@ at the bottom of the [report](#report).
 
 A set of rules which determines whether to include or exclude traffic.
 
-See [creating traffic filters](../guides/creating-filters/index.md) and the
+See [creating traffic filters](../guides/creating-filters.md) and the
 [filters reference](./filters/README.md) for more information.
 
 ### Generator

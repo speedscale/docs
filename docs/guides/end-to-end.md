@@ -27,22 +27,22 @@ End-to-end testing with Speedscale involves capturing production traffic, transf
 
 The screenshots in this section demonstrate:
 
-![JWT Token Example](jwt.png)
+![JWT Token Example](end-to-end/jwt.png)
 *JWT token transformation and validation*
 
-![Login Flow](login-new.png)
+![Login Flow](end-to-end/login-new.png)
 *User authentication flow capture*
 
-![Transform Modal](login-transform-modal.png)
+![Transform Modal](end-to-end/login-transform-modal.png)
 *Data transformation configuration*
 
-![Traffic Analysis](traffic.png)
+![Traffic Analysis](end-to-end/traffic.png)
 *Real-time traffic monitoring and analysis*
 
-![Test Reports](report.png)
+![Test Reports](end-to-end/report.png)
 *Comprehensive test result reporting*
 
-![Mock Configuration](mocks.png)
+![Mock Configuration](end-to-end/mocks.png)
 *Service mock setup and configuration*
 
 ## Getting Started
