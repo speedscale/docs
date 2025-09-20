@@ -82,3 +82,23 @@ proxymock mock
 ```
 
 You can now run your MySQL client normally and it will connect to proxymock on port 3306 like a normal database.
+
+## Modifying Responses
+
+To modify the responses manually, you can find the appropriate markdown file and edit the contents. However, to automate data transforamtion you can use the transform system provided by [Speedscale enterprise](https://app.speedscale.com). To edit your snapshot, upload it to the cloud:
+
+```sh
+proxymock cloud push snapshot
+```
+
+A link to your snapshot will be provided. In the Speedscale UI, add your transforms like the following:
+
+![transforms](./mysql/mysql-transforms.png)
+
+Remember to click Save. Now download the modified snapshot:
+
+```sh
+proyxmock cloud pull snapshot <id>
+```
+
+You will notice a new `.metadata` directory containing your transform definitions. When you run `proxymock mock` again the transforms will be applied to your mock.
