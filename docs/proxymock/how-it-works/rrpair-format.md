@@ -18,10 +18,10 @@ title: File Format
 
 ## File Structure
 
-RRPair markdown files use section headers with the pattern `### SECTION_NAME ###` to organize content. Each section's content is wrapped in triple backticks (```). The section ordering may change based on inbound or outbound traffic but that is only a convention and not a requirement:
+RRPair markdown files use section headers with the pattern `### SECTION_NAME ###` to organize content. Each section's content is wrapped in triple backticks (```):
 
 ````markdown
-### REQUEST (TEST) ###
+### REQUEST ###
 ```
 METHOD PROTOCOL://HOST:PORT/PATH?QUERY HTTP/VERSION
 Header-Name: Header-Value
@@ -33,14 +33,21 @@ BODY
 
 ### RESPONSE ###
 ```
+HTTP/VERSION STATUS_CODE STATUS_MESSAGE
 Header-Name: Header-Value
-Status-Header: status-value
 ```
 
 ```
 {
   "response": "body content here"
 }
+```
+
+### SIGNATURE ###
+```
+key1 is value1
+key2 is value2
+key3 is -NONE-
 ```
 
 ### METADATA ###
@@ -66,7 +73,7 @@ The REQUEST section represents the HTTP request made to an API endpoint.
 
 #### Format
 ````markdown
-### REQUEST (TEST) ###
+### REQUEST ###
 ```
 METHOD PROTOCOL://HOST:PORT/PATH?QUERY HTTP/VERSION
 Header-Name: Header-Value
@@ -95,7 +102,7 @@ T3: trailer-value-3
 
 #### Example
 ````markdown
-### REQUEST (TEST) ###
+### REQUEST ###
 ```
 POST https://api.example.com/v1/users HTTP/2.0
 Authorization: Bearer eyJ0eXAiOiJKV1Q...
@@ -119,8 +126,8 @@ The RESPONSE section represents the HTTP response from an API endpoint.
 ````markdown
 ### RESPONSE ###
 ```
+HTTP/VERSION STATUS_CODE STATUS_MESSAGE
 Header-Name: Header-Value
-Status-Header: status-value
 ```
 
 ```
@@ -131,8 +138,8 @@ Status-Header: status-value
 ````
 
 #### Rules
-- **Headers Only**: No status line (status code stored in internal JSON)
-- **Alphabetical Order**: Headers sorted alphabetically
+- **Status Line**: First line contains HTTP version, status code, and status message
+- **Headers**: Listed alphabetically, case-sensitive
 - **Content-Length**: Excluded (recalculated during processing)
 - **Body Formatting**: JSON pretty-printed, HTML formatted
 - **Empty Bodies**: Represented as empty section
@@ -141,6 +148,7 @@ Status-Header: status-value
 ````markdown
 ### RESPONSE ###
 ```
+HTTP/2.0 201 Created
 Content-Type: application/json
 Location: /users/12345
 X-Request-ID: abc123
@@ -156,27 +164,6 @@ X-Request-ID: abc123
 ```
 ````
 
-### RESPONSE (MOCK) Section
-
-Used for outgoing traffic where the response is mocked.
-
-#### Format
-````markdown
-### RESPONSE (MOCK) ###
-```
-Content-Type: application/json
-```
-
-```
-{
-  "mock": "response data"
-}
-```
-````
-
-#### Rules
-- Same formatting rules as RESPONSE section
-- Represents mock response for outgoing requests or expected response for inbound requests
 
 ### SIGNATURE Section
 
@@ -297,9 +284,9 @@ json: {"msgType":"rrpair","ts":"2024-01-15T14:30:22.489942Z",...}
 
 ## Complete Examples
 
-### Incoming API Request Example
+### API Request Example
 ````markdown
-### REQUEST (TEST) ###
+### REQUEST ###
 ```
 POST https://api.payment.com/v1/charges HTTP/2.0
 Authorization: Bearer sk_test_123456789
@@ -318,6 +305,7 @@ Idempotency-Key: charge_12345
 
 ### RESPONSE ###
 ```
+HTTP/2.0 200 OK
 Content-Type: application/json
 Request-ID: req_abc123def456
 ```
@@ -330,6 +318,15 @@ Request-ID: req_abc123def456
   "status": "succeeded",
   "created": 1642176622
 }
+```
+
+### SIGNATURE ###
+```
+http:host is api.payment.com
+http:method is POST
+http:queryparams is -NONE-
+http:url is /v1/charges
+instance is 0
 ```
 
 ### METADATA ###
@@ -347,10 +344,22 @@ json: {"msgType":"rrpair","ts":"2024-01-15T14:30:22.489942Z","l7protocol":"http"
 ```
 ````
 
-### Outgoing API Request Example
+### Outbound API Request Example
 ````markdown
-### RESPONSE (MOCK) ###
+### REQUEST ###
 ```
+GET http://internal-api.company.com/v1/users?limit=10&offset=0 HTTP/1.1
+Authorization: Bearer internal_token_123
+User-Agent: MyService/2.1.0
+```
+
+```
+
+```
+
+### RESPONSE ###
+```
+HTTP/1.1 200 OK
 Content-Type: application/json
 X-API-Version: v1
 ```
@@ -365,7 +374,7 @@ X-API-Version: v1
     },
     {
       "id": 2,
-      "name": "Jane Smith", 
+      "name": "Jane Smith",
       "email": "jane@example.com"
     }
   ],
@@ -380,17 +389,6 @@ http:method is GET
 http:queryparams is limit=10&offset=0
 http:url is /v1/users
 instance is 0
-```
-
-### REQUEST ###
-```
-GET http://internal-api.company.com/v1/users?limit=10&offset=0 HTTP/1.1
-Authorization: Bearer internal_token_123
-User-Agent: MyService/2.1.0
-```
-
-```
-
 ```
 
 ### METADATA ###
