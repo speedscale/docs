@@ -13,7 +13,7 @@ The following instructions will work with most MySQL clients. However, for demon
 This demo app is available in the [speedscale/demo](https://github.com/speedscale/demo) repository and requires Java to be installed. If you'd like to use the demo app, clone the repository and navigate to the `java-auth` directory, which contains a basic Java authentication service that interacts with MySQL:
 
 ```bash
-git clone https://github.com/speedscale/demo && cd java-auth
+git clone https://github.com/speedscale/demo && cd demo/java-auth
 ```
 
 Build the java *server* normally using maven and start MySQL on your local machine (instructions in the README). Don't worry if you don't have java installed and can't use this app. Just apply the environment variables to your own MySQL client app.
