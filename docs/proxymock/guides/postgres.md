@@ -74,7 +74,7 @@ The actual wire protocol is binary but proxymock displays request and response d
 
 ## Starting the Mock Server {#start-mocks}
 
-Make sure to stop your local PostgreSQL server to prevent port conflicts. You can run your app against the normal PostgreSQL port 5432 now.
+Make sure to stop your local PostgreSQL server to prevent port conflicts. You can run your app against the normal PostgreSQL port 5432 now and proxymock will simulate the database.
 
 Start the *proxymock* mock server:
 
