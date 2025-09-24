@@ -99,7 +99,7 @@ A link to your snapshot will be provided. In the Speedscale UI, add your transfo
 Remember to click Save. Now download the modified snapshot:
 
 ```sh
-proyxmock cloud pull snapshot <id>
+proxymock cloud pull snapshot <id>
 ```
 
 You will notice a new `.metadata` directory containing your transform definitions. When you run `proxymock mock` again the transforms will be applied to your mock.
