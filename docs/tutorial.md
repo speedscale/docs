@@ -10,10 +10,10 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 
 ## Prerequisites
 
-1. [Speedctl is installed](./setup/install/cli.md)
-2. Clone https://github.com/speedscale/demo
-3. [Java](https://jdk.java.net/) is present
-4. Make sure `JAVA_HOME` is set correctly (on MacOS you can run `/usr/libexec/java_home` to find the correct `JAVA_HOME`)
+1. CLI [speedctl is installed](./setup/install/cli.md)
+2. CLI [proxymock is installed](./proxymock/getting-started/installation.md)
+3. Clone https://github.com/speedscale/demo
+4. [Java](https://jdk.java.net/) is present and `JAVA_HOME` is set correctly (on MacOS you can run `/usr/libexec/java_home` to find the correct `JAVA_HOME`)
 5. Install `jq` and `make` if not already on your desktop (`brew install jq` and `brew install make` on MacOS for example)
 
 ## The App
@@ -28,11 +28,25 @@ Make sure you navigate to the `java` subdirectory within the `demo` repository.
 
 <TabItem value="Kubernetes">
 
-1. [Install the operator](./setup/install/kubernetes-operator.md)
-2. Run:
+1. [Install the operator](./quick-start.md#install-speedscale-operator-optional)
+2. To deploy the demo app and sidecar, run:
 
 ```bash
 make kube-capture
+```
+
+3. Validate the app was deployed properly with:
+
+```bash
+kubectl -n default get pods
+```
+
+Which should show `2/2` for the java-server pod indicating there are 2 containers (the application and the sidecar).
+
+```bash
+NAME                           READY   STATUS    RESTARTS   AGE
+java-client-54ccddd5cd-tthld   1/1     Running   0          37s
+java-server-597577977-bthvl    2/2     Running   0          37s
 ```
 
 This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
@@ -79,31 +93,41 @@ This should start generating traffic that you can see in the Speedscale UI withi
 
 <TabItem value="Local">
 
-1. Generate local certs by running the following command:
+1. Generate local certs by running the following command (it should say "Certificate was added to keystore"):
 
 ```bash
-speedctl create certs --jks --output-dir ~/.speedscale/certs
+proxymock certs --jks
 ```
 
-2. Run in a separate terminal window:
+2. Start the capture system with this command:
 
 ```bash
-speedctl capture java-server 8080
+proxymock capture
 ```
 
-3. Run in your original terminal window:
+3. Open another terminal window to run the `java-server` program:
 
 ```bash
 make local-capture
 ```
 
-4. Run
+4. Open a third terminal window to run the client application:
 
 ```bash
 make client-capture
 ```
 
-This should start generating traffic that you can see in the Speedscale UI within a couple of minutes.
+5. This will generate traffic, and you can view the traffic with the command:
+
+```bash
+proxymock inspect
+```
+
+6. If you want to push this data to Speedscale cloud you can with the command:
+
+```bash
+proxymock cloud push snapshot --in proxymock/recorded-YOUR_TIMESTAMP
+```
 
 </TabItem>
 
