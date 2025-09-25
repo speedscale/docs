@@ -16,4 +16,7 @@ that contain specific annotations. It then automatically stands up an isolation
 test environment around the deployment. The operator itself is a deployment
 that will be always present on the cluster.
 
-Please complete the [quick start](../../quick-start.md) for detailed instructions on installing Speedscale into Kubernetes.
+> Looking to install the operator? Follow the step-by-step instructions in the
+> [Quick Start – Install Speedscale Operator](../../quick-start.md#install-speedscale-operator-optional).
+
+For additional background and architecture, complete the [Quick Start](../../quick-start.md) first, then return here for conceptual details about how the operator works within your cluster.
