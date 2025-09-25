@@ -8,6 +8,11 @@ title: File Format
 
 **proxymock** creates files as artifacts when recording, replaying, and mocking. The [RRPair](/reference/glossary.md#rrpair) markdown format is a human-readable representation of API traffic data used by Speedscale. This format allows developers and LLMs to easily read, understand, and modify API request/response data while maintaining all necessary technical details for accurate replay.
 
+:::note
+The markdown format is not supported for all protocols.  For protocols without
+markdown support JSON will be used instead.
+:::
+
 ## Key Benefits
 
 - **Human Readable**: Easy to read and understand API interactions
