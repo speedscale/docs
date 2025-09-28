@@ -12,9 +12,10 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 
 1. CLI [speedctl is installed](./setup/install/cli.md)
 2. CLI [proxymock is installed](./proxymock/getting-started/installation.md)
-3. Clone https://github.com/speedscale/demo
-4. [Java](https://jdk.java.net/) is present and `JAVA_HOME` is set correctly (on MacOS you can run `/usr/libexec/java_home` to find the correct `JAVA_HOME`)
-5. Install `jq` and `make` if not already on your desktop (`brew install jq` and `brew install make` on MacOS for example)
+3. After installing CLI, `SPEEDSCALE_HOME` should be set correctly, if you don't see it run `proxymock init` again and allow it to update your rcfile.
+4. Clone the repo: https://github.com/speedscale/demo
+5. [Java](https://jdk.java.net/) is present and `JAVA_HOME` is set correctly (on MacOS you can run `/usr/libexec/java_home` to find the correct `JAVA_HOME`)
+6. Install `jq` and `make` if not already on your desktop (`brew install jq` and `brew install make` on MacOS for example)
 
 ## The App
 
@@ -102,7 +103,7 @@ proxymock certs --jks
 2. Start the capture system with this command:
 
 ```bash
-proxymock capture
+proxymock record --app-port 8080
 ```
 
 3. Open another terminal window to run the `java-server` program:
@@ -117,10 +118,10 @@ make local-capture
 make client-capture
 ```
 
-5. This will generate traffic, and you can view the traffic with the command:
+5. This will generate traffic, and you can view the traffic with this command:
 
 ```bash
-proxymock inspect
+proxymock inspect --in proxymock/recorded-YOUR_TIMESTAMP
 ```
 
 6. If you want to push this data to Speedscale cloud you can with the command:
