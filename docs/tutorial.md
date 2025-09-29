@@ -197,16 +197,25 @@ export TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose -
 
 1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](./guides/creating-a-snapshot.md) section.
 2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
-3. Run:
+3. This is how you run the application:
 
 ```bash
 make local-replay
 ```
 
-4. Replace `SNAPSHOT_ID` and run:
-
+4. In another terminal window, download the modified snapshot locally with:
 ```bash
-speedctl replay SNAPSHOT_ID --test-config-id=standard  --custom-url='http://localhost:8080'
+proxymock cloud pull snapshot SNAPSHOT_ID
+```
+
+5. Now you can run the mock server like so:
+```bash
+proxymock mock --in proxymock/snapshot-SNAPSHOT_ID
+```
+
+6. In a third terminal window, you can run the test replay:
+```bash
+proxymock replay --in proxymock/snapshot-SNAPSHOT_ID
 ```
 
 </TabItem>
@@ -343,7 +352,7 @@ services:
 
 <TabItem value="Local">
 
-Run the `speedctl capture` command with the additional flag `--dlp-config standard`.
+When running `proxymock` the files are stored locally but don't run through data loss prevention.
 
 </TabItem>
 
