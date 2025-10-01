@@ -21,7 +21,7 @@ To follow the guide below, you will need:
 
 1. [speedctl](/setup/install/cli)
 2. An [installed Speedscale Operator](../quick-start.md).
-3. An [active sidecar capturing traffic](/setup/sidecar/install/)
+3. An [active sidecar capturing traffic](/setup/sidecar/install.md)
 
 
 ## How It Works

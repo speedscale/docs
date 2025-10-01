@@ -156,7 +156,7 @@ In the example below, the service we want to capture is called `notifications` a
 
 1. An init container that populates the task volume with the TLS certs we created in Secrets Manager in the previous step.
 2. TLS configuration for the `notifications` service with the environment variables for `SSL_CERT_FILE`, `HTTP_PROXY` and `HTTPS_PROXY`. These
-   variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
+   variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes.md#configuring-your-application-proxy-server)
    and [trusting TLS certificates](/setup/sidecar/tls/#trusting-tls-certificates).
 3. A `goproxy` sidecar that will capture inbound and outbound traffic. The environment variables for this container need to be edited per environment. `APP_LABEL`, `APP_POD_NAME` and `APP_POD_NAMESPACE` can be set to whatever values you want to differentiate different captured traffic by. `REVERSE_PROXY_PORT` must be the port on which the app being captured serves. `FORWARDER_ADDR` needs to be whatever the service discovery name for the forwarder we setup previously is, in this case `forwarder.ecs.local:8888`.
 

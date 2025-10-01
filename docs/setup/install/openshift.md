@@ -45,7 +45,7 @@ Once this step is complete, you can continue [installing the Speedscale operator
 
 The Speedscale Sidecar is able to capture traffic from your workload by either running as a transparent proxy
 or as an explicit inline proxy. Both modes require additional configuration and setup in order to function
-correctly. See [proxy modes](/setup/sidecar/proxy-modes/) for more detail. In either case, it will be
+correctly. See [proxy modes](/setup/sidecar/proxy-modes.md) for more detail. In either case, it will be
 required to use an additional SCC for your workload to allow the sidecar to run as the user ID specified in
 the resulting pod spec.
 
@@ -135,7 +135,7 @@ oc adm policy add-scc-to-group anyuid system:serviceaccounts:<WORKLOAD_NAMESPACE
 ```
 
 Once this is complete, you can annotate your workload to inject the sidecar with the correct proxy operational
-mode. For example (additional detail can be found [here](/setup/sidecar/proxy-modes/)):
+mode. For example (additional detail can be found [here](/setup/sidecar/proxy-modes.md)):
 
 ```bash
 cat <<EOF | oc patch -n my-namespace deploy my-app -p -

@@ -13,7 +13,7 @@ replay.
 
 Get started with
 [your test configs in Speedscale](https://app.speedscale.com/config)
-or with the [reference docs](../../reference/configuration).
+or with the [reference docs](/reference/configuration/README.md).
 
 ## What can be controlled?
 

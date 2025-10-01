@@ -96,4 +96,4 @@ speedscale-responder-abstract-yucca-ffc7a8ffec-f11av   1/1     Running          
 
 ## Data Security
 
-To learn more about Speedscale's overall approach to data security, please visit our security [hub](../../security/security_).
+To learn more about Speedscale's overall approach to data security, please visit our security [hub](/security/security_.md).

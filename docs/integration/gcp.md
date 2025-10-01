@@ -17,7 +17,7 @@ Autopilot is an operational mode for GKE in which the entire cluster configurati
 all managed by Google. Because it functions more as a managed service, Google also applies strict security
 policies for deployed applications. Most notably, Autopilot does not allow pods with privileged containers.
 Because of this, the Speedscale sidecar is unable to make the necessary networking changes needed to function
-as a transparent proxy. Applications running in GKE Autopilot must configure the [proxy mode](/setup/sidecar/proxy-modes/)
+as a transparent proxy. Applications running in GKE Autopilot must configure the [proxy mode](/setup/sidecar/proxy-modes.md)
 of the sidecar to operate as a standard forward and reverse proxy (i.e. the "dual" proxy operation mode).
 
 In addition to this limitation, Autopilot also enforces rules for container resource requests and limits.

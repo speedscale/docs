@@ -7,7 +7,7 @@ import ArchitectureOverview from './outerspace-go.png'
 
 Welcome to proxymock!
 
-This guide provides a step-by-step approach to creating a [mock server](reference/glossary.md#mock-server) and tests for a simple Go application. Choose your preferred workflow below:
+This guide provides a step-by-step approach to creating a [mock server](/reference/glossary.md#mock-server) and tests for a simple Go application. Choose your preferred workflow below:
 
 ## What You'll Learn
 

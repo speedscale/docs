@@ -26,7 +26,7 @@ one with 500ms.
 - Lastly, [transforms](/reference/glossary.md#transform) may also affect throughput.  The combination of
   captured traffic and transforms are what make Speedscale unique and powerful, but they also come with a
 performance cost which depends on the transform being used.  [Resigning
-JWTs](/transform/transforms/jwt_resign/), for example can be a compute intensive operation
+JWTs](/transform/transforms/jwt_resign.md), for example can be a compute intensive operation
 and often affects every RRPair in a [snapshot](/reference/glossary.md#snapshot).  While transforms generally
 don't account for a majority of the generator's CPU time, any processing dedicated to transforming traffic
 cannot be used to send requests and process results.
@@ -65,7 +65,7 @@ Load tests should always set the [test config](/reference/glossary.md#test-confi
 mode](/reference/glossary.md#low-data-mode) enabled to avoid sending thousands or millions of
 [RRPairs](/reference/glossary.md#rrpair) to the Speedscale cloud.  If the load is high enough the generator
 will generate requests, and thus RRPairs, faster than they can be captured.  This can result in the generator
-running out of memory and [crashing](/reference/faq/#communication-with-the-generator-was-lost-during-replay)
+running out of memory and [crashing](/reference/faq.md#communication-with-the-generator-was-lost-during-replay)
 as it tries to process them all. For the same reason avoid setting the log level higher than "info" during
 load tests to avoid flooding the logs with millions of events which could also cause the generator to crash.
 

@@ -12,7 +12,7 @@ wherever proxymock was run.
 Traffic going to (tests), and coming from (mocks), your app can be recorded.
 The recorded traffic that went to your app can be replayed with `proxymock
 replay`.  The recorded traffic that went from your app to external resources can
-be used to create a [mock server](/reference/glossary/#mock-server) with `proxymock mock`.
+be used to create a [mock server](/reference/glossary.md#mock-server) with `proxymock mock`.
 
 When running `proxymock replay` or `proxymock mock` new requests are also
 recorded to the `proxymock` directory, unless disabled with a CLI flag.
@@ -23,7 +23,7 @@ Speedscale's [mock server](/reference/glossary.md#mock-server) uses the outbound
 (egress) traffic of your application to create a mock server.
 
 Each request received by the mock server is translated into a
-[signature](/proxymock/how-it-works/signature/) to make it quickly identifiable.
+[signature](/proxymock/how-it-works/signature.md) to make it quickly identifiable.
 This is visible in [RRPair](/reference/glossary.md#rrpair) files and can be
 modified to change the matching
 criteria.

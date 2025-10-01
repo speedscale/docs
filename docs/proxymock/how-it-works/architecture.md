@@ -58,14 +58,14 @@ means making requests to `localhost:4143` instead of `localhost:8080`.
 Once **proxymock** has created [mocks](/reference/glossary.md#mock) from
 outbound traffic it can be used as a [mock
 server](/reference/glossary.md#mock-server) to respond to requests from your
-app.  Mock [signatures](/proxymock/how-it-works/signature/) are generated from the
+app.  Mock [signatures](/proxymock/how-it-works/signature.md) are generated from the
 mock artifacts captured earlier.
 
     <AppWithMocks />
 
 While dependencies can be fully replace by **proxymock**, there is a dotted line
 to indicate "passthrough", which is what happens when a request to the mock
-server does not match a [signature](/proxymock/how-it-works/signature/). In that case the
+server does not match a [signature](/proxymock/how-it-works/signature.md). In that case the
 request is forwarded to the real resource.
 
   </TabItem>

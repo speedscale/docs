@@ -17,7 +17,7 @@ One great use of Speedscale is to record traffic in one cluster and replay it an
 
 ![Traffic Selector](./traffic_header.png)
 
-2. Create filters to narrow down the traffic to only the incoming requests and outgoing mocks you want to include. The Speedscale cloud engine can handle very large snapshots but it may cause you to wait unnecessarily. Common traffic that slows things down includes monitoring heartbeats and liveness probes. For more information on filtering check out the [docs](../../../reference/filters/).
+2. Create filters to narrow down the traffic to only the incoming requests and outgoing mocks you want to include. The Speedscale cloud engine can handle very large snapshots but it may cause you to wait unnecessarily. Common traffic that slows things down includes monitoring heartbeats and liveness probes. For more information on filtering check out the [docs](/reference/filters/README.md).
 
 ### Replay traffic in a 2nd cluster
 

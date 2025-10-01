@@ -25,7 +25,7 @@ The bottom of the report performance tab shows a summary of latency by
 endpoint, aggregated metrics which apply to only a single endpoint. An endpoint
 is a more generalized view of a URL without the host, port, query parameters,
 etc.  Use this information to identify slow API calls and set
-[goals](../../../reference/configuration/goals/) to fail the report when an
+[goals](/reference/configuration/goals.md) to fail the report when an
 endpoint falls outside service level objectives.
 
 ![Performance by URL](./latency-summary.png)

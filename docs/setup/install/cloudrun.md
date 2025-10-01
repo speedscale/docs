@@ -120,7 +120,7 @@ volumes:
           path: tls.crt
 ```
 
-The environment variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes/#configuring-your-application-proxy-server)
+The environment variables depend on the language of your app so refer to [proxy server configuration](/setup/sidecar/proxy-modes.md#configuring-your-application-proxy-server)
 and [trusting TLS certificates](/setup/sidecar/tls.md#trusting-tls-certificates).
 
 ### Verification

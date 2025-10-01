@@ -207,7 +207,7 @@ cluster or from your local desktop.
 
 Snapshots are listed on the [snapshots page](https://app.speedscale.com/snapshots) in the UI.
 
-See [creating a snapshot](/guides/creating-a-snapshot/) for more information.
+See [creating a snapshot](/guides/creating-a-snapshot.md) for more information.
 
 ### speedctl
 
