@@ -10,7 +10,7 @@ import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@sit
 
 # Quickstart (MCP)
 
-This guide provides a step-by-step approach to creating a [mock server](reference/glossary.md#mock-server) and tests for a simple Go application using proxymock's MCP (Model Context Protocol) integration with AI coding assistants like Cursor, Claude, or GitHub Copilot.
+This guide provides a step-by-step approach to creating a [mock server](/reference/glossary.md#mock-server) and tests for a simple Go application using proxymock's MCP (Model Context Protocol) integration with AI coding assistants like Cursor, Claude, or GitHub Copilot.
 
 ## Before you begin
 

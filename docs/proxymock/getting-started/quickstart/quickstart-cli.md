@@ -10,7 +10,7 @@ import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@sit
 
 # Quickstart (CLI)
 
-This guide provides a step-by-step approach to creating a [mock server](reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
+This guide provides a step-by-step approach to creating a [mock server](/reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
 
 ## Choose Your Environment
 

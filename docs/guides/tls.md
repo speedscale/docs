@@ -6,7 +6,7 @@ sidebar_position: 7
 
 ## Prerequisites
 1. [The Operator is installed](../quick-start.md).
-2. [A sidecar has been installed and traffic is being captured](/setup/sidecar/install/)
+2. [A sidecar has been installed and traffic is being captured](/setup/sidecar/install.md)
 
 ## Our app
 For this guide, we are using an app called `bq-app` that has an endpoint `/name/{state}` and makes calls out to Google's BigQuery on every inbound request.

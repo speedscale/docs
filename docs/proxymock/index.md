@@ -15,7 +15,7 @@ import {
 
 # Overview
 
-This guide provides a step by step guide to creating an sandbox for testing your code. This involves automatic generation of tests and a [mock server](reference/glossary.md#mock-server) for a simple Go application using only the **proxymock** CLI.
+This guide provides a step by step guide to creating an sandbox for testing your code. This involves automatic generation of tests and a [mock server](/reference/glossary.md#mock-server) for a simple Go application using only the **proxymock** CLI.
 
 ## [Getting started in 30 seconds](./getting-started/quickstart) {#getting-started}
 

@@ -98,7 +98,7 @@ Configuring TLS trust is, in most cases, language specific. Every runtime langua
 
 ## How Does It Work?
 
-The following explanations are provided for engineers seeking a deeper understanding of how TLS unwrapping takes place. Tools like [envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/listeners/listeners#tcp) follow an almost identical procedure with their sidecars and this is not Speedscale-specific knowledge. Also keep in mind that Speedscale supports alternative ingest mechanisms including HTTP file and Postman collection import. See the [integrations](/integration/import/http_wire/) section for more information.
+The following explanations are provided for engineers seeking a deeper understanding of how TLS unwrapping takes place. Tools like [envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/listeners/listeners#tcp) follow an almost identical procedure with their sidecars and this is not Speedscale-specific knowledge. Also keep in mind that Speedscale supports alternative ingest mechanisms including HTTP file and Postman collection import. See the [integrations](/integration/import/http_wire.md) section for more information.
 
 ### Inbound
 

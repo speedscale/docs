@@ -5,7 +5,7 @@ sidebar_position: 1
 # Traffic
 
 The traffic section contains high-level, and commonly modified, settings for
-the [generator and responder](../../../concepts/replay).
+the [generator and responder](/concepts/replay.md).
 
 The tool tip for each setting should point you in the right direction and more nuanced settings are covered here.
 
@@ -36,7 +36,7 @@ Here are a few examples:
 ## Endpoint Grouping
 
 Traditionally the
-[latency summary table](../../../guides/reports/performance-details/#latency-summary)
+[latency summary table](/guides/reports/performance-details.md#latency-summary)
 is provided with the raw endpoints observed during replay, but a common pattern
 in API design involves embedding identifiers as a part of the URL.  This leads
 to so many entries in the table that they are no longer useful.
@@ -57,7 +57,7 @@ Now replays run with this test config will provide a more concise latency summar
 
 ![summary-with-group](./endpoint-summary-grouped.png)
 
-And using the exact same pattern in [goals](../goals/) will set thresholds for the endpoint group.
+And using the exact same pattern in [goals](../configuration/goals.md) will set thresholds for the endpoint group.
 
 ![goals-endpoint-filter](./goals-endpoint-filter.png)
 

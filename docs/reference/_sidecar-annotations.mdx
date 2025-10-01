@@ -81,7 +81,7 @@ same thing as prometheus.io/scrape because that tells Prometheus what to do. Thi
 ### `sidecar.speedscale.com/proxy-type`
 
 Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `proxy`, ignored otherwise. See
-[proxy modes](/setup/sidecar/proxy-modes/) for more information on how each mode functions.
+[proxy modes](/setup/sidecar/proxy-modes.md) for more information on how each mode functions.
 
 - Accepted Values:
   - `transparent` (default)
@@ -95,7 +95,7 @@ Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `pr
 
 Set the protocol clients should use when connecting to the sidecar when operating in one of `reverse`,
 `forward`, or `dual` proxy types. This setting is ignored if `proxy-type` is `transparent`. See
-[proxy modes](/setup/sidecar/proxy-modes/) for more information.
+[proxy modes](/setup/sidecar/proxy-modes.md) for more information.
 
 - Accepted Values:
   - `tcp` (only valid for `reverse` proxies)

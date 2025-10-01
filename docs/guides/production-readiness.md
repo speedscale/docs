@@ -141,7 +141,7 @@ In addition to the resources, there are numerous other ways to customize the sid
 
 ## Pod Sampling
 
-See the [FAQ](/reference/faq/) for more information about Speedscale capabilities.
+See the [FAQ](/reference/faq.md) for more information about Speedscale capabilities.
 
 Sampling or "canary deployment" is an effective way to limit the blast radius of any change. There are multiple ways to configure sampling for pods that are built into Kubernetes. Here are 2 options:
 

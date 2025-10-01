@@ -29,7 +29,7 @@ In order to integrate **proxymock** into your CI/CD you will need:
 - Access to modify your CI/CD pipeline
 - Your **proxymock** API key
 - A paid **proxymock** account (see [proxymock.io](https://proxymock.io/pricing) for pricing details)
-- Pre-recorded traffic files (see [recording](/proxymock/getting-started/quickstart/quickstart-cli/#recording) to record from your app)
+- Pre-recorded traffic files (see [recording](/proxymock/getting-started/quickstart/quickstart-cli.md#recording) to record from your app)
 
 ## 1. The Pipeline
 
