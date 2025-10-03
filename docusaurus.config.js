@@ -24,7 +24,6 @@ const config = {
   themes: ["@docusaurus/theme-mermaid"],
 
   plugins: [
-    "docusaurus-plugin-hubspot",
     [
       "@docusaurus/plugin-google-tag-manager",
       {
@@ -577,6 +576,41 @@ const config = {
     ],
   ],
 
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: {
+        id: 'customeros-metrics',
+        type: 'text/javascript',
+      },
+      innerHTML: `(function (c, u, s, t, o, m, e, r, O, S) {var customerOS = document.createElement(s);customerOS.src = u;customerOS.async = true;(document.body || document.head).appendChild(customerOS);})(window, "https://cosxuaidt.speedscale.com/analytics-0.1.js", "script");`,
+    },
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'text/javascript',
+      },
+      innerHTML: `(function(h,o,u,n,d) {
+    h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
+    d=o.createElement(u);d.async=1;d.src=n
+    n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
+  })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v6/datadog-rum.js','DD_RUM')
+  window.DD_RUM.onReady(function() {
+    window.DD_RUM.init({
+      clientToken: 'pub2019c1346c7ab4080cf258cb4d94d3c9',
+      applicationId: '41389bb5-58c1-4216-b37d-b0cf3f004bb9',
+      site: 'datadoghq.com',
+      service: 'docs.speedscale.com',
+      env: 'production',
+      sessionSampleRate: 100,
+      sessionReplaySampleRate: 0,
+      trackBfcacheViews: true,
+      defaultPrivacyLevel: 'mask-user-input',
+    });
+  })`,
+    },
+  ],
+
   clientModules: [],
 
   presets: [
@@ -607,9 +641,6 @@ const config = {
         // Public API key: it is safe to commit it
         apiKey: "96ea3a26c0551c1f0e9729366ef87cd5",
         indexName: "speedscale",
-      },
-      hubspot: {
-        accountId: 7910857,
       },
       colorMode: {
         disableSwitch: true,
