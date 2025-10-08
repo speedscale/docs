@@ -1,10 +1,17 @@
-# CLAUDE.md
+# Agent Guidelines
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This document orients any AI coding agent working in this repository. Follow the workflow expectations below before making changes or running commands.
+
+## Workflow Expectations
+- Create a brief plan (via the planning tool) for multi-step tasks; skip only when the change is truly simple.
+- Prefer `rg`/`rg --files` when searching; avoid slower fallbacks unless necessary.
+- Keep edits ASCII unless the file already relies on other character sets; add comments only when they aid future readers.
+- Never revert user-authored changes; ask for guidance if you encounter unexpected edits you did not make.
+- Request approval before destructive operations or commands that need broader filesystem/network access.
+- Run relevant tests or linters when feasible; mention any steps you could not perform.
 
 ## Project Overview
-
-This is Speedscale's documentation website built with Docusaurus 2. Speedscale is an API testing platform that uses traffic capture and replay for stress testing APIs with real-world scenarios. The documentation covers two main products:
+This is Speedscale's documentation website built with Docusaurus 3 (currently 3.8.1). Speedscale is an API testing platform that uses traffic capture and replay for stress testing APIs with real-world scenarios. The documentation covers two main products:
 - **Speedscale Platform**: Full enterprise API testing platform  
 - **ProxyMock**: Local development tool for mocking APIs
 
@@ -75,7 +82,7 @@ When deleting pages, always add redirects to `docusaurus.config.js` to prevent b
 
 ### Technical Stack
 
-- **Framework**: Docusaurus 3.7.0
+- **Framework**: Docusaurus 3.8.1
 - **React**: 19.0.0  
 - **Node**: >=18.0 required
 - **Search**: Algolia DocSearch
@@ -83,7 +90,7 @@ When deleting pages, always add redirects to `docusaurus.config.js` to prevent b
 
 ## Documentation Improvement Plan
 
-*Last updated: 2025-01-11*
+*Last updated: 2025-10-08*
 
 ### Completed Immediate Fixes
 ✅ **Fixed broken redirects** in `docusaurus.config.js` (lines 128, 382, 454, 466)
