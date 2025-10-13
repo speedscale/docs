@@ -578,17 +578,17 @@ const config = {
 
   headTags: [
     {
-      tagName: 'script',
+      tagName: "script",
       attributes: {
-        id: 'customeros-metrics',
-        type: 'text/javascript',
+        id: "customeros-metrics",
+        type: "text/javascript",
       },
       innerHTML: `(function (c, u, s, t, o, m, e, r, O, S) {var customerOS = document.createElement(s);customerOS.src = u;customerOS.async = true;(document.body || document.head).appendChild(customerOS);})(window, "https://cosxuaidt.speedscale.com/analytics-0.1.js", "script");`,
     },
     {
-      tagName: 'script',
+      tagName: "script",
       attributes: {
-        type: 'text/javascript',
+        type: "text/javascript",
       },
       innerHTML: `(function(h,o,u,n,d) {
     h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
@@ -662,6 +662,11 @@ const config = {
           {
             href: "https://speedscale.com/blog",
             label: "Blog",
+            position: "right",
+          },
+          {
+            href: "https://slack.speedscale.com",
+            label: "Community Slack",
             position: "right",
           },
           {
