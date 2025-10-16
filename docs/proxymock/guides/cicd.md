@@ -159,7 +159,7 @@ verify:
     container:
       name: speedscale
       image: golang:1.25
-      command: ["/bin/sh"]
+      command: ["/bin/bash"]
       args: ["-c", "go build -o myapp . && ./proxymock.sh"] # <--- proxymock script - see below
 ```
 
@@ -271,7 +271,7 @@ The script expects the `SPEEDSCALE_API_KEY` environment variable to be set
 
 
 ```sh
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # set the port your application will listen on, where traffic will be replayed
 APP_PORT=8080
@@ -290,7 +290,12 @@ RUN_MOCK_SERVER=true
 ###    SCRIPT BELOW     ###
 ###########################
 
-set -ex
+# log file paths
+REPLAY_LOG_FILE="proxymock_replay.log"
+APP_LOG_FILE="proxymock_app.log"
+MOCK_LOG_FILE="proxymock_mock.log"
+
+set -e
 set -o pipefail 2>/dev/null || true
 
 validate() {
@@ -320,23 +325,32 @@ run_mock_server() {
 
   proxymock mock \
     --verbose \
-    --in $PROXYMOCK_IN_DIR/ \
-    --log-to proxymock_mock.log &
+    --in "$PROXYMOCK_IN_DIR/" \
+    --log-to "$MOCK_LOG_FILE" &
 }
 
 run_replay() {
-  REPLAY_LOG_FILE="proxymock_replay.log"
-  print_replay_log() {
+  print_logs() {
+    if [ -f "$MOCK_LOG_FILE" ]; then
+      echo "=== proxymock mock server logs ==="
+      cat $MOCK_LOG_FILE
+    fi
+    echo "=== proxymock replay logs ==="
     cat $REPLAY_LOG_FILE
+    if [ -f "$APP_LOG_FILE" ]; then
+      echo "=== application logs ==="
+      cat $APP_LOG_FILE
+    fi
   }
-  trap print_replay_log EXIT
+  trap print_logs EXIT
 
   # start proxymock replay, with your app, to run your app and replay test traffic
   # against it
   proxymock replay \
-    --in "$PROXYMOCK_DIR" \
+    --in "$PROXYMOCK_IN_DIR" \
     --test-against localhost:$APP_PORT \
     --log-to $REPLAY_LOG_FILE \
+    --app-log-to $APP_LOG_FILE \
     --fail-if "latency.max > 1500" \
     -- $APP_COMMAND
 }
@@ -375,8 +389,6 @@ If this does not produce an API key make sure you are registered first with `pro
 
 Make `SPEEDSCALE_API_KEY` available to your pipeline as an environment variable
 so **proxymock** can be initialized when the pipeline runs.
-
- <!-- FIXME: (JMT) complete -->
 
 ## Need Help?
 
