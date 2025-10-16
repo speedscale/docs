@@ -30,14 +30,14 @@ Installation instructions for proxymock are [here](https://docs.speedscale.com/p
 
 ## MCP at a Glance
 
-MCP is a lightweight, open protocol that standardizes how LLM clients (IDEs, chat apps) talk to capability providers (like proxymock). It defines a small set of API types so tools can interoperate:
+MCP is a lightweight, open protocol that standardizes how AI applications (IDEs, chat apps) connect to capability providers (like proxymock). It defines a small set of API types so tools can interoperate:
 
-- Tools: Callable functions with typed inputs/outputs exposed by a server (e.g., "start_mock", "record_traffic"). Great for invoking actions.
-- Prompts: Parameterized prompt templates the client can render and send to the model for consistent instructions (e.g., "generate test from capture").
-- Resources: Read‑only documents or data the client can fetch by URI (e.g., local files, logs, recordings) to ground the model.
-- Events/Status: Lightweight notifications so clients can stream progress, results, or errors to the user.
+- Tools: Callable functions with typed inputs/outputs that models can invoke autonomously (e.g., "start_mock", "record_traffic"). The AI decides when to call these.
+- Prompts: Parameterized prompt templates that users explicitly select, often surfaced as slash commands (e.g., "generate test from capture"). User-controlled, not auto-invoked.
+- Resources: Read‑only documents or data that can be fetched by URI (e.g., local files, logs, recordings) to ground the model with context.
+- Sampling: Allows servers to request LLM completions from the host application, enabling agentic behaviors while maintaining user control.
 
-Together these make agent integrations predictable across different clients ([Cursor](https://cursor.com), [Claude Desktop](https://claude.ai/download), [VS Code](https://code.visualstudio.com)/[Copilot Chat](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp)) without custom adapters.
+Together these make agent integrations predictable across different AI applications ([Cursor](https://cursor.com), [Claude Desktop](https://claude.ai/download), [VS Code](https://code.visualstudio.com)/[Copilot Chat](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp)) without custom adapters.
 
 ## Agentic vs IDE Assistants
 
@@ -47,19 +47,19 @@ Together these make agent integrations predictable across different clients ([Cu
 
 proxymock provides support for both types of workflows. For fully agentic workflows you should consider using a full sandbox environment with dedicated resources. This will allow your AI agents to run autonomously without your laptop. 
 
-## Slash Commands vs Prompting
+## Slash Commands vs Natural Language
 
-When interacting with agentic tools or IDE assistants via MCP, you can use both **slash commands** and **natural language prompts** to trigger actions in proxymock.
+When interacting with AI assistants via MCP, you can use both **slash commands** and **natural language** to work with proxymock.
 
-- **Slash Commands**: These are structured commands that usually start with a `/` (for example, `/start_mock` or `/record_traffic`). Slash commands are directly mapped to specific MCP tools or actions. They are precise, unambiguous, and ideal for quickly invoking a known capability. Many chat-based IDEs and agentic tools (like Cursor or Claude Desktop) support slash commands for tool discovery and execution.
+- **Slash Commands**: These are structured commands that usually start with a `/` (for example, `/record_my_app` or `/find_breaking_api_changes`). In MCP terminology, slash commands typically invoke **prompts**—predefined templates that you explicitly select. They provide a consistent, repeatable way to trigger specific workflows. Many AI applications (like Cursor or Claude Desktop) surface MCP prompts as slash commands in their UI.
 
   - *Example*:
     ```
-    /replay_traffic
+    /find_breaking_api_changes
     ```
-    This will immediately trigger a replay to start via MCP.
+    This invokes a guided workflow that helps you compare recorded and replayed traffic to identify API regressions.
 
-- **Prompting**: This involves using natural language to describe what you want the tool or agent to do (for example, "run a mock server" or "please record all API calls"). Prompts are flexible and can be more conversational, allowing the agent to interpret your intent and choose the appropriate tool or sequence of actions. This is especially useful for more complex or multi-step tasks.
+- **Natural Language**: You can describe what you want in plain language (for example, "run a mock server" or "please record all API calls"). The AI interprets your intent and may automatically invoke MCP **tools**—capabilities that the model can call autonomously—or combine multiple actions to fulfill your request. This is flexible and works well for exploratory or multi-step tasks.
 
   - *Example*:
     ```
@@ -68,10 +68,10 @@ When interacting with agentic tools or IDE assistants via MCP, you can use both 
 
 **When to use which?**
 
-- Use **slash commands** when you know the exact action you want and want to execute it quickly.
-- Use **prompts** for more descriptive, multi-step, or open-ended requests, or when you want the agent to decide the best course of action.
+- Use **slash commands** when you want a specific, predefined workflow or template applied consistently.
+- Use **natural language** for exploratory work, multi-step tasks, or when you want the AI to determine the best approach.
 
-Most modern agentic IDEs and chat tools support both approaches, and MCP is designed to handle either style seamlessly. Try both to see which fits your workflow best!
+Most modern AI applications support both approaches, and MCP enables seamless integration of both interaction styles. Try both to see which fits your workflow best!
 
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
   <MCPProtocolCard />
@@ -91,15 +91,16 @@ If the `proxymock init` command fails or you are using an unknown IDE, you can m
 ```json
 {
     "mcpServers": {
-        "proxymock-simulator": {
-            "command": "/Users/some_user/.speedscale/proxymock",
+        "proxymock": {
+            "command": "/Users/me/.speedscale/proxymock",
             "args": [
                 "mcp"
-            ]
+            ],
+            "type": "stdio"
         }
     }
 }
+```
 
 Additionally, you can re-detect and install by running `proxymock mcp install`.
-```
 :::
