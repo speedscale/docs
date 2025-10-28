@@ -80,13 +80,13 @@ Before you start browsing to a site, it’s always a good practice to clear your
 
 ## Browsing a Site
 
-Now you’re ready, feel free to browse a site. Within 1-2 minutes, you should see the traffic showing up in Speedscale:
+Now you’re ready, feel free to browse a site. Within 1-2 minutes, you should see the traffic showing up in Speedscale. You can view your traffic by opening another browser (not Firefox) and navigating to [https://app.speedscale.com](https://app.speedscale.com). Click the Traffic heading in the main navigation and then select your service (browser) from the filters.
 
 :::note
 The traffic shows up as outbound because it is leaving your browser and going to another backend system, the important thing is that traffic is showing up at all.
 :::
 
-You may be surprised to see how many different systems your browser is accessing. Feel free to add filters to specify the subset of traffic you are really interested in. Once you see the traffic you like then you can create a snapshot by hitting the `Save Tests/Mocks` button and keeping all the defaults. This will create a snapshot with an ID that you will need in the next steps.
+You may be surprised to see how many different systems your browser is accessing. Feel free to add filters to specify the subset of traffic you are really interested in. Once you see the traffic you like then you can create a snapshot by hitting the `Save` button and keeping all the defaults. This will create a snapshot with an ID that you will need in the next steps.
 
 ![Snapshot](./browser/snapshot-wikipedia.png)
 
