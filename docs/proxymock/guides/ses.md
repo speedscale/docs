@@ -18,6 +18,10 @@ git clone https://github.com/speedscale/demo && cd demo/go-ses-demo
 
 Don't worry if you can't use this demo app. Just apply the environment variables to your own AWS SES client app.
 
+<div style={{textAlign: 'center'}}>
+  <iframe src="https://player.vimeo.com/video/1133183871" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+</div>
+
 ## Recording AWS SES Traffic {#recording-intro}
 
 The `proxymock record` command creates RRPair files from real AWS SES interactions. Each request will contain an SES API call (like SendEmail or SendRawEmail) and the response will contain the message ID and other metadata returned by AWS.
