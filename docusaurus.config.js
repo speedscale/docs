@@ -14,12 +14,14 @@ const config = {
   baseUrl: "/",
   trailingSlash: true,
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.ico",
   organizationName: "speedscale", // Usually your GitHub org/user name.
   projectName: "docs", // Usually your repo name.
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: "throw",
+    },
   },
   themes: ["@docusaurus/theme-mermaid"],
 
