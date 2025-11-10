@@ -117,13 +117,15 @@ Remove the taint when done.
 kubectl taint nodes <node1> dedicated-to=speedscale-generator:NoExecute-
 ```
 
-### Monitor Your Workload
+### Monitoring
 
 This is tech so it's highly unlikely that everything will work exactly as expected the first time.  Your app
 may not scale as you expect, or it may crash, or the generator won't reach the desired throughput.
 Understanding what your application is during during the load test will help guide you towards the next steps.
 Look at metrics, review logs, and monitor the environment to get the full picture.  This obviously includes
 the application being tested but also databases, caches, third party services, etc.
+
+The generator pod also exposes a endpoint on port `4145` which can be used to monitor internal metrics, provided your monitoring system is setup to support scraping short-lived workloads.
 
 ## Multiple Generators
 
