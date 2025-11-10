@@ -81,7 +81,7 @@ Expect that memory usage will climb with the number of active connections.
 
 ### Monitoring
 
-Monitor your responders CPU under load to understand how they are performing. Watch for CPU throttling to indicate that the esponder needs more CPU to handle the load.
+Monitor your responders CPU under load to understand how they are performing. Watch for CPU throttling to indicate that more CPU is needed to handle the load.
 
 Get access to internal responder metrics with the Prometheus endpoint on port `4145`, provided your monitoring system is setup to support scraping short-lived workloads.
 
