@@ -35,28 +35,33 @@ Memory usage remained consistent for all tests at around 700 MB per responder, b
 
 ## Configuration
 
+Responder configuration can be managed through the [test config](/reference/glossary.md#test-config) when running the responder inside a Speedscale-managed cluster.
+
+:::info
+Long-running responders deployed in a Kubernetes cluster by the Speedscale Operator will need to be re-deployed to apply changes after the test config is modified.
+:::
+
+### Low Data Mode
+
+The responder should always set the test config to run with [low data mode](/reference/glossary.md#low-data-mode) enabled when running under high load to avoid sending thousands or millions of [RRPairs](/reference/glossary.md#rrpair) to the Speedscale cloud.  If the load is high enough without low data mode the responder may generate RRPairs faster than they can be captured which can result in an out-of-memory crash. For the same reason avoid setting the log level higher than "info" to avoid flooding the logs with millions of events.
+
+![low-data-mode](./responder-sizing-guide/low-data-mode.png)
+
+### Multiple Responders
+
 To configure responder resources, navigate to the "Cluster" tab in your [test config](/reference/glossary.md#test-config).
 
 ![test config cluster tab](./generator-sizing-guide/test-config-cluster-tab.png)
+
+### CPU and Memory
 
 On the cluster tab you can set both the CPU/memory resources and the number of responder replicas.
 
 ![resource configuration](./responder-sizing-guide/resource-configuration.png)
 
-:::warning
-Long-running responders deployed in a Kubernetes cluster by the Speedscale Operator will need to be re-deployed to apply changes after the test config is modified.
-:::
-
 ## Best Practices
 
-<!-- FIXME: (JMT) high water mark -->
-
-- Minimize the number of transforms to only what you need
-
-
-- Run multiple responders to split the load between them
-- Ensure responders have adequate CPU and are not saturated
-- Ensure your application has enough connections to communicate with multiple responders, but not so many that memory usage becomes a bottleneck
+Follow these recommendations for the best experience under high load.
 
 ### Multiple Responders
 
