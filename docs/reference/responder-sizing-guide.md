@@ -41,6 +41,12 @@ Responder configuration can be managed through the [test config](/reference/glos
 Long-running responders deployed in a Kubernetes cluster by the Speedscale Operator will need to be re-deployed to apply changes after the test config is modified.
 :::
 
+### Response Timing
+
+Ensure your application gets responses from the responder immediately by setting the response timing to "Full speed".  This isn't as realistic as using the recorded latency, but it ensures a much faster response.
+
+![response timing](./responder-sizing-guide/response-timing.png)
+
 ### Low Data Mode
 
 The responder should always set the test config to run with [low data mode](/reference/glossary.md#low-data-mode) enabled when running under high load to avoid sending thousands or millions of [RRPairs](/reference/glossary.md#rrpair) to the Speedscale cloud.  If the load is high enough without low data mode the responder may generate RRPairs faster than they can be captured which can result in an out-of-memory crash. For the same reason avoid setting the log level higher than "info" to avoid flooding the logs with millions of events.
