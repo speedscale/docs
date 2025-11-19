@@ -19,8 +19,8 @@ By the end of this guide, you will be able to:
 ### 1.3 Prerequisites
 
 Before using this guide, you should have:
-- A snapshot containing recorded traffic from your service
-- At least one report generated from test traffic
+- A [snapshot](../concepts/capture.md) containing recorded traffic from your service
+- At least one [report](./reports/README.md) generated from test traffic
 - Basic understanding of HTTP requests and responses
 - Access to the Mocked Responses view in your reports
 
@@ -30,7 +30,7 @@ Before using this guide, you should have:
 
 ### 2.1 What is Mock Accuracy?
 
-Mock Accuracy is a metric that measures how well your service mock matches incoming requests to recorded responses. It represents the percentage of requests that the responder successfully matched to a recorded signature, allowing it to return the appropriate mocked response.
+Mock Accuracy is a metric that measures how well your service mock matches incoming requests to recorded responses. It represents the percentage of requests that the [responder](../reference/glossary.md#responder) successfully matched to a recorded signature, allowing it to return the appropriate mocked response. For more about service mocking, see [Mocks & Service Virtualization](../mocks/mocks.md).
 
 A high Mock Accuracy means your mock server can reliably handle test traffic without needing to reach out to real backend services.
 
@@ -64,7 +64,7 @@ The ultimate goal is to achieve **100% Mock Accuracy**, meaning every request in
 - Understand why any requests remain unmatched
 - Continuously refine signatures as your application evolves
 
-**[SCREENSHOT: Mock Accuracy metric card in Responder toolbar showing hits/total (percentage)]**
+![Mock Accuracy metric card in Responder toolbar showing hits/total (percentage)](./signature-refinement-guide/mock-accuracy.png)
 
 ---
 
@@ -72,7 +72,7 @@ The ultimate goal is to achieve **100% Mock Accuracy**, meaning every request in
 
 ### 3.1 What is a Signature?
 
-A **signature** is a unique identifier for a request, composed of key-value pairs extracted from various parts of the HTTP request. The responder uses signatures to match incoming requests to recorded responses.
+A **signature** is a unique identifier for a request, composed of key-value pairs extracted from various parts of the HTTP request. The responder uses signatures to match incoming requests to recorded responses. For a deeper understanding of how signature matching works, see [Signature Matching](../mocks/signature.md).
 
 #### 3.1.1 Signature Key-Value Pairs
 
@@ -109,7 +109,7 @@ The most frequently used signature keys include:
 
 #### 3.2.1 What are Transform Chains?
 
-A **transform chain** is a set of operations that modify how signatures are extracted from requests. Transform chains allow you to make signatures more flexible by removing or modifying problematic keys that prevent matches.
+A **transform chain** is a set of operations that modify how signatures are extracted from requests. Transform chains allow you to make signatures more flexible by removing or modifying problematic keys that prevent matches. For a comprehensive overview of the transform system, see [Transform Overview](../transform/overview.md) or [Transform Concepts](../concepts/transforms.md).
 
 #### 3.2.2 How Transform Chains Work
 
@@ -215,8 +215,6 @@ Every request in your report has a match status:
 **Meaning**: The request was sent to the real backend service instead of being mocked. This typically occurs when the request pattern wasn't present in the original recording.
 **Action Required**: Consider adding this request pattern to your snapshot if it's part of your test suite.
 
-**[SCREENSHOT: Example signature with key-value pairs displayed in tabular format]**
-
 ---
 
 ## 4. Navigating to the Mocked Responses View
@@ -265,7 +263,7 @@ The Report Overview provides several metrics:
 
 These metrics help you understand the overall health of your mock configuration before diving into specific request details.
 
-**[SCREENSHOT: Report Overview with Mock Accuracy metric card, clicking through to Mocked Responses tab]**
+![Report Overview with Mock Accuracy metric card, clicking through to Mocked Responses tab](./signature-refinement-guide/mocked-responses-tab.png)
 
 ---
 
@@ -273,7 +271,7 @@ These metrics help you understand the overall health of your mock configuration 
 
 ### 5.1 Viewing the RRPair List
 
-The Mocked Responses tab displays an **RRPair List** (Request-Response Pair List). Each row represents a single request from your test run, showing:
+The Mocked Responses tab displays an **RRPair List** ([Request-Response Pair](../reference/glossary.md#rrpair) List). Each row represents a single request from your test run, showing:
 
 - Request method and URL
 - Match status icon (Match, No Match, or Passthrough)
@@ -314,7 +312,7 @@ When you click on an RRPair, a details drawer opens on the right side of the scr
 
 The Signature tab is your primary tool for understanding why a match failed.
 
-**[SCREENSHOT: MultiServiceRRPairList showing various match statuses]**
+![Example signature with key-value pairs displayed in tabular format](./signature-refinement-guide/match-examples.png)
 
 ---
 
@@ -338,7 +336,9 @@ The signature table displays:
 - **Value**: The actual value extracted from the request
 - **Status Indicator**: Visual indicator showing if this key caused a mismatch
 
-The table uses vertical tabs for keys, allowing you to quickly navigate between different signature components.
+The table uses vertical tabs for keys, allowing you to quickly navigate between different signature components. You may see a diff view similar to Visual Studio Code if there have been changes applied by the transform system.
+
+![signature key values](./signature-refinement-guide/signature-example.png)
 
 ### 6.3 Understanding Change Indicators
 
@@ -414,7 +414,7 @@ Useful when combining with other filters to target specific operations.
 
 These quick filters help you create precise transform chains that affect only the requests you intend to modify.
 
-**[SCREENSHOT: Signature tab showing signature keys with change indicator pills]**
+![Signature tab showing signature keys with change indicator pills](./signature-refinement-guide/filter-example.png)
 
 ---
 
@@ -505,7 +505,7 @@ When the dialog opens, it automatically:
 
 This auto-selection helps you quickly identify the most likely cause of the mismatch without manually searching through potentially large JSON structures.
 
-**[SCREENSHOT: SignatureSuggestionsDialog with side-by-side comparison and highlighted differences]**
+![SignatureSuggestionsDialog with side-by-side comparison and highlighted differences](./signature-refinement-guide/suggested-signatures.png)
 
 ---
 
@@ -678,6 +678,10 @@ This chain:
 - **Transforms**: Removes the `http:requestBodyJSON` key from signatures
 - **Tags**: Metadata for tracking the transform's origin and purpose
 
+:::tip
+For more information on how transform chains work and the order of execution, see [Transform Overview](../transform/overview.md#extractors-and-transforms).
+:::
+
 ### 9.3 Reviewing the Queued Transform Details
 
 After queuing a transform, review its details:
@@ -722,8 +726,6 @@ All queued transforms accumulate in the pending changes panel. This allows you t
 - Batch-apply changes for efficient testing
 
 **Best Practice**: Start with a few key removals (1-3) rather than queuing many at once. Apply and evaluate, then queue more if needed.
-
-**[SCREENSHOT: Clicking "Queue Remove from Signature" button for http:requestBodyJSON]**
 
 ---
 
@@ -804,7 +806,7 @@ Use "Discard All" when:
 
 **Warning**: Discarding is permanent for queued transforms. Once discarded, you'll need to re-queue changes manually.
 
-**[SCREENSHOT: PendingTransformsPanel showing list of queued transforms with descriptions]**
+![Clicking "Queue Remove from Signature" button for http:requestBodyJSON](./signature-refinement-guide/pending-transform-changes.png)
 
 ---
 
@@ -890,9 +892,7 @@ The new report automatically opens with the **Mocked Responses** tab active, sho
 - Refreshed RRPair list with new match statuses
 - Results of your signature refinements
 
-This saves you navigation time and immediately shows whether your refinements improved the Mock Accuracy.
-
-**[SCREENSHOT: Responder toolbar with "Apply Changes" button highlighted]**
+This saves you navigation time and immediately shows whether your refinements improved the Mock Accuracy. Keep in mind that the mock accuracy report may take a few minutes to run. The page will update on its own or hit refresh.
 
 ---
 
@@ -966,7 +966,7 @@ Decide whether to continue refining:
 - **90-95%**: Good - acceptable for most use cases
 - **&lt;90%**: Needs more work - significant gaps in mock coverage
 
-**[SCREENSHOT: Mock Accuracy metric showing improved percentage after applying changes]**
+![Mock Accuracy metric showing improved percentage after applying changes](./signature-refinement-guide/mock-accuracy-perfect.png)
 
 ---
 
@@ -1136,7 +1136,7 @@ Passthrough requests affect Mock Accuracy depending on how they're counted:
 
 Check your system's documentation to understand how passthrough requests factor into your Mock Accuracy metric.
 
-**[SCREENSHOT: "Add Passthrough Requests" button in Responder toolbar]**
+!["Add Passthrough Requests" button in Responder toolbar](./signature-refinement-guide/add-passthrough-requests.png)
 
 ---
 
@@ -1628,24 +1628,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 | **Pending Transforms** | Queued transforms that haven't been applied yet |
 | **Queue** | To stage a transform for later application without immediately applying it |
 
-### 19.2 Signature Key Reference
-
-| Key | Description | Example Value | When to Remove |
-|-----|-------------|---------------|----------------|
-| `http:host` | Target server hostname | `api.example.com` | **Rarely** - essential for routing |
-| `http:method` | HTTP method | `GET`, `POST`, `PUT`, `DELETE` | **Never** - critical for matching |
-| `http:url` | Request URL path | `/api/v1/users/123` | **Never** - critical for matching |
-| `http:requestBodyJSON` | JSON request body | `{"key": "value"}` | **Often** - if body contains dynamic data |
-| `http:requestBodyXML` | XML request body | `<request>...</request>` | **Often** - if body contains dynamic data |
-| `http:headers` | HTTP headers (combined) | `{"Authorization": "..."}` | **Sometimes** - if headers contain session tokens |
-| `http:qp:*` | Individual query parameters (e.g., `http:qp:page`, `http:qp:client`) | `http:qp:page = "1"` | **Selectively** - remove dynamic params, keep semantic ones |
-| `http:qp:sessionId` | Session ID query parameter | `abc123def456` | **Often** - session-specific |
-| `http:qp:timestamp` | Timestamp query parameter | `1234567890` | **Always** - dynamic per request |
-| `http:header:Authorization` | Authorization header | `Bearer token123` | **Often** - session-specific |
-| `http:header:X-Timestamp` | Timestamp header | `2024-01-01T10:00:00Z` | **Always** - dynamic per request |
-| `http:header:X-Request-ID` | Request ID header | `uuid-123-456` | **Always** - unique per request |
-
-### 19.3 Transform Type Reference
+### 19.2 Transform Type Reference
 
 | Transform Type | Purpose | Parameters | Example Use Case |
 |----------------|---------|------------|------------------|
@@ -1655,9 +1638,9 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 | `extract_field` | Extract a specific field from a complex value | `key`: Source key<br/>`path`: JSONPath or XPath<br/>`newKey`: Destination key | Extract only `$.action` field from JSON body for matching |
 | `regex_replace` | Replace patterns in values using regular expressions | `key`: Key to transform<br/>`pattern`: Regex pattern<br/>`replacement`: Replacement string | Remove UUIDs or dynamic IDs from URL paths |
 
-**Note**: `delete_sig`, `scrub`, and `scrub_date` are the most commonly used transforms for signature refinement. Not all transform types may be available in your version. Consult your platform documentation for the complete list.
+**Note**: `delete_sig`, `scrub`, and `scrub_date` are the most commonly used transforms for signature refinement. Not all transform types may be available in your version. For a complete reference of all available transform types and extractors, see [Transform Traffic Reference](../reference/transform-traffic/README.md).
 
-### 19.4 Match Status Reference
+### 19.3 Match Status Reference
 
 | Status | Icon | Meaning | Action Required |
 |--------|------|---------|-----------------|
@@ -1665,7 +1648,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 | **No Match** | Red X ✗ | Request did not match any recorded signature | **Yes** - refine signature |
 | **Passthrough** | Yellow warning ⚠ | Request was forwarded to real backend service | **Maybe** - add to snapshot if needed |
 
-### 19.5 UI Component Reference
+### 19.4 UI Component Reference
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
@@ -1960,24 +1943,6 @@ Use this checklist for each refinement iteration:
 - Contact your platform support team
 - Review example snapshots from similar projects
 - Consult with experienced team members
-
----
-
-## Screenshot Placeholders Summary
-
-1. **Mock Accuracy metric card in Responder toolbar** - Shows hits/total (percentage) format
-2. **Report Overview with Mock Accuracy metric card** - Clicking through to Mocked Responses tab
-3. **Example signature with key-value pairs** - Tabular format with keys and values
-4. **MultiServiceRRPairList showing various match statuses** - Match, No Match, Passthrough icons
-5. **Signature tab with change indicator pills** - Plus, minus, tilde indicators
-6. **SignatureSuggestionsDialog with side-by-side comparison** - Monaco editor diff view
-7. **"Queue Remove from Signature" button action** - Button highlighted for http:requestBodyJSON
-8. **PendingTransformsPanel with queued transforms** - List of transforms with descriptions
-9. **Responder toolbar with "Apply Changes" button** - Button highlighted showing count
-10. **Mock Accuracy metric showing improved percentage** - Before/after comparison
-11. **"Add Passthrough Requests" button** - Button in Responder toolbar
-
-**Total Screenshot Placeholders: 11**
 
 ---
 
