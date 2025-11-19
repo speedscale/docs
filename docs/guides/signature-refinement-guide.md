@@ -39,11 +39,11 @@ A high Mock Accuracy means your mock server can reliably handle test traffic wit
 Mock Accuracy is calculated as:
 
 ```
-Mock Accuracy = (Number of HITs / Total Requests) × 100%
+Mock Accuracy = (Number of Matches / Total Requests) × 100%
 ```
 
 Where:
-- **HITs**: Requests that exactly matched a recorded signature
+- **Matches**: Requests that exactly matched a recorded signature
 - **Total Requests**: All requests received during the test run
 
 For example, if your test generated 250 requests and 200 of them matched recorded signatures, your Mock Accuracy would be 80%.
@@ -82,12 +82,12 @@ A signature consists of multiple keys, each representing a different aspect of t
 http:host = "api.example.com"
 http:method = "POST"
 http:url = "/users/create"
-http:qp_client = "web"
-http:qp_version = "2.0"
+http:qp:client = "web"
+http:qp:version = "2.0"
 http:requestBodyJSON = "{\"name\":\"John\",\"timestamp\":1234567890}"
 ```
 
-Each query parameter from the URL is extracted into a separate signature key with the `http:qp_` prefix. For example, a request to `/users/create?client=web&version=2.0` would generate the `http:qp_client` and `http:qp_version` keys shown above.
+Each query parameter from the URL is extracted into a separate signature key with the `http:qp:` prefix. For example, a request to `/users/create?client=web&version=2.0` would generate the `http:qp:client` and `http:qp:version` keys shown above.
 
 When an incoming request arrives, the responder extracts the same keys and compares them to recorded signatures. If all keys match exactly, the responder returns the corresponding recorded response.
 
@@ -103,7 +103,7 @@ The most frequently used signature keys include:
 | `http:requestBodyJSON` | JSON request body | `{"id": 123, "action": "update"}` |
 | `http:requestBodyXML` | XML request body | `<request><id>123</id></request>` |
 | `http:headers` | HTTP headers | `Content-Type: application/json` |
-| `http:qp_*` | Individual query parameters (prefixed with `http:qp_`) | `http:qp_page = "1"`, `http:qp_limit = "10"` |
+| `http:qp:*` | Individual query parameters (prefixed with `http:qp:`) | `http:qp:page = "1"`, `http:qp:limit = "10"` |
 
 ### 3.2 Understanding Transform Chains
 
@@ -197,21 +197,21 @@ The goal of signature refinement is to make incoming request signatures match re
 
 Every request in your report has a match status:
 
-#### 3.4.1 HIT: Exact Match Found
+#### 3.4.1 Match: Exact Match Found
 
-**Status**: HIT
+**Status**: Match
 **Meaning**: The incoming request signature exactly matched a recorded signature. The responder successfully returned a mocked response.
 **Action Required**: None. This is the desired state.
 
-#### 3.4.2 MISS: No Match Found
+#### 3.4.2 No Match: No Match Found
 
-**Status**: MISS
+**Status**: No Match
 **Meaning**: The incoming request signature did not match any recorded signature. The responder could not determine which response to return.
 **Action Required**: Investigate and refine the signature to create a match.
 
-#### 3.4.3 PASSTHROUGH: Request Not Mocked
+#### 3.4.3 Passthrough: Request Not Mocked
 
-**Status**: PASSTHROUGH
+**Status**: Passthrough
 **Meaning**: The request was sent to the real backend service instead of being mocked. This typically occurs when the request pattern wasn't present in the original recording.
 **Action Required**: Consider adding this request pattern to your snapshot if it's part of your test suite.
 
@@ -259,7 +259,7 @@ Both actions take you to the Mocked Responses view, where you can see the detail
 The Report Overview provides several metrics:
 
 - **Total Requests**: Total number of requests in the test run
-- **Mock Accuracy**: Percentage of requests that matched (HITs)
+- **Mock Accuracy**: Percentage of requests that matched (Matches)
 - **Passthrough Count**: Number of requests sent to real services
 - **Miss Count**: Number of requests that failed to match
 
@@ -276,28 +276,28 @@ These metrics help you understand the overall health of your mock configuration 
 The Mocked Responses tab displays an **RRPair List** (Request-Response Pair List). Each row represents a single request from your test run, showing:
 
 - Request method and URL
-- Match status icon (HIT, MISS, or PASSTHROUGH)
+- Match status icon (Match, No Match, or Passthrough)
 - Timestamp
 - Response status code
 - Service name
 
 The list is typically sorted by timestamp but can be filtered and sorted by various criteria.
 
-### 5.2 Identifying MISS and PASSTHROUGH Status Icons
+### 5.2 Identifying No Match and Passthrough Status Icons
 
 Look for visual indicators in the list:
 
-- **HIT** (Green checkmark or success icon): Request matched successfully - no action needed
-- **MISS** (Red X or error icon): Request failed to match - requires attention
-- **PASSTHROUGH** (Yellow warning icon): Request went to real service - may require attention
+- **Match** (Green checkmark or success icon): Request matched successfully - no action needed
+- **No Match** (Red X or error icon): Request failed to match - requires attention
+- **Passthrough** (Yellow warning icon): Request went to real service - may require attention
 
-Focus your refinement efforts on MISS and PASSTHROUGH requests, as these represent gaps in your mock coverage.
+Focus your refinement efforts on No Match and Passthrough requests, as these represent gaps in your mock coverage.
 
 ### 5.3 Selecting an RRPair for Analysis
 
 To investigate a mismatch:
 
-1. Scan the list for MISS or PASSTHROUGH icons
+1. Scan the list for No Match or Passthrough icons
 2. Click on the row representing the problematic request
 3. The system will open a detailed view for analysis
 
@@ -342,7 +342,7 @@ The table uses vertical tabs for keys, allowing you to quickly navigate between 
 
 ### 6.3 Understanding Change Indicators
 
-When a MISS occurs, the signature view shows change indicators (pills) that highlight differences:
+When a No Match occurs, the signature view shows change indicators (pills) that highlight differences:
 
 #### 6.3.1 Added Keys (Plus + Pill)
 
@@ -424,18 +424,18 @@ These quick filters help you create precise transform chains that affect only th
 
 The **Signature Suggestions** dialog is your most powerful tool for understanding mismatches. Use it when:
 
-- You see a MISS status and need to understand why
+- You see a No Match status and need to understand why
 - The Signature tab shows modified keys (~ indicator)
 - You want to see which recorded signatures are similar to the incoming request
 - You need to decide which keys to remove or modify
 
-A **"Suggestions..."** button appears in the Signature tab when the request status is not HIT.
+A **"Suggestions..."** button appears in the Signature tab when the request status is not Match.
 
 ### 7.2 Opening the Suggestions Dialog
 
 To open the dialog:
 
-1. Navigate to the Signature tab of a MISS request
+1. Navigate to the Signature tab of a No Match request
 2. Click the **"Suggestions..."** button
 3. The system retrieves up to 10 similar recorded signatures
 4. The dialog opens with a side-by-side comparison
@@ -598,19 +598,19 @@ Incoming: <request><timestamp>9876543210</timestamp><action>update</action></req
 
 **Solution**: Remove these keys from the signature, as they rarely affect which response should be returned.
 
-#### 8.4.4 http:qp_* (Dynamic Query Parameters)
+#### 8.4.4 http:qp:* (Dynamic Query Parameters)
 
-**Problem**: Query parameters are split into individual signature keys with the `http:qp_` prefix. Some query parameters contain dynamic or session-specific values that change per request.
+**Problem**: Query parameters are split into individual signature keys with the `http:qp:` prefix. Some query parameters contain dynamic or session-specific values that change per request.
 
 **Example**:
 ```
-Recorded: http:qp_client = "web", http:qp_sessionId = "abc-123", http:qp_page = "1"
-Incoming: http:qp_client = "web", http:qp_sessionId = "xyz-789", http:qp_page = "1"
+Recorded: http:qp:client = "web", http:qp:sessionId = "abc-123", http:qp:page = "1"
+Incoming: http:qp:client = "web", http:qp:sessionId = "xyz-789", http:qp:page = "1"
 ```
 
-**Solution**: Selectively remove only the dynamic query parameter keys (e.g., `http:qp_sessionId`, `http:qp_timestamp`) while keeping semantic ones (e.g., `http:qp_page`, `http:qp_client`) that affect which response should be returned.
+**Solution**: Selectively remove only the dynamic query parameter keys (e.g., `http:qp:sessionId`, `http:qp:timestamp`) while keeping semantic ones (e.g., `http:qp:page`, `http:qp:client`) that affect which response should be returned.
 
-**Advantage**: The `http:qp_` prefix structure allows fine-grained control - you can remove specific problematic query parameters without affecting others on the same endpoint.
+**Advantage**: The `http:qp:` prefix structure allows fine-grained control - you can remove specific problematic query parameters without affecting others on the same endpoint.
 
 ### 8.5 Understanding the Impact of Removing Keys
 
@@ -710,9 +710,9 @@ These tags help you understand your transform chains later when reviewing the co
 
 You can queue multiple transforms before applying them:
 
-1. Open Signature Suggestions for one MISS request
+1. Open Signature Suggestions for one No Match request
 2. Queue a removal for a problematic key
-3. Close the dialog and select another MISS request
+3. Close the dialog and select another No Match request
 4. Queue additional removals for that request
 5. Repeat as needed
 
@@ -868,7 +868,7 @@ This test mode allows you to see the impact of your transforms without affecting
 
 A new report is generated containing:
 - Updated Mock Accuracy metrics
-- New match statuses for each request (HIT, MISS, or PASSTHROUGH)
+- New match statuses for each request (Match, No Match, or Passthrough)
 - Transform history showing which transforms were applied
 - Comparison data showing improvements or regressions
 
@@ -920,7 +920,7 @@ Evaluate the impact:
 **Moderate Improvement** (5-10% increase):
 - You're on the right track
 - Additional refinements needed
-- Look for patterns in remaining MISS requests
+- Look for patterns in remaining No Match requests
 
 **Minimal Improvement** (&lt;5% increase):
 - The transforms may not have targeted the right keys
@@ -934,16 +934,16 @@ Evaluate the impact:
 
 ### 12.3 Identifying Remaining Mismatches
 
-Even after improvements, scan the RRPair list for remaining MISS and PASSTHROUGH requests:
+Even after improvements, scan the RRPair list for remaining No Match and Passthrough requests:
 
-1. Sort or filter the list to show only MISS/PASSTHROUGH statuses
+1. Sort or filter the list to show only No Match/Passthrough statuses
 2. Identify common patterns:
    - Do they all target the same endpoint?
    - Do they share common signature characteristics?
    - Are there new problematic keys that emerged?
 
 3. Prioritize by frequency:
-   - Focus on endpoints with many MISS requests
+   - Focus on endpoints with many No Match requests
    - Address high-volume endpoints first for maximum impact
 
 ### 12.4 Determining if Further Refinement is Needed
@@ -953,11 +953,11 @@ Decide whether to continue refining:
 **Continue Refining If**:
 - Mock Accuracy is below 95%
 - There are clear patterns in remaining mismatches
-- The remaining MISS requests represent critical test paths
+- The remaining No Match requests represent critical test paths
 
 **Stop Refining If**:
 - Mock Accuracy is 95%+ (or 100%)
-- Remaining MISS requests represent genuinely new request patterns not in the recording
+- Remaining No Match requests represent genuinely new request patterns not in the recording
 - Further refinements would risk causing incorrect matches
 
 **Acceptable End States**:
@@ -980,7 +980,7 @@ Signature refinement is an iterative process:
 
 ```
 1. ANALYZE
-   ↓ Review Mock Accuracy and identify MISS requests
+   ↓ Review Mock Accuracy and identify No Match requests
    ↓ Open Signature Suggestions to understand differences
    ↓ Determine which keys are problematic
 
@@ -1008,7 +1008,7 @@ Each iteration should improve your Mock Accuracy incrementally.
 Not all mismatches are equal. Prioritize by:
 
 **1. Request Frequency**
-- Address endpoints that MISS frequently first
+- Address endpoints that No Match frequently first
 - High-frequency endpoints have the biggest impact on overall Mock Accuracy
 
 **2. Critical Paths**
@@ -1025,13 +1025,13 @@ Not all mismatches are equal. Prioritize by:
 
 ### 13.3 Working Through Multiple Mismatches
 
-When facing many MISS requests:
+When facing many No Match requests:
 
 **Step 1**: Group by endpoint
 ```
-POST /api/v1/users - 25 MISS requests
-GET /api/v1/orders - 18 MISS requests
-PUT /api/v1/profile - 12 MISS requests
+POST /api/v1/users - 25 No Match requests
+GET /api/v1/orders - 18 No Match requests
+PUT /api/v1/profile - 12 No Match requests
 ```
 
 **Step 2**: Start with the highest-count endpoint
@@ -1057,7 +1057,7 @@ Achieving perfect Mock Accuracy requires:
 
 **3. Stable Tests**: Your tests must not generate genuinely new request patterns not present in the recording
 
-If you've refined signatures thoroughly but can't reach 100%, the remaining MISS requests likely represent:
+If you've refined signatures thoroughly but can't reach 100%, the remaining No Match requests likely represent:
 - New features or endpoints not in the original recording
 - Test data that differs from recorded data
 - Edge cases not covered during recording
@@ -1069,7 +1069,7 @@ In these cases, you may need to re-record traffic or manually add the missing pa
 Stop refining when:
 
 - ✅ Mock Accuracy is 95%+ (or your target threshold)
-- ✅ Remaining MISS requests are rare edge cases
+- ✅ Remaining No Match requests are rare edge cases
 - ✅ Further refinements would risk causing incorrect matches
 - ✅ The cost of additional refinement outweighs the benefit
 
@@ -1086,7 +1086,7 @@ Remember: Higher accuracy isn't always better if it comes at the cost of incorre
 
 ### 14.1 Understanding Passthrough Status
 
-A **PASSTHROUGH** request is one that:
+A **Passthrough** request is one that:
 - Was not mocked by the responder
 - Was sent through to the real backend service
 - May not have been present in the original recording
@@ -1282,13 +1282,13 @@ Use scrub_date for timestamp fields that need normalization:
 **Rationale**: Fixing one high-volume endpoint can significantly improve overall Mock Accuracy.
 
 **Approach**:
-1. Sort MISS requests by endpoint frequency
+1. Sort No Match requests by endpoint frequency
 2. Identify the top 3-5 endpoints with the most mismatches
 3. Refine those signatures first
 4. Observe the dramatic improvement in Mock Accuracy
 
 **Example**:
-If `GET /api/v1/users` has 50 MISS requests and all other endpoints have 1-2 each, fixing `/api/v1/users` will increase your Mock Accuracy by up to 20% in a single change.
+If `GET /api/v1/users` has 50 No Match requests and all other endpoints have 1-2 each, fixing `/api/v1/users` will increase your Mock Accuracy by up to 20% in a single change.
 
 ### 16.2 Test Changes Incrementally
 
@@ -1323,7 +1323,7 @@ If `GET /api/v1/users` has 50 MISS requests and all other endpoints have 1-2 eac
 **Rationale**: Too specific signatures fail to match minor variations; too flexible signatures cause incorrect matches.
 
 **Finding Balance**:
-- **Too Specific**: Signature includes timestamps, request IDs, session tokens → many MISS requests
+- **Too Specific**: Signature includes timestamps, request IDs, session tokens → many No Match requests
 - **Too Flexible**: Signature only includes http:host → incorrect matches across different endpoints
 - **Balanced**: Signature includes endpoint, method, and semantic request data → reliable matching
 
@@ -1345,7 +1345,7 @@ For `POST /api/v1/users`:
 
 **Warning Signs**:
 - Mock Accuracy starts declining over time
-- New MISS patterns emerge on previously fixed endpoints
+- New No Match patterns emerge on previously fixed endpoints
 - Transforms target endpoints that no longer exist
 
 ### 16.6 Consider Downstream Impact
@@ -1383,7 +1383,7 @@ Incoming: {"action": "create", "timestamp": 9876543210, "uuid": "xyz-789"}
 **Solution Options** (from most granular to least):
 
 **Option 1: Scrub Specific Fields** (Recommended)
-1. Open Signature Suggestions for a MISS request with this pattern
+1. Open Signature Suggestions for a No Match request with this pattern
 2. Identify which fields are dynamic (`timestamp`, `uuid`) vs. semantic (`action`)
 3. Create scrub transforms for the dynamic fields:
    - Queue a scrub transform with path `$.timestamp`
@@ -1396,7 +1396,7 @@ Incoming: {"action": "create", "timestamp": 9876543210, "uuid": "xyz-789"}
 3. This normalizes all timestamp values to match consistently
 
 **Option 3: Remove Entire Body** (Simple but less granular)
-1. Open Signature Suggestions for a MISS request
+1. Open Signature Suggestions for a No Match request
 2. Click "Queue Remove from Signature" for `http:requestBodyJSON`
 3. Apply changes and verify that the endpoint matches based only on host, method, and URL
 4. Use this only when the entire request body is non-semantic
@@ -1425,18 +1425,18 @@ Incoming: http:headers = {"Authorization": "Bearer token789", "X-Timestamp": "20
 
 **Symptoms**:
 ```
-Recorded signature contains: http:qp_page = "1", http:qp_limit = "10", http:qp_sessionId = "abc123"
-Incoming signature contains: http:qp_page = "1", http:qp_limit = "10", http:qp_sessionId = "xyz789"
+Recorded signature contains: http:qp:page = "1", http:qp:limit = "10", http:qp:sessionId = "abc123"
+Incoming signature contains: http:qp:page = "1", http:qp:limit = "10", http:qp:sessionId = "xyz789"
 ```
 
 **Solution**:
-Query parameters are separated into individual signature keys with the `http:qp_` prefix. This allows you to selectively remove problematic parameters:
+Query parameters are separated into individual signature keys with the `http:qp:` prefix. This allows you to selectively remove problematic parameters:
 
-1. Identify which query parameter keys contain dynamic data (e.g., `http:qp_sessionId`, `http:qp_timestamp`)
+1. Identify which query parameter keys contain dynamic data (e.g., `http:qp:sessionId`, `http:qp:timestamp`)
 2. Queue removal of only the problematic query parameter keys
-3. Keep semantic query parameters that affect response selection (e.g., `http:qp_page`, `http:qp_limit`)
+3. Keep semantic query parameters that affect response selection (e.g., `http:qp:page`, `http:qp:limit`)
 
-**Example**: If `sessionId` varies but `page` and `limit` are meaningful, remove only `http:qp_sessionId` from the signature.
+**Example**: If `sessionId` varies but `page` and `limit` are meaningful, remove only `http:qp:sessionId` from the signature.
 
 **Note**: Removing query parameter keys selectively allows fine-grained control over which parameters affect matching.
 
@@ -1496,13 +1496,13 @@ Incoming: <request>
 3. **New Request Patterns**: Test traffic includes genuinely new requests not in the recording
 
 **Solutions**:
-- Review the Signature Suggestions for remaining MISS requests - are they different from previous MISS requests?
+- Review the Signature Suggestions for remaining No Match requests - are they different from previous No Match requests?
 - Check the Transform tab to see which transforms are being applied
 - Try reverting to an earlier report before the transforms were applied
 - Re-examine which keys are causing mismatches
 
 **Debugging Steps**:
-1. Select a MISS request that should have matched after your transforms
+1. Select a No Match request that should have matched after your transforms
 2. View the Signature tab
 3. Check the Transform tab to confirm your transforms were applied
 4. Re-open Signature Suggestions to see if the differences persist
@@ -1519,8 +1519,8 @@ Incoming: <request>
 - Ignore stable keys (host, method, URL) initially
 
 **Simplification Strategy**:
-1. Group MISS requests by endpoint
-2. For each endpoint, look for the common problematic key across all MISS requests
+1. Group No Match requests by endpoint
+2. For each endpoint, look for the common problematic key across all No Match requests
 3. Remove that one key for the endpoint
 4. Re-evaluate after applying the change
 
@@ -1528,7 +1528,7 @@ Incoming: <request>
 
 ### 18.3 Accidentally Removed Wrong Key
 
-**Symptoms**: After applying a transform, many requests that previously matched (HIT) now fail to match (MISS).
+**Symptoms**: After applying a transform, many requests that previously matched (Match) now fail to match (No Match).
 
 **Example**:
 You accidentally removed `http:method`, causing all requests to the same URL to match regardless of whether they're GET, POST, PUT, or DELETE.
@@ -1563,7 +1563,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 
 ### 18.5 Changes Not Applied to New Report
 
-**Symptoms**: You clicked "Apply Changes" but the new report shows the same Mock Accuracy and same MISS requests.
+**Symptoms**: You clicked "Apply Changes" but the new report shows the same Mock Accuracy and same No Match requests.
 
 **Possible Causes**:
 1. Backend processing failed
@@ -1584,7 +1584,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 
 ### 18.6 Unexpected Match Status Changes
 
-**Symptoms**: Requests that were HIT in a previous report are now MISS (or vice versa) without obvious reason.
+**Symptoms**: Requests that were Match in a previous report are now No Match (or vice versa) without obvious reason.
 
 **Possible Causes**:
 1. Transforms caused unintended side effects
@@ -1612,13 +1612,13 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 
 | Term | Definition |
 |------|------------|
-| **Mock Accuracy** | Percentage of requests that successfully matched recorded signatures (HITs) out of total requests |
+| **Mock Accuracy** | Percentage of requests that successfully matched recorded signatures (Matches) out of total requests |
 | **RRPair** | Request-Response Pair; a single HTTP request and its corresponding response |
 | **Signature** | A unique identifier for a request, composed of key-value pairs extracted from the request |
 | **Transform Chain** | A set of operations (transforms) that modify how signatures are extracted from requests |
-| **HIT** | Match status indicating the request matched a recorded signature exactly |
-| **MISS** | Match status indicating the request did not match any recorded signature |
-| **PASSTHROUGH** | Match status indicating the request was sent to the real backend service instead of being mocked |
+| **Match** | Match status indicating the request matched a recorded signature exactly |
+| **No Match** | Match status indicating the request did not match any recorded signature |
+| **Passthrough** | Match status indicating the request was sent to the real backend service instead of being mocked |
 | **Responder** | The service mock engine that matches incoming requests to recorded responses |
 | **Snapshot** | A recording of traffic containing request-response pairs and configuration |
 | **Transform** | A single operation within a transform chain (e.g., delete_sig, extract_field) |
@@ -1638,9 +1638,9 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 | `http:requestBodyJSON` | JSON request body | `{"key": "value"}` | **Often** - if body contains dynamic data |
 | `http:requestBodyXML` | XML request body | `<request>...</request>` | **Often** - if body contains dynamic data |
 | `http:headers` | HTTP headers (combined) | `{"Authorization": "..."}` | **Sometimes** - if headers contain session tokens |
-| `http:qp_*` | Individual query parameters (e.g., `http:qp_page`, `http:qp_client`) | `http:qp_page = "1"` | **Selectively** - remove dynamic params, keep semantic ones |
-| `http:qp_sessionId` | Session ID query parameter | `abc123def456` | **Often** - session-specific |
-| `http:qp_timestamp` | Timestamp query parameter | `1234567890` | **Always** - dynamic per request |
+| `http:qp:*` | Individual query parameters (e.g., `http:qp:page`, `http:qp:client`) | `http:qp:page = "1"` | **Selectively** - remove dynamic params, keep semantic ones |
+| `http:qp:sessionId` | Session ID query parameter | `abc123def456` | **Often** - session-specific |
+| `http:qp:timestamp` | Timestamp query parameter | `1234567890` | **Always** - dynamic per request |
 | `http:header:Authorization` | Authorization header | `Bearer token123` | **Often** - session-specific |
 | `http:header:X-Timestamp` | Timestamp header | `2024-01-01T10:00:00Z` | **Always** - dynamic per request |
 | `http:header:X-Request-ID` | Request ID header | `uuid-123-456` | **Always** - unique per request |
@@ -1661,9 +1661,9 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 
 | Status | Icon | Meaning | Action Required |
 |--------|------|---------|-----------------|
-| **HIT** | Green checkmark ✓ | Request matched a recorded signature exactly | None - desired state |
-| **MISS** | Red X ✗ | Request did not match any recorded signature | **Yes** - refine signature |
-| **PASSTHROUGH** | Yellow warning ⚠ | Request was forwarded to real backend service | **Maybe** - add to snapshot if needed |
+| **Match** | Green checkmark ✓ | Request matched a recorded signature exactly | None - desired state |
+| **No Match** | Red X ✗ | Request did not match any recorded signature | **Yes** - refine signature |
+| **Passthrough** | Yellow warning ⚠ | Request was forwarded to real backend service | **Maybe** - add to snapshot if needed |
 
 ### 19.5 UI Component Reference
 
@@ -1712,13 +1712,13 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
              │
              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│        Identify MISS and PASSTHROUGH Requests in List           │
+│        Identify No Match and Passthrough Requests in List           │
 │           (Filter/Sort to show only mismatches)                 │
 └────────────────────────────────┬────────────────────────────────┘
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│       Select a MISS Request → Open RRPair Details Drawer        │
+│       Select a No Match Request → Open RRPair Details Drawer        │
 └────────────────────────────────┬────────────────────────────────┘
                                  │
                                  ▼
@@ -1752,7 +1752,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 └────────────────────────────────┬────────────────────────────────┘
                                  │
                                  ▼
-                    More MISS Requests to Analyze?
+                    More No Match Requests to Analyze?
                                  │
                          ┌───────┴───────┐
                          │               │
@@ -1834,15 +1834,15 @@ Use this checklist for each refinement iteration:
 - [ ] **1. Initial Assessment**
   - [ ] Open the report to refine
   - [ ] Note the current Mock Accuracy percentage
-  - [ ] Count MISS and PASSTHROUGH requests
+  - [ ] Count No Match and PASSTHROUGH requests
 
 - [ ] **2. Identify Patterns**
-  - [ ] Group MISS requests by endpoint
+  - [ ] Group No Match requests by endpoint
   - [ ] Identify the highest-volume problematic endpoint
   - [ ] Select 1-3 endpoints to focus on this iteration
 
 - [ ] **3. Analyze Signatures**
-  - [ ] Select a MISS request from the target endpoint
+  - [ ] Select a No Match request from the target endpoint
   - [ ] Open RRPair Details Drawer
   - [ ] Navigate to Signature tab
   - [ ] Note which keys have change indicators (+ - ~)
@@ -1861,7 +1861,7 @@ Use this checklist for each refinement iteration:
 - [ ] **6. Queue Transforms**
   - [ ] Click "Queue Remove from Signature" for each problematic key
   - [ ] Verify the transform description is correct
-  - [ ] Repeat for 1-3 more similar MISS requests if needed
+  - [ ] Repeat for 1-3 more similar No Match requests if needed
 
 - [ ] **7. Review Pending Changes**
   - [ ] Open Pending Transforms Panel
@@ -1914,13 +1914,13 @@ Use this checklist for each refinement iteration:
 - Save rare edge cases for last
 
 **6. Balance Precision and Flexibility**
-- Too specific → lots of MISS requests
+- Too specific → lots of No Match requests
 - Too flexible → incorrect matches
 - Find the middle ground by keeping semantic keys and removing dynamic ones
 
 **7. Test After Each Change**
 - Never assume a transform will work - always verify
-- Check that HIT requests remain HITs after your changes
+- Check that Match requests remain Matches after your changes
 - Look for unintended regressions
 
 **8. Know When to Stop**
@@ -1968,7 +1968,7 @@ Use this checklist for each refinement iteration:
 1. **Mock Accuracy metric card in Responder toolbar** - Shows hits/total (percentage) format
 2. **Report Overview with Mock Accuracy metric card** - Clicking through to Mocked Responses tab
 3. **Example signature with key-value pairs** - Tabular format with keys and values
-4. **MultiServiceRRPairList showing various match statuses** - HIT, MISS, PASSTHROUGH icons
+4. **MultiServiceRRPairList showing various match statuses** - Match, No Match, Passthrough icons
 5. **Signature tab with change indicator pills** - Plus, minus, tilde indicators
 6. **SignatureSuggestionsDialog with side-by-side comparison** - Monaco editor diff view
 7. **"Queue Remove from Signature" button action** - Button highlighted for http:requestBodyJSON
