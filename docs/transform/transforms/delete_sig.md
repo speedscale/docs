@@ -8,7 +8,7 @@ description: "Learn how to use the delete_sig transform in Speedscale to remove 
 
 **delete_sig** completely deletes a component of the signature to improve match rates. This transform removes a specified key from the signature's hashmap, allowing you to exclude certain elements that may be causing match failures during replay.
 
-To learn more about how signatures work and when to use this transform, read the [Signature Refinement Guide](../../../guides/signature-refinement-guide.md).
+To learn more about how signatures work and when to use this transform, read the [Signature Refinement Guide](../../guides/signature-refinement-guide.md).
 
 ### Usage
 
