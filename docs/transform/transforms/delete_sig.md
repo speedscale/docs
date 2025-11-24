@@ -8,7 +8,7 @@ description: "Learn how to use the delete_sig transform in Speedscale to remove 
 
 **delete_sig** completely deletes a component of the signature to improve match rates. This transform removes a specified key from the signature's hashmap, allowing you to exclude certain elements that may be causing match failures during replay.
 
-To learn more about how signatures work and when to use this transform, read the [Signature Refinement Guide](../../guides/signature-refinement-guide.md).
+To learn more about how signatures work and when to use this transform, read the [Signature Refinement Guide](../../../guides/signature-refinement-guide.md).
 
 ### Usage
 
@@ -39,16 +39,16 @@ To learn more about how signatures work and when to use this transform, read the
 #### Example Chains
 
 ```
-req_query() -> delete_sig(key="timestamp")
+empty() -> delete_sig(key="http:method")
 ```
 
-This will delete the timestamp component from the request signature.
+This will delete the HTTP method from the request signature.
 
 ```
-req_header(name="Authorization") -> delete_sig(key="auth_token")
+empty() -> delete_sig(key="http:url")
 ```
 
-This will delete the auth_token component from the signature, allowing requests with different authentication tokens to match.
+This will delete the endpoint component from the signature, allowing requests with different endpoints to match this signature.
 
 
 #### Before (Signature with All Components)
@@ -63,7 +63,7 @@ This will delete the auth_token component from the signature, allowing requests 
 }
 ```
 
-#### After (Signature with query_params Deleted)
+#### After (Signature with http:requestBodyJSON Deleted)
 
 ```json
 {
