@@ -27,7 +27,8 @@ Now you have to configure your application to use the socks
 configure it to [trust the local certificates](/setup/sidecar/tls/#trusting-tls-certificates).
 
 You can now run requests against your service through `localhost:4143` instead
-of the normal port as our goproxy is acting as the entry point for the app now.
+of the normal port as our [goproxy](../../reference/glossary.md#goproxy) is
+acting as the entry point for the app now.
 
 ## Analyze Traffic
 

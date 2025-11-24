@@ -1,3 +1,7 @@
+---
+title: Triggers
+---
+
 ### Triggering Workflows Based on Mock Requests
 
 Speedscale allows you to automate actions by triggering workflows when a Responder receives a request matching a particular signature. Normally, the Speedscale responder expects to receive inbound requests and it simply responds with a modified response. However, when a trigger is assigned to a particular request, the responder will take the additional action of initiating a workflow after responding. This feature streamlines environment replication for asynchronous systems. For example, message buses like RabbitMQ will pass data to clients as necessary. This is different than a typical REST API because the request is initiated by the server (RabbitMQ) instead of the client. If the Speedscale Responder is simulating the RabbitMQ server then a trigger would be used to send data to clients based on a timer. Another case would be when an API accepts a message and responds via webhook later. This timer based approach is one way to simulate the "unannounced" nature of asynchronous Responder requests.
