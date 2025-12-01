@@ -49,10 +49,6 @@ Note: The Speedscale responder generally does not authenticate JWTs, so category
 
 Speedscale provides a replay wizard that simplifies the process of configuring JWT handling for your replays. The wizard automatically detects OAuth handshakes in your captured traffic and identifies JWTs that may be expired.
 
-:::note
-
-:::
-
 ### JWT Detection
 
 When you open the replay wizard, Speedscale analyzes your snapshot and displays all detected JWTs along with their status:
