@@ -573,6 +573,10 @@ const config = {
             from: "/transform/",
             to: "/transform/transforms/",
           },
+          {
+            from: "/transform/overview-llm/",
+            to: "/transform/overview/",
+          },
         ],
       },
     ],
