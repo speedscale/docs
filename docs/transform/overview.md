@@ -1,6 +1,6 @@
 ---
 description: "Discover how to observe traffic with Speedscale to automatically shift and enhance your API designs during testing. This article shows how to modify data before environment replication."
-sidebar_position: 1
+sidebar_position: 0
 ---
 
 import Mermaid from '@theme/Mermaid';
