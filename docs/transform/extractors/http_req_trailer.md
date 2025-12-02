@@ -1,13 +1,17 @@
-# http_res_trailer
+---
+description: "Learn how to extract HTTP trailers from request traffic using Speedscale's http_req_trailer extractor for effective traffic transformation and analysis."
+---
+
+# http_req_trailer
 
 ### Purpose
 
-**http_res_trailer** extracts an HTTP trailer from the response portion of the RRPair.
+**http_req_trailer** extracts an HTTP trailer from the request portion of the RRPair.
 
 ### Usage
 
 ```json
-"type": "http_res_trailer",
+"type": "http_req_trailer",
 "config": {
     "name": "<trailer>",
     "index": 0
@@ -22,7 +26,7 @@ If the trailer does not exist it will be created.
 ### Example
 
 ```json
-"type": "http_res_trailer",
+"type": "http_req_trailer",
 "config": {
     "name": "Grpc-status"
 }

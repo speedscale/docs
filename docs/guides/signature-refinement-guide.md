@@ -109,7 +109,7 @@ The most frequently used signature keys include:
 
 #### 3.2.1 What are Transform Chains?
 
-A **transform chain** is a set of operations that modify how signatures are extracted from requests. Transform chains allow you to make signatures more flexible by removing or modifying problematic keys that prevent matches. For a comprehensive overview of the transform system, see [Transform Overview](../transform/overview.md) or [Transform Concepts](../concepts/transforms.md).
+A **transform chain** is a set of operations that modify how signatures are extracted from requests. Transform chains allow you to make signatures more flexible by removing or modifying problematic keys that prevent matches. For a comprehensive overview of the transform system, see [Transform Overview](/transform/overview) or [Transform Concepts](../concepts/transforms.md).
 
 #### 3.2.2 How Transform Chains Work
 
@@ -679,7 +679,7 @@ This chain:
 - **Tags**: Metadata for tracking the transform's origin and purpose
 
 :::tip
-For more information on how transform chains work and the order of execution, see [Transform Overview](../transform/overview.md#extractors-and-transforms).
+For more information on how transform chains work and the order of execution, see [Transform Overview](/transform/overview#extractors-and-transforms).
 :::
 
 ### 9.3 Reviewing the Queued Transform Details
@@ -1638,7 +1638,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 | `extract_field` | Extract a specific field from a complex value | `key`: Source key<br/>`path`: JSONPath or XPath<br/>`newKey`: Destination key | Extract only `$.action` field from JSON body for matching |
 | `regex_replace` | Replace patterns in values using regular expressions | `key`: Key to transform<br/>`pattern`: Regex pattern<br/>`replacement`: Replacement string | Remove UUIDs or dynamic IDs from URL paths |
 
-**Note**: `delete_sig`, `scrub`, and `scrub_date` are the most commonly used transforms for signature refinement. Not all transform types may be available in your version. For a complete reference of all available transform types and extractors, see [Transform Traffic Reference](../reference/transform-traffic/README.md).
+**Note**: `delete_sig`, `scrub`, and `scrub_date` are the most commonly used transforms for signature refinement. Not all transform types may be available in your version. For a complete reference of all available transform types and extractors, see [Transform Traffic Reference](/transform/overview).
 
 ### 19.3 Match Status Reference
 

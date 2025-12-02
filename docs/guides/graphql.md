@@ -33,7 +33,7 @@ mutation {
 
 ![graphql_rrpair](./graphql/graphql-rrpair.png)
 
-To change one of the query options, find it in the response body JSON and modify it using a [JSONPath](../reference/transform-traffic/transforms/json_path.md) transform with a `response body` extractor. Alternatively, just click on the pencil icon next to the field in the Speedscale UI and it will format this transform automatically (highly recommended).
+To change one of the query options, find it in the response body JSON and modify it using a [JSONPath](/transform/transforms/json_path) transform with a `response body` extractor. Alternatively, just click on the pencil icon next to the field in the Speedscale UI and it will format this transform automatically (highly recommended).
 
 ## Testing Example (Simple)
 
