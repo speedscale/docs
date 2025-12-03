@@ -63,7 +63,7 @@ const config = {
           { from: "/analyze/traffic-viewer/", to: "/guides/tls/" },
           {
             from: "/analyze/traffic-viewer/transform-snapshot/",
-            to: "/reference/transform-traffic/",
+            to: "/transform/overview/",
           },
           {
             from: "/analyze/traffic-viewer/view-snapshot/",
@@ -130,15 +130,15 @@ const config = {
           },
           {
             from: "/configuration/tokenizers-1/http-cookie-tokenizer",
-            to: "/reference/transform-traffic/extractors/http_req_cookie/",
+            to: "/transform/extractors/http_req_cookie/",
           },
           {
             from: "/configuration/tokenizers-1/http-match-request-body/",
-            to: "/reference/transform-traffic/extractors/req_body/",
+            to: "/transform/extractors/req_body/",
           },
           {
             from: "/configuration/tokenizers-1/http-match-request-xpath",
-            to: "/reference/transform-traffic/transforms/xml_path/",
+            to: "/transform/transforms/xml_path/",
           },
           {
             from: "/configuration/tokenizers-1/http-regex/",
@@ -146,55 +146,55 @@ const config = {
           },
           {
             from: "/configuration/tokenizers-1/httpauthorization/",
-            to: "/reference/transform-traffic/extractors/http_req_header/",
+            to: "/transform/extractors/http_req_header/",
           },
           {
             from: "/configuration/transform-traffic/common-patterns/",
-            to: "/reference/transform-traffic/common-patterns/",
+            to: "/transform/overview/",
           },
           {
             from: "/configuration/transform-traffic/common-patterns/timestamp-shift/",
-            to: "/reference/transform-traffic/common-patterns/timestamp-shift/",
+            to: "/transform/overview/",
           },
           {
             from: "/configuration/transform-traffic/extractors/",
-            to: "/reference/transform-traffic/extractors/",
+            to: "/transform/extractors/",
           },
           {
             from: "/configuration/transform-traffic/extractors/general-purpose/",
-            to: "/reference/transform-traffic/extractors/",
+            to: "/transform/extractors/",
           },
           {
             from: "/configuration/transform-traffic/extractors/http/",
-            to: "/reference/transform-traffic/extractors/http_url/",
+            to: "/transform/extractors/http_url/",
           },
           {
             from: "/configuration/transform-traffic/extractors/http/http_req_header/",
-            to: "/reference/transform-traffic/extractors/http_req_header/",
+            to: "/transform/extractors/http_req_header/",
           },
           {
             from: "/configuration/transform-traffic/extractors/http/http_res_body/",
-            to: "/reference/transform-traffic/extractors/res_body/",
+            to: "/transform/extractors/res_body/",
           },
           {
             from: "/configuration/transform-traffic/local-testing-tokenconfigs/",
-            to: "/reference/transform-traffic/local-testing-tokenconfigs/",
+            to: "/transform/overview/",
           },
           {
             from: "/configuration/transform-traffic/transforms/",
-            to: "/reference/transform-traffic/transforms/",
+            to: "/transform/transforms/",
           },
           {
             from: "/configuration/transform-traffic/transforms/common-patterns/",
-            to: "/reference/transform-traffic/common-patterns/",
+            to: "/transform/overview/",
           },
           {
             from: "/configuration/transform-traffic/transforms/constant/",
-            to: "/reference/transform-traffic/transforms/constant/",
+            to: "/transform/transforms/constant/",
           },
           {
             from: "/configuration/transform-traffic/transforms/http_auth/",
-            to: "/reference/transform-traffic/transforms/",
+            to: "/transform/transforms/",
           },
           {
             from: "/configuration/transform-traffic/transforms/json_path/",
@@ -202,11 +202,11 @@ const config = {
           },
           {
             from: "/configuration/transform-traffic/transforms/variable_load/",
-            to: "/reference/transform-traffic/transforms/variable_load/",
+            to: "/transform/transforms/variable_load/",
           },
           {
             from: "/configuration/transform-traffic/transforms/xml_path/",
-            to: "/reference/transform-traffic/transforms/xml_path/",
+            to: "/transform/transforms/xml_path/",
           },
           { from: "/guides/from-file/", to: "/guides/replay/mocks/from-file/" },
           {
@@ -215,11 +215,11 @@ const config = {
           },
           {
             from: "/guides/replace_txn_ids/",
-            to: "/reference/transform-traffic/common-patterns/",
+            to: "/transform/overview/",
           },
           {
             from: "/guides/replay/mocks/replace-txn-ids/",
-            to: "/reference/transform-traffic/common-patterns/",
+            to: "/transform/overview/",
           },
           {
             from: "/guides/replay/optional-replay-annotations/",
@@ -320,7 +320,7 @@ const config = {
           },
           {
             from: "/reference/configuration/tokenizers-1/httpauthorization/",
-            to: "/reference/transform-traffic/extractors/http_req_header/",
+            to: "/transform/extractors/http_req_header/",
           },
           { from: "/reference/dlp/", to: "/guides/dlp/" },
           {
@@ -376,23 +376,23 @@ const config = {
           },
           {
             from: "/reference/tokenizers-1/",
-            to: "/reference/transform-traffic/",
+            to: "/transform/overview/",
           },
           {
             from: "/reference/tokenizers-1/http-match-request-body/",
-            to: "/reference/transform-traffic/extractors/req_body/",
+            to: "/transform/extractors/req_body/",
           },
           {
             from: "/reference/tokenizers-1/http-match-request-xpath/",
-            to: "/reference/transform-traffic/transforms/xml_path/",
+            to: "/transform/transforms/xml_path/",
           },
           {
             from: "/reference/tokenizers-1/http-match-soap-operation/",
-            to: "/reference/transform-traffic/transforms/xml_path/",
+            to: "/transform/transforms/xml_path/",
           },
           {
             from: "/reference/tokenizers-1/http-query-param/",
-            to: "/reference/transform-traffic/extractors/http_queryparam/",
+            to: "/transform/extractors/http_queryparam/",
           },
           {
             from: "/reference/tokenizers-1/http-regex/",
@@ -400,11 +400,11 @@ const config = {
           },
           {
             from: "/reference/tokenizers-1/httpauthorization/",
-            to: "/reference/transform-traffic/extractors/http_req_header/",
+            to: "/transform/extractors/http_req_header/",
           },
           {
             from: "/reference/tokenizers-1/tokenizers/",
-            to: "/reference/transform-traffic/",
+            to: "/transform/overview/",
           },
           {
             from: "/reference/transform-traffic/transforms/date/",
@@ -412,27 +412,27 @@ const config = {
           },
           {
             from: "/reference/transform-traffic/extractors/general-purpose/variable/",
-            to: "/reference/transform-traffic/extractors/variable/",
+            to: "/transform/extractors/variable/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_req_body/",
-            to: "/reference/transform-traffic/extractors/req_body/",
+            to: "/transform/extractors/req_body/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_queryparam/",
-            to: "/reference/transform-traffic/extractors/http_queryparam/",
+            to: "/transform/extractors/http_queryparam/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_req_body/",
-            to: "/reference/transform-traffic/extractors/req_body/",
+            to: "/transform/extractors/req_body/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_req_header/",
-            to: "/reference/transform-traffic/extractors/http_req_header/",
+            to: "/transform/extractors/http_req_header/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_res_body/",
-            to: "/reference/transform-traffic/extractors/res_body/",
+            to: "/transform/extractors/res_body/",
           },
           {
             from: "/reference/transform-traffic/transforms/tag_session",
@@ -457,7 +457,7 @@ const config = {
           },
           {
             from: "/reference/transform-traffic/transforms/http_auth/",
-            to: "/reference/transform-traffic/extractors/http_req_header/",
+            to: "/transform/extractors/http_req_header/",
           },
           {
             from: "/reference/transform-traffic/transforms/one_of/",
@@ -576,6 +576,90 @@ const config = {
           {
             from: "/transform/overview-llm/",
             to: "/transform/overview/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/",
+            to: "/transform/extractors/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/README/",
+            to: "/transform/extractors/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/empty/",
+            to: "/transform/extractors/empty/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/file/",
+            to: "/transform/extractors/file/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_queryparam/",
+            to: "/transform/extractors/http_queryparam/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_req_cookie/",
+            to: "/transform/extractors/http_req_cookie/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_req_header/",
+            to: "/transform/extractors/http_req_header/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_req_trailer/",
+            to: "/transform/extractors/http_req_trailer/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_res_cookie/",
+            to: "/transform/extractors/http_res_cookie/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_res_header/",
+            to: "/transform/extractors/http_res_header/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_res_trailer/",
+            to: "/transform/extractors/http_res_trailer/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_status_code/",
+            to: "/transform/extractors/http_status_code/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/http_url/",
+            to: "/transform/extractors/http_url/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/json_path/",
+            to: "/transform/extractors/json_path/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/latency/",
+            to: "/transform/extractors/latency/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/req_body/",
+            to: "/transform/extractors/req_body/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/res_body/",
+            to: "/transform/extractors/res_body/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/session/",
+            to: "/transform/extractors/session/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/target_hostname/",
+            to: "/transform/extractors/target_hostname/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/target_port/",
+            to: "/transform/extractors/target_port/",
+          },
+          {
+            from: "/reference/transform-traffic/extractors/variable/",
+            to: "/transform/extractors/variable/",
           },
         ],
       },

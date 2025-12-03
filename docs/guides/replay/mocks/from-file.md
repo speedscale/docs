@@ -12,7 +12,7 @@ If these requirements do not make sense start with the [quickstart guide](/quick
 
 - [speedctl](/setup/install/cli.md) installed
 - captured application [traffic](/reference/glossary.md#traffic)
-- an understanding of the [file extractor](/reference/transform-traffic/extractors/file.md) and [csv transform](/transform/transforms/csv.md)
+- an understanding of the [file extractor](/transform/extractors/file) and [csv transform](/transform/transforms/csv)
 
 ## The Problem
 
@@ -60,7 +60,7 @@ speedctl push user-data staging-order-ids.csv
 
 ## Create Transforms
 
-With the CSV file stored in the Speedscale cloud we can use a transform to extract the values with the [file extractor](/reference/transform-traffic/extractors/file.md) and parse it with the [CSV transform](/transform/transforms/csv.md).
+With the CSV file stored in the Speedscale cloud we can use a transform to extract the values with the [file extractor](/transform/extractors/file) and parse it with the [CSV transform](/transform/transforms/csv).
 
 :::note
 JSON does not support comments but they are added below for clarity.

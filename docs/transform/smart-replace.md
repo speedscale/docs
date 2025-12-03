@@ -9,7 +9,7 @@ sidebar_position: 2
 
 Smart Replace is a powerful tool designed to streamline the process of updating hidden data fields within recorded API traffic. By using an existing snapshot and a set of mappings (like a CSV), Smart Replace efficiently finds and replaces the specified data within your recorded API and Database traffic. Note that Smart Replace works even with encoded fields like JWT claims, XML payloads and HTTP query parameters. Think of this feature like an AI powered find/replace that lets you avoid scripting. This feature is designed to reduce your reliance on transform chains by automatically hunting down and replacing known data.
 
-In this section we'll work through a use case of replacing each user ID in a snapshot with a new test user ID. This is a common use case when user names or other IDs need to be replaced with test IDs to work in lower environments. Keep in mind that if you need to alter your data in other ways, you can use the [transform](../reference/transform-traffic/README.md) system. If you're looking to do things like replacing JWT tokens through your traffic you may want to check out this video instead:
+In this section we'll work through a use case of replacing each user ID in a snapshot with a new test user ID. This is a common use case when user names or other IDs need to be replaced with test IDs to work in lower environments. Keep in mind that if you need to alter your data in other ways, you can use the [transform](/transform/overview) system. If you're looking to do things like replacing JWT tokens through your traffic you may want to check out this video instead:
 
 <iframe src="https://player.vimeo.com/video/1117518907?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 <p><a href="https://vimeo.com/986454551">smart_replace_recorded example</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
@@ -78,7 +78,7 @@ speedctl push userdata new_data.csv
 
 ### Step 3: Add Transform
 
-Smart Replace works using the Speedscale transform system but you don't need to understand the broader system to use this feature. Many tasks you would have normally accomplished with scripting can be accomplished with Smart Replace and for everything more complicated there are [transforms](../reference/transform-traffic/README.md).
+Smart Replace works using the Speedscale transform system but you don't need to understand the broader system to use this feature. Many tasks you would have normally accomplished with scripting can be accomplished with Smart Replace and for everything more complicated there are [transforms](/transform/overview).
 
 Before executing our replay, we want to train the system to perform our replacement. To do that, we add a `train_csv` transform to our snapshot in the Variables (Tests) sectionn. From the snapshot transform editor, add this chain `empty <-> train_csv()`. It should look something like this in the UI
 

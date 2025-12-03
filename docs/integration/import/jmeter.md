@@ -53,7 +53,7 @@ In most cases, Speedscale's default assertions will be more than adequate and th
 :::tip
 Speedscale automatically records the think time and pacing of transactions. No special action is required if you simply want to replicate JMeter timings.
 :::
-   - Keep in mind that pacing can be altered for each load pattern step. See step 3 for information on load patterns. If you need to alter *individual* request timings beyond what is recorded from JMeter you can alter them using the [latency](../../reference/transform-traffic/extractors/latency.md) extractor.
+   - Keep in mind that pacing can be altered for each load pattern step. See step 3 for information on load patterns. If you need to alter *individual* request timings beyond what is recorded from JMeter you can alter them using the [latency](/transform/extractors/latency) extractor.
 
 7. **Start Speedscale Recorder:**
    - Open a terminal on your local desktop (or the machine running JMeter).

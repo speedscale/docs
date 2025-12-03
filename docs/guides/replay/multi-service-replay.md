@@ -48,7 +48,7 @@ The first request is from `frontend` and the rest are from `payment`.  The new s
 
 The snapshot now contains the `/api/payment/login` request, which means that request will be made again during the replay to retrieve a new token, but this is not enough.  We need to configure Speedscale to pass the `access_token` from the auth response to the `X-Access-Token` header in subsequent requests.
 
-We will create [Transforms](/reference/glossary.md#transform) to [store](/reference/transform-traffic/transforms/variable_store.md) the `access_token` from the auth response body and [load](/reference/transform-traffic/transforms/variable_load.md) it into the header field later. Transforms can be created for the snapshot under the `transforms` tab.
+We will create [Transforms](/reference/glossary.md#transform) to [store](/transform/transforms/variable_store) the `access_token` from the auth response body and [load](/transform/transforms/variable_load) it into the header field later. Transforms can be created for the snapshot under the `transforms` tab.
 
 Store the access token by selecting the `/api/payment/login` [RRPair](/reference/glossary.md#rrpair) and clicking the pencil by the `access_token` field.
 

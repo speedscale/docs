@@ -282,7 +282,7 @@ shown like the following:
 ![Redacted](./dlp/redacted.png)
 
 Note, that it is still possible to manipulate redacted data during a replay using traffic
-[transforms](../reference/transform-traffic/README.md). However, we may not want to ever capture or record
+[transforms](/transform/overview). However, we may not want to ever capture or record
 this data, or even let it leave your cluster, which is what DLP provides.
 
 
