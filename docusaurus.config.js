@@ -329,6 +329,10 @@ const config = {
           },
           { from: "/guides/cicd/", to: "/integration/cicd/" },
           {
+            from: "/reference/transform-traffic/",
+            to: "/transform/overview/",
+          },
+          {
             from: "/reference/transform-traffic/transforms/csv",
             to: "/transform/transforms/csv/",
           },
