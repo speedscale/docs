@@ -14,11 +14,11 @@ By the end, you will have weighed security concerns, ensured minimal application
 
 ## Preparation Checklist
 
-- [ ]  SaaS Agreement
-- [ ]  Assess your Environment
-- [ ]  Roles
-- [ ]  Remote Control
-- [ ]  Data Loss Prevention (PII)
+- [ ] SaaS Agreement
+- [ ] Assess your Environment
+- [ ] Roles
+- [ ] Remote Control
+- [ ] Data Loss Prevention (PII)
 
 ### SaaS Agreement
 
@@ -76,14 +76,14 @@ This is the ideal process for validating DLP settings:
 
 1. Create a DLP Rule (it can be blank to start with). The purpose of this is to redact specific fields that are being sent (ex: an authorization token or user email address)
 2. Install Speedscale via the helm chart and set:
-    1. `dlp.enabled` to `true` 
-    2. `dlp.config` to the name of your custom DLP Rule
+   1. `dlp.enabled` to `true`
+   2. `dlp.config` to the name of your custom DLP Rule
 3. Confirm in the logs of the operator that your DLP rules are used.
 4. Install the sidecar on the micro service.
 5. Add a DLP rule to redact a given field
-    1. You should see this causes the forwarder to restart with the new rule being applied.
-    2. Validate the field is redacted
-    3. Repeat as needed for multiple fields
+   1. You should see this causes the forwarder to restart with the new rule being applied.
+   2. Validate the field is redacted
+   3. Repeat as needed for multiple fields
 
 Once this process is complete you have a DLP configuration that can be used in production.
 
@@ -101,17 +101,32 @@ Filter rules can be tuned after deployment but if Remote Control is turned off i
 
 ## Deployment Checklist
 
-- [ ]  Operator Customization
-- [ ]  Forwarder Resources
-- [ ]  Pod Sampling and Rollout
+- [ ] Operator Customization
+- [ ] Forwarder Resources
+- [ ] Pod Sampling and Rollout
 
 In this section we will deploy the operator and then show you a strategy on how to set up a canary deployment for only part of your application traffic. This guide assumes you are already familiar with the Speedscale helm [chart](https://github.com/speedscale/operator-helm) and [helm](https://helm.sh/docs/intro/using_helm/) deployment workflow.
 
 ### Operator Customization
 
-The [chart](https://github.com/speedscale/operator-helm) chart will install a mutating webhook that is called any time a deployment occurs in the cluster. You can scope this to a subset of namespaces by setting `namespaceSelector`
+The [chart](https://github.com/speedscale/operator-helm) chart will install a mutating webhook that is called any time a deployment occurs in the cluster. You can scope this to a subset of namespaces by setting `namespaceSelector` [here](https://github.com/speedscale/operator-helm/blob/main/values.yaml#L29).
 
-[https://github.com/speedscale/operator-helm/blob/main/values.yaml#L29](https://github.com/speedscale/operator-helm/blob/main/values.yaml#L29)
+#### Namespace Selector RBAC
+
+When using a namespace selector, the Helm chart sets up RBAC resources to ensure the operator and any other components do not have permissions to access things outside of the specified namespaces. The specific resources and permissions created can be viewed in the `rbac.yaml` file of the Helm templates but the summary is:
+
+- A `ClusterRole` and corresponding `ClusterRoleBinding` called `speedscale-operator` is always created.
+- This `ClusterRole` always has permissions to list namespaces, webhooks, its own role, etc. for minimal functionality.
+- If a namespace selector is not specified, the `ClusterRole` also has permissions to read and modify all `deployments`, `statefulsets`, `daemonsets`, `secrets`, etc
+- If a namespace selector is specified, a `Role` and corresponding `RoleBinding` is created in each specified namespace with the same set of permissions relating to `deployments`, `statefulsets`, etc.
+
+:::tip
+
+`ClusterRole`'s are non-namespaced resources that specify permissions across the entire cluster while `Role`'s are namespaced resources that only specify permissions for that specific namespace
+
+:::
+
+#### Resources
 
 In a large environment with hundreds or thousands of deployments, the operator may need additional resources, you can increase the resources in the helm chart.
 
@@ -194,7 +209,6 @@ spec:
       targetPort: 8080
   selector:
     app: frontend
-
 ```
 
 It is possible to create an additional deployment with a different name but the same labels, and in addition this has the sidecar:
