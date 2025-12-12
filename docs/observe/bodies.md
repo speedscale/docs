@@ -39,7 +39,7 @@ gRPC is sent over HTTP 1.1 or 2 as a binary wire protocol. That means there is a
           "type": "PROTOBUF_FIELD_TYPE_LENGTH_DELIM"
         }
       ]
-    },
+    }
   }
 }
 ```
@@ -51,7 +51,14 @@ Each `fieldsMap` is a hash map of fields sent over gRPC. To modify a field, modi
 GraphQL queries are converted into a JSON representation of GraphQL AST. See below snippet:
 
 ```json
-{"operationName": "","query": {"Definitions": [{"Directives": [],"Kind": "OperationDefinition","Loc": null}]}}
+{
+  "operationName": "",
+  "query": {
+    "Definitions": [
+      { "Directives": [], "Kind": "OperationDefinition", "Loc": null }
+    ]
+  }
+}
 ```
 
 These ASTs are very long and hard to interpret but most changes are made in the `variables` section of the AST. In well structured GraphQL, variables should extract many of the values that would need to be modified or inspected.
@@ -60,9 +67,9 @@ These ASTs are very long and hard to interpret but most changes are made in the 
 
 ```json
 {
-    "query": {
-        "query": "SELECT * FROM \"users\" WHERE email = 'frank.gutierrez@example.com' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"id\" LIMIT '1'"
-    }
+  "query": {
+    "query": "SELECT * FROM \"users\" WHERE email = 'frank.gutierrez@example.com' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"id\" LIMIT '1'"
+  }
 }
 ```
 
@@ -82,8 +89,8 @@ Postgres queries are straightforward to modify. Add a `json_path` transform targ
               "tableAttributeNumber": 1,
               "tableOid": 16388,
               "typeModifier": -1
-            },
-          ],
+            }
+          ]
         }
       }
     ]
@@ -158,18 +165,46 @@ The Redis wire protocol is mostly human readable and easily editable. Every fiel
 
 ## Kafka
 
-When a request is initiated by a network client to your service, that is considered inbound traffic. Outbound traffic is any traffic where the service under observation is initiating the connection. Kafka traffic is always considered "outbound" because the client always dials the Kafka broker. This outbound traffic contains both message pulls and pushes.
+When a request is initiated by a network client to your service, that is considered inbound traffic. Outbound traffic is any traffic where the service under observation is initiating the connection. Kafka traffic is always considered "outbound" because the client always dials the Kafka broker. This outbound traffic contains both `Produce` and `Fetch` messages along with other Kafka operations. For eg. this is what a `Produce` message looks like.
 
 ```json
 {
-  "topic" : "user.created",
-  "partition" : 0,
-  "offset" : 124,
-  "timestamp" : 1699643501472
+  "ProduceRequest": {
+    "acks": -1,
+    "timeoutMs": 30000,
+    "topics": [
+      {
+        "name": "topicName",
+        "partitions": [
+          {
+            "records": {
+              "attributes": ["ATTRIBUTE_NO_COMPRESSION"],
+              "baseSequence": -1,
+              "baseTimestamp": "1764787375659",
+              "batchLength": 8205,
+              "crc32": 3478581886,
+              "magic": 2,
+              "maxTimestamp": "1764787375659",
+              "producerEpoch": -1,
+              "producerId": "-1",
+              "records": [
+                {
+                  "valueString": "data being sent"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "apiKey": "KAFKA_API_KEY_PRODUCE",
+  "apiVersion": 7,
+  "clientId": "client",
+  "correlationId": 4
 }
 ```
 
-The Kafka protocol is too diverse and varied to provide a concise guide here.
-
 ## Next Steps
+
 Speedscale is continually adding protocols and this list is not exhaustive. If you need help interpreting the specific format of your protocol please reach out in the [community Slack](https://slack.speedscale.com).
