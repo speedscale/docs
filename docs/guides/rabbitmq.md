@@ -40,7 +40,7 @@ This sort of inbound traffic would typically be played back during a replay. In 
 Grab your snapshot id and run this command. This will extract the message body from RabbitMQ Basic.Deliver frames which is deeply nested in Speedscale's RRPair format.
 
 ```bash
-speedctl extract data <snapshot-id> --path .AmqpV091.server.basic.deliver.body --filter='(command IS "Basic.Deliver")'
+speedctl extract data <snapshot-id> --path .AmqpV091.server.basic.deliver.body
 ```
 
 This will generate a csv that looks something like this, a CSV of the data we extracted from all the RabbitMQ message deliveries and the corresponding RRPair UUID (not needed in this case)
