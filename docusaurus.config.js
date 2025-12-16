@@ -674,14 +674,6 @@ const config = {
     {
       tagName: "script",
       attributes: {
-        id: "customeros-metrics",
-        type: "text/javascript",
-      },
-      innerHTML: `(function (c, u, s, t, o, m, e, r, O, S) {var customerOS = document.createElement(s);customerOS.src = u;customerOS.async = true;(document.body || document.head).appendChild(customerOS);})(window, "https://cosxuaidt.speedscale.com/analytics-0.1.js", "script");`,
-    },
-    {
-      tagName: "script",
-      attributes: {
         type: "text/javascript",
       },
       innerHTML: `(function(h,o,u,n,d) {
