@@ -40,13 +40,13 @@ This sort of inbound traffic would typically be played back during a replay. In 
 Grab your snapshot id and run this command. This will extract the message body from RabbitMQ Basic.Deliver frames which is deeply nested in Speedscale's RRPair format.
 
 ```bash
-speedctl extract data <snapshot-id> --path amqp.method.basic.deliver.body --filter='(command IS "Basic.Deliver")'
+speedctl extract data <snapshot-id> --path .AmqpV091.server.basic.deliver.body --filter='(command IS "Basic.Deliver")'
 ```
 
 This will generate a csv that looks something like this, a CSV of the data we extracted from all the RabbitMQ message deliveries and the corresponding RRPair UUID (not needed in this case)
 
 ```csv
-amqp.method.basic.deliver.body,RRPair UUID
+.AmqpV091.server.basic.deliver.body,RRPair UUID
 "message1",44f7a2cc-2045-4fb6-9635-3da8aa7fa909
 "message2",58f7a2cc-1135-4fa6-3433-ada5aa2fa161
 ```
@@ -64,12 +64,24 @@ Next up, using the language and LLM of your choice, create a small load producer
 1. Read the CSV from our previous step.
 1. Create a RabbitMQ connection and channel.
 1. Iterate over the CSV.
-1. For each row in the CSV, extract the first column and publish it as a message to RabbitMQ.
+1. For each row in the CSV, extract the first column and publish it as a message to RabbitMQ after base64 decoding it.
 1. Close the connection when complete.
 
-An example script in Go is provided below.
+An example script in Go is provided below. You can also find a complete demo app with this generator in our demo [repository](https://github.com/speedscale/demo/tree/master/go-rabbitmq).
 
 ```go
+package main
+
+import (
+	"encoding/base64"
+	"encoding/csv"
+	"fmt"
+	"io"
+	"os"
+
+	amqp "github.com/rabbitmq/amqp091-go"
+)
+
 func main() {
 	if err := do(); err != nil {
 		panic(err)
@@ -78,7 +90,7 @@ func main() {
 
 func do() error {
 	// Open CSV file
-	file, err := os.Open("out.csv")
+	file, err := os.Open("your_file.csv")
 	if err != nil {
 		return fmt.Errorf("failed to open CSV file: %w", err)
 	}
@@ -118,16 +130,20 @@ func do() error {
 
 		// Using the first column only
 		messageBody := row[0]
+		bodyString, err := base64.StdEncoding.DecodeString(messageBody)
+		if err != nil {
+			return fmt.Errorf("failed to decode message body: %w", err)
+		}
 
 		// Publish message to RabbitMQ
 		err = ch.Publish(
 			"",           // exchange (use default)
-			"queue-name", // routing key (your queue name)
+			"demo-queue", // routing key (your queue name)
 			false,        // mandatory
 			false,        // immediate
 			amqp.Publishing{
 				ContentType: "text/plain",
-				Body:        []byte(messageBody),
+				Body:        []byte(bodyString),
 			},
 		)
 		if err != nil {
@@ -136,8 +152,7 @@ func do() error {
 	}
 
 	return nil
-}
-```
+}```
 
 :::note
 
