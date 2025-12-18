@@ -24,9 +24,9 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology        | Type     | Support      | Notes                                                                              |
 | ----------------- | -------- | ------------ | ---------------------------------------------------------------------------------- |
-| AMQP              | Protocol | Capture Only | 0.9.1 or newer                                                                     |
+| AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
-| Google PubSub     | Protocol | Capture Only |                                                                                    |
+| Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
 | GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql.md). See [details](/observe/bodies.md#graphql) |
 | gRPC              | Protocol | Full         | See [details](/observe/bodies.md#grpc)                                             |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
@@ -74,13 +74,18 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Technology                  | Type | Support | Notes                                  |
 | --------------------------- | ---- | ------- | -------------------------------------- |
 | Agent 2 Agent               | API  | Full    |                                        |
+| Amazon MQ                  | API  | Full    | See [details](../guides/message-brokers/amazon-mq.md)      |
+| Apache ActiveMQ             | API  | Full    | See [details](../guides/message-brokers/apache-activemq.md)      |
+| Apache Pulsar               | API  | Full    | See [details](../guides/message-brokers/apache-pulsar.md)      |
 | Auth0                       | API  | Full    |                                        |
-| AWS Data Firehose           | API  | Full    |                                        |
+| AWS Data Firehose           | API  | Full    | See [details](../guides/message-brokers/aws-kinesis-data-firehose.md)      |
 | AWS Kinesis                 | API  | Full    | See [details](../guides/message-brokers/aws-kinesis.md)      |
 | AWS S3 / minio              | API  | Full    |                                        |
-| AWS SNS                     | API  | Full    |                                        |
-| AWS SQS                     | API  | Full    |                                        |
+| AWS SNS                     | API  | Full    | See [details](../guides/message-brokers/aws-sns.md)      |
+| AWS SQS                     | API  | Full    | See [details](../guides/message-brokers/aws-sqs.md)      |
+| Azure Event Hubs            | API  | Full    | See [details](../guides/message-brokers/azure-event-hubs.md)      |
 | Gmail                       | API  | Full    |                                        |
+| Google Pub/Sub               | API  | Full    | See [details](../guides/message-brokers/google-pubsub.md)      |
 | MCP                         | API  | Full    |                                        |
 | Microsoft Outlook 365       | API  | Full    |                                        |
 | Microsoft Azure Service Bus | API  | Full    | See [details](../guides/message-brokers/azure-service-bus.md)      |
