@@ -1,10 +1,13 @@
 ---
 title: Replaying RabbitMQ
+sidebar_position: 13
 ---
 
 ## Background
 
 In this guide we will show you how to replay RabbitMQ traffic using data captured by Speedscale. The network level modelling of AMQP does not match most people's mental model which leads to confusion and an undesirable replay scenario. Most people view their app interacting with RabbitMQ like this.
+
+For more information about RabbitMQ, see the [official RabbitMQ documentation](https://www.rabbitmq.com/).
 
 ```mermaid
 sequenceDiagram
@@ -37,18 +40,18 @@ This sort of inbound traffic would typically be played back during a replay. In 
 
 ## Extract the data
 
-Grab your snapshot id and run this command. This will extract the message body from RabbitMQ Basic.Deliver frames which is deeply nested in Speedscale's RRPair format.
+Grab your snapshot id and run this command. This will extract the message body and timestamps from RabbitMQ Basic.Deliver frames which are deeply nested in Speedscale's RRPair format.
 
 ```bash
-speedctl extract data <snapshot-id> --path .AmqpV091.server.basic.deliver.body
+speedctl extract data <snapshot-id> --path .AmqpV091.server.basic.deliver.body --path .ts
 ```
 
-This will generate a csv that looks something like this, a CSV of the data we extracted from all the RabbitMQ message deliveries and the corresponding RRPair UUID (not needed in this case)
+This will generate a csv that looks something like this, with the message data, timestamp, and the corresponding RRPair UUID (not needed in this case)
 
 ```csv
-.AmqpV091.server.basic.deliver.body,RRPair UUID
-"message1",44f7a2cc-2045-4fb6-9635-3da8aa7fa909
-"message2",58f7a2cc-1135-4fa6-3433-ada5aa2fa161
+.AmqpV091.server.basic.deliver.body,.ts,RRPair UUID
+"message1",2024-01-15T10:30:45.123Z,44f7a2cc-2045-4fb6-9635-3da8aa7fa909
+"message2",2024-01-15T10:30:46.456Z,58f7a2cc-1135-4fa6-3433-ada5aa2fa161
 ```
 
 :::tip
@@ -64,7 +67,9 @@ Next up, using the language and LLM of your choice, create a small load producer
 1. Read the CSV from our previous step.
 1. Create a RabbitMQ connection and channel.
 1. Iterate over the CSV.
-1. For each row in the CSV, extract the first column and publish it as a message to RabbitMQ after base64 decoding it.
+1. For each row in the CSV, extract the message body and optionally the timestamp.
+1. If timing mode is enabled, wait between messages to match the original recording timing.
+1. Decode the base64 message body and publish it to RabbitMQ.
 1. Close the connection when complete.
 
 An example script in Go is provided below. You can also find a complete demo app with this generator in our demo [repository](https://github.com/speedscale/demo/tree/master/go-rabbitmq).
@@ -75,14 +80,25 @@ package main
 import (
 	"encoding/base64"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+var (
+	respectTiming = flag.Bool("respect-timing", false, "Respect original message timing from recording")
+	csvFile       = flag.String("csv", "your_file.csv", "Path to CSV file")
+	queueName     = flag.String("queue", "demo-queue", "RabbitMQ queue name")
+	exchange      = flag.String("exchange", "", "RabbitMQ exchange name (empty for default)")
+	amqpURL       = flag.String("url", "amqp://guest:guest@localhost:5672/", "RabbitMQ connection URL")
+)
+
 func main() {
+	flag.Parse()
 	if err := do(); err != nil {
 		panic(err)
 	}
@@ -90,7 +106,7 @@ func main() {
 
 func do() error {
 	// Open CSV file
-	file, err := os.Open("your_file.csv")
+	file, err := os.Open(*csvFile)
 	if err != nil {
 		return fmt.Errorf("failed to open CSV file: %w", err)
 	}
@@ -105,7 +121,7 @@ func do() error {
 	}
 
 	// Connect to RabbitMQ
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(*amqpURL)
 	if err != nil {
 		return fmt.Errorf("failed to connect to RabbitMQ: %w", err)
 	}
@@ -118,6 +134,9 @@ func do() error {
 	}
 	defer ch.Close()
 
+	var lastTimestamp time.Time
+	startTime := time.Now()
+
 	// Iterate over CSV rows
 	for {
 		row, err := reader.Read()
@@ -128,22 +147,43 @@ func do() error {
 			return fmt.Errorf("failed to read CSV row: %w", err)
 		}
 
-		// Using the first column only
+		// Extract message body from first column
 		messageBody := row[0]
 		bodyString, err := base64.StdEncoding.DecodeString(messageBody)
 		if err != nil {
 			return fmt.Errorf("failed to decode message body: %w", err)
 		}
 
+		// Handle timing if enabled
+		if *respectTiming && len(row) > 1 {
+			// Parse timestamp from second column
+			timestamp, err := time.Parse(time.RFC3339Nano, row[1])
+			if err != nil {
+				return fmt.Errorf("failed to parse timestamp %s: %w", row[1], err)
+			}
+
+			// Calculate delay relative to previous message
+			if !lastTimestamp.IsZero() {
+				delay := timestamp.Sub(lastTimestamp)
+				if delay > 0 {
+					time.Sleep(delay)
+				}
+			} else {
+				// First message - record start time
+				startTime = time.Now()
+			}
+			lastTimestamp = timestamp
+		}
+
 		// Publish message to RabbitMQ
 		err = ch.Publish(
-			"",           // exchange (use default)
-			"demo-queue", // routing key (your queue name)
-			false,        // mandatory
-			false,        // immediate
+			*exchange,  // exchange
+			*queueName, // routing key (queue name)
+			false,      // mandatory
+			false,      // immediate
 			amqp.Publishing{
 				ContentType: "text/plain",
-				Body:        []byte(bodyString),
+				Body:        bodyString,
 			},
 		)
 		if err != nil {
@@ -151,11 +191,31 @@ func do() error {
 		}
 	}
 
+	if *respectTiming {
+		elapsed := time.Since(startTime)
+		fmt.Printf("Replay completed in %s with original timing\n", elapsed)
+	} else {
+		fmt.Println("Replay completed at maximum speed")
+	}
+
 	return nil
-}```
+}
+```
+
+### Usage Examples
+
+Send messages as fast as possible (default):
+```bash
+go run main.go --csv your_file.csv --queue demo-queue --url amqp://guest:guest@localhost:5672/
+```
+
+Respect original message timing from the recording:
+```bash
+go run main.go --csv your_file.csv --queue demo-queue --url amqp://guest:guest@localhost:5672/ --respect-timing
+```
 
 :::note
 
-Make sure to update the connection string, queue name, and exchange settings to match your RabbitMQ configuration. You may also want to add delays between messages to control the replay rate.
+Make sure to update the connection string, queue name, and exchange settings to match your RabbitMQ configuration. Use the `--respect-timing` flag to preserve the original message timing patterns from your production traffic, or omit it to send messages as fast as possible for maximum throughput testing.
 
 :::
