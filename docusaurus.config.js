@@ -235,6 +235,8 @@ const config = {
           },
           { from: "/guides/smart_replace", to: "/transform/smart-replace/" },
           { from: "/guides/triggers/", to: "/mocks/triggers/" },
+          { from: "/guides/kafka/", to: "/guides/message-brokers/kafka/" },
+          { from: "/guides/rabbitmq/", to: "/guides/message-brokers/rabbitmq/" },
           {
             from: "/reference/integrations/goreplay/",
             to: "/integration/import/goreplay/",

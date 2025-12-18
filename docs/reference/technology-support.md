@@ -34,10 +34,10 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | HTTP/S TLS        | Protocol | Full         | See [TLS](/setup/sidecar/tls/)                                                     |
 | IMAP              | Protocol | Capture Only |                                                                                    |
 | JSON              | Protocol | Full         |                                                                                    |
-| Kafka             | Protocol | Full         | See [details](../guides/kafka.md)                     |
+| Kafka             | Protocol | Full         | See [details](../guides/message-brokers/kafka.md)                     |
 | Mutual TLS (mTLS) | Protocol | Partial      | See [TLS](/setup/sidecar/tls/)                                                     |
 | Protobuf          | Protocol | Full         |                                                                                    |
-| RabbitMQ          | Protocol | Capture Only |                                                                                    |
+| RabbitMQ          | Protocol | Full         | See [details](../guides/message-brokers/rabbitmq.md)                              |
 | SOAP              | Protocol | Full         |                                                                                    |
 | XML               | Protocol | Full         |                                                                                    |
 | YAML              | Protocol | Full         |                                                                                    |
@@ -76,14 +76,14 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Agent 2 Agent               | API  | Full    |                                        |
 | Auth0                       | API  | Full    |                                        |
 | AWS Data Firehose           | API  | Full    |                                        |
-| AWS Kinesis                 | API  | Full    | See [details](../guides/kafka.md)      |
+| AWS Kinesis                 | API  | Full    | See [details](../guides/message-brokers/aws-kinesis.md)      |
 | AWS S3 / minio              | API  | Full    |                                        |
 | AWS SNS                     | API  | Full    |                                        |
 | AWS SQS                     | API  | Full    |                                        |
 | Gmail                       | API  | Full    |                                        |
 | MCP                         | API  | Full    |                                        |
 | Microsoft Outlook 365       | API  | Full    |                                        |
-| Microsoft Azure Service Bus | API  | Full    | See [details](../guides/kafka.md)      |
+| Microsoft Azure Service Bus | API  | Full    | See [details](../guides/message-brokers/azure-service-bus.md)      |
 | Salesforce                  | API  | Full    | Both the legacy SOAP and new REST APIs |
 | Stripe                      | API  | Full    |                                        |
 | Twilio                      | API  | Full    |                                        |
