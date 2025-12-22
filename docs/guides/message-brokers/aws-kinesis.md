@@ -46,7 +46,7 @@ speedctl extract data <snapshot-id> --path kafka.response.FetchResponse.topics.0
 
 For more details on extracting Kafka-compatible traffic, see the [Kafka guide](./kafka.md).
 
-### Create your producer
+## Create your producer
 
 Create a custom load producer using the AWS SDK for Kinesis or Kafka client libraries. The steps are:
 
@@ -58,14 +58,19 @@ Create a custom load producer using the AWS SDK for Kinesis or Kafka client libr
 6. Put the record to the Kinesis stream
 7. Close the client when complete
 
-An example script in Go using the AWS SDK is provided below:
+Example scripts in multiple languages are provided below.
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 ```go
 package main
 
 import (
 	"encoding/csv"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -178,7 +183,255 @@ func do() error {
 }
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.kinesis.KinesisClient;
+import software.amazon.awssdk.services.kinesis.model.PutRecordRequest;
+import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.nio.charset.StandardCharsets;
+
+public class KinesisReplay {
+    private final String csvFile;
+    private final String streamName;
+    private final String region;
+    private final String partitionKey;
+    private final boolean respectTiming;
+
+    public KinesisReplay(String csvFile, String streamName, String region, String partitionKey, boolean respectTiming) {
+        this.csvFile = csvFile;
+        this.streamName = streamName;
+        this.region = region;
+        this.partitionKey = partitionKey;
+        this.respectTiming = respectTiming;
+    }
+
+    public void replay() throws Exception {
+        // Create Kinesis client
+        KinesisClient kinesisClient = KinesisClient.builder()
+                .region(Region.of(region))
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+            // Skip header row
+            reader.readLine();
+
+            Instant lastTimestamp = null;
+            Instant startTime = Instant.now();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",", -1);
+                String messageBody = columns[0].replaceAll("^\"|\"$", ""); // Remove quotes
+
+                // Handle timing if enabled
+                if (respectTiming && columns.length > 1) {
+                    Instant timestamp = Instant.parse(columns[1]);
+
+                    if (lastTimestamp != null) {
+                        Duration delay = Duration.between(lastTimestamp, timestamp);
+                        if (!delay.isNegative()) {
+                            Thread.sleep(delay.toMillis());
+                        }
+                    } else {
+                        startTime = Instant.now();
+                    }
+                    lastTimestamp = timestamp;
+                }
+
+                // Put record to Kinesis stream
+                PutRecordRequest request = PutRecordRequest.builder()
+                        .streamName(streamName)
+                        .partitionKey(partitionKey)
+                        .data(SdkBytes.fromString(messageBody, StandardCharsets.UTF_8))
+                        .build();
+
+                kinesisClient.putRecord(request);
+            }
+
+            if (respectTiming) {
+                Duration elapsed = Duration.between(startTime, Instant.now());
+                System.out.println("Replay completed in " + elapsed + " with original timing");
+            } else {
+                System.out.println("Replay completed at maximum speed");
+            }
+        } finally {
+            kinesisClient.close();
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        String csvFile = System.getProperty("csv", "your_file.csv");
+        String streamName = System.getProperty("stream", "demo-stream");
+        String region = System.getProperty("region", "us-east-1");
+        String partitionKey = System.getProperty("partition-key", "default");
+        boolean respectTiming = Boolean.parseBoolean(System.getProperty("respect-timing", "false"));
+
+        KinesisReplay replay = new KinesisReplay(csvFile, streamName, region, partitionKey, respectTiming);
+        replay.replay();
+    }
+}
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { KinesisClient, PutRecordCommand } from '@aws-sdk/client-kinesis';
+import * as fs from 'fs';
+import * as csv from 'csv-parser';
+
+interface Config {
+  csvFile: string;
+  streamName: string;
+  region: string;
+  partitionKey: string;
+  respectTiming: boolean;
+}
+
+async function replay(config: Config): Promise<void> {
+  // Create Kinesis client
+  const kinesisClient = new KinesisClient({ region: config.region });
+
+  let lastTimestamp: Date | null = null;
+  const startTime = new Date();
+  const rows: Array<{ message: string; timestamp?: string }> = [];
+
+  // Read CSV file
+  await new Promise<void>((resolve, reject) => {
+    fs.createReadStream(config.csvFile)
+      .pipe(csv())
+      .on('data', (row) => {
+        rows.push({
+          message: Object.values(row)[0] as string,
+          timestamp: Object.values(row)[1] as string | undefined,
+        });
+      })
+      .on('end', resolve)
+      .on('error', reject);
+  });
+
+  // Process rows
+  for (const row of rows) {
+    // Handle timing if enabled
+    if (config.respectTiming && row.timestamp) {
+      const timestamp = new Date(row.timestamp);
+
+      if (lastTimestamp) {
+        const delay = timestamp.getTime() - lastTimestamp.getTime();
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+      lastTimestamp = timestamp;
+    }
+
+    // Put record to Kinesis stream
+    const command = new PutRecordCommand({
+      StreamName: config.streamName,
+      PartitionKey: config.partitionKey,
+      Data: Buffer.from(row.message, 'utf-8'),
+    });
+
+    await kinesisClient.send(command);
+  }
+
+  if (config.respectTiming) {
+    const elapsed = new Date().getTime() - startTime.getTime();
+    console.log(`Replay completed in ${elapsed}ms with original timing`);
+  } else {
+    console.log('Replay completed at maximum speed');
+  }
+}
+
+// Parse command line arguments
+const config: Config = {
+  csvFile: process.env.CSV || 'your_file.csv',
+  streamName: process.env.STREAM || 'demo-stream',
+  region: process.env.REGION || 'us-east-1',
+  partitionKey: process.env.PARTITION_KEY || 'default',
+  respectTiming: process.env.RESPECT_TIMING === 'true',
+};
+
+replay(config).catch(console.error);
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import csv
+import time
+from datetime import datetime
+from argparse import ArgumentParser
+import boto3
+
+def replay(csv_file, stream_name, region, partition_key, respect_timing):
+    # Create Kinesis client
+    kinesis_client = boto3.client('kinesis', region_name=region)
+
+    last_timestamp = None
+    start_time = time.time()
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+
+        for row in reader:
+            message_body = row[0]
+
+            # Handle timing if enabled
+            if respect_timing and len(row) > 1:
+                timestamp = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+
+                if last_timestamp is not None:
+                    delay = (timestamp - last_timestamp).total_seconds()
+                    if delay > 0:
+                        time.sleep(delay)
+                else:
+                    start_time = time.time()
+
+                last_timestamp = timestamp
+
+            # Put record to Kinesis stream
+            kinesis_client.put_record(
+                StreamName=stream_name,
+                Data=message_body.encode('utf-8'),
+                PartitionKey=partition_key
+            )
+
+    if respect_timing:
+        elapsed = time.time() - start_time
+        print(f"Replay completed in {elapsed:.2f}s with original timing")
+    else:
+        print("Replay completed at maximum speed")
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description='Replay Kinesis messages from CSV')
+    parser.add_argument('--csv', default='your_file.csv', help='Path to CSV file')
+    parser.add_argument('--stream', default='demo-stream', help='Kinesis stream name')
+    parser.add_argument('--region', default='us-east-1', help='AWS region')
+    parser.add_argument('--partition-key', default='default', help='Partition key for records')
+    parser.add_argument('--respect-timing', action='store_true', help='Respect original message timing')
+
+    args = parser.parse_args()
+    replay(args.csv, args.stream, args.region, args.partition_key, args.respect_timing)
+```
+
+</TabItem>
+</Tabs>
+
 ### Usage Examples
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 Send records as fast as possible (default):
 ```bash
@@ -189,6 +442,49 @@ Respect original message timing from the recording:
 ```bash
 go run main.go --csv your_file.csv --stream demo-stream --region us-east-1 --partition-key user-123 --respect-timing
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+Send records as fast as possible (default):
+```bash
+javac KinesisReplay.java
+java -Dcsv=your_file.csv -Dstream=demo-stream -Dregion=us-east-1 -Dpartition-key=user-123 KinesisReplay
+```
+
+Respect original message timing from the recording:
+```bash
+java -Dcsv=your_file.csv -Dstream=demo-stream -Dregion=us-east-1 -Dpartition-key=user-123 -Drespect-timing=true KinesisReplay
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+Send records as fast as possible (default):
+```bash
+CSV=your_file.csv STREAM=demo-stream REGION=us-east-1 PARTITION_KEY=user-123 npx ts-node main.ts
+```
+
+Respect original message timing from the recording:
+```bash
+CSV=your_file.csv STREAM=demo-stream REGION=us-east-1 PARTITION_KEY=user-123 RESPECT_TIMING=true npx ts-node main.ts
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+Send records as fast as possible (default):
+```bash
+python main.py --csv your_file.csv --stream demo-stream --region us-east-1 --partition-key user-123
+```
+
+Respect original message timing from the recording:
+```bash
+python main.py --csv your_file.csv --stream demo-stream --region us-east-1 --partition-key user-123 --respect-timing
+```
+
+</TabItem>
+</Tabs>
 
 ### Using Kafka-Compatible API
 

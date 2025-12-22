@@ -50,7 +50,13 @@ Create a custom load producer using the Google Cloud Pub/Sub client library for 
 6. Publish the message to the Pub/Sub topic
 7. Close the client when complete
 
-An example script in Go is provided below:
+Example scripts in multiple languages are provided below.
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 ```go
 package main
@@ -167,7 +173,247 @@ func do() error {
 }
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.PubsubMessage;
+import com.google.pubsub.v1.TopicName;
+import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.ExecutionException;
+
+public class PubSubReplay {
+    private final String csvFile;
+    private final String topicId;
+    private final String projectId;
+    private final boolean respectTiming;
+
+    public PubSubReplay(String csvFile, String topicId, String projectId, boolean respectTiming) {
+        this.csvFile = csvFile;
+        this.topicId = topicId;
+        this.projectId = projectId;
+        this.respectTiming = respectTiming;
+    }
+
+    public void replay() throws Exception {
+        TopicName topicName = TopicName.of(projectId, topicId);
+        Publisher publisher = null;
+
+        try {
+            publisher = Publisher.newBuilder(topicName).build();
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+                // Skip header row
+                reader.readLine();
+
+                Instant lastTimestamp = null;
+                Instant startTime = Instant.now();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] columns = line.split(",", -1);
+                    String messageBody = columns[0].replaceAll("^\"|\"$", ""); // Remove quotes
+
+                    // Handle timing if enabled
+                    if (respectTiming && columns.length > 1) {
+                        Instant timestamp = Instant.parse(columns[1]);
+
+                        if (lastTimestamp != null) {
+                            Duration delay = Duration.between(lastTimestamp, timestamp);
+                            if (!delay.isNegative()) {
+                                Thread.sleep(delay.toMillis());
+                            }
+                        } else {
+                            startTime = Instant.now();
+                        }
+                        lastTimestamp = timestamp;
+                    }
+
+                    // Publish message to Pub/Sub
+                    ByteString data = ByteString.copyFromUtf8(messageBody);
+                    PubsubMessage pubsubMessage = PubsubMessage.newBuilder()
+                            .setData(data)
+                            .build();
+
+                    // Wait for publish to complete
+                    publisher.publish(pubsubMessage).get();
+                }
+
+                if (respectTiming) {
+                    Duration elapsed = Duration.between(startTime, Instant.now());
+                    System.out.println("Replay completed in " + elapsed + " with original timing");
+                } else {
+                    System.out.println("Replay completed at maximum speed");
+                }
+            }
+        } finally {
+            if (publisher != null) {
+                publisher.shutdown();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        String csvFile = System.getProperty("csv", "your_file.csv");
+        String topicId = System.getProperty("topic", "demo-topic");
+        String projectId = System.getProperty("project", "your-project-id");
+        boolean respectTiming = Boolean.parseBoolean(System.getProperty("respect-timing", "false"));
+
+        PubSubReplay replay = new PubSubReplay(csvFile, topicId, projectId, respectTiming);
+        replay.replay();
+    }
+}
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { PubSub } from '@google-cloud/pubsub';
+import * as fs from 'fs';
+import * as csv from 'csv-parser';
+
+interface Config {
+  csvFile: string;
+  topicId: string;
+  projectId: string;
+  respectTiming: boolean;
+}
+
+async function replay(config: Config): Promise<void> {
+  // Create Pub/Sub client
+  const pubsub = new PubSub({ projectId: config.projectId });
+  const topic = pubsub.topic(config.topicId);
+
+  let lastTimestamp: Date | null = null;
+  const startTime = new Date();
+  const rows: Array<{ message: string; timestamp?: string }> = [];
+
+  // Read CSV file
+  await new Promise<void>((resolve, reject) => {
+    fs.createReadStream(config.csvFile)
+      .pipe(csv())
+      .on('data', (row) => {
+        rows.push({
+          message: Object.values(row)[0] as string,
+          timestamp: Object.values(row)[1] as string | undefined,
+        });
+      })
+      .on('end', resolve)
+      .on('error', reject);
+  });
+
+  // Process rows
+  for (const row of rows) {
+    // Handle timing if enabled
+    if (config.respectTiming && row.timestamp) {
+      const timestamp = new Date(row.timestamp);
+
+      if (lastTimestamp) {
+        const delay = timestamp.getTime() - lastTimestamp.getTime();
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+      lastTimestamp = timestamp;
+    }
+
+    // Publish message to Pub/Sub
+    const dataBuffer = Buffer.from(row.message);
+    await topic.publishMessage({ data: dataBuffer });
+  }
+
+  if (config.respectTiming) {
+    const elapsed = new Date().getTime() - startTime.getTime();
+    console.log(`Replay completed in ${elapsed}ms with original timing`);
+  } else {
+    console.log('Replay completed at maximum speed');
+  }
+}
+
+// Parse command line arguments
+const config: Config = {
+  csvFile: process.env.CSV || 'your_file.csv',
+  topicId: process.env.TOPIC || 'demo-topic',
+  projectId: process.env.PROJECT || 'your-project-id',
+  respectTiming: process.env.RESPECT_TIMING === 'true',
+};
+
+replay(config).catch(console.error);
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import csv
+import time
+from datetime import datetime
+from argparse import ArgumentParser
+from google.cloud import pubsub_v1
+
+def replay(csv_file, topic_id, project_id, respect_timing):
+    # Create Pub/Sub client
+    publisher = pubsub_v1.PublisherClient()
+    topic_path = publisher.topic_path(project_id, topic_id)
+
+    last_timestamp = None
+    start_time = time.time()
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+
+        for row in reader:
+            message_body = row[0]
+
+            # Handle timing if enabled
+            if respect_timing and len(row) > 1:
+                timestamp = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+
+                if last_timestamp is not None:
+                    delay = (timestamp - last_timestamp).total_seconds()
+                    if delay > 0:
+                        time.sleep(delay)
+                else:
+                    start_time = time.time()
+
+                last_timestamp = timestamp
+
+            # Publish message to Pub/Sub
+            data = message_body.encode('utf-8')
+            future = publisher.publish(topic_path, data)
+            # Wait for publish to complete
+            future.result()
+
+    if respect_timing:
+        elapsed = time.time() - start_time
+        print(f"Replay completed in {elapsed:.2f}s with original timing")
+    else:
+        print("Replay completed at maximum speed")
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description='Replay Google Pub/Sub messages from CSV')
+    parser.add_argument('--csv', default='your_file.csv', help='Path to CSV file')
+    parser.add_argument('--topic', default='demo-topic', help='Pub/Sub topic ID')
+    parser.add_argument('--project', default='your-project-id', help='GCP project ID')
+    parser.add_argument('--respect-timing', action='store_true', help='Respect original message timing')
+
+    args = parser.parse_args()
+    replay(args.csv, args.topic, args.project, args.respect_timing)
+```
+
+</TabItem>
+</Tabs>
+
 ### Usage Examples
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 Send messages as fast as possible (default):
 ```bash
@@ -178,6 +424,49 @@ Respect original message timing from the recording:
 ```bash
 go run main.go --csv your_file.csv --topic demo-topic --project your-project-id --respect-timing
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+Send messages as fast as possible (default):
+```bash
+javac PubSubReplay.java
+java -Dcsv=your_file.csv -Dtopic=demo-topic -Dproject=your-project-id PubSubReplay
+```
+
+Respect original message timing from the recording:
+```bash
+java -Dcsv=your_file.csv -Dtopic=demo-topic -Dproject=your-project-id -Drespect-timing=true PubSubReplay
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+Send messages as fast as possible (default):
+```bash
+CSV=your_file.csv TOPIC=demo-topic PROJECT=your-project-id npx ts-node main.ts
+```
+
+Respect original message timing from the recording:
+```bash
+CSV=your_file.csv TOPIC=demo-topic PROJECT=your-project-id RESPECT_TIMING=true npx ts-node main.ts
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+Send messages as fast as possible (default):
+```bash
+python main.py --csv your_file.csv --topic demo-topic --project your-project-id
+```
+
+Respect original message timing from the recording:
+```bash
+python main.py --csv your_file.csv --topic demo-topic --project your-project-id --respect-timing
+```
+
+</TabItem>
+</Tabs>
 
 :::note
 

@@ -50,7 +50,13 @@ Create a custom load producer using the AWS SDK for your preferred language. The
 6. Send the message to the SQS queue
 7. Close the client when complete
 
-An example script in Go is provided below:
+Example scripts in multiple languages are provided below.
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 ```go
 package main
@@ -167,7 +173,242 @@ func do() error {
 }
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+
+public class SQSReplay {
+    private final String csvFile;
+    private final String queueUrl;
+    private final Region region;
+    private final boolean respectTiming;
+
+    public SQSReplay(String csvFile, String queueUrl, String region, boolean respectTiming) {
+        this.csvFile = csvFile;
+        this.queueUrl = queueUrl;
+        this.region = Region.of(region);
+        this.respectTiming = respectTiming;
+    }
+
+    public void replay() throws Exception {
+        // Create SQS client
+        try (SqsClient sqsClient = SqsClient.builder()
+                .region(region)
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+             BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+
+            // Skip header row
+            reader.readLine();
+
+            Instant lastTimestamp = null;
+            Instant startTime = Instant.now();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",", -1);
+                String messageBody = columns[0].replaceAll("^\"|\"$", ""); // Remove quotes
+
+                // Handle timing if enabled
+                if (respectTiming && columns.length > 1) {
+                    Instant timestamp = Instant.parse(columns[1]);
+
+                    if (lastTimestamp != null) {
+                        Duration delay = Duration.between(lastTimestamp, timestamp);
+                        if (!delay.isNegative()) {
+                            Thread.sleep(delay.toMillis());
+                        }
+                    } else {
+                        startTime = Instant.now();
+                    }
+                    lastTimestamp = timestamp;
+                }
+
+                // Send message to SQS
+                SendMessageRequest request = SendMessageRequest.builder()
+                        .queueUrl(queueUrl)
+                        .messageBody(messageBody)
+                        .build();
+
+                sqsClient.sendMessage(request);
+            }
+
+            if (respectTiming) {
+                Duration elapsed = Duration.between(startTime, Instant.now());
+                System.out.println("Replay completed in " + elapsed + " with original timing");
+            } else {
+                System.out.println("Replay completed at maximum speed");
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        String csvFile = System.getProperty("csv", "your_file.csv");
+        String queueUrl = System.getProperty("queue", "https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue");
+        String region = System.getProperty("region", "us-east-1");
+        boolean respectTiming = Boolean.parseBoolean(System.getProperty("respect-timing", "false"));
+
+        SQSReplay replay = new SQSReplay(csvFile, queueUrl, region, respectTiming);
+        replay.replay();
+    }
+}
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+import * as fs from 'fs';
+import * as csv from 'csv-parser';
+
+interface Config {
+  csvFile: string;
+  queueUrl: string;
+  region: string;
+  respectTiming: boolean;
+}
+
+async function replay(config: Config): Promise<void> {
+  // Create SQS client
+  const sqsClient = new SQSClient({ region: config.region });
+
+  let lastTimestamp: Date | null = null;
+  const startTime = new Date();
+  const rows: Array<{ message: string; timestamp?: string }> = [];
+
+  // Read CSV file
+  await new Promise<void>((resolve, reject) => {
+    fs.createReadStream(config.csvFile)
+      .pipe(csv())
+      .on('data', (row) => {
+        rows.push({
+          message: Object.values(row)[0] as string,
+          timestamp: Object.values(row)[1] as string | undefined,
+        });
+      })
+      .on('end', resolve)
+      .on('error', reject);
+  });
+
+  // Process rows
+  for (const row of rows) {
+    // Handle timing if enabled
+    if (config.respectTiming && row.timestamp) {
+      const timestamp = new Date(row.timestamp);
+
+      if (lastTimestamp) {
+        const delay = timestamp.getTime() - lastTimestamp.getTime();
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+      lastTimestamp = timestamp;
+    }
+
+    // Send message to SQS
+    const command = new SendMessageCommand({
+      QueueUrl: config.queueUrl,
+      MessageBody: row.message,
+    });
+
+    await sqsClient.send(command);
+  }
+
+  if (config.respectTiming) {
+    const elapsed = new Date().getTime() - startTime.getTime();
+    console.log(`Replay completed in ${elapsed}ms with original timing`);
+  } else {
+    console.log('Replay completed at maximum speed');
+  }
+}
+
+// Parse command line arguments
+const config: Config = {
+  csvFile: process.env.CSV || 'your_file.csv',
+  queueUrl: process.env.QUEUE || 'https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue',
+  region: process.env.REGION || 'us-east-1',
+  respectTiming: process.env.RESPECT_TIMING === 'true',
+};
+
+replay(config).catch(console.error);
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import csv
+import time
+import boto3
+from datetime import datetime
+from argparse import ArgumentParser
+
+def replay(csv_file, queue_url, region, respect_timing):
+    # Create SQS client
+    sqs = boto3.client('sqs', region_name=region)
+
+    last_timestamp = None
+    start_time = time.time()
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+
+        for row in reader:
+            message_body = row[0]
+
+            # Handle timing if enabled
+            if respect_timing and len(row) > 1:
+                timestamp = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+
+                if last_timestamp is not None:
+                    delay = (timestamp - last_timestamp).total_seconds()
+                    if delay > 0:
+                        time.sleep(delay)
+                else:
+                    start_time = time.time()
+
+                last_timestamp = timestamp
+
+            # Send message to SQS
+            sqs.send_message(
+                QueueUrl=queue_url,
+                MessageBody=message_body
+            )
+
+    if respect_timing:
+        elapsed = time.time() - start_time
+        print(f"Replay completed in {elapsed:.2f}s with original timing")
+    else:
+        print("Replay completed at maximum speed")
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description='Replay SQS messages from CSV')
+    parser.add_argument('--csv', default='your_file.csv', help='Path to CSV file')
+    parser.add_argument('--queue', default='https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue', help='SQS queue URL')
+    parser.add_argument('--region', default='us-east-1', help='AWS region')
+    parser.add_argument('--respect-timing', action='store_true', help='Respect original message timing')
+
+    args = parser.parse_args()
+    replay(args.csv, args.queue, args.region, args.respect_timing)
+```
+
+</TabItem>
+</Tabs>
+
 ### Usage Examples
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 Send messages as fast as possible (default):
 ```bash
@@ -178,6 +419,49 @@ Respect original message timing from the recording:
 ```bash
 go run main.go --csv your_file.csv --queue https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue --region us-east-1 --respect-timing
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+Send messages as fast as possible (default):
+```bash
+javac SQSReplay.java
+java -Dcsv=your_file.csv -Dqueue=https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue -Dregion=us-east-1 SQSReplay
+```
+
+Respect original message timing from the recording:
+```bash
+java -Dcsv=your_file.csv -Dqueue=https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue -Dregion=us-east-1 -Drespect-timing=true SQSReplay
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+Send messages as fast as possible (default):
+```bash
+CSV=your_file.csv QUEUE=https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue REGION=us-east-1 npx ts-node main.ts
+```
+
+Respect original message timing from the recording:
+```bash
+CSV=your_file.csv QUEUE=https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue REGION=us-east-1 RESPECT_TIMING=true npx ts-node main.ts
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+Send messages as fast as possible (default):
+```bash
+python main.py --csv your_file.csv --queue https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue --region us-east-1
+```
+
+Respect original message timing from the recording:
+```bash
+python main.py --csv your_file.csv --queue https://sqs.us-east-1.amazonaws.com/123456789012/demo-queue --region us-east-1 --respect-timing
+```
+
+</TabItem>
+</Tabs>
 
 :::note
 

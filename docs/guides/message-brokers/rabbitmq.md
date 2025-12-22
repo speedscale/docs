@@ -72,7 +72,13 @@ Next up, using the language and LLM of your choice, create a small load producer
 1. Decode the base64 message body and publish it to RabbitMQ.
 1. Close the connection when complete.
 
-An example script in Go is provided below. You can also find a complete demo app with this generator in our demo [repository](https://github.com/speedscale/demo/tree/master/go-rabbitmq).
+Example scripts in multiple languages are provided below. You can also find a complete demo app with this generator in our demo [repository](https://github.com/speedscale/demo/tree/master/go-rabbitmq).
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 ```go
 package main
@@ -202,7 +208,259 @@ func do() error {
 }
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+import com.rabbitmq.client.*;
+import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Base64;
+
+public class RabbitMQReplay {
+    private final String csvFile;
+    private final String queueName;
+    private final String exchange;
+    private final String url;
+    private final boolean respectTiming;
+
+    public RabbitMQReplay(String csvFile, String queueName, String exchange, String url, boolean respectTiming) {
+        this.csvFile = csvFile;
+        this.queueName = queueName;
+        this.exchange = exchange;
+        this.url = url;
+        this.respectTiming = respectTiming;
+    }
+
+    public void replay() throws Exception {
+        // Connect to RabbitMQ
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setUri(url);
+
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel();
+             BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+
+            // Skip header row
+            reader.readLine();
+
+            Instant lastTimestamp = null;
+            Instant startTime = Instant.now();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",", -1);
+                String messageBody = columns[0].replaceAll("^\"|\"$", ""); // Remove quotes
+                byte[] bodyBytes = Base64.getDecoder().decode(messageBody);
+
+                // Handle timing if enabled
+                if (respectTiming && columns.length > 1) {
+                    Instant timestamp = Instant.parse(columns[1]);
+
+                    if (lastTimestamp != null) {
+                        Duration delay = Duration.between(lastTimestamp, timestamp);
+                        if (!delay.isNegative()) {
+                            Thread.sleep(delay.toMillis());
+                        }
+                    } else {
+                        startTime = Instant.now();
+                    }
+                    lastTimestamp = timestamp;
+                }
+
+                // Publish message to RabbitMQ
+                AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
+                        .contentType("text/plain")
+                        .build();
+
+                channel.basicPublish(exchange, queueName, props, bodyBytes);
+            }
+
+            if (respectTiming) {
+                Duration elapsed = Duration.between(startTime, Instant.now());
+                System.out.println("Replay completed in " + elapsed + " with original timing");
+            } else {
+                System.out.println("Replay completed at maximum speed");
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        String csvFile = System.getProperty("csv", "your_file.csv");
+        String queueName = System.getProperty("queue", "demo-queue");
+        String exchange = System.getProperty("exchange", "");
+        String url = System.getProperty("url", "amqp://guest:guest@localhost:5672/");
+        boolean respectTiming = Boolean.parseBoolean(System.getProperty("respect-timing", "false"));
+
+        RabbitMQReplay replay = new RabbitMQReplay(csvFile, queueName, exchange, url, respectTiming);
+        replay.replay();
+    }
+}
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```typescript
+import * as amqp from 'amqplib';
+import * as fs from 'fs';
+import * as csv from 'csv-parser';
+
+interface Config {
+  csvFile: string;
+  queueName: string;
+  exchange: string;
+  url: string;
+  respectTiming: boolean;
+}
+
+async function replay(config: Config): Promise<void> {
+  // Connect to RabbitMQ
+  const connection = await amqp.connect(config.url);
+  const channel = await connection.createChannel();
+
+  let lastTimestamp: Date | null = null;
+  const startTime = new Date();
+  const rows: Array<{ message: string; timestamp?: string }> = [];
+
+  // Read CSV file
+  await new Promise<void>((resolve, reject) => {
+    fs.createReadStream(config.csvFile)
+      .pipe(csv())
+      .on('data', (row) => {
+        rows.push({
+          message: Object.values(row)[0] as string,
+          timestamp: Object.values(row)[1] as string | undefined,
+        });
+      })
+      .on('end', resolve)
+      .on('error', reject);
+  });
+
+  // Process rows
+  for (const row of rows) {
+    // Decode base64 message body
+    const bodyBuffer = Buffer.from(row.message, 'base64');
+
+    // Handle timing if enabled
+    if (config.respectTiming && row.timestamp) {
+      const timestamp = new Date(row.timestamp);
+
+      if (lastTimestamp) {
+        const delay = timestamp.getTime() - lastTimestamp.getTime();
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+      lastTimestamp = timestamp;
+    }
+
+    // Publish message to RabbitMQ
+    channel.publish(config.exchange, config.queueName, bodyBuffer, {
+      contentType: 'text/plain',
+    });
+  }
+
+  await channel.close();
+  await connection.close();
+
+  if (config.respectTiming) {
+    const elapsed = new Date().getTime() - startTime.getTime();
+    console.log(`Replay completed in ${elapsed}ms with original timing`);
+  } else {
+    console.log('Replay completed at maximum speed');
+  }
+}
+
+// Parse command line arguments
+const config: Config = {
+  csvFile: process.env.CSV || 'your_file.csv',
+  queueName: process.env.QUEUE || 'demo-queue',
+  exchange: process.env.EXCHANGE || '',
+  url: process.env.URL || 'amqp://guest:guest@localhost:5672/',
+  respectTiming: process.env.RESPECT_TIMING === 'true',
+};
+
+replay(config).catch(console.error);
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import csv
+import time
+import base64
+from datetime import datetime
+from argparse import ArgumentParser
+import pika
+
+def replay(csv_file, queue_name, exchange, url, respect_timing):
+    # Connect to RabbitMQ
+    parameters = pika.URLParameters(url)
+    connection = pika.BlockingConnection(parameters)
+    channel = connection.channel()
+
+    last_timestamp = None
+    start_time = time.time()
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+
+        for row in reader:
+            message_body = row[0]
+            body_bytes = base64.b64decode(message_body)
+
+            # Handle timing if enabled
+            if respect_timing and len(row) > 1:
+                timestamp = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+
+                if last_timestamp is not None:
+                    delay = (timestamp - last_timestamp).total_seconds()
+                    if delay > 0:
+                        time.sleep(delay)
+                else:
+                    start_time = time.time()
+
+                last_timestamp = timestamp
+
+            # Publish message to RabbitMQ
+            channel.basic_publish(
+                exchange=exchange,
+                routing_key=queue_name,
+                body=body_bytes,
+                properties=pika.BasicProperties(content_type='text/plain')
+            )
+
+    connection.close()
+
+    if respect_timing:
+        elapsed = time.time() - start_time
+        print(f"Replay completed in {elapsed:.2f}s with original timing")
+    else:
+        print("Replay completed at maximum speed")
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description='Replay RabbitMQ messages from CSV')
+    parser.add_argument('--csv', default='your_file.csv', help='Path to CSV file')
+    parser.add_argument('--queue', default='demo-queue', help='RabbitMQ queue name')
+    parser.add_argument('--exchange', default='', help='RabbitMQ exchange name')
+    parser.add_argument('--url', default='amqp://guest:guest@localhost:5672/', help='RabbitMQ connection URL')
+    parser.add_argument('--respect-timing', action='store_true', help='Respect original message timing')
+
+    args = parser.parse_args()
+    replay(args.csv, args.queue, args.exchange, args.url, args.respect_timing)
+```
+
+</TabItem>
+</Tabs>
+
 ### Usage Examples
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 Send messages as fast as possible (default):
 ```bash
@@ -213,6 +471,49 @@ Respect original message timing from the recording:
 ```bash
 go run main.go --csv your_file.csv --queue demo-queue --url amqp://guest:guest@localhost:5672/ --respect-timing
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+Send messages as fast as possible (default):
+```bash
+javac RabbitMQReplay.java
+java -Dcsv=your_file.csv -Dqueue=demo-queue -Durl=amqp://guest:guest@localhost:5672/ RabbitMQReplay
+```
+
+Respect original message timing from the recording:
+```bash
+java -Dcsv=your_file.csv -Dqueue=demo-queue -Durl=amqp://guest:guest@localhost:5672/ -Drespect-timing=true RabbitMQReplay
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+Send messages as fast as possible (default):
+```bash
+CSV=your_file.csv QUEUE=demo-queue URL=amqp://guest:guest@localhost:5672/ npx ts-node main.ts
+```
+
+Respect original message timing from the recording:
+```bash
+CSV=your_file.csv QUEUE=demo-queue URL=amqp://guest:guest@localhost:5672/ RESPECT_TIMING=true npx ts-node main.ts
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+Send messages as fast as possible (default):
+```bash
+python main.py --csv your_file.csv --queue demo-queue --url amqp://guest:guest@localhost:5672/
+```
+
+Respect original message timing from the recording:
+```bash
+python main.py --csv your_file.csv --queue demo-queue --url amqp://guest:guest@localhost:5672/ --respect-timing
+```
+
+</TabItem>
+</Tabs>
 
 :::note
 
