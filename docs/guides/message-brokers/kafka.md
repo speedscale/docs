@@ -70,7 +70,13 @@ Next up, using the language and LLM of your choice, create a small load producer
 1. Send the message to Kafka.
 1. Wait for the producer flush to complete.
 
-An example script in Go is provided below.
+Example scripts in multiple languages are provided below.
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 ```go
 package main
@@ -191,7 +197,251 @@ func do() error {
 }
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.StringSerializer;
+import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Properties;
+
+public class KafkaReplay {
+    private final String csvFile;
+    private final String topic;
+    private final String brokers;
+    private final boolean respectTiming;
+
+    public KafkaReplay(String csvFile, String topic, String brokers, boolean respectTiming) {
+        this.csvFile = csvFile;
+        this.topic = topic;
+        this.brokers = brokers;
+        this.respectTiming = respectTiming;
+    }
+
+    public void replay() throws Exception {
+        // Configure Kafka producer
+        Properties props = new Properties();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+        try (KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+             BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+
+            // Skip header row
+            reader.readLine();
+
+            Instant lastTimestamp = null;
+            Instant startTime = Instant.now();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",", -1);
+                String messageBody = columns[0].replaceAll("^\"|\"$", ""); // Remove quotes
+
+                // Handle timing if enabled
+                if (respectTiming && columns.length > 1) {
+                    Instant timestamp = Instant.parse(columns[1]);
+
+                    if (lastTimestamp != null) {
+                        Duration delay = Duration.between(lastTimestamp, timestamp);
+                        if (!delay.isNegative()) {
+                            Thread.sleep(delay.toMillis());
+                        }
+                    } else {
+                        startTime = Instant.now();
+                    }
+                    lastTimestamp = timestamp;
+                }
+
+                // Send message to Kafka
+                ProducerRecord<String, String> record = new ProducerRecord<>(topic, messageBody);
+                producer.send(record);
+            }
+
+            // Wait for all messages to be delivered
+            producer.flush();
+
+            if (respectTiming) {
+                Duration elapsed = Duration.between(startTime, Instant.now());
+                System.out.println("Replay completed in " + elapsed + " with original timing");
+            } else {
+                System.out.println("Replay completed at maximum speed");
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        String csvFile = System.getProperty("csv", "out.csv");
+        String topic = System.getProperty("topic", "demo-topic");
+        String brokers = System.getProperty("brokers", "localhost:9092");
+        boolean respectTiming = Boolean.parseBoolean(System.getProperty("respect-timing", "false"));
+
+        KafkaReplay replay = new KafkaReplay(csvFile, topic, brokers, respectTiming);
+        replay.replay();
+    }
+}
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```typescript
+import { Kafka, Producer } from 'kafkajs';
+import * as fs from 'fs';
+import * as csv from 'csv-parser';
+
+interface Config {
+  csvFile: string;
+  topic: string;
+  brokers: string[];
+  respectTiming: boolean;
+}
+
+async function replay(config: Config): Promise<void> {
+  // Create Kafka client
+  const kafka = new Kafka({
+    clientId: 'speedscale-replay',
+    brokers: config.brokers,
+  });
+
+  const producer: Producer = kafka.producer();
+  await producer.connect();
+
+  let lastTimestamp: Date | null = null;
+  const startTime = new Date();
+  const rows: Array<{ message: string; timestamp?: string }> = [];
+
+  // Read CSV file
+  await new Promise<void>((resolve, reject) => {
+    fs.createReadStream(config.csvFile)
+      .pipe(csv())
+      .on('data', (row) => {
+        rows.push({
+          message: Object.values(row)[0] as string,
+          timestamp: Object.values(row)[1] as string | undefined,
+        });
+      })
+      .on('end', resolve)
+      .on('error', reject);
+  });
+
+  // Process rows
+  for (const row of rows) {
+    // Handle timing if enabled
+    if (config.respectTiming && row.timestamp) {
+      const timestamp = new Date(row.timestamp);
+
+      if (lastTimestamp) {
+        const delay = timestamp.getTime() - lastTimestamp.getTime();
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+      lastTimestamp = timestamp;
+    }
+
+    // Send message to Kafka
+    await producer.send({
+      topic: config.topic,
+      messages: [{ value: row.message }],
+    });
+  }
+
+  await producer.disconnect();
+
+  if (config.respectTiming) {
+    const elapsed = new Date().getTime() - startTime.getTime();
+    console.log(`Replay completed in ${elapsed}ms with original timing`);
+  } else {
+    console.log('Replay completed at maximum speed');
+  }
+}
+
+// Parse command line arguments
+const config: Config = {
+  csvFile: process.env.CSV || 'out.csv',
+  topic: process.env.TOPIC || 'demo-topic',
+  brokers: (process.env.BROKERS || 'localhost:9092').split(','),
+  respectTiming: process.env.RESPECT_TIMING === 'true',
+};
+
+replay(config).catch(console.error);
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+import csv
+import time
+from datetime import datetime
+from argparse import ArgumentParser
+from confluent_kafka import Producer
+
+def replay(csv_file, topic, brokers, respect_timing):
+    # Create Kafka producer
+    conf = {
+        'bootstrap.servers': brokers,
+    }
+    producer = Producer(conf)
+
+    last_timestamp = None
+    start_time = time.time()
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+
+        for row in reader:
+            message_body = row[0]
+
+            # Handle timing if enabled
+            if respect_timing and len(row) > 1:
+                timestamp = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+
+                if last_timestamp is not None:
+                    delay = (timestamp - last_timestamp).total_seconds()
+                    if delay > 0:
+                        time.sleep(delay)
+                else:
+                    start_time = time.time()
+
+                last_timestamp = timestamp
+
+            # Send message to Kafka
+            producer.produce(topic, value=message_body.encode('utf-8'))
+
+    # Wait for all messages to be delivered
+    producer.flush()
+
+    if respect_timing:
+        elapsed = time.time() - start_time
+        print(f"Replay completed in {elapsed:.2f}s with original timing")
+    else:
+        print("Replay completed at maximum speed")
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description='Replay Kafka messages from CSV')
+    parser.add_argument('--csv', default='out.csv', help='Path to CSV file')
+    parser.add_argument('--topic', default='demo-topic', help='Kafka topic name')
+    parser.add_argument('--brokers', default='localhost:9092', help='Kafka broker addresses')
+    parser.add_argument('--respect-timing', action='store_true', help='Respect original message timing')
+
+    args = parser.parse_args()
+    replay(args.csv, args.topic, args.brokers, args.respect_timing)
+```
+
+</TabItem>
+</Tabs>
+
 ### Usage Examples
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 Send messages as fast as possible (default):
 ```bash
@@ -202,3 +452,46 @@ Respect original message timing from the recording:
 ```bash
 go run main.go --csv out.csv --topic my-topic --brokers localhost:9092 --respect-timing
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+Send messages as fast as possible (default):
+```bash
+javac KafkaReplay.java
+java -Dcsv=out.csv -Dtopic=my-topic -Dbrokers=localhost:9092 KafkaReplay
+```
+
+Respect original message timing from the recording:
+```bash
+java -Dcsv=out.csv -Dtopic=my-topic -Dbrokers=localhost:9092 -Drespect-timing=true KafkaReplay
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+Send messages as fast as possible (default):
+```bash
+CSV=out.csv TOPIC=my-topic BROKERS=localhost:9092 npx ts-node main.ts
+```
+
+Respect original message timing from the recording:
+```bash
+CSV=out.csv TOPIC=my-topic BROKERS=localhost:9092 RESPECT_TIMING=true npx ts-node main.ts
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+Send messages as fast as possible (default):
+```bash
+python main.py --csv out.csv --topic my-topic --brokers localhost:9092
+```
+
+Respect original message timing from the recording:
+```bash
+python main.py --csv out.csv --topic my-topic --brokers localhost:9092 --respect-timing
+```
+
+</TabItem>
+</Tabs>

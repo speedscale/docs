@@ -60,7 +60,13 @@ Create a custom load producer using Kafka client libraries (for Kafka-compatible
 6. Send the message to Pulsar
 7. Wait for delivery confirmation
 
-An example script in Go using Kafka-compatible API is provided below:
+Example scripts in multiple languages using Pulsar's Kafka-compatible API are provided below.
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 ```go
 package main
@@ -73,6 +79,7 @@ import (
 	"os"
 	"time"
 
+	// Using Kafka client library for Pulsar's Kafka-compatible API
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
@@ -106,7 +113,7 @@ func do() error {
 		return fmt.Errorf("failed to read CSV header: %w", err)
 	}
 
-	// Create Kafka producer configured for Pulsar
+	// Create Kafka producer configured for Pulsar's Kafka-compatible API
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": *brokers,
 	})
@@ -161,7 +168,7 @@ func do() error {
 			Value: []byte(messageBody),
 		}
 
-		// Produce message to Pulsar
+		// Produce message to Pulsar via Kafka-compatible API
 		if err := producer.Produce(msg, nil); err != nil {
 			return fmt.Errorf("failed to produce message to Pulsar: %w", err)
 		}
@@ -181,7 +188,254 @@ func do() error {
 }
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+// Using Kafka client library for Pulsar's Kafka-compatible API
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.StringSerializer;
+import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Properties;
+
+public class PulsarReplay {
+    private final String csvFile;
+    private final String topic;
+    private final String brokers;
+    private final boolean respectTiming;
+
+    public PulsarReplay(String csvFile, String topic, String brokers, boolean respectTiming) {
+        this.csvFile = csvFile;
+        this.topic = topic;
+        this.brokers = brokers;
+        this.respectTiming = respectTiming;
+    }
+
+    public void replay() throws Exception {
+        // Configure Kafka producer for Pulsar's Kafka-compatible API
+        Properties props = new Properties();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+        try (KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+             BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+
+            // Skip header row
+            reader.readLine();
+
+            Instant lastTimestamp = null;
+            Instant startTime = Instant.now();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",", -1);
+                String messageBody = columns[0].replaceAll("^\"|\"$", ""); // Remove quotes
+
+                // Handle timing if enabled
+                if (respectTiming && columns.length > 1) {
+                    Instant timestamp = Instant.parse(columns[1]);
+
+                    if (lastTimestamp != null) {
+                        Duration delay = Duration.between(lastTimestamp, timestamp);
+                        if (!delay.isNegative()) {
+                            Thread.sleep(delay.toMillis());
+                        }
+                    } else {
+                        startTime = Instant.now();
+                    }
+                    lastTimestamp = timestamp;
+                }
+
+                // Send message to Pulsar via Kafka-compatible API
+                ProducerRecord<String, String> record = new ProducerRecord<>(topic, messageBody);
+                producer.send(record);
+            }
+
+            // Wait for all messages to be delivered
+            producer.flush();
+
+            if (respectTiming) {
+                Duration elapsed = Duration.between(startTime, Instant.now());
+                System.out.println("Replay completed in " + elapsed + " with original timing");
+            } else {
+                System.out.println("Replay completed at maximum speed");
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        String csvFile = System.getProperty("csv", "out.csv");
+        String topic = System.getProperty("topic", "persistent://public/default/demo-topic");
+        String brokers = System.getProperty("brokers", "localhost:6650");
+        boolean respectTiming = Boolean.parseBoolean(System.getProperty("respect-timing", "false"));
+
+        PulsarReplay replay = new PulsarReplay(csvFile, topic, brokers, respectTiming);
+        replay.replay();
+    }
+}
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```typescript
+// Using Kafka client library for Pulsar's Kafka-compatible API
+import { Kafka, Producer } from 'kafkajs';
+import * as fs from 'fs';
+import * as csv from 'csv-parser';
+
+interface Config {
+  csvFile: string;
+  topic: string;
+  brokers: string[];
+  respectTiming: boolean;
+}
+
+async function replay(config: Config): Promise<void> {
+  // Create Kafka client configured for Pulsar's Kafka-compatible API
+  const kafka = new Kafka({
+    clientId: 'speedscale-pulsar-replay',
+    brokers: config.brokers,
+  });
+
+  const producer: Producer = kafka.producer();
+  await producer.connect();
+
+  let lastTimestamp: Date | null = null;
+  const startTime = new Date();
+  const rows: Array<{ message: string; timestamp?: string }> = [];
+
+  // Read CSV file
+  await new Promise<void>((resolve, reject) => {
+    fs.createReadStream(config.csvFile)
+      .pipe(csv())
+      .on('data', (row) => {
+        rows.push({
+          message: Object.values(row)[0] as string,
+          timestamp: Object.values(row)[1] as string | undefined,
+        });
+      })
+      .on('end', resolve)
+      .on('error', reject);
+  });
+
+  // Process rows
+  for (const row of rows) {
+    // Handle timing if enabled
+    if (config.respectTiming && row.timestamp) {
+      const timestamp = new Date(row.timestamp);
+
+      if (lastTimestamp) {
+        const delay = timestamp.getTime() - lastTimestamp.getTime();
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+      lastTimestamp = timestamp;
+    }
+
+    // Send message to Pulsar via Kafka-compatible API
+    await producer.send({
+      topic: config.topic,
+      messages: [{ value: row.message }],
+    });
+  }
+
+  await producer.disconnect();
+
+  if (config.respectTiming) {
+    const elapsed = new Date().getTime() - startTime.getTime();
+    console.log(`Replay completed in ${elapsed}ms with original timing`);
+  } else {
+    console.log('Replay completed at maximum speed');
+  }
+}
+
+// Parse command line arguments
+const config: Config = {
+  csvFile: process.env.CSV || 'out.csv',
+  topic: process.env.TOPIC || 'persistent://public/default/demo-topic',
+  brokers: (process.env.BROKERS || 'localhost:6650').split(','),
+  respectTiming: process.env.RESPECT_TIMING === 'true',
+};
+
+replay(config).catch(console.error);
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+# Using Kafka client library for Pulsar's Kafka-compatible API
+import csv
+import time
+from datetime import datetime
+from argparse import ArgumentParser
+from confluent_kafka import Producer
+
+def replay(csv_file, topic, brokers, respect_timing):
+    # Create Kafka producer configured for Pulsar's Kafka-compatible API
+    conf = {
+        'bootstrap.servers': brokers,
+    }
+    producer = Producer(conf)
+
+    last_timestamp = None
+    start_time = time.time()
+
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
+
+        for row in reader:
+            message_body = row[0]
+
+            # Handle timing if enabled
+            if respect_timing and len(row) > 1:
+                timestamp = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+
+                if last_timestamp is not None:
+                    delay = (timestamp - last_timestamp).total_seconds()
+                    if delay > 0:
+                        time.sleep(delay)
+                else:
+                    start_time = time.time()
+
+                last_timestamp = timestamp
+
+            # Send message to Pulsar via Kafka-compatible API
+            producer.produce(topic, value=message_body.encode('utf-8'))
+
+    # Wait for all messages to be delivered
+    producer.flush()
+
+    if respect_timing:
+        elapsed = time.time() - start_time
+        print(f"Replay completed in {elapsed:.2f}s with original timing")
+    else:
+        print("Replay completed at maximum speed")
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description='Replay Pulsar messages from CSV')
+    parser.add_argument('--csv', default='out.csv', help='Path to CSV file')
+    parser.add_argument('--topic', default='persistent://public/default/demo-topic', help='Pulsar topic name')
+    parser.add_argument('--brokers', default='localhost:6650', help='Pulsar broker addresses')
+    parser.add_argument('--respect-timing', action='store_true', help='Respect original message timing')
+
+    args = parser.parse_args()
+    replay(args.csv, args.topic, args.brokers, args.respect_timing)
+```
+
+</TabItem>
+</Tabs>
+
 ### Usage Examples
+
+<Tabs>
+<TabItem value="go" label="Go">
 
 Send messages as fast as possible (default):
 ```bash
@@ -192,6 +446,49 @@ Respect original message timing from the recording:
 ```bash
 go run main.go --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:6650 --respect-timing
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+Send messages as fast as possible (default):
+```bash
+javac PulsarReplay.java
+java -Dcsv=out.csv -Dtopic=persistent://public/default/demo-topic -Dbrokers=localhost:6650 PulsarReplay
+```
+
+Respect original message timing from the recording:
+```bash
+java -Dcsv=out.csv -Dtopic=persistent://public/default/demo-topic -Dbrokers=localhost:6650 -Drespect-timing=true PulsarReplay
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+Send messages as fast as possible (default):
+```bash
+CSV=out.csv TOPIC=persistent://public/default/demo-topic BROKERS=localhost:6650 npx ts-node main.ts
+```
+
+Respect original message timing from the recording:
+```bash
+CSV=out.csv TOPIC=persistent://public/default/demo-topic BROKERS=localhost:6650 RESPECT_TIMING=true npx ts-node main.ts
+```
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+Send messages as fast as possible (default):
+```bash
+python main.py --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:6650
+```
+
+Respect original message timing from the recording:
+```bash
+python main.py --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:6650 --respect-timing
+```
+
+</TabItem>
+</Tabs>
 
 ### Pulsar Configuration
 
