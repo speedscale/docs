@@ -15,20 +15,20 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@algolia/client-abtesting": "^5.19.0",
-    "@algolia/client-analytics": "^5.19.0",
-    "@algolia/client-insights": "^5.19.0",
-    "@algolia/client-personalization": "^5.19.0",
-    "@algolia/client-query-suggestions": "^5.19.0",
-    "@algolia/client-search": "^5.19.0",
-    "@algolia/ingestion": "^1.19.0",
-    "@algolia/monitoring": "^1.19.0",
-    "@algolia/recommend": "^5.19.0",
+    "@algolia/client-abtesting": "^5.46.2",
+    "@algolia/client-analytics": "^5.46.2",
+    "@algolia/client-insights": "^5.46.2",
+    "@algolia/client-personalization": "^5.46.2",
+    "@algolia/client-query-suggestions": "^5.46.2",
+    "@algolia/client-search": "^5.46.2",
+    "@algolia/ingestion": "^1.46.2",
+    "@algolia/monitoring": "^1.46.2",
+    "@algolia/recommend": "^5.46.2",
     "@babel/helpers": "^7.26.10",
     "@babel/runtime": "^7.26.10",
     "@babel/runtime-corejs3": "^7.26.10",
-    "@docsearch/css": "^3.8.2",
-    "@docsearch/react": "^3.8.2",
+    "@docsearch/css": "^4.4.0",
+    "@docsearch/react": "^4.4.0",
     "@docusaurus/bundler": "^3.9.2",
     "@docusaurus/core": "^3.9.2",
     "@docusaurus/cssnano-preset": "^3.9.2",
@@ -44,15 +44,15 @@
     "@docusaurus/theme-mermaid": "^3.9.2",
     "@docusaurus/theme-search-algolia": "^3.9.2",
     "@mdx-js/react": "^3.0.1",
-    "algoliasearch": "^5.19.0",
-    "algoliasearch-helper": "^3.22.6",
+    "algoliasearch": "^5.46.2",
+    "algoliasearch-helper": "^3.27.0",
     "clsx": "^2.0.0",
     "csv-parser": "^3.0.0",
-    "dompurify": "^3.2.4",
-    "estree-util-value-to-estree": "^3.3.3",
+    "dompurify": "^3.3.1",
+    "estree-util-value-to-estree": "^3.5.0",
     "prism-react-renderer": "^2.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.9.2",
@@ -63,15 +63,15 @@
     "node": ">=18.0"
   },
   "resolutions": {
-    "cheerio": "1.0.0-rc.12",
+    "cheerio": "1.1.2",
     "image-size": "^2.0.2",
     "http-proxy-middleware": "^3.0.0",
     "@babel/runtime": "^7.26.10",
     "@babel/runtime-corejs3": "^7.26.10",
     "@babel/helpers": "^7.26.10",
     "prismjs": "^1.30.0",
-    "dompurify": "^3.2.4",
-    "katex": "^0.16.21"
+    "dompurify": "^3.3.1",
+    "katex": "^0.16.27"
   },
   "browserslist": {
     "production": [
