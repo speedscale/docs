@@ -51,6 +51,10 @@ secretAccessList:
   - "database-credentials"
 ```
 
+:::info
+Even if Speedscale has access to your secrets, they never leave your cluster. Secrets are only used locally within the cluster for testing operations.
+:::
+
 :::warning
 When `secretAccessList` is populated, Speedscale will only be able to access the secrets listed. Any transforms that reference secrets not in this list will fail.
 :::
