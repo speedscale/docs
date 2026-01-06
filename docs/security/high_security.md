@@ -27,6 +27,40 @@ Once the operator is restarted with these commands, the code necessary to run an
 
 Speedscale allows the use of customer-managed encryption keys (CMEK) on a case-by-case basis. This provides a security middle ground whereby customers have complete control but Speedscale continues to maintain the infrastructure. Please see the [guide](../guides/cmek.md) to get started.
 
+## Limiting Secret Access
+
+In highly secure environments, you may want to restrict which Kubernetes secrets Speedscale can access during testing. Speedscale uses secrets as variables for various transforms, such as JWT resigning where secrets are referenced using the syntax `${{secret:secret_name/key_inside_the_secret}}`.
+
+The `secretAccessList` parameter in the Speedscale Operator helm chart controls this access:
+
+- **Empty list (default)**: Grants access to all secrets in the cluster
+- **Populated list**: Limits access to only the specified secrets
+
+### Configuration
+
+Set the `secretAccessList` in your helm values file:
+
+```yaml
+# Allow access to all secrets (default)
+secretAccessList: []
+
+# Limit access to specific secrets only
+secretAccessList:
+  - "jwt-signing-secret"
+  - "api-keys"
+  - "database-credentials"
+```
+
+:::info
+Even if Speedscale has access to your secrets, they never leave your cluster. Secrets are only used locally within the cluster for testing operations.
+:::
+
+:::warning
+When `secretAccessList` is populated, Speedscale will only be able to access the secrets listed. Any transforms that reference secrets not in this list will fail.
+:::
+
+This feature provides granular control over secret access while maintaining Speedscale's ability to perform necessary testing operations.
+
 ## Fully Customer Hosted
 
 Some security environments are so restrictive that no external outbound communication is possible. Please [contact us](mailto:support@speedscale.com) if you require this deployment and support model.
