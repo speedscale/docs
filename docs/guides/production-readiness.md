@@ -19,6 +19,7 @@ By the end, you will have weighed security concerns, ensured minimal application
 - [ ] Roles
 - [ ] Remote Control
 - [ ] Data Loss Prevention (PII)
+- [ ] Secret Access Control
 
 ### SaaS Agreement
 
@@ -86,6 +87,17 @@ This is the ideal process for validating DLP settings:
    3. Repeat as needed for multiple fields
 
 Once this process is complete you have a DLP configuration that can be used in production.
+
+### Secret Access Control
+
+In highly secure environments, you may want to restrict which Kubernetes secrets Speedscale can access during testing. Speedscale uses secrets as variables for various transforms, such as JWT resigning. The `secretAccessList` parameter in the Speedscale Operator helm chart controls this access:
+
+- **Empty list (default)**: Grants access to all secrets in the cluster
+- **Populated list**: Limits access to only the specified secrets
+
+[https://github.com/speedscale/operator-helm/blob/main/values.yaml#L41](https://github.com/speedscale/operator-helm/blob/main/values.yaml#L41)
+
+For production environments requiring strict security controls, configure `secretAccessList` with only the secrets that Speedscale needs for testing operations. This provides granular control over secret access while maintaining Speedscale's ability to perform necessary testing operations.
 
 ### Traffic Filtering
 
