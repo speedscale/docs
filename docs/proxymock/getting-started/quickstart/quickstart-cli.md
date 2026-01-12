@@ -1,11 +1,12 @@
 ---
 sidebar_position: 3
 ---
+
 import ArchitectureOverview from './outerspace-go.png'
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import MacCLIInstall from '../../index/_cli_macos_minified.mdx'
-import LinuxCLIInstall from '../../index/_cli_linux_minified.mdx'
+import MacCLIInstall from '../../index/\_cli_macos_minified.mdx'
+import LinuxCLIInstall from '../../index/\_cli_linux_minified.mdx'
 import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@site/src/components/Cards';
 
 # Quickstart (CLI)
@@ -25,19 +26,20 @@ Select your environment below and all instructions will update accordingly. If y
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
     ![Codespaces](./codespaces.png)
-    
+
     You've selected **GitHub Codespaces**. All commands below are optimized for the Codespaces environment with special notes for port forwarding and authentication.
-    
+
     ### Setting up Codespaces
-    
+
     To get started with the outerspace-go Codespace:
-    
+
     1. Go to [github.com/speedscale/outerspace-go](https://github.com/speedscale/outerspace-go)
     2. Click the green **"Code"** button
     3. Select the **"Codespaces"** tab
-    4. Click **"Create codespace on main"** 
+    4. Click **"Create codespace on main"**
     5. Wait for the environment to initialize (usually 1-2 minutes)
     6. Once ready, you'll have a VS Code environment in your browser with Go and ProxyMock pre-installed
+
   </TabItem>
   <TabItem value="binary" label="🔧 Other">
     You've selected **Other**. See our detailed installation guide for your specific system.
@@ -92,6 +94,7 @@ For this example we'll be using a simple demo app that accepts an API request, c
     :::note Codespaces Environment
     ProxyMock is automatically available in the outerspace-go Codespace.
     :::
+
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     For other operating systems and more detailed instructions, see the [installation](../installation.md) instructions.
@@ -100,17 +103,23 @@ For this example we'll be using a simple demo app that accepts an API request, c
 
 Need another OS like Windows or are you having issues? See advanced [installation](../installation.md).
 
-## Step 2: Initialize proxymock {#initializing}
+## Step 2: Obtain an API Key {#api-key}
+
+If you are an enterprise customer you can find your api key on the [Profile Page](https://app.speedscale.com/profile).
+
+![API Key](../../../setup/install/api-key.png)
+
+Otherwise you can [sign up for an API Key](https://app.speedscale.com/proxymock/signup). Don't worry, we don't sell marketing data or give your email address to any bot nets.
+
+## Step 3: Initialize proxymock {#initializing}
 
 Run the following command to obtain an API key:
 
 ```shell
-proxymock init
+proxymock init --api-key <your key>
 ```
 
-Don't worry, we don't sell marketing data or give your email address to any bot nets.
-
-## Step 3: Install the demo app and start recording {#recording}
+## Step 4: Install the demo app and start recording {#recording}
 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
@@ -125,11 +134,12 @@ Don't worry, we don't sell marketing data or give your email address to any bot 
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
     If you're using the outerspace-go Codespace, the repository is already cloned. Navigate to it and start recording:
-    
+
     ```shell
     export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
     proxymock record -- go run main.go
     ```
+
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     ```shell
@@ -151,7 +161,7 @@ Press ctrl-c to interrupt
 
 ## Step 4: Run test transactions {#run-tests}
 
-Start a *new* terminal and run the following command.
+Start a _new_ terminal and run the following command.
 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
@@ -168,10 +178,11 @@ Start a *new* terminal and run the following command.
     ```shell jsx title="Run in new terminal window"
     ./tests/run_http_tests.sh --recording
     ```
-    
+
     :::note Codespaces Port Forwarding
     Make sure port 4343 is forwarded in your Codespace. You should see it automatically forwarded in the Ports tab.
     :::
+
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     ```shell jsx title="Run in new terminal window"
@@ -306,6 +317,7 @@ LATENCY / THROUGHPUT
 ```
 
 This demonstrates how you can test your microservice in isolation.
+
 - No need to write tests, you can replay the inbound traffic
 - No need to build a test environment, you can mock the dependencies
 - If you want to change the data, simply edit the markdown files
