@@ -96,4 +96,18 @@ speedscale-responder-abstract-yucca-ffc7a8ffec-f11av   1/1     Running          
 
 ## Data Security
 
-To learn more about Speedscale's overall approach to data security, please visit our security [hub](/security/security_.md).
+Speedscale's Data Loss Prevention (DLP) engine protects sensitive information by redacting personally identifiable information (PII) and other sensitive data before it leaves your network. The DLP engine runs within the forwarder component, inspecting all traffic data received from sidecars and automatically detecting and redacting sensitive patterns such as email addresses, credit card numbers, Social Security Numbers, and other PII.
+
+```mermaid
+graph LR
+    Sidecar[Sidecar<br/>speedscale-goproxy]
+    Forwarder[Forwarder<br/>Cache<br/>DLP Engine]
+    Kinesis[AWS Kinesis<br/>Firehose]
+    
+    Sidecar -->|traffic data| Forwarder
+    Forwarder -->|filtered data<br/>PII redacted| Kinesis
+```
+
+The DLP engine processes traffic data in the forwarder before forwarding it to AWS Kinesis Firehose. This ensures that sensitive information is never transmitted outside your environment, while preserving the overall structure and shape of the data for testing purposes. The forwarder's cache optimizes performance by reducing redundant processing of similar traffic patterns.
+
+To learn more about configuring DLP and Speedscale's overall approach to data security, please visit our [Data Loss Prevention Guide](../guides/dlp.md) and security [hub](/security/security_.md).
