@@ -29,14 +29,74 @@ This is why when observed in Speedscale, you see something like this that has a 
 
 ![Kafka Traffic](./kafka/traffic.png)
 
-This sort of outbound traffic would typically be part of a mock when running a replay. In the case of Kafka however, we can simplify the replay process by simply turning `Fetch` calls made by our app into `Produce` calls controlled by our homemade load driver.
+This sort of outbound traffic would typically be part of a mock when running a replay. In the case of Kafka however, we can simplify the replay process by simply turning `Fetch` calls made by our app into `Produce` calls.
 
-## Prerequistites
+## Prerequisites
 
 1. [speedctl](/reference/glossary.md#speedctl) is installed
 1. [Create a snapshot](/guides/creating-a-snapshot.md) containing the traffic you need.
 
-## Extract the data
+## Replay with proxymock (Recommended)
+
+The simplest way to replay Kafka traffic is using `proxymock`. When a snapshot contains Kafka traffic, `proxymock replay` will automatically produce messages to the specified Kafka broker.
+
+### Pull a Snapshot
+
+First, download the snapshot from Speedscale cloud:
+
+```bash
+proxymock cloud pull snapshot <snapshot-id>
+```
+
+This will download the snapshot traffic to individual local files.
+
+### Replay Traffic
+
+```bash
+proxymock replay --in <directory> --test-against <kafka-broker>
+```
+
+For example:
+
+```bash
+proxymock replay --in ./proxymock/snapshot-abc123 --test-against localhost:9092
+```
+
+### Output
+
+When replaying Kafka traffic, proxymock displays a Kafka-specific latency table:
+
+```
+LATENCY / THROUGHPUT
++-----------------+---------+-------+-------------+-------+-------+-------+-------+--------+-----------------+------------+
+|      TOPIC      |   API   | COUNT | AVG LATENCY |  P50  |  P90  |  P95  |  P99  | FAILED | RESULT MISMATCH | PER-SECOND |
++-----------------+---------+-------+-------------+-------+-------+-------+-------+--------+-----------------+------------+
+| dev-fulfillment | Produce |     3 |    94.33 ms | 12 ms | 12 ms | 12 ms | 12 ms |     0% |              0% |      10.28 |
++-----------------+---------+-------+-------------+-------+-------+-------+-------+--------+-----------------+------------+
+| TOTAL           |         |     3 |    94.33 ms | 12 ms | 12 ms | 12 ms | 12 ms |     0% |              0% |      10.28 |
++-----------------+---------+-------+-------------+-------+-------+-------+-------+--------+-----------------+------------+
+```
+
+The output shows:
+- **Topic**: The Kafka topic messages were produced to
+- **API**: The Kafka API operation (e.g., Produce)
+- **COUNT**: Number of messages sent
+- **Latency metrics**: Average, P50, P90, P95, and P99 latencies for producing messages
+- **FAILED**: Percentage of failed produce operations
+- **RESULT MISMATCH**: Percentage of unexpected results
+- **PER-SECOND**: Throughput in messages per second
+
+:::note
+The latency reported is the time to produce messages to the broker, not the full latency for downstream applications to consume them.
+:::
+
+---
+
+## Manual Replay (Alternative)
+
+If you need more control over the replay process, you can extract the data from Speedscale and create a custom producer script.
+
+### Extract the data
 
 Grab your snapshot id and run this command. This will extract the message data and timestamps from Kafka fetch commands, which are deeply nested in Speedscale's RRPair format.
 
@@ -58,7 +118,7 @@ This example uses a basic case where single topic and a single record per Fetch 
 
 :::
 
-## Create your producer
+### Create your producer
 
 Next up, using the language and LLM of your choice, create a small load producer to send these messages to your Kafka broker. The steps here are
 
