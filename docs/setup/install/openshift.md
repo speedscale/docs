@@ -11,8 +11,9 @@ This workflow is currently in preview status. Please provide feedback in our [sl
 :::
 
 ## Prerequisites
-2. An available OpenShift cluster with administrative access
-3. [OpenShift CLI](https://docs.openshift.com/container-platform/4.11/cli_reference/openshift_cli/getting-started-cli.html)
+
+1. An available OpenShift cluster with administrative access
+1. [OpenShift CLI](https://docs.openshift.com/container-platform/4.11/cli_reference/openshift_cli/getting-started-cli.html)
 
 [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift) is a container orchestration
 offering from Red Hat that aims to provide a cloud-like platform that can be deployed either in existing cloud
@@ -24,32 +25,26 @@ Enterprise Linux are already accustomed.
 
 ## Installing the Speedscale Operator
 
-OpenShift uses [security context constraints](https://docs.openshift.com/container-platform/4.11/authentication/managing-security-context-constraints.html)
-(SCCs) to place more restrictive rules on how pods can be run and what permissions they have as opposed to
-plain Kubernetes. Speedscale components specify the user ID in container security contexts, which by default
-is disallowed by OpenShift and will cause operator installations to fail. To prevent this, you must add a
-policy rule that allows the Speedscale service account to run as any user ID.
+The following settings are required to be set in the `values.yaml` when [installing the Speedscale operator](../../setup/install/kubernetes-operator.md) for OpenShift. OpenShift injects it's own user and group IDs, so we need to set these fields as null to allow it to override them at deploy time. You can read more about how [here](https://www.redhat.com/en/blog/a-guide-to-openshift-and-uids).
 
-```bash
-oc adm policy add-scc-to-group anyuid system:serviceaccounts:speedscale
+```yaml
+privilegedSidecars: true
+globalPodSecurityContext:
+  runAsUser: null
+  runAsGroup: null
+globalSecurityContext:
+  fsGroup: null
+  supplementalGroups: null
 ```
-
-:::note
-The value `anyuid` is a default SCC provided by OpenShift. Any SCC can be used so long as the RunAsUser
-strategy is set to `RunAsAny`. See `oc explain scc` for more detail.
-:::
-
-Once this step is complete, you can continue [installing the Speedscale operator](../../setup/install/kubernetes-operator.md).
 
 ## Capturing Traffic
 
-The Speedscale Sidecar is able to capture traffic from your workload by either running as a transparent proxy
-or as an explicit inline proxy. Both modes require additional configuration and setup in order to function
-correctly. See [proxy modes](/setup/sidecar/proxy-modes.md) for more detail. In either case, it will be
-required to use an additional SCC for your workload to allow the sidecar to run as the user ID specified in
-the resulting pod spec.
+Speedscale is able to capture traffic from your workload by either running as a sidecar injected onto your workload or as an eBPF agent. The sidecar mode requires additional configuration and setup in order to function
+correctly.
 
-### Transparent Proxy
+### Sidecar mode
+
+#### Security Context Constraints
 
 Running the sidecar as a transparent proxy is the default installation behavior and prevents needing to
 configure manual proxies by initializing pods via `iptables` modifications. In standard Kubernetes
@@ -57,45 +52,29 @@ environments, this only requires the sidecar init container to run as root. This
 OpenShift environments since even with the container running as root, SELinux policies will still prevent the
 necessary `iptables` modifications from taking place.
 
+OpenShift uses [security context constraints](https://docs.openshift.com/container-platform/4.11/authentication/managing-security-context-constraints.html)
+(SCCs) to place more restrictive rules on how pods can be run and what permissions they have as opposed to
+plain Kubernetes.
+
 In addition to needing an SCC that allows running as any specified user ID, the sidecar's init container also
-requires additional capabilities to function correctly, namely `NET_ADMIN` and `NET_RAW`. A custom SCC can be
-added that allows both running with a specific user ID and the additional capabilities.
+requires additional capabilities to function correctly, namely `NET_ADMIN` and `NET_RAW`. [A custom SCC](#securitycontextconstraint-example) can be
+added that allows both running with a specific user ID and the additional capabilities r the specific workload could be added to the built in `privileged` SCC provided by OpenShift.
 
 ```bash
-cat <<EOF | oc create -f -
-apiVersion: security.openshift.io/v1
-kind: SecurityContextConstraints
-metadata:
-  name: speedscale-sidecar
-allowHostDirVolumePlugin: false
-allowHostIPC: false
-allowHostNetwork: false
-allowHostPID: false
-allowHostPorts: false
-allowPrivilegeEscalation: true
-allowPrivilegedContainer: true
-allowedCapabilities:
-- NET_ADMIN
-- NET_RAW
-readOnlyRootFilesystem: false
-fsGroup:
-  type: RunAsAny
-runAsUser:
-  type: RunAsAny
-seLinuxContext:
-  type: RunAsAny
-supplementalGroups:
-  type: RunAsAny
-volumes:
-- "*"
-
-EOF
+oc create -f scc.yaml
 ```
 
 Add this SCC to your service account group policy:
 
 ```bash
 oc adm policy add-scc-to-group speedscale-sidecar system:serviceaccounts:<WORKLOAD_NAMESPACE>
+```
+
+Or
+
+```bash
+oc adm policy add-scc-to-group privileged system:serviceaccounts:<WORKLOAD_NAMESPACE>
+
 ```
 
 When this is done, allow the Speedscale operator to add the sidecar to your workload using the `inject`
@@ -123,60 +102,44 @@ You may also remove the SCC from the service account group at this time if you n
 oc adm policy remove-scc-from-group speedscale-sidecar system:serviceaccounts:<WORKLOAD_NAMESPACE>
 ```
 
-### Inline Proxy
+### eBPF (Beta)
 
-Running the sidecar as an inline proxy is simpler to deploy at the cost of potentially requiring additional
-configuration for your application to leverage it. Before configuring your workload, ensure that you have
-added an appropriate SCC allowing the sidecar to run as its specified user ID. Note that if your workload
-already supports this, this step is not required.
+In eBPF mode, a privileged daemonset is deployed to all nodes and uses the built in `privileged` SCC provided by OpenShift. In addition to the overrides specified earlier for the `values.yaml`, you'll need to specify a few more flags to enable capture through this mode:
 
-```bash
-oc adm policy add-scc-to-group anyuid system:serviceaccounts:<WORKLOAD_NAMESPACE>
-```
+```yaml
+# Required regardless of sidecar mode
+privilegedSidecars: true
+globalPodSecurityContext:
+  runAsUser: null
+  runAsGroup: null
+globalSecurityContext:
+  fsGroup: null
+  supplementalGroups: null
 
-Once this is complete, you can annotate your workload to inject the sidecar with the correct proxy operational
-mode. For example (additional detail can be found [here](/setup/sidecar/proxy-modes.md)):
-
-```bash
-cat <<EOF | oc patch -n my-namespace deploy my-app -p -
-annotations:
-  sidecar.speedscale.com/inject: "true"
-  sidecar.speedscale.com/proxy-type: "dual"
-  sidecar.speedscale.com/proxy-protocol: "tcp:http"
-  sidecar.speedscale.com/proxy-port: "8080"
-EOF
-```
-
-Do note that inbound traffic to your workload **must** be directed to the sidecar. If your workload exposes a
-`Service`, ensure that the `targetPort` for the traffic you wish to capture is modified to use the reverse
-proxy's port, which by default is `4143`. Use `kubectl edit svc <YOUR_SVC>` or `oc edit svc <YOUR_SVC>` to
-make this modification.
-
-To stop capturing traffic with the inline proxy, edit your workload to remove it:
-
-```bash
-cat <<EOF | oc patch -n my-namespace deploy my-app -p -
-annotations:
-  sidecar.speedscale.com/inject: "false"
-EOF
-```
-
-If your workload service account needed an additional SCC added to allow the sidecar to operate with the user
-ID it specifies, you can also remove that as well:
-
-```bash
-oc adm policy remove-scc-from-group anyuid system:serviceaccounts:<WORKLOAD_NAMESPACE>
+# eBPF related settings
+ebpf:
+  enabled: true
+  configuration:
+    capture:
+      # targets to be monitored and captured by the ebpf capture process
+      targets:
+        - name: example-service
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: mynamespace
+          podSelector:
+            matchLabels:
+              app: myapp
 ```
 
 ## Replaying Traffic
 
-As with capturing traffic, replaying a traffic snapshot will also require an SCC that allows Speedscale
-components to run with the user ID they specify. However, for some instances in which TLS outbound traffic is
-being mocked, the Speedscale sidecar is attached to the workload during replay. For this reason, consider
-creating a custom SCC referenced for the transparent proxy configuration mentioned above:
+As with capturing traffic in sidecar mode, replaying a traffic snapshot will also require an SCC that allows Speedscale
+components to run with privileged access, regardless of the capture mode. For replays, you must [setup the SCC](#security-context-constraints) in order for all Speedscale components to be able to run.
 
-```bash
-cat <<EOF | oc create -f -
+## SecurityContextConstraint Example
+
+```yaml
 apiVersion: security.openshift.io/v1
 kind: SecurityContextConstraints
 metadata:
@@ -189,8 +152,8 @@ allowHostPorts: false
 allowPrivilegeEscalation: true
 allowPrivilegedContainer: true
 allowedCapabilities:
-- NET_ADMIN
-- NET_RAW
+  - NET_ADMIN
+  - NET_RAW
 readOnlyRootFilesystem: false
 fsGroup:
   type: RunAsAny
@@ -201,14 +164,7 @@ seLinuxContext:
 supplementalGroups:
   type: RunAsAny
 volumes:
-- "*"
-EOF
-```
-
-Then add the SCC to your service account group policy:
-
-```bash
-oc adm policy add-scc-to-group speedscale-sidecar system:serviceaccounts:<WORKLOAD_NAMESPACE>
+  - "*"
 ```
 
 ## Getting Help
