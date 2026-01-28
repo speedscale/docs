@@ -28,6 +28,7 @@ Enterprise Linux are already accustomed.
 The following settings are required to be set in the `values.yaml` when [installing the Speedscale operator](../../setup/install/kubernetes-operator.md) for OpenShift. OpenShift injects it's own user and group IDs, so we need to set these fields as null to allow it to override them at deploy time. You can read more about how [here](https://www.redhat.com/en/blog/a-guide-to-openshift-and-uids).
 
 ```yaml
+createJKS: false
 privilegedSidecars: true
 globalPodSecurityContext:
   runAsUser: null
@@ -108,6 +109,7 @@ In eBPF mode, a privileged daemonset is deployed to all nodes and uses the built
 
 ```yaml
 # Required regardless of sidecar mode
+createJKS: false
 privilegedSidecars: true
 globalPodSecurityContext:
   runAsUser: null
