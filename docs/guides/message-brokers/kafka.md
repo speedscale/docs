@@ -36,9 +36,19 @@ This sort of outbound traffic would typically be part of a mock when running a r
 1. [speedctl](/reference/glossary.md#speedctl) is installed
 1. [Create a snapshot](/guides/creating-a-snapshot.md) containing the traffic you need.
 
-## Replay with proxymock (Recommended)
+## Replay from UI (Recommended)
 
-The simplest way to replay Kafka traffic is using `proxymock`. When a snapshot contains Kafka traffic, `proxymock replay` will automatically produce messages to the specified Kafka broker.
+The simplest way to replay Kafka traffic is using the replay wizard in the Speedscale UI. The wizard provides a guided experience for configuring and running replays directly against your Kafka brokers in-cluster. Speedscale automatically handles Kafka message production during replay, eliminating the need for manual setup or scripting.
+
+For detailed instructions, see the [replay wizard guide](/guides/replay/README.md).
+
+:::note
+The latency reported on the report in the UI is the time to produce messages to the broker, not the full latency for downstream applications to consume them.
+:::
+
+## Replay with proxymock
+
+The [**proxymock**](/proxymock/) CLI tool can be used to replay recorded Kafka traffic directly into a Kafka broker using the `proxymock replay` command.
 
 ### Pull a Snapshot
 
