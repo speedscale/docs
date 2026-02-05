@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 title: Introduction to Data Loss Prevention (DLP)
 description: Learn about Speedscale's DLP feature for automatically discovering, masking, and managing PII and sensitive data in API traffic.
 ---
