@@ -71,6 +71,26 @@ const config = {
           },
           { from: "/cli/speedscale/", to: "/guides/cli/" },
           {
+            from: "/dlp/api-reference/",
+            to: "/dlp/cli-reference/",
+          },
+          {
+            from: "/dlp/security-compliance/",
+            to: "/security/data_protection/",
+          },
+          {
+            from: "/dlp/examples/",
+            to: "/dlp/",
+          },
+          {
+            from: "/dlp/glossary/",
+            to: "/dlp/",
+          },
+          {
+            from: "/dlp/appendix/",
+            to: "/dlp/",
+          },
+          {
             from: "/cli/speedscale/guides/docker-observability/",
             to: "/setup/install/docker/",
           },
