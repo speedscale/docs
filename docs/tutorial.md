@@ -362,4 +362,4 @@ Now we see the authorization header is redacted and never makes it to Speedscale
 
 ![Redacted](./guides/end-to-end/redacted.png)
 
-For more complex DLP configuration you can use [this guide](./guides/dlp.md).
+For more complex DLP configuration you can use [this guide](/dlp/).

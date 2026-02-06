@@ -91,6 +91,10 @@ const config = {
             to: "/dlp/",
           },
           {
+            from: "/guides/dlp/",
+            to: "/dlp/",
+          },
+          {
             from: "/cli/speedscale/guides/docker-observability/",
             to: "/setup/install/docker/",
           },
@@ -134,7 +138,7 @@ const config = {
             from: "/configuration/configuration/rules/",
             to: "/reference/configuration/goals/",
           },
-          { from: "/configuration/dlp/", to: "/guides/dlp/" },
+          { from: "/configuration/dlp/", to: "/dlp/" },
           { from: "/configuration/filters/", to: "/guides/creating-filters/" },
           {
             from: "/configuration/filters/from-traffic-viewer/",
@@ -344,7 +348,7 @@ const config = {
             from: "/reference/configuration/tokenizers-1/httpauthorization/",
             to: "/transform/extractors/http_req_header/",
           },
-          { from: "/reference/dlp/", to: "/guides/dlp/" },
+          { from: "/reference/dlp/", to: "/dlp/" },
           {
             from: "/reference/install/cli-speedctl/",
             to: "/setup/upgrade/operator/",
