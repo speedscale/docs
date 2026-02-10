@@ -1,4 +1,5 @@
 ---
+slug: /guides/dlp-redacting-pii
 sidebar_position: 100
 title: Redacting PII (DLP)
 ---
@@ -19,9 +20,9 @@ on the [community Slack](https://slack.speedscale.com) to discuss your specific 
 
 To follow the guide below, you will need:
 
-1. [speedctl](/setup/install/cli)
-2. An [installed Speedscale Operator](../quick-start.md).
-3. An [active sidecar capturing traffic](/setup/sidecar/install.md)
+1. [speedctl](/getting-started/installation/install/cli)
+2. An [installed Speedscale Operator](../getting-started/quick-start.md).
+3. An [active sidecar capturing traffic](/getting-started/installation/sidecar/install.md)
 
 
 ## How It Works
@@ -282,7 +283,7 @@ shown like the following:
 ![Redacted](./dlp/redacted.png)
 
 Note, that it is still possible to manipulate redacted data during a replay using traffic
-[transforms](/transform/overview). However, we may not want to ever capture or record
+[transforms](/guides/transformation/overview). However, we may not want to ever capture or record
 this data, or even let it leave your cluster, which is what DLP provides.
 
 

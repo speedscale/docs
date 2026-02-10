@@ -12,13 +12,13 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology | Type     | Support | Notes                          |
 | ---------- | -------- | ------- | ------------------------------ |
-| .NET       | Language | Full    | See [TLS](/setup/sidecar/tls/) |
-| C++        | Language | Full    | See [TLS](/setup/sidecar/tls/) |
-| Go         | Language | Full    | See [TLS](/setup/sidecar/tls/) |
-| Java       | Language | Full    | See [TLS](/setup/sidecar/tls/) |
-| Node.js    | Language | Full    | See [TLS](/setup/sidecar/tls/) |
-| Python     | Language | Full    | See [TLS](/setup/sidecar/tls/) |
-| Ruby       | Language | Full    | See [TLS](/setup/sidecar/tls/) |
+| .NET       | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| C++        | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| Go         | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| Java       | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| Node.js    | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| Python     | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| Ruby       | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
 
 ### Supported Protocols
 
@@ -27,15 +27,15 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
-| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql.md). See [details](/observe/bodies.md#graphql) |
-| gRPC              | Protocol | Full         | See [details](/observe/bodies.md#grpc)                                             |
+| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql.md). See [details](/guides/capture/bodies#graphql) |
+| gRPC              | Protocol | Full         | See [details](/guides/capture/bodies#grpc)                                             |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |
-| HTTP/S TLS        | Protocol | Full         | See [TLS](/setup/sidecar/tls/)                                                     |
+| HTTP/S TLS        | Protocol | Full         | See [TLS](/getting-started/installation/sidecar/tls/)                                                     |
 | IMAP              | Protocol | Capture Only |                                                                                    |
 | JSON              | Protocol | Full         |                                                                                    |
 | Kafka             | Protocol | Full         | See [details](../guides/message-brokers/kafka.md)                     |
-| Mutual TLS (mTLS) | Protocol | Partial      | See [TLS](/setup/sidecar/tls/)                                                     |
+| Mutual TLS (mTLS) | Protocol | Partial      | See [TLS](/getting-started/installation/sidecar/tls/)                                                     |
 | Protobuf          | Protocol | Full         |                                                                                    |
 | RabbitMQ          | Protocol | Full         | See [details](../guides/message-brokers/rabbitmq.md)                              |
 | SOAP              | Protocol | Full         |                                                                                    |
@@ -46,7 +46,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology            | Type | Support | Notes                                                                                            |
 | --------------------- | ---- | ------- | ------------------------------------------------------------------------------------------------ |
-| AWS Signature (SigV4) | Auth | Full    | Automatic discovery and replacement. See [aws_auth transform](/transform/transforms/aws_auth.md) |
+| AWS Signature (SigV4) | Auth | Full    | Automatic discovery and replacement. See [aws_auth transform](/guides/transformation/transforms/aws_auth) |
 | Basic Auth            | Auth | Full    |                                                                                                  |
 | Bearer JWT            | Auth | Full    | Automatic discovery and replacement. See [JWT guide](../guides/replay/resign-jwt.md)             |
 | Cookies               | Auth | Full    |                                                                                                  |
@@ -66,8 +66,8 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Microsoft Outlook 365 | API  | Full         |                                                  |
 | MongoDB               | DBMS | Capture Only |                                                  |
 | MySQL                 | DBMS | Full         |                                                  |
-| Postgres              | DBMS | Full         | See [details](/observe/bodies.md#postgres)       |
-| Redis                 | DBMS | Capture Only | See [details](/observe/bodies.md#redis)          |
+| Postgres              | DBMS | Full         | See [details](/guides/capture/bodies#postgres)       |
+| Redis                 | DBMS | Capture Only | See [details](/guides/capture/bodies#redis)          |
 
 ### Supported APIs
 
@@ -101,30 +101,30 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | Environment/Distribution                       | Notes                                                                                   |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
 | Argo Rollouts                                  | See [guide](../guides/argo.md)                                                          |
-| AWS Elastic Container Service (ECS) or Fargate | See [guide](../setup/install/ecs.md)                                                    |
+| AWS Elastic Container Service (ECS) or Fargate | See [guide](../getting-started/installation/install/ecs.md)                                                    |
 | AWS Elastic Kubernetes Service (EKS)           |                                                                                         |
-| AWS Elastic Beanstalk                          | See [guide](../setup/install/beanstalk.md)                                              |
-| AWS Elastic Compute Cloud (EC2)                | See [guide](../setup/install/vm.md)                                                     |
+| AWS Elastic Beanstalk                          | See [guide](../getting-started/installation/install/beanstalk.md)                                              |
+| AWS Elastic Compute Cloud (EC2)                | See [guide](../getting-started/installation/install/vm.md)                                                     |
 | Canonical Microk8s                             | Must enable DNS                                                                         |
 | Civo Kubernetes                                |                                                                                         |
 | CNCF Kind                                      |                                                                                         |
 | CNCF Minikube                                  | Must add `--cni=true` flag                                                              |
 | DigitalOcean Kubernetes                        |                                                                                         |
-| Docker Desktop                                 | See [guide](../setup/install/docker.md)                                                 |
+| Docker Desktop                                 | See [guide](../getting-started/installation/install/docker.md)                                                 |
 | DigitalOcean Managed Kubernetes                |                                                                                         |
-| GCP GKE Autopilot                              | Requires [Dual Proxy](/setup/sidecar/proxy-modes.md)                                    |
+| GCP GKE Autopilot                              | Requires [Dual Proxy](/getting-started/installation/sidecar/proxy-modes)                                    |
 | GCP GKE CloudRun                               |                                                                                         |
 | GCP GKE Standard                               |                                                                                         |
-| Istio                                          | See [guide](../setup/install/istio.md)                                                  |
+| Istio                                          | See [guide](../getting-started/installation/install/istio.md)                                                  |
 | MacOS Desktop                                  | See [CLI](../guides/cli.md)                                                             |
 | Microsoft Azure Kubernetes Service (AKS)       |                                                                                         |
-| Microsoft Azure App Services                   | See [guide](../setup/install/azure.md)                                                  |
-| Postman Collections (v2+)                      | See [guide](../integration/import/import-postman.md)                                    |
+| Microsoft Azure App Services                   | See [guide](../getting-started/installation/install/azure.md)                                                  |
+| Postman Collections (v2+)                      | See [guide](/guides/integrations/import/import-postman)                                    |
 | Rancher Desktop                                |                                                                                         |
 | Rancher K3S                                    |                                                                                         |
 | Rancher RKE2                                   | Rancher Marketplace [Helm Chart](https://rancher.com/docs/rancher/v2.6/en/helm-charts/) |
-| Redhat OpenShift                               | See [guide](../setup/install/openshift.md)                                              |
-| Virtual Machines (VMWare and others)           | See [guide](../setup/install/vm.md)                                                     |
+| Redhat OpenShift                               | See [guide](../getting-started/installation/install/openshift.md)                                              |
+| Virtual Machines (VMWare and others)           | See [guide](../getting-started/installation/install/vm.md)                                                     |
 | Windows Desktop                                | See [CLI](../guides/cli.md)                                                             |
 
 Speedscale control plane, sidecar and replay system are compatible with all currently supported versions of [Kubernetes](https://kubernetes.io/releases/) and [Istio](https://istio.io/latest/docs/releases/supported-releases/).

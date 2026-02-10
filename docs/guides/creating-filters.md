@@ -35,7 +35,7 @@ Here's how you create and apply them:
 ## Create Filters with the CLI
 
 ### Prerequisites
-1. [Speedctl is installed](/setup/install/cli.md)
+1. [Speedctl is installed](/getting-started/installation/install/cli.md)
 
 ### Pull Filter Using the CLI
 You can pull your filter using `speedctl`.

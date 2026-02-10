@@ -56,7 +56,7 @@ service (inbound) and from your service to third parties like other APIs or
 databases (outbound). Go proxy is, as its name suggests, a [proxy](#proxy) which
 captures traffic routed through it.
 
-See [proxy modes](/setup/sidecar/proxy-modes.md) for more information.
+See [proxy modes](/getting-started/installation/sidecar/proxy-modes) for more information.
 
 ### Inspector
 
@@ -114,7 +114,7 @@ In Speedscale mock servers are provided by either
 [proxymock](/proxymock/) on your local machine or by the
 [responder](#responder) in a cluster.
 
-See [Mocking and Service Virtualization](/mocks/) for more information.
+See [Mocking and Service Virtualization](/guides/mocking/mocks) for more information.
 
 ### Operator
 
@@ -123,7 +123,7 @@ that runs in your cluster to perform Speedscale actions on your behalf.
 Actions like adding a sidecar proxy to your workload, or starting a
 [replay](#replay) in your cluster.
 
-See [Kubernetes Operator](../setup/install/kubernetes-operator.md) for more information.
+See [Kubernetes Operator](/getting-started/installation/install/kubernetes-operator) for more information.
 
 ### Proxy
 
@@ -214,7 +214,7 @@ See [creating a snapshot](/guides/creating-a-snapshot.md) for more information.
 The Speedscale CLI which can be used to interact with Speedscale resources in
 all the same ways the [Speedscale UI](https://app.speedscale.com) does.
 
-See [cli setup](../setup/install/cli.md) for more information.
+See [cli setup](/getting-started/installation/install/cli) for more information.
 
 ### SUT
 

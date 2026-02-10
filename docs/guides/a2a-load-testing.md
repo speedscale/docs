@@ -35,7 +35,7 @@ Since A2A uses JSON-RPC 2.0 over HTTP(S), it can be load tested like any other H
 Speedscale captures real A2A traffic between agents and replays it at scale:
 
 1. **Capture**: Deploy the Speedscale sidecar to capture live A2A traffic between your agents, including JSON-RPC calls, SSE streams, and async notifications
-2. **Transform**: Use [extractors and transformers](/transform/extractors/) to handle dynamic values in Agent Cards, session tokens, or agent-specific identifiers
+2. **Transform**: Use [extractors and transformers](/guides/transformation/extractors/) to handle dynamic values in Agent Cards, session tokens, or agent-specific identifiers
 3. **Replay**: Configure a [test config](/reference/glossary.md#test-config) with your desired load pattern (see [Load Testing guide](/guides/replay/load-test.md))
 4. **Analyze**: Review response accuracy, latency, and throughput to identify bottlenecks
 
@@ -109,7 +109,7 @@ A2A communications often involve:
 - Secure token exchange between agents
 - Rate limiting and abuse prevention
 
-**Testing Strategy**: Use Speedscale's [transform capabilities](/transform/extractors/) to handle authentication tokens during replay. Test rate limiting behavior under high load to ensure legitimate agent traffic isn't blocked.
+**Testing Strategy**: Use Speedscale's [transform capabilities](/guides/transformation/extractors/) to handle authentication tokens during replay. Test rate limiting behavior under high load to ensure legitimate agent traffic isn't blocked.
 
 ## Best Practices
 
@@ -122,5 +122,5 @@ A2A communications often involve:
 
 - [Load Testing Guide](/guides/replay/load-test.md) - Configure and run load tests
 - [Traffic Replay Concepts](/concepts/replay.md) - Understand how replay works
-- [Extractors and Transformers](/transform/extractors/) - Handle dynamic values in A2A traffic
+- [Extractors and Transformers](/guides/transformation/extractors/) - Handle dynamic values in A2A traffic
 - [A2A Protocol Specification](https://github.com/a2aproject/A2A) - Official protocol documentation

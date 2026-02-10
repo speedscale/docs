@@ -55,10 +55,10 @@ The screenshots in this section demonstrate:
 
 ## Related Documentation
 
-- [Capture Traffic](/observe/traffic)
-- [Transform Data](/transform/overview)
-- [Service Mocking](/mocks/)
+- [Capture Traffic](/guides/capture/traffic)
+- [Transform Data](/guides/transformation/overview)
+- [Service Mocking](/guides/mocking/mocks)
 - [Test Configuration](/reference/configuration/)
 - [Reports & Analysis](/guides/reports/)
 
-For detailed implementation guides, see the specific sections for [Setup](/setup/install/), [Transform](/transform/transforms/), and [Replay](/guides/replay/).
+For detailed implementation guides, see the specific sections for [Setup](/getting-started/installation/install/), [Transform](/guides/transformation/transforms/), and [Replay](/guides/replay/).

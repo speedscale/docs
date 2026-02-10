@@ -63,7 +63,7 @@ const config = {
           { from: "/analyze/traffic-viewer/", to: "/guides/tls/" },
           {
             from: "/analyze/traffic-viewer/transform-snapshot/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/analyze/traffic-viewer/view-snapshot/",
@@ -72,7 +72,7 @@ const config = {
           { from: "/cli/speedscale/", to: "/guides/cli/" },
           {
             from: "/dlp/api-reference/",
-            to: "/dlp/cli-reference/",
+            to: "/guides/dlp/cli-reference",
           },
           {
             from: "/dlp/security-compliance/",
@@ -80,23 +80,23 @@ const config = {
           },
           {
             from: "/dlp/examples/",
-            to: "/dlp/",
+            to: "/guides/dlp",
           },
           {
             from: "/dlp/glossary/",
-            to: "/dlp/",
+            to: "/guides/dlp",
           },
           {
             from: "/dlp/appendix/",
-            to: "/dlp/",
+            to: "/guides/dlp",
           },
           {
             from: "/cli/speedscale/guides/docker-observability/",
-            to: "/setup/install/docker/",
+            to: "/getting-started/installation/install/docker",
           },
           {
             from: "/cli/speedscale/guides/docker-observability/demo-app/",
-            to: "/setup/install/docker/",
+            to: "/getting-started/installation/install/docker",
           },
           {
             from: "/cli/speedscale/guides/local-observability/",
@@ -150,83 +150,83 @@ const config = {
           },
           {
             from: "/configuration/tokenizers-1/http-cookie-tokenizer",
-            to: "/transform/extractors/http_req_cookie/",
+            to: "/guides/transformation/extractors/http_req_cookie/",
           },
           {
             from: "/configuration/tokenizers-1/http-match-request-body/",
-            to: "/transform/extractors/req_body/",
+            to: "/guides/transformation/extractors/req_body/",
           },
           {
             from: "/configuration/tokenizers-1/http-match-request-xpath",
-            to: "/transform/transforms/xml_path/",
+            to: "/guides/transformation/transforms/xml_path/",
           },
           {
             from: "/configuration/tokenizers-1/http-regex/",
-            to: "/transform/transforms/regex",
+            to: "/guides/transformation/transforms/regex",
           },
           {
             from: "/configuration/tokenizers-1/httpauthorization/",
-            to: "/transform/extractors/http_req_header/",
+            to: "/guides/transformation/extractors/http_req_header/",
           },
           {
             from: "/configuration/transform-traffic/common-patterns/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/configuration/transform-traffic/common-patterns/timestamp-shift/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/configuration/transform-traffic/extractors/",
-            to: "/transform/extractors/",
+            to: "/guides/transformation/extractors/",
           },
           {
             from: "/configuration/transform-traffic/extractors/general-purpose/",
-            to: "/transform/extractors/",
+            to: "/guides/transformation/extractors/",
           },
           {
             from: "/configuration/transform-traffic/extractors/http/",
-            to: "/transform/extractors/http_url/",
+            to: "/guides/transformation/extractors/http_url/",
           },
           {
             from: "/configuration/transform-traffic/extractors/http/http_req_header/",
-            to: "/transform/extractors/http_req_header/",
+            to: "/guides/transformation/extractors/http_req_header/",
           },
           {
             from: "/configuration/transform-traffic/extractors/http/http_res_body/",
-            to: "/transform/extractors/res_body/",
+            to: "/guides/transformation/extractors/res_body/",
           },
           {
             from: "/configuration/transform-traffic/local-testing-tokenconfigs/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/configuration/transform-traffic/transforms/",
-            to: "/transform/transforms/",
+            to: "/guides/transformation/transforms/",
           },
           {
             from: "/configuration/transform-traffic/transforms/common-patterns/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/configuration/transform-traffic/transforms/constant/",
-            to: "/transform/transforms/constant/",
+            to: "/guides/transformation/transforms/constant/",
           },
           {
             from: "/configuration/transform-traffic/transforms/http_auth/",
-            to: "/transform/transforms/",
+            to: "/guides/transformation/transforms/",
           },
           {
             from: "/configuration/transform-traffic/transforms/json_path/",
-            to: "/transform/transforms/json_path/",
+            to: "/guides/transformation/transforms/json_path/",
           },
           {
             from: "/configuration/transform-traffic/transforms/variable_load/",
-            to: "/transform/transforms/variable_load/",
+            to: "/guides/transformation/transforms/variable_load/",
           },
           {
             from: "/configuration/transform-traffic/transforms/xml_path/",
-            to: "/transform/transforms/xml_path/",
+            to: "/guides/transformation/transforms/xml_path/",
           },
           { from: "/guides/from-file/", to: "/guides/replay/mocks/from-file/" },
           {
@@ -235,11 +235,11 @@ const config = {
           },
           {
             from: "/guides/replace_txn_ids/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/guides/replay/mocks/replace-txn-ids/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/guides/replay/optional-replay-annotations/",
@@ -251,48 +251,48 @@ const config = {
           },
           {
             from: "/guides/import-charles/",
-            to: "/integration/import/import-charles/",
+            to: "/guides/integrations/import/import-charles/",
           },
-          { from: "/guides/smart_replace", to: "/transform/smart-replace/" },
-          { from: "/guides/triggers/", to: "/mocks/triggers/" },
+          { from: "/guides/smart_replace", to: "/guides/transformation/smart-replace/" },
+          { from: "/guides/triggers/", to: "/guides/mocking/triggers/" },
           { from: "/guides/kafka/", to: "/guides/message-brokers/kafka/" },
           { from: "/guides/rabbitmq/", to: "/guides/message-brokers/rabbitmq/" },
           {
             from: "/reference/integrations/goreplay/",
-            to: "/integration/import/goreplay/",
+            to: "/guides/integrations/import/goreplay/",
           },
           {
             from: "/reference/integrations/http_wire/",
-            to: "/integration/import/http_wire/",
+            to: "/guides/integrations/import/http_wire/",
           },
           {
             from: "/guides/import-postman/",
-            to: "/integration/import/import-postman/",
+            to: "/guides/integrations/import/import-postman/",
           },
           {
             from: "/guides/import-har/",
-            to: "/integration/import/import-har/",
+            to: "/guides/integrations/import/import-har/",
           },
           {
             from: "/reference/integrations/wiremock/",
-            to: "/integration/import/wiremock/",
+            to: "/guides/integrations/import/wiremock/",
           },
           {
             from: "/reference/integrations/postman/",
-            to: "/integration/export/postman/",
+            to: "/guides/integrations/export/postman/",
           },
           {
             from: "/reference/integrations/jmeter/",
-            to: "/integration/import/jmeter/",
+            to: "/guides/integrations/import/jmeter/",
           },
           {
             from: "/guides/review-services/",
             to: "/guides/creating-a-snapshot/",
           },
-          { from: "/install/cli-speedctl/", to: "/setup/install/cli/" },
+          { from: "/install/cli-speedctl/", to: "/getting-started/installation/install/cli/" },
           {
             from: "/install/kubernetes-operator/",
-            to: "/setup/install/kubernetes-operator/",
+            to: "/getting-started/installation/install/kubernetes-operator/",
           },
           {
             from: "/install/kubernetes-sidecar/sidecar-annotations/",
@@ -300,29 +300,29 @@ const config = {
           },
           {
             from: "/install/kubernetes-sidecar/sidecar-dual-proxy/",
-            to: "/setup/sidecar/proxy-modes/",
+            to: "/getting-started/installation/sidecar/proxy-modes/",
           },
           {
             from: "/install/kubernetes-sidecar/sidecar-http-proxy/",
-            to: "/setup/sidecar/proxy-modes/",
+            to: "/getting-started/installation/sidecar/proxy-modes/",
           },
           {
             from: "/install/kubernetes-sidecar/sidecar-perf/",
-            to: "/setup/sidecar/performance/",
+            to: "/getting-started/installation/sidecar/performance/",
           },
           {
             from: "/install/kubernetes-sidecar/sidecar-trust/",
-            to: "/setup/sidecar/tls/",
+            to: "/getting-started/installation/sidecar/tls/",
           },
           {
             from: "/install/kubernetes-sidecar/using-with-istio/",
-            to: "/setup/install/istio/",
+            to: "/getting-started/installation/install/istio/",
           },
           { from: "/install/networking/", to: "/reference/networking/" },
           { from: "/install/overview/", to: "/quick-start" },
           {
             from: "/manual-sequences/manually-installing-sidecar/",
-            to: "/setup/sidecar/install/",
+            to: "/getting-started/installation/sidecar/install/",
           },
           {
             from: "/manual-sequences/replay-with-speedctl/",
@@ -338,188 +338,188 @@ const config = {
           },
           {
             from: "/manual-sequences/reverse-proxy-sidecar/",
-            to: "/setup/sidecar/proxy-modes/",
+            to: "/getting-started/installation/sidecar/proxy-modes/",
           },
           {
             from: "/reference/configuration/tokenizers-1/httpauthorization/",
-            to: "/transform/extractors/http_req_header/",
+            to: "/guides/transformation/extractors/http_req_header/",
           },
           { from: "/reference/dlp/", to: "/guides/dlp/" },
           {
             from: "/reference/install/cli-speedctl/",
-            to: "/setup/upgrade/operator/",
+            to: "/getting-started/upgrade/operator/",
           },
-          { from: "/guides/cicd/", to: "/integration/cicd/" },
+          { from: "/guides/cicd/", to: "/guides/integrations/cicd/" },
           {
             from: "/reference/transform-traffic/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/reference/transform-traffic/transforms/csv",
-            to: "/transform/transforms/csv/",
+            to: "/guides/transformation/transforms/csv/",
           },
-          { from: "/reference/integrations/gcp/", to: "/integration/gcp/" },
-          { from: "/reference/integrations/aws/", to: "/integration/aws/" },
+          { from: "/reference/integrations/gcp/", to: "/guides/integrations/gcp/" },
+          { from: "/reference/integrations/aws/", to: "/guides/integrations/aws/" },
           {
             from: "/reference/integrations/rancher-labs/",
-            to: "/integration/rancher-labs/",
+            to: "/guides/integrations/rancher-labs/",
           },
           {
             from: "/reference/integrations/datadog/",
-            to: "/integration/export/datadog/",
+            to: "/guides/integrations/export/datadog/",
           },
           {
             from: "/reference/integrations/grafana/",
-            to: "/integration/export/grafana/",
+            to: "/guides/integrations/export/grafana/",
           },
           {
             from: "/reference/integrations/new-relic/",
-            to: "/integration/export/new-relic/",
+            to: "/guides/integrations/export/new-relic/",
           },
           {
             from: "/reference/integration-with-cicd/azure-devops/",
-            to: "/integration/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/reference/integration-with-cicd/circleci/",
-            to: "/integration/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/reference/integration-with-cicd/github/",
-            to: "/integration/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/reference/integration-with-cicd/gitlab-cicd/",
-            to: "/integration/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/reference/integration-with-cicd/jenkins/",
-            to: "/integration/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/reference/manual-sequences/reverse-proxy-sidecar/",
-            to: "/setup/sidecar/proxy-modes/",
+            to: "/getting-started/installation/sidecar/proxy-modes/",
           },
           {
             from: "/reference/tokenizers-1/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/reference/tokenizers-1/http-match-request-body/",
-            to: "/transform/extractors/req_body/",
+            to: "/guides/transformation/extractors/req_body/",
           },
           {
             from: "/reference/tokenizers-1/http-match-request-xpath/",
-            to: "/transform/transforms/xml_path/",
+            to: "/guides/transformation/transforms/xml_path/",
           },
           {
             from: "/reference/tokenizers-1/http-match-soap-operation/",
-            to: "/transform/transforms/xml_path/",
+            to: "/guides/transformation/transforms/xml_path/",
           },
           {
             from: "/reference/tokenizers-1/http-query-param/",
-            to: "/transform/extractors/http_queryparam/",
+            to: "/guides/transformation/extractors/http_queryparam/",
           },
           {
             from: "/reference/tokenizers-1/http-regex/",
-            to: "/transform/transforms/regex",
+            to: "/guides/transformation/transforms/regex",
           },
           {
             from: "/reference/tokenizers-1/httpauthorization/",
-            to: "/transform/extractors/http_req_header/",
+            to: "/guides/transformation/extractors/http_req_header/",
           },
           {
             from: "/reference/tokenizers-1/tokenizers/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/reference/transform-traffic/transforms/date/",
-            to: "/transform/transforms/date/",
+            to: "/guides/transformation/transforms/date/",
           },
           {
             from: "/reference/transform-traffic/extractors/general-purpose/variable/",
-            to: "/transform/extractors/variable/",
+            to: "/guides/transformation/extractors/variable/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_req_body/",
-            to: "/transform/extractors/req_body/",
+            to: "/guides/transformation/extractors/req_body/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_queryparam/",
-            to: "/transform/extractors/http_queryparam/",
+            to: "/guides/transformation/extractors/http_queryparam/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_req_body/",
-            to: "/transform/extractors/req_body/",
+            to: "/guides/transformation/extractors/req_body/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_req_header/",
-            to: "/transform/extractors/http_req_header/",
+            to: "/guides/transformation/extractors/http_req_header/",
           },
           {
             from: "/reference/transform-traffic/extractors/http/http_res_body/",
-            to: "/transform/extractors/res_body/",
+            to: "/guides/transformation/extractors/res_body/",
           },
           {
             from: "/reference/transform-traffic/transforms/tag_session",
-            to: "/transform/transforms/tag_session/",
+            to: "/guides/transformation/transforms/tag_session/",
           },
           {
             from: "/reference/transform-traffic/transforms/store_sig/",
-            to: "/transform/transforms/store_sig/",
+            to: "/guides/transformation/transforms/store_sig/",
           },
           {
             from: "/reference/transform-traffic/transforms/grpc_field/",
-            to: "/transform/extractors/json_path/",
+            to: "/guides/transformation/extractors/json_path/",
           },
 
           {
             from: "/reference/transform-traffic/transforms/json_selector/",
-            to: "/transform/transforms/json_selector/",
+            to: "/guides/transformation/transforms/json_selector/",
           },
           {
             from: "/reference/transform-traffic/transforms/jwt_resign/",
-            to: "/transform/transforms/jwt_resign/",
+            to: "/guides/transformation/transforms/jwt_resign/",
           },
           {
             from: "/reference/transform-traffic/transforms/http_auth/",
-            to: "/transform/extractors/http_req_header/",
+            to: "/guides/transformation/extractors/http_req_header/",
           },
           {
             from: "/reference/transform-traffic/transforms/one_of/",
-            to: "/transform/transforms/one_of/",
+            to: "/guides/transformation/transforms/one_of/",
           },
           {
             from: "/reference/transform-traffic/transforms/regex/",
-            to: "/transform/transforms/regex",
+            to: "/guides/transformation/transforms/regex",
           },
           {
             from: "/reference/transform-traffic/transforms/train/",
-            to: "/transform/transforms/smart_replace",
+            to: "/guides/transformation/transforms/smart_replace",
           },
           {
             from: "/reference/transform-traffic/transforms/smart_replace",
-            to: "/transform/transforms/smart_replace",
+            to: "/guides/transformation/transforms/smart_replace",
           },
           {
             from: "/reference/transform-traffic/transforms/dataframe",
-            to: "/transform/transforms/dataframe",
+            to: "/guides/transformation/transforms/dataframe",
           },
           {
             from: "/reference/transform-traffic/transforms/train_csv/",
-            to: "/transform/transforms/smart_replace_csv/",
+            to: "/guides/transformation/transforms/smart_replace_csv/",
           },
           {
             from: "/reference/transform-traffic/transforms/smart_replace_csv/",
-            to: "/transform/transforms/smart_replace_csv/",
+            to: "/guides/transformation/transforms/smart_replace_csv/",
           },
           {
             from: "/reference/transform-traffic/transforms/train_actual/",
-            to: "/transform/transforms/smart_replace_recorded/",
+            to: "/guides/transformation/transforms/smart_replace_recorded/",
           },
           {
             from: "/reference/transform-traffic/transforms/smart_replace_recorded/",
-            to: "/transform/transforms/smart_replace_recorded/",
+            to: "/guides/transformation/transforms/smart_replace_recorded/",
           },
           {
             from: "/reference/transform-traffic/common-patterns/change-login/",
@@ -540,21 +540,21 @@ const config = {
           { from: "/replay/viewing-reports-1/", to: "/guides/reports/" },
           {
             from: "/replay/viewing-reports-1/errors/",
-            to: "/guides/reports/errors/",
+            to: "/guides/reports/errors",
           },
-          { from: "/setup/sidecar/", to: "/setup/sidecar/install/" },
-          { from: "/setup/sidecar/sidecar-trust/", to: "/setup/sidecar/tls/" },
+          { from: "/setup/sidecar/", to: "/getting-started/installation/sidecar/install/" },
+          { from: "/setup/sidecar/sidecar-trust/", to: "/getting-started/installation/sidecar/tls/" },
           {
             from: "/setup/sidecar/using-with-istio/",
-            to: "/setup/install/istio/",
+            to: "/getting-started/installation/install/istio/",
           },
           {
             from: "/setup/upgrade/changed-annotations/",
-            to: "/setup/sidecar/annotations/",
+            to: "/getting-started/installation/sidecar/annotations/",
           },
-          { from: "/upgrade/operator/", to: "/setup/upgrade/operator/" },
-          { from: "/guides/istio/", to: "/setup/install/istio/" },
-          { from: "/guides/openshift/", to: "/setup/install/openshift/" },
+          { from: "/upgrade/operator/", to: "/getting-started/upgrade/operator/" },
+          { from: "/guides/istio/", to: "/getting-started/installation/install/istio/" },
+          { from: "/guides/openshift/", to: "/getting-started/installation/install/openshift/" },
           {
             from: "/proxymock/reference/architecture/",
             to: "/proxymock/how-it-works/architecture/",
@@ -589,103 +589,103 @@ const config = {
           },
           {
             from: "/mocks/mocks/",
-            to: "/mocks/",
+            to: "/guides/mocking/mocks",
           },
           {
             from: "/setup/",
-            to: "/setup/install/",
+            to: "/getting-started/installation/install/",
           },
           {
             from: "/transform/",
-            to: "/transform/transforms/",
+            to: "/guides/transformation/transforms/",
           },
           {
             from: "/transform/overview-llm/",
-            to: "/transform/overview/",
+            to: "/guides/transformation/overview",
           },
           {
             from: "/reference/transform-traffic/extractors/",
-            to: "/transform/extractors/",
+            to: "/guides/transformation/extractors/",
           },
           {
             from: "/reference/transform-traffic/extractors/README/",
-            to: "/transform/extractors/",
+            to: "/guides/transformation/extractors/",
           },
           {
             from: "/reference/transform-traffic/extractors/empty/",
-            to: "/transform/extractors/empty/",
+            to: "/guides/transformation/extractors/empty/",
           },
           {
             from: "/reference/transform-traffic/extractors/file/",
-            to: "/transform/extractors/file/",
+            to: "/guides/transformation/extractors/file/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_queryparam/",
-            to: "/transform/extractors/http_queryparam/",
+            to: "/guides/transformation/extractors/http_queryparam/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_req_cookie/",
-            to: "/transform/extractors/http_req_cookie/",
+            to: "/guides/transformation/extractors/http_req_cookie/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_req_header/",
-            to: "/transform/extractors/http_req_header/",
+            to: "/guides/transformation/extractors/http_req_header/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_req_trailer/",
-            to: "/transform/extractors/http_req_trailer/",
+            to: "/guides/transformation/extractors/http_req_trailer/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_res_cookie/",
-            to: "/transform/extractors/http_res_cookie/",
+            to: "/guides/transformation/extractors/http_res_cookie/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_res_header/",
-            to: "/transform/extractors/http_res_header/",
+            to: "/guides/transformation/extractors/http_res_header/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_res_trailer/",
-            to: "/transform/extractors/http_res_trailer/",
+            to: "/guides/transformation/extractors/http_res_trailer/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_status_code/",
-            to: "/transform/extractors/http_status_code/",
+            to: "/guides/transformation/extractors/http_status_code/",
           },
           {
             from: "/reference/transform-traffic/extractors/http_url/",
-            to: "/transform/extractors/http_url/",
+            to: "/guides/transformation/extractors/http_url/",
           },
           {
             from: "/reference/transform-traffic/extractors/json_path/",
-            to: "/transform/extractors/json_path/",
+            to: "/guides/transformation/extractors/json_path/",
           },
           {
             from: "/reference/transform-traffic/extractors/latency/",
-            to: "/transform/extractors/latency/",
+            to: "/guides/transformation/extractors/latency/",
           },
           {
             from: "/reference/transform-traffic/extractors/req_body/",
-            to: "/transform/extractors/req_body/",
+            to: "/guides/transformation/extractors/req_body/",
           },
           {
             from: "/reference/transform-traffic/extractors/res_body/",
-            to: "/transform/extractors/res_body/",
+            to: "/guides/transformation/extractors/res_body/",
           },
           {
             from: "/reference/transform-traffic/extractors/session/",
-            to: "/transform/extractors/session/",
+            to: "/guides/transformation/extractors/session/",
           },
           {
             from: "/reference/transform-traffic/extractors/target_hostname/",
-            to: "/transform/extractors/target_hostname/",
+            to: "/guides/transformation/extractors/target_hostname/",
           },
           {
             from: "/reference/transform-traffic/extractors/target_port/",
-            to: "/transform/extractors/target_port/",
+            to: "/guides/transformation/extractors/target_port/",
           },
           {
             from: "/reference/transform-traffic/extractors/variable/",
-            to: "/transform/extractors/variable/",
+            to: "/guides/transformation/extractors/variable/",
           },
         ],
       },
@@ -729,6 +729,7 @@ const config = {
         docs: {
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
+          exclude: ["dlp/**", "dlp-old-backup/**"], // Exclude old dlp directories to prevent duplicate routes (redirects handle old URLs)
           editUrl: ({ versionDocsDirPath, docPath }) =>
             `https://github.com/speedscale/docs/edit/main/${versionDocsDirPath}/${docPath}`,
         },

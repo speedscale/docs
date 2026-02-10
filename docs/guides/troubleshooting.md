@@ -173,7 +173,7 @@ Istio/Envoy are deeply embedded into Kubernetes networking and may need to be co
 1. Firewall rules blocking cloud services. For example, if your app (or Speedscale) cannot reach AWS or GCP the pod may never start.
 2. Istio CNI Agent may require a specific annotation to allow Speedscale to run.
 
-You can find more information about how to resolve these issues in this [guide](../setup/install/istio.md).
+You can find more information about how to resolve these issues in this [guide](../getting-started/installation/install/istio.md).
 
 # Step 12: Check for Network Security Tools
 

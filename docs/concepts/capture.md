@@ -30,7 +30,7 @@ here](/guides/creating-a-snapshot.md).
 In addition to filtering, snapshots can be transformed before use in replays.
 For eg. you may have timestamps as part of the header in your captured ingress
 and your application rejects timestamps older than an hour. You can configure
-[Traffic Transforms](/transform/overview) to achieve this.
+[Traffic Transforms](/guides/transformation/overview) to achieve this.
 
 ## The Request Response Pair
 

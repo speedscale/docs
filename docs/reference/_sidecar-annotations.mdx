@@ -81,7 +81,7 @@ same thing as prometheus.io/scrape because that tells Prometheus what to do. Thi
 ### `sidecar.speedscale.com/proxy-type`
 
 Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `proxy`, ignored otherwise. See
-[proxy modes](/setup/sidecar/proxy-modes.md) for more information on how each mode functions.
+[proxy modes](/getting-started/installation/sidecar/proxy-modes) for more information on how each mode functions.
 
 - Accepted Values:
   - `transparent` (default)
@@ -95,7 +95,7 @@ Type of proxy the sidecar should operate as. Only valid if `capture-mode` is `pr
 
 Set the protocol clients should use when connecting to the sidecar when operating in one of `reverse`,
 `forward`, or `dual` proxy types. This setting is ignored if `proxy-type` is `transparent`. See
-[proxy modes](/setup/sidecar/proxy-modes.md) for more information.
+[proxy modes](/getting-started/installation/sidecar/proxy-modes) for more information.
 
 - Accepted Values:
   - `tcp` (only valid for `reverse` proxies)
@@ -145,7 +145,7 @@ forward proxy with proxy types `transparent`, `forward`, and `dual`.
 ### `sidecar.speedscale.com/tls-out`
 
 Enables or disables TLS outbound interception and unwrapping. If disabled, encrypted traffic will not be
-viewable in the Speedscale UI. See [TLS](/setup/sidecar/tls/) for more information.
+viewable in the Speedscale UI. See [TLS](/getting-started/installation/sidecar/tls/) for more information.
 
 - Accepted Values:
   - `true`
@@ -168,7 +168,7 @@ container env vars. This setting is only used when `tls-out` is enabled.
 
 Kubernetes [TLS secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets) containing
 the TLS private key and public certificate that should be used for inbound client requests. Setting this
-enables inbound TLS interception and unwrapping. See [TLS](/setup/sidecar/tls/) for more information.
+enables inbound TLS interception and unwrapping. See [TLS](/getting-started/installation/sidecar/tls/) for more information.
 
 ---
 
@@ -192,7 +192,7 @@ If `tls-in-secret` is provided, this is the filename of the TLS public key. If i
 
 Kubernetes [TLS secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets) containing the
 client TLS private key and public certificate that should be used for outbound requests requiring mutual TLS.
-Do not set this unless your application uses mutual TLS. See [TLS](/setup/sidecar/tls/) for more information.
+Do not set this unless your application uses mutual TLS. See [TLS](/getting-started/installation/sidecar/tls/) for more information.
 
 ---
 

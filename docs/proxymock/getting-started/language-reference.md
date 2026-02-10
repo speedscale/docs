@@ -5,7 +5,7 @@ title: Language Configuration
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import LanguageSpecificTLSConfiguration from '../../setup/sidecar/\_language_specific_tls_config.mdx';
+import LanguageSpecificTLSConfiguration from '../../getting-started/installation/sidecar/_language_specific_tls_config.mdx';
 
 Some language-specific environment configuration may be necessary but you should not need to modify your application code to use **proxymock**.
 

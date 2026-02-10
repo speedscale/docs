@@ -10,7 +10,7 @@ Here’s a quick guide on how to use Speedscale to modify JSON data.
 
 ### 1. Adding or Modifying a Key-Value Pair
 
-The [json_path](/transform/transforms/json_path) transform provides a simple API for modifying a JSON string. By default, if the path does not exist then a new key will be created. If you would prefer that the transform error instead you can set `create=false` in the configuration.
+The [json_path](/guides/transformation/transforms/json_path) transform provides a simple API for modifying a JSON string. By default, if the path does not exist then a new key will be created. If you would prefer that the transform error instead you can set `create=false` in the configuration.
 
 Take the following example JSON as an HTTP request body:
 

@@ -33,7 +33,7 @@ mutation {
 
 ![graphql_rrpair](./graphql/graphql-rrpair.png)
 
-To change one of the query options, find it in the response body JSON and modify it using a [JSONPath](/transform/transforms/json_path) transform with a `response body` extractor. Alternatively, just click on the pencil icon next to the field in the Speedscale UI and it will format this transform automatically (highly recommended).
+To change one of the query options, find it in the response body JSON and modify it using a [JSONPath](/guides/transformation/transforms/json_path) transform with a `response body` extractor. Alternatively, just click on the pencil icon next to the field in the Speedscale UI and it will format this transform automatically (highly recommended).
 
 ## Testing Example (Simple)
 
@@ -60,7 +60,7 @@ In the UI, you can click on the pencil icon next to value you want to change and
 
 In text from this transform chain translates into `req_body()->json_path("variables.cartValidationRequest.channel") -> constant("horse_and_buggy")`.
 
-Once we save this transform chain, every instance of "channel" within the GraphQL query variables will be translated into "horse and buggy". Combine this procedure with the existing how to guides for different types of transformations. We're using a constant value here for simplicity but real apps will need something more complex like a [csv](../transform/transforms/csv.md).
+Once we save this transform chain, every instance of "channel" within the GraphQL query variables will be translated into "horse and buggy". Combine this procedure with the existing how to guides for different types of transformations. We're using a constant value here for simplicity but real apps will need something more complex like a [csv](./transformation/transforms/csv.md).
 
 ## Transform Example (Advanced)
 
@@ -70,7 +70,7 @@ Now let's say we have a collection of GraphQL requests like the screenshot above
 
 ![graphql_transforms](./graphql/graphql-transforms.png)
 
-Now that we've instructed Speedscale on how to change this field, we're ready to replay against our workload. Initiate a replay using one of the methods listed in the [tutorial](../tutorial.md).
+Now that we've instructed Speedscale on how to change this field, we're ready to replay against our workload. Initiate a replay using one of the methods listed in the [tutorial](../getting-started/tutorial.md).
 
 ## Replay Results
 When we replay the Snapshot, we can see the "Actual" replayed payload. Again you will be able to see the GraphQL query in Raw(recorded) and Raw(Actual) tabs. The following screenshot shows the original and replaced value in the replay initiated in the previous step.
