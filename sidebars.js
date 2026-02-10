@@ -13,8 +13,8 @@
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
-  // By default, Docusaurus generates a sidebar from the docs folder structure
-  tutorialSidebar: [
+  // Default docs sidebar (plugin expects this id when routeBasePath is "/")
+  docs: [
     {
       type: "category",
       label: "Getting Started",

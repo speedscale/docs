@@ -37,6 +37,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/getting-started/introduction/",
+            to: "/",
+          },
+          {
             from: "/end-to-end/",
             to: "/guides/end-to-end/",
           },
