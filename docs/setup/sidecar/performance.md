@@ -41,7 +41,17 @@ things that provide additional data for support purposes, notably:
 1. Increases logging verbosity to show more detail on the sidecar's inner workings.
 2. Enablees packet captures for all known interfaces in the container.
 
-To enable this mode, add the following annotation to any workload that already has the sidecar injected:
+To enable this mode, turn on diagnostics mode in the UI from Infrastructure -> Select Cluster -> Workloads -> Select Namespace -> Select Workload and turn the Enable Diagnostics Mode slider on.
+
+![Diagnostics Screenshot](./diagnostics_screenshot.png)
+
+Diagnostics will be automatically uploaded to Speedscale and no further action is necessary.
+
+:::tip
+Remember to turn off diagnostics mode after reproducing any issues by reversing this process or you will use ingest unnecessarily.
+:::
+
+If you would like to turn on diagnostics and collect PCAPs manually add the following annotation to any workload that already has the sidecar injected. This process is not necessary if remote control is enabled:
 
 ```
 sidecar.speedscale.com/diagnostics: "true"
