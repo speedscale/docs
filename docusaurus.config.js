@@ -1348,6 +1348,18 @@ const config = {
             to: "/reference/kubernetes-annotations/",
           },
           {
+            from: "/reference/_sidecar-annotations/",
+            to: "/reference/kubernetes-annotations/",
+          },
+          {
+            from: "/reference/_common-annotations/",
+            to: "/reference/kubernetes-annotations/",
+          },
+          {
+            from: "/reference/_external-services/",
+            to: "/reference/networking/",
+          },
+          {
             from: "/reference/configuration/rules/",
             to: "/reference/configuration/goals/",
           },

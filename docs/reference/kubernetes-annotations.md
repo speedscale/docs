@@ -3,8 +3,8 @@ title: Kubernetes Annotations
 sidebar_position: 9
 ---
 
-import SidecarAnnotations from './_sidecar-annotations.mdx'
-import CommonV2Annotations from '../reference/_common-annotations.mdx'
+import SidecarAnnotations from '@site/src/partials/reference/sidecar-annotations.mdx'
+import CommonV2Annotations from '@site/src/partials/reference/common-annotations.mdx'
 
 Below are all the relevant Kubernetes annotations for the Speedscale sidecar. Replays are controlled using [Custom Resource Definitions](./replay-crd.md)
 
