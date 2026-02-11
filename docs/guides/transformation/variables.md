@@ -13,9 +13,9 @@ Transform variables provide a way to share data between requests.  For example, 
 Variables can be thought of as a map of key=value pairs. Once set, they can be retrieved and modified using a set of transforms including:
 
 - **[var_store](/guides/transformation/transforms/variable_store)** - Assign a new value to a variable
-- **[var_load](/guides/transformation/transforms/variable_store)** - Replace current value with the value of a variable
+- **[var_load](/guides/transformation/transforms/variable_load)** - Replace current value with the value of a variable
 
-This is the simplest way to interact with the variable storage system, but not necessarily the most powerful. Keep in mind that [smart replace](../transforms/smart_replace) transforms are independent of the variable cache and changes made in one will not be reflected in the other. Variables are for custom use cases. Smart replace is for more automated use cases and is a better starting place for most users.
+This is the simplest way to interact with the variable storage system, but not necessarily the most powerful. Keep in mind that [smart replace](/guides/transformation/transforms/smart_replace/) transforms are independent of the variable cache and changes made in one will not be reflected in the other. Variables are for custom use cases. Smart replace is for more automated use cases and is a better starting place for most users.
 
 ### Scope
 
@@ -44,4 +44,3 @@ This also works inside of configuration fields in other transforms, like `jwt_re
 ![jwt_example](./overview/jwt_example.png)
 
 By understanding these scoping rules, engineers using the Speedscale transform system can effectively replicate some aspects of scripting languages.
-

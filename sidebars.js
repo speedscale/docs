@@ -111,7 +111,6 @@ const sidebars = {
             "guides/creating-a-snapshot",
             "guides/creating-filters",
             "guides/cli",
-            "guides/dlp",
             "guides/load-patterns",
             "guides/troubleshooting",
           ],

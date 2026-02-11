@@ -71,7 +71,7 @@ speedscale-goproxy java-server
 ```
 
 :::tip
-Speedscale can dynamically prevent PII data from leaving your environment during ingest. Learn more in our [Data Loss Prevention Guide](../guides/dlp.md)
+Speedscale can dynamically prevent PII data from leaving your environment during ingest. Learn more in our [Data Loss Prevention Guide](/dlp/)
 :::
 
 ## Replay Only
@@ -114,4 +114,4 @@ graph LR
 
 The DLP engine processes traffic data in the forwarder before forwarding it to AWS Kinesis Firehose. This ensures that sensitive information is never transmitted outside your environment, while preserving the overall structure and shape of the data for testing purposes. The forwarder's cache optimizes performance by reducing redundant processing of similar traffic patterns.
 
-To learn more about configuring DLP and Speedscale's overall approach to data security, please visit our [Data Loss Prevention Guide](../guides/dlp.md) and security [hub](/security/security_.md).
+To learn more about configuring DLP and Speedscale's overall approach to data security, please visit our [Data Loss Prevention Guide](/dlp/) and security [hub](/security/security_/).

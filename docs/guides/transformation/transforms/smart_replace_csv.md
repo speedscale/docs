@@ -35,7 +35,7 @@ If we fed this CSV into `smart_replace_csv` it would cause all future occurrence
 
 ### Example
 
-`smart_replace_csv` is used as part of the data redaction and replacement [workflow](../../dlp.md).
+`smart_replace_csv` is used as part of the data redaction and replacement [workflow](/guides/dlp/).
 
 #### Configuration
 
