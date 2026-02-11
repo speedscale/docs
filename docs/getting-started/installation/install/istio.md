@@ -3,7 +3,7 @@ title: Istio
 sidebar_position: 11
 ---
 
-import ExternalServices from '../../../reference/\_external-services.mdx'
+import ExternalServices from '@site/src/partials/reference/external-services.mdx'
 
 :::info
 Please make sure the [Speedscale Operator](../../../getting-started/quick-start.md) is installed before configuring Istio support.
