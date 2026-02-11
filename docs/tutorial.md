@@ -326,7 +326,7 @@ If we drill down into a request, we can also see data we may not want to leave o
 
 ![Auth](./guides/end-to-end/unredacted.png)
 
-You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low accuracies because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you cna follow the instructions below.
+You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low accuracies because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you can follow the instructions below.
 
 <Tabs>
 
@@ -366,4 +366,4 @@ Now we see the authorization header is redacted and never makes it to Speedscale
 
 ![Redacted](./guides/end-to-end/redacted.png)
 
-For more complex DLP configuration you can use [this guide](/dlp/).
+For more complex DLP configuration you can use [this guide](/guides/dlp/).

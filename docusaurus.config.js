@@ -1260,10 +1260,6 @@ const config = {
             to: "/security/contact/",
           },
           {
-            from: "/search/",
-            to: "/",
-          },
-          {
             from: "/reference/integrations/",
             to: "/guides/integrations/import/",
           },
@@ -1282,14 +1278,6 @@ const config = {
           {
             from: "/reference/tokenizers-1/http-cookie-tokenizer/",
             to: "/guides/transformation/extractors/http_req_cookie/",
-          },
-          {
-            from: "/markdown-page/",
-            to: "/",
-          },
-          {
-            from: "/index_old/",
-            to: "/",
           },
           {
             from: "/guides/docker/",
