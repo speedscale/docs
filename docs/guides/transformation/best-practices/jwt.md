@@ -1,3 +1,7 @@
+---
+sidebar_position: 0
+---
+
 # Authorization
 
 If you look through your recorded data, you're likely to see one of the following authorization patterns:

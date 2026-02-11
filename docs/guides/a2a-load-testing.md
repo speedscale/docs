@@ -1,3 +1,7 @@
+---
+sidebar_position: 0
+---
+
 # Load Testing Agent-to-Agent (A2A) API Calls
 
 ## What is the A2A Protocol?

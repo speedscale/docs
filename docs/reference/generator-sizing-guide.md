@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+---
+
 # Generator Sizing Guide
 
 When running a load test it is helpful to understand the environmental requirements for reaching your desired

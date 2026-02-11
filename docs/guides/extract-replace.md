@@ -1,3 +1,7 @@
+---
+sidebar_position: 10
+---
+
 # Bulk Data Extraction
 
 Bulk Data Extraction is a powerful feature that allows you to identify a piece of data from a collection of HTTP request/response pairs (rrpairs) and export it for mass modification. After editing the extracted data, you can feed the updated values back into Speedscale to customize behaviors during replay. This workflow combines the speedctl CLI tool with the Speedscale UI to simplify large-scale data manipulation.

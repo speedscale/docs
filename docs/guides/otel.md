@@ -1,3 +1,7 @@
+---
+sidebar_position: 19
+---
+
 # OpenTelemetry
 
 [OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/) (OTEL) is an open-source project that provides vendor-neutral tools, APIs, and SDKs designed to create and manage observability data within distributed systems. This data includes metrics, logs, and especially traces. Traces enable developers and operations teams to understand the flow of requests across various components within a complex system, providing a comprehensive picture of how services interact. Each trace consists of individual units of work called spans. Speedscale is OpenTelemetry-aware and treats OTEL Trace and Span IDs as native data types.

@@ -1,3 +1,6 @@
+---
+sidebar_position: 2
+---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CLIInstall from './installation/install/_cli_install.mdx'
@@ -5,19 +8,9 @@ import ApiKey from './installation/install/api-key.png'
 
 # Quick Start
 
-Choose how you want to get started with Speedscale:
-
-<Tabs>
-
-<TabItem value="local" label="Local installation" default>
-
-For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic.
-
-Go to the **[Local Development (AI) – Getting Started](/proxymock/)** guide to install proxymock and get started in about 30 seconds.
-
-</TabItem>
-
-<TabItem value="cloud" label="Cloud installation">
+:::info Local installation
+For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. See **[Local Development (AI) – Getting Started](/proxymock/)** to install proxymock and get started in about 30 seconds.
+:::
 
 This guide walks through installing Speedscale into a Kubernetes (cloud or on-prem) environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./tutorial.md) to record, replay and view results for a demo application.
 
@@ -179,7 +172,3 @@ If you have any issues installing, check out the [troubleshooting guide](./insta
 At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
 
 If you're already an expert you can click the `Add Service` button in the UI to automatically add sidecars or install them [manually](./installation/sidecar/install.md).
-
-</TabItem>
-
-</Tabs>

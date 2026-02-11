@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Deployment Architecture
 
 Speedscale runs a set of components and processes in your Kubernetes environment. This document outlines the specific components and the network requirements for each component.

@@ -1,5 +1,6 @@
 ---
 title: Guides
+sidebar_position: 3
 ---
 
 import { GrpcCard, OpenApiCard, ModifyRrpairsCard } from '@site/src/components/Cards';

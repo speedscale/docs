@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Export to Postman
 
 Speedscale can export and import traffic in the open source Postman [collection format](https://github.com/postmanlabs/postman-collection). This lets you use your familiar tools to send test requests to your app with traffic that was collected by Speedscale.

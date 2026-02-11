@@ -1,3 +1,7 @@
+---
+sidebar_position: 8
+---
+
 # Helm Values
 
 This document describes the configuration options available for the Speedscale Operator Helm [chart](https://github.com/speedscale/operator-helm). The Speedscale Operator is a Kubernetes operator that watches for deployments and can inject proxies to capture traffic or set up isolation test environments.

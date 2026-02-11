@@ -1,3 +1,7 @@
+---
+sidebar_position: 13
+---
+
 # json_path
 
 **json_path** extracts an element from a JSON document using JSONPath. The input token must be a JSON document and the JSONPath must be valid. Note that we use the excellent [gjson](https://github.com/tidwall/gjson) library but not all JSONPath combinations are supported. Check the GitHub page to see if a more complicated JSONPath is supported.

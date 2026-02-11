@@ -1,5 +1,6 @@
 ---
 title: Kubernetes Annotations
+sidebar_position: 9
 ---
 
 import SidecarAnnotations from './_sidecar-annotations.mdx'

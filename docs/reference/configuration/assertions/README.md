@@ -1,3 +1,7 @@
+---
+sidebar_position: 0
+---
+
 # Assertions
 
 Assertions compare the response received from the application during testing to

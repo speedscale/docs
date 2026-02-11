@@ -1,5 +1,6 @@
 ---
 title: Capture and Replay on Browser
+sidebar_position: 3
 ---
 
 ## Setup

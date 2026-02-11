@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # How it works
 
 **proxymock** works by capturing real [traffic](/reference/glossary.md#traffic)

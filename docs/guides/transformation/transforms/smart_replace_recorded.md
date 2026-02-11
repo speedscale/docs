@@ -1,3 +1,7 @@
+---
+sidebar_position: 25
+---
+
 # smart_replace_recorded
 
 ### Purpose

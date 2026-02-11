@@ -1,3 +1,7 @@
+---
+sidebar_position: 7
+---
+
 #  Generate Mocks from OpenAPI
 
 ## Overview

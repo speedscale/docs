@@ -1,3 +1,7 @@
+---
+sidebar_position: 15
+---
+
 # How to Modify JSON Payloads
 
 Working with JSON payloads is a common task, whether you're parsing data or modifying it dynamically. Speedscale makes it easy to modify JSON strings without scripting or other complex data manipulation techniques. In this guide we will walk through using [transforms](../concepts/transforms.md) to quickly modify the request or response payload within an RRPair.

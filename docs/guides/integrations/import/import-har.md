@@ -1,5 +1,6 @@
 ---
 title: Import from Browser/HAR
+sidebar_position: 4
 ---
 
 import Tabs from '@theme/Tabs';

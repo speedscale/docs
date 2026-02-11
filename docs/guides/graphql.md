@@ -1,5 +1,6 @@
 ---
 description: "Discover how to implement and optimize GraphQL applications with Speedscale, including best practices and troubleshooting tips. This comprehensive guide provides developers with essential insights for enhancing performance and ensuring robust functionality in their GraphQL services."
+sidebar_position: 11
 ---
 
 # GraphQL

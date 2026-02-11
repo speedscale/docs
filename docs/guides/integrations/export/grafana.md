@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Export to Grafana K6
 
 Speedscale can export traffic in the open source [Grafana K6](https://github.com/grafana/k6) test case format. This lets you use your familiar tools to send test requests to your app with traffic that was collected by Speedscale. Speedscale will take inbound requests and turn them into a sequence of requests made in a complete K6 script. Note that only the raw traffic is exported. There is no limitation on how many times snapshots can be exported. However, keep in mind transforms and other data manipulation logic are not part of the export due to the difference in paradigms (automated vs script-driven).

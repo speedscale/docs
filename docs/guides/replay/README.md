@@ -1,3 +1,6 @@
+---
+sidebar_position: 1
+---
 # Dashboard
 
 Once your service has recorded traffic you can start a replay with the "Replay

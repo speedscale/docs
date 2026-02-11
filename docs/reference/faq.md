@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # FAQ
 
 You've got questions, we've got answers.

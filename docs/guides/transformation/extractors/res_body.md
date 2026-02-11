@@ -1,5 +1,6 @@
 ---
 description: "Discover how to effectively utilize Speedscale extractors to gather and manipulate response body data in your application traffic. This documentation provides detailed instructions and examples to optimize your monitoring and testing processes."
+sidebar_position: 15
 ---
 
 # res_body

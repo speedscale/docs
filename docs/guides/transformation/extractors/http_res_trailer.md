@@ -1,5 +1,6 @@
 ---
 description: "Learn how to extract HTTP trailers from response traffic using Speedscale's http_res_trailer extractor for effective traffic transformation and analysis."
+sidebar_position: 9
 ---
 
 # http_res_trailer

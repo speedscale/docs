@@ -1,5 +1,6 @@
 ---
 description: "Learn how to utilize Speedscale's Smart Replace feature to efficiently modify API responses during testing. This documentation provides clear instructions and examples for implementing traffic transforms to enhance your application's performance."
+sidebar_position: 23
 ---
 
 # smart_replace

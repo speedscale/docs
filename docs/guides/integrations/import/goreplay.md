@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Import from GoReplay
 
 Speedscale can import traffic in the open source [GoReplay format](https://github.com/buger/goreplay). This lets you use your familiar tools to send test requests to your app with traffic that was collected by Speedscale.

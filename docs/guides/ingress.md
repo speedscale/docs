@@ -1,5 +1,6 @@
 ---
 title: Capture Cluster Ingress Traffic
+sidebar_position: 14
 ---
 
 In some instances, it may be desirable to capture cluster ingress traffic. Doing so allows you the ability

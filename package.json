@@ -15,15 +15,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@algolia/client-abtesting": "^5.19.0",
-    "@algolia/client-analytics": "^5.19.0",
-    "@algolia/client-insights": "^5.19.0",
-    "@algolia/client-personalization": "^5.19.0",
-    "@algolia/client-query-suggestions": "^5.19.0",
-    "@algolia/client-search": "^5.19.0",
-    "@algolia/ingestion": "^1.19.0",
-    "@algolia/monitoring": "^1.19.0",
-    "@algolia/recommend": "^5.19.0",
     "@babel/helpers": "^7.26.10",
     "@babel/runtime": "^7.26.10",
     "@babel/runtime-corejs3": "^7.26.10",
@@ -45,7 +36,6 @@
     "@docusaurus/theme-search-algolia": "^3.9.2",
     "@mdx-js/react": "^3.0.1",
     "algoliasearch": "^5.19.0",
-    "algoliasearch-helper": "^3.22.6",
     "clsx": "^2.0.0",
     "csv-parser": "^3.0.0",
     "dompurify": "^3.2.4",

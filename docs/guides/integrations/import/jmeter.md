@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+---
+
 # Migrating from JMeter
 
 Performance testing is a crucial aspect of the software development lifecycle, ensuring applications can handle expected load and stress. Apache JMeter and Speedscale are two popular tools used for this purpose. Speedscale users commonly seek to migrate JMeter scripts onto the Speedscale platform to modernize their API testing.

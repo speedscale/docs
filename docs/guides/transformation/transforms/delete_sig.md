@@ -1,5 +1,6 @@
 ---
 description: "Learn how to use the delete_sig transform in Speedscale to remove specific components from request signatures, improving match rates and replay flexibility by selectively excluding signature elements."
+sidebar_position: 9
 ---
 
 # delete_sig

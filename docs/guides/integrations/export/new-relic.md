@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Export to New Relic
 
 Export data from your Speedscale environment to New Relic One

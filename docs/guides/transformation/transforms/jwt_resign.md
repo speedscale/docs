@@ -1,3 +1,7 @@
+---
+sidebar_position: 15
+---
+
 # jwt_resign
 
 ### Purpose

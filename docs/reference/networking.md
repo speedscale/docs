@@ -1,3 +1,7 @@
+---
+sidebar_position: 11
+---
+
 # Networking Requirements
 
 import ExternalServices from './_external-services.mdx'

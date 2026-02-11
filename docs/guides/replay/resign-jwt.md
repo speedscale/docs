@@ -1,5 +1,6 @@
 ---
 title: Re-sign JWTs
+sidebar_position: 8
 ---
 
 # Re-signing JWTs

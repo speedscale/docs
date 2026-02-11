@@ -1,5 +1,6 @@
 ---
 description: "Discover how to utilize extractors in Speedscale to effectively manage request bodies by extracting essential data for your traffic transformations. This documentation provides detailed guidance on implementing request body extractors to enhance your application's observability and performance."
+sidebar_position: 14
 ---
 
 # req_body

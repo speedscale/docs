@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # eBPF Traffic Collection
 
 ## What is eBPF?

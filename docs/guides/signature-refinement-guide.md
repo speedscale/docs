@@ -1,3 +1,7 @@
+---
+sidebar_position: 22
+---
+
 # How to Refine Signatures to Improve Mock Accuracy
 
 ## 1. Introduction

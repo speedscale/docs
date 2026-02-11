@@ -1,3 +1,6 @@
+---
+sidebar_position: 5
+---
 # Inner vs Outer Loop
 
 In software engineering, the concepts of the “inner loop” and the “outer loop” represent two distinct cycles within the development process, each focusing on different activities, scopes, and timeframes. Understanding these loops is crucial for optimizing workflows, enhancing productivity, and delivering high-quality software. The Speedscale platform accelerates developer productivity because it simplifies some outer loop tasks enough that they can be treated as inner loop. Speedscale reduces friction by decoupling engineers from infrastructure. On the surface that means reducing the cost of developer environments but at a deeper level it means removing gates from the software development lifecycle and reducing developer frustration. Some documentation already [exists](https://notes.paulswail.com/public/The+inner+and+outer+loops+of+software+development+workflow) describing this but on this page we'll focus on how it pertains to environment replication.

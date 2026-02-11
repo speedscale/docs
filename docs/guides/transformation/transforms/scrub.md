@@ -1,3 +1,7 @@
+---
+sidebar_position: 20
+---
+
 # scrub
 
 **scrub** replaces the incoming string with a new value. This works similar to [scrub_date](./scrub_date.md) in that it does a find/replace on the current RRPair. This is typically used to "blank out" rotating values like request IDs in a responder signature match. Using this transform will increase your match rate.

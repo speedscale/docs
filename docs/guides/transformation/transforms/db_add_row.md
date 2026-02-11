@@ -1,3 +1,7 @@
+---
+sidebar_position: 8
+---
+
 # db_add_row
 
 ## Purpose

@@ -1,5 +1,6 @@
 ---
 title: File Format
+sidebar_position: 7
 ---
 
 # Markdown Format Specification

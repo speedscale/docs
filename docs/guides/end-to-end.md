@@ -1,3 +1,7 @@
+---
+sidebar_position: 9
+---
+
 # End-to-End Testing Guide
 
 This section provides comprehensive end-to-end testing workflows using Speedscale to validate your APIs with real-world traffic scenarios.

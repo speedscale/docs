@@ -1,3 +1,6 @@
+---
+sidebar_position: 4
+---
 # Bubble Environments
 
 Speedscale is a tool for creating, updating and maintaining Bubble Environments that closely mimic production. This article briefly discusses the differences between staging environments, ephemeral environments and bubble environments. It will make clear that most expensive staging environments can be eliminated with **Bubble Environments** but some unsupported systems still require setup with an Ephemeral Environments tool.

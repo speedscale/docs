@@ -1,3 +1,7 @@
+---
+sidebar_position: 21
+---
+
 import PrometheusOptions from './prometheus/prometheus-options.png'
 
 # Scraping Prometheus Metrics

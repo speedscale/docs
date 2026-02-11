@@ -1,3 +1,7 @@
+---
+sidebar_position: 0
+---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CLIInstall from './getting-started/installation/install/_cli_install.mdx'
