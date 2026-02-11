@@ -12,7 +12,7 @@ requires special consideration when used in conjunction with Speedscale.
 
 ## Installation
 
-Please ensure the [Kubernetes Operator](/setup/install/kubernetes-operator.md)
+Please ensure the [Kubernetes Operator](/getting-started/installation/install/kubernetes-operator.md)
 is running in your cluster before moving on.
 
 :::important Inspector Restart Required
@@ -59,7 +59,7 @@ The status on the wizard should complete and send a test request.
 
 <TabItem value="speedctl" label="speedctl CLI">
 
-Make sure you have [speedctl installed](/setup/install/cli.md) before you
+Make sure you have [speedctl installed](/getting-started/installation/install/cli.md) before you
 start.  Verify you have the [inspector](/reference/glossary.md#inspector)
 running in your cluster with:
 

@@ -9,7 +9,7 @@ Speedscale mocks are built from observed traffic stored in a Snapshot. At the co
 
 ## Download Your Snapshot
 
-Take a snapshot of some outbound requests to use as a starting point. For more information on creating a snapshot take a look at our [Quick Start](../../../quick-start.md). Once you've created a snapshot take note of it's ID. You can find this in the URL of your browser or copy to your clipboard by clicking (three dot menu)->Copy Snapshot ID from the Snapshot Summary view.
+Take a snapshot of some outbound requests to use as a starting point. For more information on creating a snapshot take a look at our [Quick Start](../../../getting-started/quick-start.md). Once you've created a snapshot take note of it's ID. You can find this in the URL of your browser or copy to your clipboard by clicking (three dot menu)->Copy Snapshot ID from the Snapshot Summary view.
 
 First thing we want to do is download the snapshot with the command line CLI:
 

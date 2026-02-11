@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 import RRPairList from './modify-rrpairs/rrpair-list.png'
 import RRPairDetail from './modify-rrpairs/rrpair-response-detail.png'
 

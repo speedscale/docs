@@ -107,7 +107,7 @@ Need another OS like Windows or are you having issues? See advanced [installatio
 
 If you are an enterprise customer you can find your api key on the [Profile Page](https://app.speedscale.com/profile).
 
-![API Key](../../../setup/install/api-key.png)
+![API Key](../../../getting-started/installation/install/api-key.png)
 
 Otherwise you can [sign up for an API Key](https://app.speedscale.com/proxymock/signup). Don't worry, we don't sell marketing data or give your email address to any bot nets.
 

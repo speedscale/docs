@@ -46,7 +46,7 @@ speedctl extract data <snapshot-id> --path .http.request.body --path .ts
 
 ### Method 3: Using gRPC API
 
-If you're using Pulsar's gRPC API, you can extract data from gRPC messages. See Speedscale's [gRPC documentation](/observe/bodies.md#grpc) for details on extracting gRPC traffic.
+If you're using Pulsar's gRPC API, you can extract data from gRPC messages. See Speedscale's [gRPC documentation](/guides/capture/bodies.md#grpc) for details on extracting gRPC traffic.
 
 ### Create your producer
 

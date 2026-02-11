@@ -17,7 +17,7 @@ Here are a few quick things that will help you understand if your replay is runn
 3. Check the [reports interface](https://app.speedscale.com/reports) to see if a new report has been generated
 4. Check your Service Under Test (SUT)'s namespace to see if a Speedscale generator or responder pod have been created
 
-If you don't see one or all of these items, double check your operator installation and your annotations. Reminder: make sure you are running the [latest operator](https://docs.speedscale.com/setup/upgrade/operator/).
+If you don't see one or all of these items, double check your operator installation and your annotations. Reminder: make sure you are running the [latest operator](https://docs.speedscale.com/getting-started/upgrade/operator/).
 
 As a reminder, you can view the operator logs using this kubectl command:
 

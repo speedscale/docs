@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # FAQ
 
 You've got questions, we've got answers.
@@ -90,7 +94,7 @@ Calico and most custom networking setups should work by default with Speedscale 
 
 ### What if we use a security tool like TwistLock?
 
-Twistlock and other security plugins may disable the Speedscale sidecar from capturing traffic using `iptables` rules. If this is the case, Speedscale can be configured to run in `dual` proxy mode as detailed [here](../setup/install/istio.md).
+Twistlock and other security plugins may disable the Speedscale sidecar from capturing traffic using `iptables` rules. If this is the case, Speedscale can be configured to run in `dual` proxy mode as detailed [here](/getting-started/installation/install/istio).
 
 ### How can I view JSON Request-Response pairs directly? <a href="#how-can-i-view-json-request-response-pairs-directly" id="how-can-i-view-json-request-response-pairs-directly"></a>
 

@@ -44,7 +44,7 @@ So you already have a Speedscale account.  You will need to get your personal AP
 
 Copy the API key to your clipboard:
 
-![API Key](../../setup/install/api-key.png)
+![API Key](../../getting-started/installation/install/api-key.png)
 </TabItem>
 
   <TabItem value="New User">

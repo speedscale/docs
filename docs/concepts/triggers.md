@@ -1,5 +1,6 @@
 ---
 title: Triggers
+sidebar_position: 12
 ---
 
 ### Triggering Workflows Based on Mock Requests

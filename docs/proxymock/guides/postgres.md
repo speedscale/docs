@@ -1,3 +1,7 @@
+---
+sidebar_position: 8
+---
+
 # PostgreSQL Mocking
 
 This guide covers how to use proxymock to mock PostgreSQL database connections and queries for local development and testing.

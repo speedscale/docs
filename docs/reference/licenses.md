@@ -1,3 +1,7 @@
+---
+sidebar_position: 10
+---
+
 # OpenSource Licenses and Credits
 - @aashutoshrathi/word-wrap ([MIT](https://github.com/aashutoshrathi/word-wrap))
 - @amcharts/amcharts5 ([Custom: https://www.amcharts.com/](https://github.com/amcharts/amcharts5))

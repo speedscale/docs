@@ -1,3 +1,7 @@
+---
+sidebar_position: 22
+---
+
 # How to Refine Signatures to Improve Mock Accuracy
 
 ## 1. Introduction
@@ -30,7 +34,7 @@ Before using this guide, you should have:
 
 ### 2.1 What is Mock Accuracy?
 
-Mock Accuracy is a metric that measures how well your service mock matches incoming requests to recorded responses. It represents the percentage of requests that the [responder](../reference/glossary.md#responder) successfully matched to a recorded signature, allowing it to return the appropriate mocked response. For more about service mocking, see [Mocks & Service Virtualization](../mocks/mocks.md).
+Mock Accuracy is a metric that measures how well your service mock matches incoming requests to recorded responses. It represents the percentage of requests that the [responder](../reference/glossary.md#responder) successfully matched to a recorded signature, allowing it to return the appropriate mocked response. For more about service mocking, see [Mocks & Service Virtualization](./mocking/mocks.md).
 
 A high Mock Accuracy means your mock server can reliably handle test traffic without needing to reach out to real backend services.
 
@@ -72,7 +76,7 @@ The ultimate goal is to achieve **100% Mock Accuracy**, meaning every request in
 
 ### 3.1 What is a Signature?
 
-A **signature** is a unique identifier for a request, composed of key-value pairs extracted from various parts of the HTTP request. The responder uses signatures to match incoming requests to recorded responses. For a deeper understanding of how signature matching works, see [Signature Matching](../mocks/signature.md).
+A **signature** is a unique identifier for a request, composed of key-value pairs extracted from various parts of the HTTP request. The responder uses signatures to match incoming requests to recorded responses. For a deeper understanding of how signature matching works, see [Signature Matching](./mocking/signature.md).
 
 #### 3.1.1 Signature Key-Value Pairs
 
@@ -109,7 +113,7 @@ The most frequently used signature keys include:
 
 #### 3.2.1 What are Transform Chains?
 
-A **transform chain** is a set of operations that modify how signatures are extracted from requests. Transform chains allow you to make signatures more flexible by removing or modifying problematic keys that prevent matches. For a comprehensive overview of the transform system, see [Transform Overview](/transform/overview) or [Transform Concepts](../concepts/transforms.md).
+A **transform chain** is a set of operations that modify how signatures are extracted from requests. Transform chains allow you to make signatures more flexible by removing or modifying problematic keys that prevent matches. For a comprehensive overview of the transform system, see [Transform Overview](/guides/transformation/overview) or [Transform Concepts](../concepts/transforms.md).
 
 #### 3.2.2 How Transform Chains Work
 
@@ -679,7 +683,7 @@ This chain:
 - **Tags**: Metadata for tracking the transform's origin and purpose
 
 :::tip
-For more information on how transform chains work and the order of execution, see [Transform Overview](/transform/overview#extractors-and-transforms).
+For more information on how transform chains work and the order of execution, see [Transform Overview](/guides/transformation/overview#extractors-and-transforms).
 :::
 
 ### 9.3 Reviewing the Queued Transform Details
@@ -1638,7 +1642,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 | `extract_field` | Extract a specific field from a complex value | `key`: Source key<br/>`path`: JSONPath or XPath<br/>`newKey`: Destination key | Extract only `$.action` field from JSON body for matching |
 | `regex_replace` | Replace patterns in values using regular expressions | `key`: Key to transform<br/>`pattern`: Regex pattern<br/>`replacement`: Replacement string | Remove UUIDs or dynamic IDs from URL paths |
 
-**Note**: `delete_sig`, `scrub`, and `scrub_date` are the most commonly used transforms for signature refinement. Not all transform types may be available in your version. For a complete reference of all available transform types and extractors, see [Transform Traffic Reference](/transform/overview).
+**Note**: `delete_sig`, `scrub`, and `scrub_date` are the most commonly used transforms for signature refinement. Not all transform types may be available in your version. For a complete reference of all available transform types and extractors, see [Transform Traffic Reference](/guides/transformation/overview).
 
 ### 19.3 Match Status Reference
 

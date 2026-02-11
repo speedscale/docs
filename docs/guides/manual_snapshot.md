@@ -3,7 +3,7 @@ title: Create a snapshot using APIs
 sidebar_position: 38
 ---
 
-In this guide we will show you how to manually create a snapshot using the Speedscale API. There are much easier ways to create traffic snapshots, such as direct [recording](https://github.com/speedscale/demo) or by [importing a Postman collection](../integration/import/import-postman.md). This guide is useful if you want to create an RRPair programmatically.
+In this guide we will show you how to manually create a snapshot using the Speedscale API. There are much easier ways to create traffic snapshots, such as direct [recording](https://github.com/speedscale/demo) or by [importing a Postman collection](./integrations/import/import-postman.md). This guide is useful if you want to create an RRPair programmatically.
 
 The speedctl CLI tool has a local repository of snapshots that can be synchronized with Speedscale cloud. The process is similar to the `git` source control tool in that you modify snapshots locally and then push/pull them to the central repo. Editing snapshots is like working with text files full of JSON.
 
@@ -18,7 +18,7 @@ It is also possible to edit the snapshot metadata file stored at `<user director
 ## Prerequisites
 
 - Speedscale java [demo](https://github.com/speedscale/demo) is installed
-- [speedctl](../setup/install/cli.md) is installed
+- [speedctl](../getting-started/installation/install/cli.md) is installed
 
 ## Create a Sample Raw File
 
@@ -137,7 +137,7 @@ This will cause an analysis job to be run in Speedscale cloud and you should see
 
 ## Run a Replay
 
-Run a replay in the same way you normally would outlined in our [tutorial](../tutorial.md#replay). Select your new snapshot by name (in this example we called it `testing`).
+Run a replay in the same way you normally would outlined in our [tutorial](../getting-started/tutorial.md#replay). Select your new snapshot by name (in this example we called it `testing`).
 
 ## Wrap up
 

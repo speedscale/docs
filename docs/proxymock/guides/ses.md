@@ -1,3 +1,7 @@
+---
+sidebar_position: 9
+---
+
 # AWS SES Mocking
 
 This guide covers how to use proxymock to mock AWS Simple Email Service (SES) connections and API calls for local development and testing.

@@ -1,3 +1,7 @@
+---
+sidebar_position: 20
+---
+
 # Production Readiness
 
 This guide is a comprehensive walkthrough of considerations for recording from a production environment using the Speedscale sidecar. Keep in mind that recording with the sidecar has various pros and cons but alternative collection mechanisms are fully supported. For many customers the sidecar is the easiest option. If you are using an environment other than Kubernetes, this guide may be helpful but much of it will not be relevant. Contact [support](https://slack.speedscale.com) for help tailoring these instructions to your environment.
@@ -39,7 +43,7 @@ If you are not running on Kubernetes then most of these instructions will need t
 
 - [ ] Are you utilizing a Service Mesh?
 
-Istio and its derivatives are currently supported natively. Other service meshes may be supported if you contact [support](https://slack.speedscale.com). If you are using Istio you will need to follow the instructions in this [section](../setup/install/istio.md) while configuring the operator. Just save that link for later.
+Istio and its derivatives are currently supported natively. Other service meshes may be supported if you contact [support](https://slack.speedscale.com). If you are using Istio you will need to follow the instructions in this [section](../getting-started/installation/install/istio.md) while configuring the operator. Just save that link for later.
 
 - [ ] Does your cluster have resources to support the extra recording workload?
 
@@ -164,7 +168,7 @@ On an application with very high throughput, the sidecar may need additional res
 
 In addition to the resources, there are numerous other ways to customize the sidecar. For example if there is traffic that is not required, you can completely block that port or host. There is a complete set of annotations for customization here:
 
-[https://docs.speedscale.com/setup/sidecar/annotations/](https://docs.speedscale.com/setup/sidecar/annotations/)
+[https://docs.speedscale.com/getting-started/installation/sidecar/annotations/](https://docs.speedscale.com/getting-started/installation/sidecar/annotations/)
 
 ## Pod Sampling
 
@@ -278,4 +282,4 @@ At this point you should have the operator deployed (via helm) and at least a ca
 
 Open your normal Kubernetes monitoring solution and check CPU/Memory utilization versus the assigned limits. If the limits are being exceeded then you will need to modify the helm chart to increase available limits. If you do not have a monitoring solution we recommend [k9s](https://github.com/derailed/k9s) as a fast and pleasant option. You should verify the operator, forwarder and sidecars to be sure.
 
-Next, check your application latency vs historical averages to make sure the impact is not unexpected. Keep in mind that some small latency impact is normal. If you're seeing excessive latency we have an extensive diagnostics [metrics](../setup/sidecar/performance.md) guide. As always, feel free to reach out to [support](https://slack.speedscale.com).
+Next, check your application latency vs historical averages to make sure the impact is not unexpected. Keep in mind that some small latency impact is normal. If you're seeing excessive latency we have an extensive diagnostics [metrics](../getting-started/installation/sidecar/performance.md) guide. As always, feel free to reach out to [support](https://slack.speedscale.com).

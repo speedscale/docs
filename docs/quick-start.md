@@ -1,7 +1,11 @@
+---
+sidebar_position: 0
+---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import CLIInstall from './setup/install/\_cli_install.mdx'
-import ApiKey from './setup/install/api-key.png'
+import CLIInstall from './getting-started/installation/install/_cli_install.mdx'
+import ApiKey from './getting-started/installation/install/api-key.png'
 
 # Quick Start
 
@@ -31,7 +35,7 @@ You will need to get your personal API key from your [Profile Page](https://app.
 
 If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./tutorial.md). The rest of this document is focused on installing a Kubernetes-based demo.
 
-If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then you can install using these instructions. If you are not running in Kubernetes, or are running with a more specialized enterprise distribution please select environment-specific [instructions](./setup/install/README.md) in this section.
+If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then you can install using these instructions. If you are not running in Kubernetes, or are running with a more specialized enterprise distribution please select environment-specific [instructions](./getting-started/installation/install/README.md) in this section.
 
 <Tabs>
 
@@ -59,8 +63,8 @@ for all configuration options available for the Helm chart.
 Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
 The install wizard will walk you through installing the
-[Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
-and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
+[Speedscale Kubernetes Operator](./getting-started/installation/install/kubernetes-operator.md)
+and adding the [Speedscale Sidecar](./getting-started/installation/sidecar/install.md) to your deployment.
 
 ### (Optional) Adding Image Pull Secrets
 
@@ -79,10 +83,10 @@ speedctl install --imgpullsecrets my-secret1,my-secret2p
 
 If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
 The install wizard will walk you through installing the
-[Speedscale Kubernetes Operator](./setup/install/kubernetes-operator.md)
-and adding the [Speedscale Sidecar](./setup/sidecar/install.md) to your deployment.
+[Speedscale Kubernetes Operator](./getting-started/installation/install/kubernetes-operator.md)
+and adding the [Speedscale Sidecar](./getting-started/installation/sidecar/install.md) to your deployment.
 
-Speedscale can also be used with [Docker](./setup/install/docker.md) and [locally](./guides/cli.md).
+Speedscale can also be used with [Docker](./getting-started/installation/install/docker.md) and [locally](./guides/cli.md).
 
 </TabItem>
 
@@ -122,7 +126,7 @@ Installing via `helm install` is preferred as different GitOps engines treat Hel
 
 :::
 
-You can generate manifests either via Helm or our [CLI](./setup/install/cli.md).
+You can generate manifests either via Helm or our [CLI](./getting-started/installation/install/cli.md).
 
 ```
 helm template speedscale-operator speedscale/speedscale-operator \
@@ -156,7 +160,7 @@ speedscale-operator-xxxxxxxxxx-xxxxx    1/1     Running   0          15s
 
 :::tip
 
-If you have any issues installing, check out the [troubleshooting guide](./setup/install/troubleshooting.md) or contact support on [slack](https://slack.speedscale.com)
+If you have any issues installing, check out the [troubleshooting guide](./getting-started/installation/install/troubleshooting.md) or contact support on [slack](https://slack.speedscale.com)
 
 :::
 
@@ -164,4 +168,4 @@ If you have any issues installing, check out the [troubleshooting guide](./setup
 
 At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
 
-If you're already an expert you can click the `Add Service` button in the UI to automatically add sidecars or install them [manually](./setup/sidecar/install.md).
+If you're already an expert you can click the `Add Service` button in the UI to automatically add sidecars or install them [manually](./getting-started/installation/sidecar/install.md).

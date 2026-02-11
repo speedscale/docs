@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+---
+
 # Generator Sizing Guide
 
 When running a load test it is helpful to understand the environmental requirements for reaching your desired
@@ -26,7 +30,7 @@ one with 500ms.
 - Lastly, [transforms](/reference/glossary.md#transform) may also affect throughput.  The combination of
   captured traffic and transforms are what make Speedscale unique and powerful, but they also come with a
 performance cost which depends on the transform being used.  [Resigning
-JWTs](/transform/transforms/jwt_resign.md), for example can be a compute intensive operation
+JWTs](/guides/transformation/transforms/jwt_resign), for example can be a compute intensive operation
 and often affects every RRPair in a [snapshot](/reference/glossary.md#snapshot).  While transforms generally
 don't account for a majority of the generator's CPU time, any processing dedicated to transforming traffic
 cannot be used to send requests and process results.

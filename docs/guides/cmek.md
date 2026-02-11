@@ -1,5 +1,6 @@
 ---
 title: CMEK
+sidebar_position: 5
 ---
 
 import Mermaid from '@theme/Mermaid';

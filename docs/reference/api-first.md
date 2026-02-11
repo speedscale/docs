@@ -1,3 +1,7 @@
+---
+sidebar_position: 0
+---
+
 # Control Speedscale via API
 
 Speedscale practices *api first* development which means that every capability available via the UI is available programmatically. Internally, Speedscale engineers build and test every user-initiated capability using APIs that are designed to be customer facing. Once the API-initiated version of a feature is complete, a UI-option is added. This means that Speedscale satisfies two very different usage models:

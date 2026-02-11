@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Data Retention
 
 Speedscale segments data into three categories which have different data retention policies. Each data tier has a default retention length but can be extended as needed. Please contact your sales representative or reach us on [slack](https://slack.speedscale.com) for more information.

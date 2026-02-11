@@ -52,4 +52,4 @@ Kubernetes which support such automation.
 
 **proxymock** does support being embedded into a CI/CD pipeline but requires a
 commercial license. You can learn more about `proxymock push` and `proxymock
-pull` in the [Speedscale Enterprise](../../intro.md) documentation.
+pull` in the [Speedscale Enterprise](/) documentation.

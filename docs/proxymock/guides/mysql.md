@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+---
+
 # MySQL Mocking
 
 This guide covers how to use proxymock to mock MySQL database connections and queries for local development and testing.

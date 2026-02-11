@@ -1,12 +1,13 @@
 ---
 title: Capture and Replay on Browser
+sidebar_position: 3
 ---
 
 ## Setup
 
 ### Prerequisites
 
-1. [Speedctl is installed](../setup/install/cli.md)
+1. [Speedctl is installed](../getting-started/installation/install/cli.md)
 1. Firefox (or Firefox Developer Edition) required
 
 ### Prepare Environment

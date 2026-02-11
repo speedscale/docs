@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -10,7 +14,7 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 
 ## Prerequisites
 
-1. CLI [speedctl is installed](./setup/install/cli.md)
+1. CLI [speedctl is installed](./getting-started/installation/install/cli.md)
 2. CLI [proxymock is installed](./proxymock/getting-started/installation.md)
 3. After installing CLI, `SPEEDSCALE_HOME` should be set correctly, if you don't see it run `proxymock init` again and allow it to update your rcfile.
 4. Clone the repo: https://github.com/speedscale/demo
@@ -290,7 +294,7 @@ This is just a small subset of things you can do with Speedscale, other things t
 1. Capture traffic from one of your own apps
 2. [Replay traffic from one cluster into another](./guides/replay/guide_other_cluster.md)
 3. [Run a load test](./guides/replay/load-test.md)
-4. [Integrate with CI/CD](./integration/cicd/cicd.md)
+4. [Integrate with CI/CD](./guides/integrations/cicd/cicd.md)
 
 ## Uninstall
 
@@ -322,7 +326,7 @@ If we drill down into a request, we can also see data we may not want to leave o
 
 ![Auth](./guides/end-to-end/unredacted.png)
 
-You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low accuracies because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you cna follow the instructions below.
+You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low accuracies because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you can follow the instructions below.
 
 <Tabs>
 
@@ -362,4 +366,4 @@ Now we see the authorization header is redacted and never makes it to Speedscale
 
 ![Redacted](./guides/end-to-end/redacted.png)
 
-For more complex DLP configuration you can use [this guide](/dlp/).
+For more complex DLP configuration you can use [this guide](/guides/dlp/).

@@ -1,3 +1,7 @@
+---
+sidebar_position: 15
+---
+
 # How to Modify JSON Payloads
 
 Working with JSON payloads is a common task, whether you're parsing data or modifying it dynamically. Speedscale makes it easy to modify JSON strings without scripting or other complex data manipulation techniques. In this guide we will walk through using [transforms](../concepts/transforms.md) to quickly modify the request or response payload within an RRPair.
@@ -10,7 +14,7 @@ Here’s a quick guide on how to use Speedscale to modify JSON data.
 
 ### 1. Adding or Modifying a Key-Value Pair
 
-The [json_path](/transform/transforms/json_path) transform provides a simple API for modifying a JSON string. By default, if the path does not exist then a new key will be created. If you would prefer that the transform error instead you can set `create=false` in the configuration.
+The [json_path](/guides/transformation/transforms/json_path) transform provides a simple API for modifying a JSON string. By default, if the path does not exist then a new key will be created. If you would prefer that the transform error instead you can set `create=false` in the configuration.
 
 Take the following example JSON as an HTTP request body:
 

@@ -1,3 +1,7 @@
+---
+sidebar_position: 7
+---
+
 # Single Sign-On (SSO) Integration
 
 ## Overview
