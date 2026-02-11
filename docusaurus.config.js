@@ -99,10 +99,6 @@ const config = {
             to: "/guides/dlp/",
           },
           {
-            from: "/guides/dlp/",
-            to: "/dlp/",
-          },
-          {
             from: "/cli/speedscale/guides/docker-observability/",
             to: "/getting-started/installation/install/docker",
           },
@@ -146,7 +142,7 @@ const config = {
             from: "/configuration/configuration/rules/",
             to: "/reference/configuration/goals/",
           },
-          { from: "/configuration/dlp/", to: "/dlp/" },
+          { from: "/configuration/dlp/", to: "/guides/dlp/" },
           { from: "/configuration/filters/", to: "/guides/creating-filters/" },
           {
             from: "/configuration/filters/from-traffic-viewer/",
@@ -356,7 +352,7 @@ const config = {
             from: "/reference/configuration/tokenizers-1/httpauthorization/",
             to: "/guides/transformation/extractors/http_req_header/",
           },
-          { from: "/reference/dlp/", to: "/dlp/" },
+          { from: "/reference/dlp/", to: "/guides/dlp/" },
           {
             from: "/reference/install/cli-speedctl/",
             to: "/getting-started/upgrade/operator/",
@@ -709,7 +705,7 @@ const config = {
           },
           {
             from: "/integration/cicd/",
-            to: "/guides/integrations/cicd/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/integration/export/",
@@ -773,11 +769,11 @@ const config = {
           },
           {
             from: "/integration/vscode/",
-            to: "/guides/integrations/",
+            to: "/guides/integrations/import/",
           },
           {
             from: "/mocks/",
-            to: "/guides/mocking/",
+            to: "/guides/mocking/mocks/",
           },
           {
             from: "/mocks/idempotent/",
@@ -1253,7 +1249,7 @@ const config = {
           },
           {
             from: "/proxymock/getting-started/integration/cicd/cicd/",
-            to: "/guides/integrations/cicd/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/concepts/inner-outer/cycle/",
@@ -1269,11 +1265,11 @@ const config = {
           },
           {
             from: "/reference/integrations/",
-            to: "/guides/integrations/",
+            to: "/guides/integrations/import/",
           },
           {
             from: "/reference/integration-with-cicd/",
-            to: "/guides/integrations/cicd/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/proxymock/getting-started/api-key/proxymock/getting-started/initialize/",
@@ -1345,7 +1341,7 @@ const config = {
           },
           {
             from: "/docs/integrations/",
-            to: "/guides/integrations/",
+            to: "/guides/integrations/import/",
           },
           {
             from: "/dlp/",
@@ -1381,7 +1377,7 @@ const config = {
           },
           {
             from: "/proxymock/getting-started/quickstart/quickstart-cli/integration/cicd/cicd/",
-            to: "/guides/integrations/cicd/cicd/",
+            to: "/guides/integrations/cicd/",
           },
           {
             from: "/proxymock/ai-testing/",
@@ -1397,7 +1393,7 @@ const config = {
           },
           {
             from: "/integration/",
-            to: "/guides/integrations/",
+            to: "/guides/integrations/import/",
           },
           {
             from: "/guides/vm/",
