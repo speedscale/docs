@@ -4,7 +4,7 @@ sidebar_position: 11
 
 # Networking Requirements
 
-import ExternalServices from './_external-services.mdx'
+import ExternalServices from '@site/src/partials/reference/external-services.mdx'
 
 In order to operate properly, the Speedscale operator requires network access to the following services:
 
