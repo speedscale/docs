@@ -1481,7 +1481,11 @@ const config = {
         docs: {
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
-          exclude: ["dlp/**", "dlp-old-backup/**"], // Exclude old dlp directories to prevent duplicate routes (redirects handle old URLs)
+          exclude: [
+            "dlp/**",
+            "dlp-old-backup/**", // Exclude old dlp directories to prevent duplicate routes (redirects handle old URLs)
+            "**/_*.{md,mdx}", // Exclude component files (files starting with underscore) from navigation
+          ],
           editUrl: ({ versionDocsDirPath, docPath }) =>
             `https://github.com/speedscale/docs/edit/main/${versionDocsDirPath}/${docPath}`,
         },
