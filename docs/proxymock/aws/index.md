@@ -9,6 +9,11 @@ Speedscale can be used with most AWS services simply by running your app and rec
 
 A list of known supported technologies can be found [here](../../reference/technology-support.md). However, your API or Database may just work so you should try it out.
 
+## Available AWS Service Guides
+
+- [AWS SES (Simple Email Service)](./ses.md) - Record and mock email sending with detailed step-by-step instructions
+- [DynamoDB](./dynamodb.md) - Pre-made mock for common DynamoDB operations
+
 ## General API Information
 
 AWS Services use a variety of different API formats and protocols. Speedscale will automatically detect the API format and use the correct one. Here are some general purpose insights for the AWS APIs that utilize HTTP.

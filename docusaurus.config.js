@@ -1439,6 +1439,10 @@ const config = {
             from: "/replay/viewing-reports-1/logs/",
             to: "/guides/reports/logs/",
           },
+          {
+            from: "/proxymock/guides/ses/",
+            to: "/proxymock/aws/ses/",
+          },
         ],
       },
     ],
