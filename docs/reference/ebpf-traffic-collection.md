@@ -157,6 +157,26 @@ eBPF's design ensures safe execution within the kernel:
 - Minimal memory allocations in kernel space
 - Batched data delivery to user space
 
+## Overhead
+
+eBPF-based observability solutions are widely promoted for their low resource footprint. The Speedscale eBPF collector follows this pattern and is designed to impose minimal overhead across three dimensions:
+
+### Latency
+
+The latency impact of eBPF traffic collection is negligible in practice. Because eBPF programs run directly in kernel space, they observe traffic at the point it flows through the network stack, without injecting hops, proxies, or extra syscalls into the data path. Processing occurs in-kernel with zero-copy semantics, and there is no need to copy packets to user space before analysis. As a result, the collector adds effectively no measurable latency to application requests and responses. This aligns with how other eBPF-based observability tools (e.g., Cilium/Hubble, Pixie) describe their impact: near-zero or negligible latency overhead.
+
+### CPU
+
+The eBPF collector consumes a small amount of CPU for program execution, event processing, and periodic data delivery to user space. Compared to traditional user-space agents or sidecars, eBPF-based collection typically adds low single-digit percentage overhead when tuned for production. Under typical cluster load, this usage is minimal relative to the total CPU available across nodes and should not materially affect application performance or scaling decisions.
+
+### Memory
+
+eBPF programs and their associated maps use a modest, bounded amount of kernel memory. Per-program overhead is typically on the order of hundreds of kilobytes for maps and metadata. The collector is designed to avoid unbounded allocations and to keep memory usage stable over time.
+
+### Kubernetes Cluster Context
+
+In the context of a full Kubernetes cluster, the eBPF collector’s resource footprint is small compared to control plane components, application workloads, and other add-ons. It should not substantially increase cluster-wide CPU or memory utilization, and it avoids the per-pod overhead of sidecar-based approaches.
+
 ## Sidecar vs eBPF
 
 #### Advantages of Kubernetes Sidecars
