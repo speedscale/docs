@@ -41,6 +41,12 @@ CPU usage scales roughly linearly with request volume. The capture container is 
 
 After a high-throughput period ends, the collector may continue consuming elevated resources while it drains buffered data. Plan for this lag when evaluating resource headroom.
 
+### Log Level Impact
+
+The observations above were taken at the default `info` log level. Running the collector at `debug` level significantly increases CPU usage in the ingest container. Under debug logging the ingest container can become CPU-throttled at moderate traffic rates, which limits its ability to forward captured data. The capture container is largely unaffected by log level.
+
+Avoid debug logging under production load. If debug logging is needed for troubleshooting, use it briefly during low-traffic periods or temporarily increase the ingest container's CPU limit.
+
 ## Default Configuration
 
 Collector resource requests and limits are configured through the [Helm chart](/reference/helm.md). The defaults are applied per container (capture and ingest):
