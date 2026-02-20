@@ -24,26 +24,22 @@ The table below shows peak resource usage per container at various request rates
 | 1000 | 414m        | 487Mi       | 116m       | 340Mi      | **530m**      | **827Mi**     |
 
 :::note
-These observations were made with the eBPF collector capturing a single workload with outbound TLS traffic. Your results will vary based on the number of captured workloads, traffic patterns, payload sizes, and protocol mix.
+These observations were made while capturing a single workload with outbound TLS traffic. Your results will vary based on the number of captured workloads, traffic patterns, payload sizes, and protocol mix.
 :::
 
 ## Key Observations
 
 ### Memory
 
-The capture container has a baseline memory footprint of approximately 408Mi at idle. This is due to eBPF maps and kernel BTF (BPF Type Format) data that must be loaded at startup. Memory usage grows modestly with traffic volume.
-
-:::tip
-Monitor collector memory usage so you know when a resource increase is necessary. At higher traffic volumes the combined memory usage can approach the default limits.
-:::
+The capture container has a relatively high baseline memory footprint at idle due to eBPF maps and kernel BTF (BPF Type Format) data that must be loaded at startup. Memory usage grows modestly with traffic volume. The ingest container starts small but grows under load as it buffers captured data for forwarding.
 
 ### CPU
 
-CPU usage scales roughly linearly with request volume. If you are capturing high-throughput workloads, monitor for CPU throttling and increase the CPU limit as needed to maintain reliable collection.
+CPU usage scales roughly linearly with request volume. The capture container is the heavier consumer of the two.
 
 ### Post-Load Drain
 
-After a high-throughput period ends, the collector may continue consuming elevated resources while it drains buffered data. During testing, the pod was still at 501m capture CPU and 400Mi ingest memory after a 1000 QPS test concluded. Plan for this lag when evaluating resource headroom.
+After a high-throughput period ends, the collector may continue consuming elevated resources while it drains buffered data. Plan for this lag when evaluating resource headroom.
 
 ## Default Configuration
 
@@ -55,10 +51,6 @@ Collector resource requests and limits are configured through the [Helm chart](/
 | Memory request    | 256M    |
 | CPU limit         | 500m    |
 | Memory limit      | 1G      |
-
-:::caution
-The default memory request of 256M is below the observed idle memory usage of 408Mi for the capture container. On nodes with tight resource budgets, this mismatch can cause scheduling issues where the Kubernetes scheduler places the pod on a node that cannot actually support it.
-:::
 
 To override these defaults, set the appropriate values in your Helm values file. For example:
 
@@ -74,26 +66,15 @@ ebpf:
       memory: "2G"
 ```
 
-## Recommendations
+## Monitoring
 
-### Memory Requests
-
-Set memory requests to at least **512M** per container to reflect the actual idle footprint and avoid scheduling problems. This is especially important in clusters where nodes are close to capacity.
-
-### High-Throughput Workloads
-
-For nodes running workloads above 500 QPS:
-
-- Increase the CPU limit to **1000m** or higher to prevent throttling of the capture container.
-- Increase the memory limit to **2G** to accommodate ingest buffering under sustained load.
-- Monitor for post-load drain lag to ensure the pod has time to process buffered data before resources are reclaimed.
-
-### Monitoring
-
-Monitor collector pod resource usage through your cluster monitoring solution (Prometheus, Datadog, etc.) or with tools like [k9s](https://k9scli.io/). Watch for:
+Monitor collector pod resource usage through your cluster monitoring solution. Watch for:
 
 - **CPU throttling** on the capture container, which can cause dropped traffic.
 - **Memory pressure** on the ingest container under sustained high throughput.
 - **OOMKill events** if limits are set too low for the observed traffic volume.
+- **Scheduling issues** where the default memory request is below the actual idle footprint of the capture container.
 
 The collector exposes a `/stats` endpoint that reports probe call counts, bytes processed, and chunks published. Use this for application-level monitoring of the capture pipeline.
+
+If you observe any of these issues, increase the corresponding resource requests or limits in your Helm values.
