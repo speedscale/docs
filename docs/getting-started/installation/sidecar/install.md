@@ -19,8 +19,8 @@ used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
 
-:::info
-Speedscale also supports alternate data collectors including log scraping and even a pre-GA eBPF option (contact support for more information). Envoy WASM plug-ins are not supported because of limitations in the current WASM implementation. WASM plug-ins present limitations for this use case including lack of complete data visibility, lack of support for non-HTTP protocols and a challenging configuration experience.
+:::tip
+Speedscale also supports [eBPF-based traffic collection](/reference/ebpf-traffic-collection) which captures TLS traffic without certificates, proxies, or application changes.
 :::
 
 

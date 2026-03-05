@@ -103,9 +103,9 @@ You may also remove the SCC from the service account group at this time if you n
 oc adm policy remove-scc-from-group speedscale-sidecar system:serviceaccounts:<WORKLOAD_NAMESPACE>
 ```
 
-### eBPF (Beta)
+### eBPF
 
-In eBPF mode, a privileged daemonset is deployed to all nodes and uses the built in `privileged` SCC provided by OpenShift. In addition to the overrides specified earlier for the `values.yaml`, you'll need to specify a few more flags to enable capture through this mode:
+In eBPF mode, a daemonset is deployed to all nodes. In addition to the overrides specified earlier for the `values.yaml`, you'll need to specify a few more flags to enable capture through this mode:
 
 ```yaml
 # Required regardless of sidecar mode
