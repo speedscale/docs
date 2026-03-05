@@ -112,7 +112,6 @@ DLP rules are applied in real-time as traffic flows through your forwarders:
 
 - Data is redacted before it reaches Speedscale cloud
 - Original data never leaves your infrastructure
-- Redaction happens at the network level using eBPF technology
 - No application code changes required
 
 ### Maintained Test Data Quality

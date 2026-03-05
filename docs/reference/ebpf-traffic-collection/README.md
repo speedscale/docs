@@ -6,193 +6,147 @@ sidebar_position: 0
 
 ## What is eBPF?
 
-eBPF (extended Berkeley Packet Filter) is a  technology that allows running sandboxed programs in the Linux kernel without changing kernel source code or loading kernel modules. Originally designed for packet filtering, eBPF has evolved into a general-purpose execution engine that enables safe and efficient kernel programming. Many Kubernetes network technologies such as [Envoy](https://istio.io/latest/docs/overview/dataplane-modes/) and [Cilium](https://cilium.io/) are moving to eBPF to reduce resource utilization.
+eBPF (extended Berkeley Packet Filter) is a Linux kernel technology that allows running sandboxed programs in
+the kernel without changing kernel source code or loading kernel modules. Many Kubernetes networking tools
+such as [Cilium](https://cilium.io/) use eBPF for efficient, low-overhead traffic observation.
 
-## How eBPF Works for Network Traffic Collection
+## How Speedscale Uses eBPF
 
-### Kernel-Level Observability
+Speedscale's eBPF collector `nettap` runs as a Kubernetes **DaemonSet** on each node. It attaches lightweight
+probes to the kernel and to specific user-space libraries to observe network traffic without proxies,
+sidecars, or application changes.
 
-eBPF programs run directly in kernel space, providing unprecedented visibility into network traffic with minimal overhead. Unlike traditional packet capture methods that require copying packets from kernel to user space, eBPF can process network data directly where it originates.
+### Plaintext TCP Traffic
 
-Key advantages include:
-- **Zero-copy operations**: Data can be analyzed without expensive memory copies
-- **Minimal performance impact**: Programs run in kernel space with native performance
-- **Real-time processing**: Traffic analysis happens as packets flow through the network stack
-- **Comprehensive visibility**: Access to both network packets and kernel metadata
+Kernel-level **kprobes** attach to TCP send/receive functions to observe plaintext TCP traffic directly in the
+kernel's network stack. This captures traffic for any application on the node without needing per-process
+instrumentation.
 
-### Traffic Capture Architecture
+### TLS Traffic
 
-eBPF programs attach to various kernel hook points to intercept network traffic:
+See [TLS Traffic Visibility](#tls-traffic-visibility) below for details on how encrypted traffic is
+captured in plaintext.
 
-#### Socket-Level Hooks
-- **Socket create/destroy**: Track connection lifecycle
-- **Socket send/receive**: Monitor data transmission
-- **Socket state changes**: Observe connection state transitions
+### DNS Enrichment
 
-#### Network Stack Hooks
-- **TC (Traffic Control)**: Capture packets at the network interface level
-- **XDP (eXpress Data Path)**: Ultra-fast packet processing at the driver level
-- **Netfilter hooks**: Integrate with iptables and connection tracking
+`nettap` observes DNS traffic in order to build an IP-to-hostname mapping table. This enriches captured
+traffic with the original hostnames so that traffic is displayed with meaningful service names rather than raw
+IP addresses. This is particularly useful for non-HTTP protocols where there is no equivalent to the HTTP
+`Host` header.
 
-#### System Call Tracing
-- **syscall entry/exit**: Monitor application network API calls
-- **kprobes/kretprobes**: Trace specific kernel functions
-- **tracepoints**: Use predefined kernel instrumentation points
+### Kubernetes Integration
 
-#### User-Space Instrumentation
-- **uprobes/uretprobes**: Instrument user-space functions for TLS visibility
-- **USDT (User Statically Defined Tracing)**: Application-specific tracing points
-- **Library function hooking**: Monitor SSL/TLS library calls
+`nettap` runs with `hostNetwork` and `hostPID` enabled, giving it visibility into all pods on the node. It
+uses this ability along with the Kubernetes API in order to map connections back to specific pods, enriching
+captured traffic with pod name, namespace, labels, and other metadata.
 
-### Data Collection Process
+## TLS Traffic Visibility
 
-1. **Program Loading**: eBPF programs are compiled to bytecode and loaded into the kernel
-2. **Verification**: Kernel verifier ensures programs are safe and will terminate
-3. **Attachment**: Programs attach to appropriate kernel hooks
-4. **Event Generation**: Network events trigger program execution
-5. **Data Aggregation**: Programs collect and process network metadata
-6. **User Space Delivery**: Processed data is delivered to user space applications
+Speedscale captures TLS-encrypted traffic in plaintext, without needing certificates, proxies, or application
+changes.
 
-### TCP Traffic Analysis
+### OpenSSL 3.x
 
-For TCP traffic specifically, eBPF enables deep inspection capabilities:
+**uprobes** attach to read/write functions in OpenSSL 3.x for processes that use it. `nettap`
+auto-detects the OpenSSL library loaded by each process and attaches probes dynamically. This captures
+plaintext data after decryption (reads) and before encryption (writes).
 
-#### Connection Tracking
-- Monitor TCP handshake establishment
-- Track connection state throughout lifecycle
-- Detect connection failures and anomalies
+### Go Native TLS
 
-#### Data Flow Analysis
-- Capture request/response pairs
-- Measure latency and throughput
-- Analyze data patterns and sizes
+For Go applications using the standard `crypto/tls` package, `nettap` attaches **uprobes** directly
+to Go's TLS read and write functions. This requires:
 
-#### Performance Metrics
-- Round-trip time (RTT) measurements
-- Congestion window analysis
-- Retransmission detection
-- Bandwidth utilization
+- Go version 1.18 or later
+- **Unstripped binaries** (symbol table must be present for probe attachment so binaries must be built without `-ldflags="-s"`)
 
-### TLS Traffic Visibility
+### Java (JVMTI Agent)
 
-One of the most powerful capabilities of eBPF for API testing is the ability to inspect encrypted TLS traffic without requiring certificate management or SSL termination.
+JVM-based applications require a separate mechanism rather than eBPF probes: a **JVMTI agent** that
+instruments Java's TLS layer from within the JVM. This captures plaintext traffic for any Java application
+using standard TLS libraries (e.g., `javax.net.ssl`).
 
-#### User-Space uprobes for TLS Decryption
+### What This Means in Practice
 
-eBPF uprobes (user-space probes) can instrument SSL/TLS library functions to capture plaintext data before encryption and after decryption:
+- No TLS certificates to install or manage
+- No proxy sidecars to deploy or configure
+- No application code changes or recompilation
+- Full HTTP/HTTPS request and response visibility including headers and bodies
 
-**OpenSSL Instrumentation**
-- **SSL_write()**: Capture outbound plaintext data before encryption
-- **SSL_read()**: Capture inbound plaintext data after decryption  
-- **SSL_write_ex() / SSL_read_ex()**: Support for newer OpenSSL APIs
-- **BIO_write() / BIO_read()**: Low-level I/O operations for comprehensive coverage
+## Requirements
 
-**Library Detection and Compatibility**
-- Automatic detection of OpenSSL, BoringSSL, and LibreSSL versions
-- Dynamic symbol resolution for different library versions
-- Support for statically linked applications through binary analysis
-- Fallback mechanisms for custom TLS implementations
+- **Architecture:** `x86_64` or `arm64`
+- **Linux Kernel 5.17+** with BTF (BPF Type Format) support enabled. BTF provides portable type information
+  that allows the `nettap` probes to work across different kernel versions without recompilation
 
-#### Benefits for Encrypted Traffic Analysis
+### Capabilities
 
-**Complete API Visibility**
-- Full HTTP/HTTPS request and response bodies
-- Headers, cookies, and authentication tokens
-- JSON, XML, and binary payload inspection
-- GraphQL queries and responses over HTTPS
+`nettap` requires the following Linux capabilities:
 
-**Zero Configuration**
-- No certificate installation or management required
-- No application code modifications needed
-- No proxy deployment or traffic redirection
-- Transparent operation with existing infrastructure
+| Capability        | Purpose                                          |
+|-------------------|--------------------------------------------------|
+| `CAP_BPF`         | Load and manage eBPF programs                    |
+| `CAP_PERFMON`     | Access perf events and ring buffers              |
+| `CAP_NET_ADMIN`   | Attach network-related probes                    |
+| `CAP_SYS_PTRACE`  | PID namespace identification                     |
 
-**Production Safety**
-- Read-only access to application memory
-- No modification of encryption keys or certificates
-- Minimal performance impact (typically &lt;2% overhead)
-- Fail-safe operation prevents application crashes
+### Kubernetes Deployment
 
-#### Implementation Considerations for TLS
+`nettap` runs as a **DaemonSet** with:
 
-**Memory Layout Compatibility**
-- Handle different SSL library versions and memory layouts
-- Adapt to compiler optimizations and inlining
-- Support for containerized applications with varying library versions
+- `hostNetwork: true` - visibility into host-level network traffic to capture traffic for any pod scheduled on the node
+- `hostPID: true` - ability to discover and attach probes to application processes for any pod scheduled on the node
 
-**Data Correlation**
-- Match encrypted network packets with decrypted payloads
-- Maintain connection state across SSL sessions
-- Handle connection multiplexing and HTTP/2 streams
+## Limitations
 
-**Security Boundaries**
-- Respect process isolation and user permissions
-- Audit logging for compliance requirements  
-- Optional data masking for sensitive information
-
-### Security and Safety
-
-eBPF's design ensures safe execution within the kernel:
-
-- **Verifier**: Static analysis prevents infinite loops and invalid memory access
-- **Sandboxing**: Programs run in isolated execution context
-- **Resource limits**: Bounded execution time and memory usage
-- **Permission model**: Fine-grained access control to kernel features
-
-## Implementation Considerations
-
-### Kernel Requirements
-- Linux kernel 5.1+
-- eBPF-enabled kernel configuration
-- Sufficient kernel memory for program loading
-
-### Permissions
-- CAP_BPF capability (Linux 5.8+) or CAP_SYS_ADMIN
-- Appropriate seccomp and AppArmor policies
-- Container runtime privilege requirements
-
-### Performance Tuning
-- Program optimization for hot code paths
-- Efficient data structures and algorithms
-- Minimal memory allocations in kernel space
-- Batched data delivery to user space
+- **Go binaries must not be stripped** - Go native TLS capture requires preserving the ELF symbol table. Binaries
+  built with `-ldflags="-s"` or otherwise stripped will not have TLS traffic captured. Plaintext
+  TCP traffic is still captured.
+- **Mid-stream connections** - Connections established before `nettap` attaches probes will not
+  have their initial handshake or early data captured. Subsequent requests on those connections are
+  captured normally.
+- **TCP only** - `nettap` captures TCP traffic only. UDP is only captured for DNS resolution (port 53).
+- **OpenSSL version** - TLS capture via uprobes is limited to OpenSSL 3.x. Applications using older
+  OpenSSL versions, BoringSSL, or LibreSSL will not have TLS traffic captured, though plaintext TCP
+  traffic is still visible.
 
 ## Overhead
 
-eBPF-based observability solutions are widely promoted for their low resource footprint. The Speedscale eBPF collector follows this pattern and is designed to impose minimal overhead across three dimensions:
+eBPF-based collection is designed for minimal production impact across three dimensions:
 
 ### Latency
 
-The latency impact of eBPF traffic collection is negligible in practice. Because eBPF programs run directly in kernel space, they observe traffic at the point it flows through the network stack, without injecting hops, proxies, or extra syscalls into the data path. Processing occurs in-kernel with zero-copy semantics, and there is no need to copy packets to user space before analysis. As a result, the collector adds effectively no measurable latency to application requests and responses. This aligns with how other eBPF-based observability tools (e.g., Cilium/Hubble, Pixie) describe their impact: near-zero or negligible latency overhead.
+`nettap` observes traffic passively - it does not sit in the data path. Probes execute in-kernel
+alongside normal network operations, adding no measurable latency to application requests or responses.
 
 ### CPU
 
-The eBPF collector consumes a small amount of CPU for program execution, event processing, and periodic data delivery to user space. Compared to traditional user-space agents or sidecars, eBPF-based collection typically adds low single-digit percentage overhead when tuned for production. Under typical cluster load, this usage is minimal relative to the total CPU available across nodes and should not materially affect application performance or scaling decisions.
+eBPF programs consume a small amount of CPU for event processing and delivery to user space. Under
+typical workloads, this is low single-digit percentage overhead compared to total node CPU.
 
 ### Memory
 
-eBPF programs and their associated maps use a modest, bounded amount of kernel memory. Per-program overhead is typically on the order of hundreds of kilobytes for maps and metadata. The collector is designed to avoid unbounded allocations and to keep memory usage stable over time.
+eBPF programs and their associated maps use a bounded amount of kernel memory, typically on the order
+of hundreds of kilobytes per program. `nettap` avoids unbounded allocations and maintains stable
+memory usage over time.
 
-### Kubernetes Cluster Context
-
-In the context of a full Kubernetes cluster, the eBPF collector’s resource footprint is small compared to control plane components, application workloads, and other add-ons. It should not substantially increase cluster-wide CPU or memory utilization, and it avoids the per-pod overhead of sidecar-based approaches.
+For detailed resource utilization data, see [Resource Utilization](resource-utilization.md).
 
 ## Sidecar vs eBPF
 
-#### Advantages of Kubernetes Sidecars
+Choosing between sidecar-based and eBPF-based traffic collection depends on your environment and
+requirements.
 
-- **Language Agnostic**: Works with any application regardless of programming language or framework.
-- **Rich Protocol Support**: Can handle complex protocols (HTTP/2, gRPC, etc.) and TLS termination.
-- **User-Space Flexibility**: Easier to update, debug, and extend without kernel dependencies.
-- **Fine-Grained Control**: Can inject, modify, or block traffic at the application layer.
-- **Mature Ecosystem**: Integrates with existing service mesh and observability tools.
+### When to Use eBPF
 
-#### Advantages of eBPF
+- You want **frictionless** traffic capture that does not require workload modifications
+- You want **node-level visibility** without per-pod sidecars
+- You need to capture TLS traffic **without managing certificates** or modifying deployments
+- You want to **minimize resource overhead** and avoid sidecar CPU/memory costs
 
-- **Low Overhead**: Kernel-level visibility with minimal performance impact.
-- **Transparent Operation**: No need to modify application code or deployment manifests.
-- **Comprehensive Coverage**: Captures all network traffic, including non-proxied and encrypted flows.
-- **Security Isolation**: Runs in a sandboxed environment with strict safety checks.
-- **Dynamic Instrumentation**: Can attach to running systems without restarts or redeployments.
+### When to Use Sidecars/Proxies
 
-Interested in leveraging eBPF for advanced traffic collection? Contact us at **support@speedscale.com** to learn more about our eBPF collector beta program and how it can enhance your API testing capabilities.
+- Your cluster restricts the elevated permissions required to instrument eBPF probes
+- Your environment requires **per-pod traffic control** with fine-grained policies
+- You are using nodes with **older kernels** that don't meet eBPF requirements
+- You need to capture TLS traffic from applications using TLS libraries not yet supported by the
+  eBPF collector

@@ -151,6 +151,6 @@ sequenceDiagram
 
 In this mode, the sidecar is actively re-signing traffic so that your service is interacting with the Speedscale sidecar and the sidecar is then interacting with the external service. This is similar to tools like [mitmproxy](https://mitmproxy.org/).
 
-:::tip BETA
-Sidecar proxies are slowly being replaced by eBPF-based collections but platform support is not wide enough for enterprise full adoption yet. If you're interesting in an eBPF-based collector please reach out to [support](https://slack.speedscale.com).
+:::tip
+Speedscale also supports [eBPF-based traffic collection](/reference/ebpf-traffic-collection) which captures TLS traffic without certificates, proxies, or application changes.
 :::
