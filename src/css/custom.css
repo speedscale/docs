@@ -74,6 +74,11 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   display: none;
 }
 
+/* Add breathing room between the dark mode toggle and the free trial button */
+[class*='colorModeToggle'] {
+  margin-left: 10px;
+}
+
 .free-trial {
     font-weight: 600;
     color: #ffffff;

@@ -1512,7 +1512,7 @@ const config = {
         indexName: "speedscale",
       },
       colorMode: {
-        disableSwitch: true,
+        disableSwitch: false,
       },
       navbar: {
         title: "",
