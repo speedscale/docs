@@ -33,3 +33,12 @@ import BinaryCLIInstall from './installation/\_cli_binary.mdx'
 Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp install`.
 :::
 
+## After installing
+
+**proxymock** requires an API key. You can get one and save it in one step:
+
+- **New users:** Run `proxymock init` and follow the prompts (you can sign up when prompted).
+- **Existing key:** Run `proxymock init --api-key <your key>`.
+
+For more options (enterprise profile, CI, troubleshooting), see [Initialize API Key](/proxymock/guides/initialize.md). Then continue with the [Quickstart](/proxymock/getting-started/quickstart) to run your first recording.
+

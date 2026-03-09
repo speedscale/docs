@@ -40,15 +40,13 @@ proxymock init --api-key <Your API Key>
 
 <Tabs>
   <TabItem value="Existing Enterprise Customer">
-So you already have a Speedscale account.  You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile).
-
-Copy the API key to your clipboard:
-
-![API Key](../../getting-started/installation/install/api-key.png)
-</TabItem>
+If you already have a Speedscale account, get your personal API key from your [Profile page](https://app.speedscale.com/profile) (API Key section). Copy the key, then run `proxymock init --api-key <your key>`.
+  </TabItem>
 
   <TabItem value="New User">
-[Signup for an API Key](https://app.speedscale.com/proxymock/signup)
+[Sign up for an API key](https://app.speedscale.com/proxymock/signup). After signup, copy your key from the page (see below) and run `proxymock init --api-key <your key>`, or run `proxymock init` and paste the key when prompted.
+
+![Where to find your API key](../getting-started/api-key.png)
   </TabItem>
 </Tabs>
 

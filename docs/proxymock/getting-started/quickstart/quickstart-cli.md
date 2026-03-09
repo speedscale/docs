@@ -103,23 +103,21 @@ For this example we'll be using a simple demo app that accepts an API request, c
 
 Need another OS like Windows or are you having issues? See advanced [installation](../installation.md).
 
-## Step 2: Obtain an API Key {#api-key}
+## Step 2: Get and register your API key {#api-key}
 
-If you are an enterprise customer you can find your api key on the [Profile Page](https://app.speedscale.com/profile).
+**Easiest (new users):** Run `proxymock init` with no arguments. You'll be prompted to sign up or sign in; your API key is then saved. We don't sell marketing data or share your email.
 
-![API Key](../../../getting-started/installation/install/api-key.png)
+**If you already have a key:** Get it from [sign up](https://app.speedscale.com/proxymock/signup) or, for enterprise customers, the [Profile page](https://app.speedscale.com/profile). Then register it:
 
-Otherwise you can [sign up for an API Key](https://app.speedscale.com/proxymock/signup). Don't worry, we don't sell marketing data or give your email address to any bot nets.
-
-## Step 3: Initialize proxymock {#initializing}
-
-Run the following command to obtain an API key:
+![Where to find your API key](../api-key.png)
 
 ```shell
 proxymock init --api-key <your key>
 ```
 
-## Step 4: Install the demo app and start recording {#recording}
+For more detail (enterprise, CI, troubleshooting), see [Initialize API Key](/proxymock/guides/initialize.md).
+
+## Step 3: Install the demo app and start recording {#recording}
 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
