@@ -35,7 +35,7 @@ Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `pr
 
 ## After installing
 
-**proxymock** requires an API key. You can get one and save it in one step:
+**proxymock** requires an API key. If you don't have one, [get one here](https://app.speedscale.com/proxymock/signup). Then save it in one step:
 
 - **New users:** Run `proxymock init` and follow the prompts (you can sign up when prompted).
 - **Existing key:** Run `proxymock init --api-key <your key>`.
