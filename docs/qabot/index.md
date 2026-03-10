@@ -5,7 +5,7 @@ sidebar_position: 0
 
 # QABot
 
-QABot automates the creation of realistic and reliable tests and service mocks using traffic replay. By recording a running instance of your application and replaying the traffic against it multiple times, QABot compares the results and generates data modification suggestions called Recommendations. These Recommendations are automatically applied to the original snapshot to improve the accuracy of service mocks and tests.
+QABot automates the creation of realistic and reliable tests and service mocks using traffic replay. By recording a running instance of your application and replaying the traffic against it multiple times, QABot compares the results and generates data modification recommendations. These recommendations are automatically applied to the original snapshot to improve the accuracy of service mocks and tests.
 
 :::tip Active Beta
 QABot is currently in active beta. To activate this feature in your environment, join the [Speedscale community](https://speedscale.com/community/) or contact your Speedscale representative.
