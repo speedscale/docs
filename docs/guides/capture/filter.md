@@ -64,6 +64,27 @@ Clicking the Save button at the top of the Traffic Viewer will cause the current
 
 Traffic filters can also be saved for use as forwarder filters or snapshot criteria by clicking the save button inside the filter editor dialog. The Traffic Viewer also employs URL deep links which means you can copy/paste the URL bar in your browser to share a view.
 
+## Resending Requests
+
+You can resend any captured request directly from the traffic viewer. Click on an RRPair to open the detail view, then click the **Resend** button to open the resend panel. From there you can modify headers, body, and URL before sending. The response appears alongside the original for easy comparison. See the full [Resend RRPair guide](../resend-rrpair.md) for details.
+
+## Full-Text Search
+
+The traffic viewer supports full-text search across request and response content. Use the search bar to find specific strings in URLs, headers, and bodies across all visible traffic. This is particularly useful for tracking down requests containing specific tokens, error messages, or field values.
+
+## Request and Response Editor
+
+The RRPair detail view uses a Monaco-based code editor (the same editor that powers VS Code) for displaying request and response bodies.
+
+![RRPair detail view with syntax highlighting](./rrpair-syntax.png)
+
+The editor provides:
+
+- **Syntax highlighting** for JSON, XML, HTML, and other content types
+- **Code folding** to collapse and expand nested structures
+- **Keyboard shortcuts** — standard editor shortcuts like `Cmd/Ctrl+F` for find, `Cmd/Ctrl+G` for go to line
+- **Word wrap toggle** for long lines
+
 ## Managing Snapshot Size
 
 :::tip

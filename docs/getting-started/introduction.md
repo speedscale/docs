@@ -14,6 +14,12 @@ releases take place. The old days of manually generating and maintaining load / 
 Speedscale combines observability technology with cloud data warehouses to make test maintenance obsolete. The cost to generate
 regression and performance validation suites is so low, you no longer edit/modify old tests -- you simply generate a new one.
 
+![Speedscale home screen](./home-screen.png)
+
+### AI Assistant
+
+The fastest way to get started is the **AI assistant** on the home screen. Ask it questions in natural language — it can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
+
 Speedscale is a 3 part process: **Observe**, **Analyze**, and **Replay**.
 
 ### Observe <a href="#observe" id="observe"></a>

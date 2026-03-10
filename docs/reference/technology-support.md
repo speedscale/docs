@@ -6,7 +6,7 @@ sidebar_position: 3
 
 Protocol Support
 
-Speedscale replays involve three distinct steps that are supported separately: **Capture**, **Analyze**, and **Playback**. It is possible to have observability (Capture) into one protocol without necessarily having full replay support. Please reach out if you need support for a technology not in this list.
+Speedscale replays involve three distinct steps that are supported separately: **Capture**, **Analyze**, and **Replay**. It is possible to have observability (Capture) into one protocol without necessarily having full replay support. Please reach out if you need support for a technology not in this list.
 
 ### Supported Languages
 
