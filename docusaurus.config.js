@@ -1097,7 +1097,11 @@ const config = {
           },
           {
             from: "/transform/suggestions/",
-            to: "/guides/transformation/suggestions/",
+            to: "/guides/transformation/recommendations/",
+          },
+          {
+            from: "/guides/transformation/suggestions/",
+            to: "/guides/transformation/recommendations/",
           },
           {
             from: "/transform/transforms/",

@@ -65,6 +65,38 @@ JVM-based applications require a separate mechanism rather than eBPF probes: a *
 instruments Java's TLS layer from within the JVM. This captures plaintext traffic for any Java application
 using standard TLS libraries (e.g., `javax.net.ssl`).
 
+### PHP (OpenSSL)
+
+For PHP applications, `nettap` attaches **uprobes** to the OpenSSL shared library used by PHP's TLS layer. This captures plaintext HTTP traffic from PHP services without any code changes. The OpenSSL library must be available as a shared object (not statically compiled).
+
+### .NET (OpenSSL on Linux)
+
+On Linux, .NET applications typically use OpenSSL for TLS. `nettap` attaches **uprobes** to the OpenSSL library to capture plaintext traffic. This works for ASP.NET Core and other .NET workloads running on Linux containers. Windows-based .NET using SChannel is not supported.
+
+### Python (OpenSSL)
+
+Python's `ssl` module uses OpenSSL under the hood. `nettap` attaches **uprobes** to the OpenSSL library loaded by the Python process. For statically compiled Python builds, you may need to set the `NETTAP_OPENSSL_STATIC` environment variable and provide the path to the OpenSSL binary.
+
+### Node.js (Static OpenSSL)
+
+Node.js bundles a statically linked copy of OpenSSL. To capture TLS traffic from Node.js applications, set the following environment variables on the `nettap` DaemonSet:
+
+- `NETTAP_OPENSSL_STATIC=true`
+- Set the binary path to the Node.js executable
+
+This allows `nettap` to locate and attach probes to the statically linked OpenSSL functions within the Node.js binary.
+
+### Language Support Matrix
+
+| Language | Capture Method | TLS Support | Min Kernel | Notes |
+|---|---|---|---|---|
+| Go | eBPF uprobe (`crypto/tls`) | Native | 5.17 | Best supported; requires unstripped binaries |
+| Java | JVMTI agent | JSSE hook | 5.17 | Requires nettap Java agent on classpath |
+| PHP | eBPF uprobe (OpenSSL) | OpenSSL | 5.17 | Requires OpenSSL shared library |
+| .NET | eBPF uprobe (OpenSSL) | OpenSSL | 5.17 | Linux only; SChannel not supported |
+| Python | eBPF uprobe (`ssl` / OpenSSL) | OpenSSL | 5.17 | Static builds need `NETTAP_OPENSSL_STATIC` |
+| Node.js | Static OpenSSL uprobe | OpenSSL | 5.17 | Set `NETTAP_OPENSSL_STATIC=true` and binary path |
+
 ### What This Means in Practice
 
 - No TLS certificates to install or manage
@@ -95,6 +127,91 @@ using standard TLS libraries (e.g., `javax.net.ssl`).
 
 - `hostNetwork: true` - visibility into host-level network traffic to capture traffic for any pod scheduled on the node
 - `hostPID: true` - ability to discover and attach probes to application processes for any pod scheduled on the node
+
+## Installation
+
+### Enabling via Helm
+
+To enable eBPF capture, set `ebpf.enabled: true` in your Helm values and define at least one capture target:
+
+```bash
+helm install speedscale-operator speedscale/speedscale-operator \
+  -n speedscale \
+  --create-namespace \
+  --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
+  --set clusterName=<YOUR-CLUSTER-NAME> \
+  --set ebpf.enabled=true \
+  -f ebpf-values.yaml
+```
+
+Where `ebpf-values.yaml` contains your capture targets:
+
+```yaml
+ebpf:
+  enabled: true
+  configuration:
+    capture:
+      targets:
+        - name: my-service
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: my-namespace
+          podSelector:
+            matchLabels:
+              app: my-service
+```
+
+You can define multiple targets to capture traffic from different services or namespaces. See the [Helm Values reference](../helm.md) for the full list of eBPF configuration options.
+
+### Enabling via Annotation
+
+You can also enable eBPF capture on a per-workload basis using Kubernetes annotations. This is useful when you want to target specific deployments without modifying the global Helm configuration:
+
+```bash
+kubectl annotate deployment my-app -n my-namespace \
+  ebpf.speedscale.com/capture="true"
+```
+
+To control which ports are captured via eBPF:
+
+```bash
+kubectl annotate deployment my-app -n my-namespace \
+  ebpf.speedscale.com/port-filter="8080,8443"
+```
+
+To disable eBPF capture on a workload:
+
+```bash
+kubectl annotate deployment my-app -n my-namespace \
+  ebpf.speedscale.com/capture="false" --overwrite
+```
+
+:::tip
+Annotation-based capture requires that `ebpf.enabled: true` is set in the Helm chart. The annotation controls which workloads are targeted, but the nettap DaemonSet must be running on the node.
+:::
+
+### Verifying Installation
+
+After enabling eBPF, verify that the nettap DaemonSet is running:
+
+```bash
+kubectl -n speedscale get daemonset
+```
+
+You should see a `nettap` DaemonSet with pods running on each node:
+
+```
+NAME     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+nettap   3         3         3       3             3           <none>          5m
+```
+
+Check the nettap logs to verify probe attachment:
+
+```bash
+kubectl -n speedscale logs daemonset/nettap | grep "probe attached"
+```
+
+The logs will indicate which probe type was selected for each process (kprobe, uprobe, or JVMTI) and whether attachment succeeded.
 
 ## Limitations
 

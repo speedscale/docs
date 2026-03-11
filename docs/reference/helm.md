@@ -109,6 +109,51 @@ helm install speedscale-operator speedscale/speedscale-operator \
 | `tolerations` | list | `[]` | List of tolerations for pod scheduling. See [Kubernetes tolerations documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/). |
 | `nodeSelector` | object | `{}` | Node selector object for pod scheduling. See [Kubernetes node selector documentation](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/). |
 
+### eBPF Traffic Collection
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ebpf.enabled` | bool | `false` | Enable eBPF-based traffic capture via the nettap DaemonSet. When enabled, nettap is deployed to all nodes in the cluster. |
+| `ebpf.configuration.capture.targets` | list | `[]` | List of capture targets. Each target specifies which workloads nettap should monitor using label selectors. |
+| `ebpf.configuration.capture.targets[].name` | string | `""` | A descriptive name for this capture target. |
+| `ebpf.configuration.capture.targets[].namespaceSelector.matchLabels` | object | `{}` | Label selector to match namespaces for this target. Example: `kubernetes.io/metadata.name: my-namespace`. |
+| `ebpf.configuration.capture.targets[].podSelector.matchLabels` | object | `{}` | Label selector to match pods within the selected namespaces. Example: `app: my-service`. |
+
+**Example — enable eBPF and target a specific service:**
+
+```yaml
+ebpf:
+  enabled: true
+  configuration:
+    capture:
+      targets:
+        - name: payments-service
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: payments
+          podSelector:
+            matchLabels:
+              app: payments-api
+```
+
+**Example — capture all traffic in a namespace:**
+
+```yaml
+ebpf:
+  enabled: true
+  configuration:
+    capture:
+      targets:
+        - name: all-staging
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: staging
+          podSelector:
+            matchLabels: {}
+```
+
+For eBPF requirements (kernel version, capabilities, supported languages), see the [eBPF Traffic Collection reference](./ebpf-traffic-collection/README.md).
+
 ### Data Loss Prevention (DLP)
 
 | Parameter | Type | Default | Description |

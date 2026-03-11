@@ -51,6 +51,7 @@ const sidebars = {
         id: "guides/index"
       },
       items: [
+        "guides/ai-assistant",
         {
           type: "category",
           label: "Traffic Capture",
@@ -110,6 +111,11 @@ const sidebars = {
             "guides/extract-replace",
             "guides/creating-a-snapshot",
             "guides/creating-filters",
+            "guides/recommendations",
+            "guides/resend-rrpair",
+            "guides/cluster-map",
+            "guides/compare-rrpairs",
+            "guides/websocket",
             "guides/cli",
             "guides/load-patterns",
             "guides/troubleshooting",

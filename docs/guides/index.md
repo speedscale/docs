@@ -41,12 +41,17 @@ This section contains practical, step-by-step guides for using Speedscale's API 
   <TroubleshootingCard />
 </div>
 
+## Analysis & Reports
+
+- **[Reports](./reports/)** - Understanding test results and performance metrics
+- **[Traffic Recommendations](./recommendations)** - Automated insights from replay reports
+- **[Resend RRPair](./resend-rrpair)** - Resend and modify captured requests from the traffic viewer
+
 ## Additional Resources
 
 - **[Advanced Filters](./advanced-filters)** - Create sophisticated traffic filters for precise capture
 - **[CLI Usage](./cli)** - Command-line interface for power users
 - **[Ingress Traffic](./ingress)** - Capture cluster ingress traffic
-- **[Reports](./reports/)** - Understanding test results and performance metrics
 - **[GraphQL Support](./graphql)** - Working with GraphQL APIs
 - **[JSON Payloads](./json-payloads)** - Handling complex JSON data structures
 - **[Load Patterns](./load-patterns)** - Configure realistic load testing scenarios
