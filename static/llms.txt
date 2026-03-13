@@ -13,14 +13,21 @@
 
 Learn how Speedscale works: traffic capture, snapshots, transforms, replay, mocking, and assertions.
 
-- [Concepts Overview](https://docs.speedscale.com/concepts/)
+- [Traffic Capture](https://docs.speedscale.com/concepts/capture/)
+- [Traffic Replay](https://docs.speedscale.com/concepts/traffic-replay/)
+- [Transforms](https://docs.speedscale.com/concepts/transforms/)
+- [Service Mocking](https://docs.speedscale.com/concepts/service_mocking/)
+- [Authentication](https://docs.speedscale.com/concepts/auth/)
+- [Test Configuration](https://docs.speedscale.com/concepts/test_config/)
 
 ## Guides
 
 Step-by-step how-to guides for common tasks.
 
 ### Traffic Capture
-- [Capture Guides](https://docs.speedscale.com/guides/capture/)
+- [Capture Infrastructure](https://docs.speedscale.com/guides/capture/infra/)
+- [Capture Traffic](https://docs.speedscale.com/guides/capture/traffic/)
+- [Capture Filtering](https://docs.speedscale.com/guides/capture/filter/)
 
 ### Traffic Transformation
 - [Transformation Overview](https://docs.speedscale.com/guides/transformation/overview/)
@@ -31,13 +38,19 @@ Step-by-step how-to guides for common tasks.
 - [Replay Guides](https://docs.speedscale.com/guides/replay/)
 
 ### Service Mocking
-- [Mocking Guides](https://docs.speedscale.com/guides/mocking/)
+- [Mock Services](https://docs.speedscale.com/guides/mocking/mocks/)
+- [Mock Triggers](https://docs.speedscale.com/guides/mocking/triggers/)
+- [Idempotent Mocking](https://docs.speedscale.com/guides/mocking/idempotent/)
 
 ### Data Loss Prevention
 - [DLP Guides](https://docs.speedscale.com/guides/dlp/)
 
 ### CI/CD Integrations
-- [Integration Guides](https://docs.speedscale.com/guides/integrations/)
+- [CI/CD Integration](https://docs.speedscale.com/guides/integrations/cicd/)
+- [AWS Integration](https://docs.speedscale.com/guides/integrations/aws/)
+- [GCP Integration](https://docs.speedscale.com/guides/integrations/gcp/)
+- [Import](https://docs.speedscale.com/guides/integrations/import/)
+- [Export](https://docs.speedscale.com/guides/integrations/export/)
 
 ### Advanced Topics
 - [GraphQL](https://docs.speedscale.com/guides/graphql/)
