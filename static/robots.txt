@@ -1,3 +1,29 @@
+# Search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# AI search crawlers (allowed - these power search results)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# AI training crawlers (disallowed - protect proprietary content)
+User-agent: GPTBot
+Disallow: /
+
+# Default
 User-agent: *
 Allow: /
+
 Sitemap: https://docs.speedscale.com/sitemap.xml

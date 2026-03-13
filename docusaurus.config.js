@@ -1454,6 +1454,13 @@ const config = {
 
   headTags: [
     {
+      tagName: "meta",
+      attributes: {
+        name: "msvalidate.01",
+        content: "6EB60220D9E6092C2488398E9DCE5ACE",
+      },
+    },
+    {
       tagName: "script",
       attributes: {
         type: "text/javascript",
@@ -1508,6 +1515,20 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        { name: "og:site_name", content: "Speedscale Docs" },
+        { name: "og:type", content: "website" },
+        {
+          name: "og:image",
+          content: "https://docs.speedscale.com/img/speedscale.svg",
+        },
+        { name: "twitter:card", content: "summary" },
+        { name: "twitter:site", content: "@speedscaleai" },
+        {
+          name: "twitter:image",
+          content: "https://docs.speedscale.com/img/speedscale.svg",
+        },
+      ],
       algolia: {
         // The application ID provided by Algolia
         appId: "G1CYU179LN",
