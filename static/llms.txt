@@ -1,0 +1,104 @@
+# Speedscale Documentation
+
+> Technical documentation for Speedscale, a runtime validation platform for cloud-native APIs. Speedscale captures real production traffic and replays it against code changes in CI/CD pipelines to catch behavioral regressions. This site covers the Speedscale Platform, ProxyMock (free local mocking tool), and QABot.
+
+## Getting Started
+
+- [Introduction](https://docs.speedscale.com/getting-started/introduction/)
+- [Quick Start](https://docs.speedscale.com/getting-started/quick-start/)
+- [Tutorial](https://docs.speedscale.com/getting-started/tutorial/)
+- [Installation](https://docs.speedscale.com/getting-started/installation/)
+
+## Core Concepts
+
+Learn how Speedscale works: traffic capture, snapshots, transforms, replay, mocking, and assertions.
+
+- [Traffic Capture](https://docs.speedscale.com/concepts/capture/)
+- [Traffic Replay](https://docs.speedscale.com/concepts/traffic-replay/)
+- [Transforms](https://docs.speedscale.com/concepts/transforms/)
+- [Service Mocking](https://docs.speedscale.com/concepts/service_mocking/)
+- [Authentication](https://docs.speedscale.com/concepts/auth/)
+- [Test Configuration](https://docs.speedscale.com/concepts/test_config/)
+
+## Guides
+
+Step-by-step how-to guides for common tasks.
+
+### Traffic Capture
+- [Capture Infrastructure](https://docs.speedscale.com/guides/capture/infra/)
+- [Capture Traffic](https://docs.speedscale.com/guides/capture/traffic/)
+- [Capture Filtering](https://docs.speedscale.com/guides/capture/filter/)
+
+### Traffic Transformation
+- [Transformation Overview](https://docs.speedscale.com/guides/transformation/overview/)
+- [Extractors](https://docs.speedscale.com/guides/transformation/extractors/)
+- [Generators](https://docs.speedscale.com/guides/transformation/generators/)
+
+### Traffic Replay
+- [Replay Guides](https://docs.speedscale.com/guides/replay/)
+
+### Service Mocking
+- [Mock Services](https://docs.speedscale.com/guides/mocking/mocks/)
+- [Mock Triggers](https://docs.speedscale.com/guides/mocking/triggers/)
+- [Idempotent Mocking](https://docs.speedscale.com/guides/mocking/idempotent/)
+
+### Data Loss Prevention
+- [DLP Guides](https://docs.speedscale.com/guides/dlp/)
+
+### CI/CD Integrations
+- [CI/CD Integration](https://docs.speedscale.com/guides/integrations/cicd/)
+- [AWS Integration](https://docs.speedscale.com/guides/integrations/aws/)
+- [GCP Integration](https://docs.speedscale.com/guides/integrations/gcp/)
+- [Import](https://docs.speedscale.com/guides/integrations/import/)
+- [Export](https://docs.speedscale.com/guides/integrations/export/)
+
+### Advanced Topics
+- [GraphQL](https://docs.speedscale.com/guides/graphql/)
+- [TLS / Encrypted Traffic](https://docs.speedscale.com/guides/tls/)
+- [WebSockets](https://docs.speedscale.com/guides/websocket/)
+- [Message Brokers (Kafka, RabbitMQ)](https://docs.speedscale.com/guides/message-brokers/)
+- [CLI Reference](https://docs.speedscale.com/guides/cli/)
+- [Troubleshooting](https://docs.speedscale.com/guides/troubleshooting/)
+
+## ProxyMock (Free Local Dev Tool)
+
+ProxyMock is a free, open-source CLI tool for local API mocking and traffic recording. It captures real API traffic and replays it locally without external dependencies.
+
+- [ProxyMock Overview](https://docs.speedscale.com/proxymock/)
+- [Installation](https://docs.speedscale.com/proxymock/getting-started/installation/)
+- [Quickstart (CLI)](https://docs.speedscale.com/proxymock/getting-started/quickstart/quickstart-cli/)
+- [Quickstart (MCP)](https://docs.speedscale.com/proxymock/getting-started/quickstart/quickstart-mcp/)
+- [FAQ](https://docs.speedscale.com/proxymock/getting-started/faq/)
+- [Language Reference](https://docs.speedscale.com/proxymock/getting-started/language-reference/)
+- [How It Works](https://docs.speedscale.com/proxymock/how-it-works/)
+- [Guides](https://docs.speedscale.com/proxymock/guides/)
+- [AWS Integration](https://docs.speedscale.com/proxymock/aws/)
+
+## QABot
+
+AI-powered test assistant for Speedscale.
+
+- [QABot](https://docs.speedscale.com/qabot/)
+
+## Reference
+
+Technical reference for configuration, filters, transforms, and eBPF traffic collection.
+
+- [Reference](https://docs.speedscale.com/reference/)
+- [Technology Support](https://docs.speedscale.com/reference/technology-support/)
+- [Configuration](https://docs.speedscale.com/reference/configuration/)
+- [Filters](https://docs.speedscale.com/reference/filters/)
+- [eBPF Traffic Collection](https://docs.speedscale.com/reference/ebpf-traffic-collection/)
+
+## Security
+
+- [Security Overview](https://docs.speedscale.com/security/)
+- [Data Protection](https://docs.speedscale.com/security/data_protection/)
+
+## Related Resources
+
+- [Speedscale Website](https://speedscale.com)
+- [Blog](https://speedscale.com/blog/)
+- [Pricing](https://speedscale.com/pricing/)
+- [GitHub](https://github.com/speedscale)
+- [Community Slack](https://slack.speedscale.com)
