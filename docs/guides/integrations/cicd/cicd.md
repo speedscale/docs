@@ -269,6 +269,10 @@ or through the CI/CD platform:
 | TIMEOUT     | 10m           | Maximum amount of time to wait for replay to complete.           |
 | BUILD_TAG   | v1.2.3        | Identifies the version of your service being tested.             |
 
+:::tip Namespace inference
+If `NAMESPACE` is omitted (or `--namespace` is not passed), `speedctl infra replay` will infer the namespace automatically when the snapshot was captured from a single namespace. If the snapshot spans multiple namespaces the variable is required.
+:::
+
 ## The Script
 
 Let's fill in the **speedscale.sh** script shown above. Choose the
@@ -378,6 +382,85 @@ esac
 </TabItem>
 
 </Tabs>
+
+## Customising Mock Behaviour in CI
+
+The `speedctl infra replay` command supports several flags to control which outbound dependencies are mocked during a pipeline run. These can be passed directly in your **speedscale.sh** script or added as additional environment variables.
+
+### Disable all mocks
+
+Pass `--no-mocks` to send real outbound traffic instead of using recorded responses:
+
+```bash
+REPORT_ID=$(speedctl infra replay "$SERVICE" \
+  --cluster "$CLUSTER" \
+  --namespace "$NAMESPACE" \
+  --test-config-id "$TEST_CONFIG" \
+  --snapshot-id "$SNAPSHOT_ID" \
+  --id-only \
+  --build-tag "$BUILD_TAG" \
+  --no-mocks)
+```
+
+### Mock only specific dependencies
+
+Use `--mock-only` (repeatable) to mock a subset of outbound services and call everything else live. Selectors accept `svc:<substring>`, `host:<hostname>`, `glob:<pattern>`, or an exact service key.
+
+```bash
+REPORT_ID=$(speedctl infra replay "$SERVICE" \
+  --cluster "$CLUSTER" \
+  --namespace "$NAMESPACE" \
+  --test-config-id "$TEST_CONFIG" \
+  --snapshot-id "$SNAPSHOT_ID" \
+  --id-only \
+  --build-tag "$BUILD_TAG" \
+  --mock-only 'svc:payments' \
+  --mock-only 'host:api.stripe.com')
+```
+
+### Exclude specific dependencies from mocking
+
+Use `--mock-except` to mock everything *except* the listed services:
+
+```bash
+REPORT_ID=$(speedctl infra replay "$SERVICE" \
+  --cluster "$CLUSTER" \
+  --namespace "$NAMESPACE" \
+  --test-config-id "$TEST_CONFIG" \
+  --snapshot-id "$SNAPSHOT_ID" \
+  --id-only \
+  --build-tag "$BUILD_TAG" \
+  --mock-except 'svc:db')
+```
+
+### Exclude inbound services from replay
+
+Use `--exclude-in` (repeatable) to skip specific **inbound** services so they are not replayed:
+
+```bash
+REPORT_ID=$(speedctl infra replay "$SERVICE" \
+  --cluster "$CLUSTER" \
+  --namespace "$NAMESPACE" \
+  --test-config-id "$TEST_CONFIG" \
+  --snapshot-id "$SNAPSHOT_ID" \
+  --id-only \
+  --build-tag "$BUILD_TAG" \
+  --exclude-in 'svc:frontend')
+```
+
+### Preview the mock plan without running a replay
+
+During pipeline development you can validate your selector configuration with `--dry-run-mocks`. This prints the resolved mock plan and exits without triggering a replay:
+
+```bash
+speedctl infra replay "$SERVICE" \
+  --cluster "$CLUSTER" \
+  --snapshot-id "$SNAPSHOT_ID" \
+  --mock-only 'svc:payments' \
+  --dry-run-mocks -o pretty
+```
+
+See the [full replay reference](/guides/replay/via-speedctl.md) for a complete list of flags and selector syntax.
 
 ## Need Help?
 
