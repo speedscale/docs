@@ -1,29 +1,10 @@
 import React from 'react';
-import Head from '@docusaurus/Head';
-import { useLocation } from '@docusaurus/router';
 
+// Root theme wrapper.
+// Canonical URLs are handled natively by Docusaurus (respects trailingSlash
+// and the site url in docusaurus.config.js).  A previous version of this file
+// injected a duplicate <link rel="canonical"> via <Head>, which caused a React
+// hydration mismatch (error #418) and broke client-side features like search.
 export default function Root({ children }) {
-  const location = useLocation();
-
-  // Generate canonical URL at render time (SSR-compatible, not useEffect)
-  let pathname = location.pathname;
-
-  // Add trailing slash for directory format (unless root or file with extension)
-  if (pathname !== '/' && !pathname.endsWith('/') && !pathname.match(/\.[a-z]+$/i)) {
-    pathname += '/';
-  }
-
-  // Create canonical URL using the configured site URL
-  const canonicalURL = new URL(pathname, 'https://docs.speedscale.com');
-  // Strip query parameters to avoid duplicates
-  canonicalURL.search = '';
-
-  return (
-    <>
-      <Head>
-        <link rel="canonical" href={canonicalURL.toString()} />
-      </Head>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }
