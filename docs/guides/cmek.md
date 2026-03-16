@@ -1,5 +1,6 @@
 ---
 title: CMEK
+description: "Manage your data security with Speedscale's Customer Managed Encryption Keys (CMEK), allowing control over encryption key lifecycle and access."
 sidebar_position: 5
 ---
 

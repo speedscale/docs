@@ -1,4 +1,5 @@
 ---
+description: "Import HTTP Wire Format files into Speedscale to migrate traffic data and create mocks for API testing using request/response pairs in ZIP format."
 sidebar_position: 2
 ---
 

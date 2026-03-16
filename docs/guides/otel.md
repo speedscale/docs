@@ -1,4 +1,5 @@
 ---
+description: "Explore how Speedscale integrates with OpenTelemetry to manage observability data, enabling effective tracing and environment replication for API testing."
 sidebar_position: 19
 ---
 

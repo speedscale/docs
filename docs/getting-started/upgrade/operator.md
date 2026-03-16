@@ -1,5 +1,6 @@
 ---
 title: Operator
+description: "Upgrade the Speedscale operator in your Kubernetes cluster with this comprehensive guide, covering helm commands, rollback options, and validation steps."
 sidebar_position: 1
 ---
 

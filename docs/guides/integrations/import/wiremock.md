@@ -1,4 +1,5 @@
 ---
+description: "Import WireMock mappings into Speedscale to quickly create service mocks and leverage existing configurations for efficient API testing and traffic replay"
 sidebar_position: 7
 ---
 

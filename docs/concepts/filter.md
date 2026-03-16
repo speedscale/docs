@@ -1,4 +1,5 @@
 ---
+description: "Explore how to use Filters and Subsets in Speedscale to manage recorded traffic, ensuring data privacy and enhancing analysis capabilities."
 sidebar_position: 3
 ---
 

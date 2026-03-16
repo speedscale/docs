@@ -1,4 +1,5 @@
 ---
+description: "Explore Speedscale's security measures, including automated testing, personnel vetting, and regular penetration testing to ensure robust protection for your data."
 sidebar_position: 4
 ---
 

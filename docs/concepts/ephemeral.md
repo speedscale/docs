@@ -1,4 +1,5 @@
 ---
+description: "Create and manage Bubble Environments with Speedscale to mimic production settings, reducing costs and enhancing testing efficiency for your development workflow"
 sidebar_position: 4
 ---
 # Bubble Environments

@@ -1,5 +1,6 @@
 ---
 title: Common Performance Issues
+description: "Identify common performance issues with message brokers like Kafka and RabbitMQ to optimize load testing and enhance your Speedscale integrations."
 sidebar_position: 14
 ---
 

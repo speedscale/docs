@@ -1,4 +1,5 @@
 ---
+description: "Validate HTTP response bodies with Speedscale by comparing runtime values to expected results, including support for JSON and gRPC content types."
 sidebar_position: 1
 ---
 

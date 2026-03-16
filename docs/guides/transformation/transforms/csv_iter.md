@@ -1,4 +1,5 @@
 ---
+description: "Utilize the CSV Iterator in Speedscale to read and inject values from CSV files for efficient API testing and traffic replay in your applications"
 sidebar_position: 5
 ---
 

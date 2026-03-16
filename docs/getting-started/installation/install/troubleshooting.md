@@ -1,4 +1,5 @@
 ---
+description: "Troubleshoot installation and operation permissions for Speedscale, ensuring proper setup and resolving common issues like webhook errors in your cluster."
 sidebar_position: 100
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: CI/CD
+description: "Integrate Speedscale into your CI/CD workflow to enhance deployment confidence with detailed steps for configuration and execution."
 sidebar_position: 2
 ---
 

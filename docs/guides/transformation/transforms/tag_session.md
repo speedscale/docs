@@ -1,4 +1,5 @@
 ---
+description: "Tag session identifiers in Speedscale to group requests for analysis and traffic replay, simplifying session management in your API testing workflows."
 sidebar_position: 28
 ---
 

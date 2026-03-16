@@ -1,6 +1,7 @@
 ---
 sidebar_position: 5
 title: Creating a Snapshot
+description: "Create a snapshot in Speedscale to capture and replay specific traffic, utilizing filters and detailed logs for effective API testing and analysis"
 ---
 
 <iframe src="https://player.vimeo.com/video/983558864" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>

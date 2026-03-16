@@ -1,5 +1,6 @@
 ---
 title: Mocks & Service Virtualization
+description: "Explore how Speedscale enhances mocking and service virtualization by automating mock creation and updates for accurate API testing and environment replication"
 sidebar_position: 1
 ---
 

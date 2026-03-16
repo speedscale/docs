@@ -1,4 +1,5 @@
 ---
+description: "Create a mock server and tests for a Go application using ProxyMock's MCP integration with AI coding assistants in this quickstart guide."
 sidebar_position: 4
 ---
 import Tabs from '@theme/Tabs';

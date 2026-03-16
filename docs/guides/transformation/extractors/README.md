@@ -1,4 +1,5 @@
 ---
+description: "Utilize Extractors in Speedscale to pull and transform specific data from requests or responses for effective API testing and traffic replay."
 sidebar_position: 0
 ---
 

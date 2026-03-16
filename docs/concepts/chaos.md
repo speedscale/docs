@@ -1,4 +1,5 @@
 ---
+description: "Explore how to implement Chaos Engineering with Speedscale to test API resilience by simulating failures and manipulating request behaviors for robust applications"
 sidebar_position: 6
 ---
 

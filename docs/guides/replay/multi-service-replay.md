@@ -1,4 +1,5 @@
 ---
+description: "Configure Speedscale for Multi-Service Replay to simulate API interactions, merging snapshots for authentication and API traffic testing."
 sidebar_position: 7
 ---
 

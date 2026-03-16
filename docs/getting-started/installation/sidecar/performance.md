@@ -1,5 +1,6 @@
 ---
 title: Performance and Diagnostics
+description: "Test sidecar latency and performance with Speedscale to ensure optimal API functionality during pre-production and progressive rollout strategies"
 sidebar_position: 4
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: Import from Browser/HAR
+description: "Import traffic from HAR files into Speedscale to create tests or mocks, enabling efficient API testing and traffic replay for your development needs"
 sidebar_position: 4
 ---
 

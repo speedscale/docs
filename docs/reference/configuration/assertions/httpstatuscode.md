@@ -1,4 +1,5 @@
 ---
+description: "Check HTTP status codes in your API responses with Speedscale to ensure they match expected values for accurate testing and validation."
 sidebar_position: 3
 ---
 

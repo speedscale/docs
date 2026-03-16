@@ -1,4 +1,5 @@
 ---
+description: "Create a sandbox for testing your Go application with ProxyMock, featuring automatic test generation and a mock server setup in just 30 seconds."
 sidebar_position: 1
 ---
 import Tabs from '@theme/Tabs';

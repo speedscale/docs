@@ -1,4 +1,5 @@
 ---
+description: "Export traffic from Speedscale to Grafana K6 in the open-source test case format for seamless API testing and traffic replay with familiar tools"
 sidebar_position: 2
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: QABot
+description: "Automate test creation and service mocks with QABot in Speedscale, leveraging traffic replay to enhance data integrity and reliability in CI pipelines"
 sidebar_position: 0
 ---
 

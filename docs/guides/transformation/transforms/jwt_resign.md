@@ -1,4 +1,5 @@
 ---
+description: "Re-sign existing JWT tokens with the jwt_resign feature in Speedscale, honoring original algorithms and customizing claims for API testing."
 sidebar_position: 15
 ---
 

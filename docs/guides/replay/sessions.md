@@ -1,5 +1,6 @@
 ---
 title: Session Handling
+description: "Manage session handling with Speedscale to automatically track and identify sessions during API traffic capture and replay for efficient testing."
 sidebar_position: 7
 ---
 

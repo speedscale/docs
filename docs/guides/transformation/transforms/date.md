@@ -1,4 +1,5 @@
 ---
+description: "Parse and update timestamps using the date transform in Speedscale, with options for automatic or manual offset configuration for accurate traffic replay."
 sidebar_position: 7
 ---
 

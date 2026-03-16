@@ -1,4 +1,5 @@
 ---
+description: "Store and manage tokens efficiently using the var_store feature in Speedscale, ensuring persistence across requests for seamless API testing."
 sidebar_position: 33
 ---
 

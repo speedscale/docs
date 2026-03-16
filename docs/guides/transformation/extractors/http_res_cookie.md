@@ -1,4 +1,5 @@
 ---
+description: "Extract HTTP cookies from RRPair requests using the http_res_cookie function in Speedscale to enhance your API testing and traffic replay capabilities"
 sidebar_position: 7
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Explore the report status lifecycle in Speedscale, detailing active and terminal statuses for effective monitoring and troubleshooting of test reports"
 sidebar_position: 10
 ---
 

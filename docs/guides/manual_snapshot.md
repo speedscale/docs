@@ -1,5 +1,6 @@
 ---
 title: Create a snapshot using APIs
+description: "Create a snapshot using the Speedscale API by following this guide, which details the manual process for programmatically managing traffic snapshots."
 sidebar_position: 38
 ---
 

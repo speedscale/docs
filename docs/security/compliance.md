@@ -1,4 +1,5 @@
 ---
+description: "Explore Speedscale's certifications, including SOC 2 Type I audit results, ensuring top-tier security and compliance for your API testing and traffic replay needs"
 sidebar_position: 1
 ---
 

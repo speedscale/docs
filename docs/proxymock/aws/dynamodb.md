@@ -1,4 +1,5 @@
 ---
+description: "Explore how to use Speedscale's pre-made DynamoDB mock for quick API testing, including importing, inspecting, and modifying request and response formats."
 sidebar_position: 0
 ---
 

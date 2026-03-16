@@ -1,5 +1,6 @@
 ---
 title: Replaying Azure Event Hubs
+description: "Replay Azure Event Hubs traffic using Speedscale's standard replay capabilities with Kafka client libraries for effective API testing and traffic management."
 sidebar_position: 9
 ---
 

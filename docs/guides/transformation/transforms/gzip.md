@@ -1,4 +1,5 @@
 ---
+description: "Compress and decompress raw byte slices using gzip in Speedscale to optimize API responses and enhance performance in your applications"
 sidebar_position: 12
 ---
 

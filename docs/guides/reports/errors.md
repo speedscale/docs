@@ -1,4 +1,5 @@
 ---
+description: "Analyze replay accuracy with Speedscale's errors dashboard, tracking response rates, accuracy comparisons, and assertion results for effective API testing."
 sidebar_position: 3
 ---
 

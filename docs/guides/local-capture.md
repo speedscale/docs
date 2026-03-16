@@ -1,5 +1,6 @@
 ---
 title: Record from Local Desktop
+description: "Record your local desktop environment using Speedscale to create \"Preview\" environments for CI validation and instant service mocks for testing."
 sidebar_position: 21
 ---
 

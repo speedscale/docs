@@ -1,4 +1,5 @@
 ---
+description: "Explore Speedscale's AI training policy, ensuring data privacy and security while leveraging generative AI for test data generation in your enterprise environment."
 sidebar_position: 7
 ---
 

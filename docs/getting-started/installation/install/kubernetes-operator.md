@@ -1,4 +1,5 @@
 ---
+description: "Deploy the Speedscale Kubernetes Operator to automate the configuration of Speedscale components and create isolation test environments in your cluster."
 sidebar_position: 1
 ---
 

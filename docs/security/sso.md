@@ -1,4 +1,5 @@
 ---
+description: "Integrate Single Sign-On (SSO) with Speedscale for secure access management using Auth0 and major Identity Providers to enhance your enterprise security."
 sidebar_position: 7
 ---
 

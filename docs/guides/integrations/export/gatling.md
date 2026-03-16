@@ -1,4 +1,5 @@
 ---
+description: "Export traffic captured by Speedscale as Gatling simulation scripts to leverage Gatling's load testing framework for effective API performance testing."
 sidebar_position: 3
 ---
 

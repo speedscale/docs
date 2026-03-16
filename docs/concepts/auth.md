@@ -1,4 +1,5 @@
 ---
+description: "Implement JWT Authorization with Speedscale to handle token expiration during traffic replay and customize your testing for various authorization patterns."
 sidebar_position: 11
 ---
 

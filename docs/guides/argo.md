@@ -1,5 +1,6 @@
 ---
 title: Speedscale with Argo Rollouts
+description: "Integrate Speedscale with Argo Rollouts to enhance Kubernetes deployment control, ensuring proper setup and sidecar management for effective traffic replay."
 sidebar_position: 30
 ---
 

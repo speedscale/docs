@@ -1,4 +1,5 @@
 ---
+description: "Add new rows to database result sets with the db_add_row transform in Speedscale, enabling effective test data injection for PostgreSQL and MySQL."
 sidebar_position: 8
 ---
 

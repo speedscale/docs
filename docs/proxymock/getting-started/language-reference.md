@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 title: Language Configuration
+description: "Configure language-specific settings for ProxyMock to route traffic effectively without modifying application code, ensuring seamless API testing and traffic replay."
 ---
 
 import Tabs from '@theme/Tabs';

@@ -1,4 +1,5 @@
 ---
+description: "Extract elements from JSON documents using the json_selector in Speedscale, enabling dynamic path matching for flexible API testing and traffic replay."
 sidebar_position: 14
 ---
 

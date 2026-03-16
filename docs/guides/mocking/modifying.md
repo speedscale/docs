@@ -1,5 +1,6 @@
 ---
 title: Modifying a Signature
+description: "Modify signatures in Speedscale to enhance request matching and improve response accuracy for API testing and service virtualization."
 sidebar_position: 4
 ---
 

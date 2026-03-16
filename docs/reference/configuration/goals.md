@@ -1,4 +1,5 @@
 ---
+description: "Define success criteria for your tests with Speedscale by setting goals that trigger report failures to ensure optimal performance in CI/CD pipelines"
 sidebar_position: 4
 ---
 

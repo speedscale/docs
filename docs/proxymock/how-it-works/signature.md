@@ -1,5 +1,6 @@
 ---
 title: Signature Matching
+description: "Implement signature matching with ProxyMock to create realistic service mocks that accurately simulate external APIs and databases for your testing environment"
 sidebar_position: 3
 ---
 

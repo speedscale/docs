@@ -1,4 +1,5 @@
 ---
+description: "Troubleshoot Speedscale's lifecycle events and ensure your Service-Under-Test workloads are running smoothly with our detailed guide on operator logs and configurations"
 sidebar_position: 3
 ---
 

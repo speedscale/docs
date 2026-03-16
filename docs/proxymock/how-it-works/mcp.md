@@ -1,4 +1,5 @@
 ---
+description: "Explore the Model Context Protocol (MCP) for ProxyMock to enable seamless integration with AI tools and enhance your API testing and mocking capabilities."
 sidebar_position: 6
 ---
 

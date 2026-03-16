@@ -1,5 +1,6 @@
 ---
 title: Replaying AWS SNS
+description: "Replay AWS SNS traffic using Speedscale's standard replay capabilities to capture, snapshot, and replay your application's interactions with SNS."
 sidebar_position: 7
 ---
 

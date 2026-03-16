@@ -1,4 +1,5 @@
 ---
+description: "Run ProxyMock with Docker to seamlessly integrate traffic recording and mocking for your applications running in local containers with easy configuration steps"
 sidebar_position: 1
 ---
 

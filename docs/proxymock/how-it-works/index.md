@@ -1,4 +1,5 @@
 ---
+description: "Discover how ProxyMock captures real traffic through a proxy to create automated mocks and tests without changing your application code."
 sidebar_position: 3
 ---
 

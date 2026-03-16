@@ -1,4 +1,5 @@
 ---
+description: "Configure Speedscale to expose Prometheus metrics in Kubernetes for enhanced observability and effective API traffic analysis during testing and development"
 sidebar_position: 21
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: Load Testing Message Brokers
+description: "Load test message brokers effectively with Speedscale, capturing traffic and replaying realistic patterns for accurate performance evaluation in distributed systems"
 sidebar_position: 1
 ---
 

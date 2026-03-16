@@ -1,4 +1,5 @@
 ---
+description: "Explore the Report Summary in Speedscale to understand replay results, configurations, and performance metrics for effective API testing and traffic replay."
 sidebar_position: 9
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: Sessions
+description: "Track and manage sessions in Speedscale for API testing, including automatic detection and manual identification of session IDs during traffic replay."
 sidebar_position: 5
 ---
 

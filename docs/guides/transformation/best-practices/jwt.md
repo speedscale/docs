@@ -1,4 +1,5 @@
 ---
+description: "Understand authorization patterns and JWT re-signing in Speedscale to ensure seamless API testing and traffic replay during your development process"
 sidebar_position: 0
 ---
 

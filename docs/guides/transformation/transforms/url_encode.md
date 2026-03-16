@@ -1,4 +1,5 @@
 ---
+description: "Transform plain text strings into URL encoded strings with the url_encode function in Speedscale for seamless API testing and traffic replay."
 sidebar_position: 31
 ---
 

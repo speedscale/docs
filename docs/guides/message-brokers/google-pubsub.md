@@ -1,5 +1,6 @@
 ---
 title: Replaying Google Pub/Sub
+description: "Replay Google Pub/Sub traffic using Speedscale's standard HTTP replay capabilities to capture, snapshot, and replay your application's interactions effectively."
 sidebar_position: 11
 ---
 

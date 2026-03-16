@@ -1,5 +1,6 @@
 ---
 title: Architecture
+description: "Explore the architecture of ProxyMock to understand how it captures and replays traffic for API testing without modifying your application setup"
 sidebar_position: 1
 ---
 

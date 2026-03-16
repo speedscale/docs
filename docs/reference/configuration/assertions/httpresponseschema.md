@@ -1,4 +1,5 @@
 ---
+description: "Compare HTTP response schemas with Speedscale to identify differences in runtime and expected bodies, including support for JSON and gRPC content types."
 sidebar_position: 2
 ---
 

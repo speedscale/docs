@@ -1,4 +1,5 @@
 ---
+description: "Explore the logs of Speedscale to understand the sequence of calls from each component during traffic replay and review system settings and results."
 sidebar_position: 4
 ---
 

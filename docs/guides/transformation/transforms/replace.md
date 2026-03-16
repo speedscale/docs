@@ -1,4 +1,5 @@
 ---
+description: "Utilize the replace function in Speedscale to find and replace substrings in strings, with options for limiting the number of replacements made."
 sidebar_position: 19
 ---
 

@@ -1,6 +1,7 @@
 ---
 sidebar_position: 39
 title: Identify a Session or ID
+description: "Identify and tag unique session IDs in Speedscale to enhance traffic replay and enable AI-powered features for API testing and data management."
 ---
 
 ## Sessions

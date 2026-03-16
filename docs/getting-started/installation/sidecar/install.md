@@ -1,5 +1,6 @@
 ---
 title: Sidecar
+description: "Capture network traffic for Kubernetes services using the Speedscale sidecar proxy to enhance API testing and traffic replay capabilities."
 sidebar_position: 1
 ---
 

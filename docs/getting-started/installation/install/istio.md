@@ -1,5 +1,6 @@
 ---
 title: Istio
+description: "Configure Istio support with the Speedscale Operator to enable traffic management and seamless integration of Speedscale sidecars in your workloads."
 sidebar_position: 11
 ---
 

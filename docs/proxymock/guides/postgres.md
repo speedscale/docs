@@ -1,4 +1,5 @@
 ---
+description: "Mock PostgreSQL database connections and queries for local development using ProxyMock with this comprehensive guide on recording and testing techniques."
 sidebar_position: 8
 ---
 

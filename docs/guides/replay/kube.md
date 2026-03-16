@@ -1,4 +1,5 @@
 ---
+description: "Configure traffic replay in Kubernetes using Speedscale by modifying resource annotations and leveraging snapshots for effective API testing."
 sidebar_position: 2
 ---
 

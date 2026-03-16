@@ -1,4 +1,5 @@
 ---
+description: "Extract the session ID from RRPair in Speedscale to uniquely identify clients using JWT or other unique identifiers for effective API testing."
 sidebar_position: 16
 ---
 

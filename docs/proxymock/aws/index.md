@@ -1,5 +1,6 @@
 ---
 title: Mock AWS Services
+description: "Mock AWS services with Speedscale to easily record and replay traffic, utilizing pre-made mocks and detailed guides for seamless API testing."
 sidebar_position: 100
 ---
 

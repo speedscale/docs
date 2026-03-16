@@ -1,4 +1,5 @@
 ---
+description: "Configure traffic settings in Speedscale to customize URL transformations and group API endpoints for efficient traffic replay and testing"
 sidebar_position: 1
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: "SUSE Rancher Labs"
+description: "Explore how to integrate Speedscale with SUSE Rancher for seamless API testing and traffic replay using the helm chart available in the Rancher Marketplace"
 sidebar_position: 5
 ---
 

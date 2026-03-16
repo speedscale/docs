@@ -1,4 +1,5 @@
 ---
+description: "Explore Speedscale's Pricing FAQ to understand usage-based billing, data ingestion metrics, and strategies to optimize costs for your API testing needs"
 sidebar_position: 6
 ---
 

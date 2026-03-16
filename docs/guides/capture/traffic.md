@@ -1,4 +1,5 @@
 ---
+description: "Explore the Speedscale Traffic Viewer to gain real-time insights into API traffic, enabling effective debugging and performance optimization for your applications"
 sidebar_position: 1
 ---
 

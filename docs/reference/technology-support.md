@@ -1,4 +1,5 @@
 ---
+description: "Explore Speedscale's technology support for API testing, covering protocol and language support for seamless capture, analysis, and replay."
 sidebar_position: 3
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Control Speedscale programmatically via API for seamless data collection and traffic replay, ensuring consistent capabilities across UI and API-driven usage."
 sidebar_position: 0
 ---
 

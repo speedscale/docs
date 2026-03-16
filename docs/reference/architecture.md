@@ -1,4 +1,5 @@
 ---
+description: "Explore the deployment architecture of Speedscale, detailing components, network requirements, and installation methods for Kubernetes environments."
 sidebar_position: 1
 ---
 

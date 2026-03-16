@@ -1,4 +1,5 @@
 ---
+description: "Trim incoming strings in Speedscale by removing prefixes, suffixes, or spaces to streamline your API testing and traffic replay processes."
 sidebar_position: 29
 ---
 

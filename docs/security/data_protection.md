@@ -1,4 +1,5 @@
 ---
+description: "Ensure data protection with Speedscale by utilizing custom authentication, API keys, and robust access management for secure API testing and traffic replay."
 sidebar_position: 3
 ---
 

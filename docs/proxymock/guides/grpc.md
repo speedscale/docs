@@ -1,5 +1,6 @@
 ---
 title: Mock gRPC APIs
+description: "Mock gRPC APIs with ProxyMock by recording traffic from your app, creating easy mocks, and exploring supported technologies for efficient API testing."
 sidebar_position: 2
 ---
 

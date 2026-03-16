@@ -1,5 +1,6 @@
 ---
 title: Mocks | Triggers (BETA)
+description: "Explore Speedscale's Responder Triggers feature to initiate workflows for asynchronous applications, enhancing environment replication and API testing."
 sidebar_position: 5
 canonicalUrl: 'https://docs.speedscale.com/guides/mocking/triggers/'
 ---

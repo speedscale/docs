@@ -1,5 +1,6 @@
 ---
 title: Replaying Azure Service Bus
+description: "Replay Azure Service Bus traffic using Speedscale's standard replay capabilities to capture, snapshot, and replay your application's interactions efficiently"
 sidebar_position: 10
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Get help with ProxyMock by connecting on the Speedscale Slack or emailing support@speedscale.com for assistance with your API testing needs"
 sidebar_position: 5
 ---
 

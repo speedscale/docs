@@ -1,5 +1,6 @@
 ---
 title: Import from Postman
+description: "Import Postman collections into Speedscale and replay them in a Kubernetes cluster, even without the Speedscale sidecar, using this detailed guide."
 sidebar_position: 5
 ---
 

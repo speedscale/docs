@@ -1,4 +1,5 @@
 ---
+description: "Explore the Replay Data Model in Speedscale, detailing snapshot creation, raw traffic components, traffic transforms, and report generation for effective API testing."
 sidebar_position: 6
 ---
 

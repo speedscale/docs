@@ -1,4 +1,5 @@
 ---
+description: "Extract HTTP headers from response portions using the http_res_header function in Speedscale, including options for handling multiple headers."
 sidebar_position: 8
 ---
 

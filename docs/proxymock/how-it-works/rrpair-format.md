@@ -1,5 +1,6 @@
 ---
 title: File Format
+description: "Explore the RRPair markdown format in ProxyMock for recording and replaying API traffic with Speedscale, ensuring human readability and easy debugging."
 sidebar_position: 7
 ---
 

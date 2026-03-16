@@ -1,4 +1,5 @@
 ---
+description: "Configure filters in Speedscale to exclude monitoring calls from AWS ELB and Prometheus for effective traffic replay and API testing."
 sidebar_position: 3
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Explore how to use variables in Speedscale for persistent data storage across requests, including key-value pairs and transform functions for enhanced API testing."
 sidebar_position: 3
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Extract HTTP headers from requests using the http_req_header function in Speedscale to enhance your API testing and traffic replay capabilities"
 sidebar_position: 5
 ---
 

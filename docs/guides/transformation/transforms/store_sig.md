@@ -1,4 +1,5 @@
 ---
+description: "Learn how to use the store_sig transform in Speedscale to enhance service mocking by adding custom data items for accurate request signature matching"
 sidebar_position: 27
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Explore the Speedscale Traffic View to filter and replicate traffic, inspect transactions, and create environment snapshots for effective API testing."
 sidebar_position: 2
 ---
 

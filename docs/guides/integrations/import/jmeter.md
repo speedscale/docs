@@ -1,4 +1,5 @@
 ---
+description: "Migrate your JMeter scripts to Speedscale with this guide, detailing the steps to streamline API testing and enhance performance testing capabilities."
 sidebar_position: 6
 ---
 

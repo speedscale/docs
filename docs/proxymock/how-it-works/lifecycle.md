@@ -1,4 +1,5 @@
 ---
+description: "Explore the Lifecycle of ProxyMock to learn how to record, replay, and manage traffic for effective API testing and mocking with Speedscale."
 sidebar_position: 2
 ---
 
