@@ -1,5 +1,6 @@
 ---
 title: "AWS"
+description: "Explore how Speedscale integrates with AWS services, ensuring secure and efficient infrastructure for API testing and traffic replay with EKS compatibility."
 sidebar_position: 3
 ---
 

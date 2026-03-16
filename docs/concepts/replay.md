@@ -1,4 +1,5 @@
 ---
+description: "Replay real traffic with Speedscale by generating and responding to captured requests, enabling effective API testing and issue diagnosis in your applications."
 sidebar_position: 2
 ---
 # Replaying Traffic

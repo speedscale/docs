@@ -1,4 +1,5 @@
 ---
+description: "Mock backends during testing with Speedscale to reduce dependencies on external APIs and ensure reliable API interactions without real transactions."
 sidebar_position: 0
 ---
 

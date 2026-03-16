@@ -1,4 +1,5 @@
 ---
+description: "Utilize the empty extractor in Speedscale to initiate the transform chain with an empty string for runtime variables and activities without explicit sources"
 sidebar_position: 1
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Install Speedscale and learn how to capture, transform, and replay traffic with mocks using the example app in this comprehensive tutorial."
 sidebar_position: 1
 ---
 

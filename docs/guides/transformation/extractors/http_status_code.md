@@ -1,4 +1,5 @@
 ---
+description: "Extract the status code from RRPair responses using the http_status_code extractor in Speedscale to ensure valid downstream transformations."
 sidebar_position: 10
 ---
 

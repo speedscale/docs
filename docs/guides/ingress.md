@@ -1,5 +1,6 @@
 ---
 title: Capture Cluster Ingress Traffic
+description: "Capture cluster ingress traffic with Speedscale to create comprehensive snapshots for testing multiple backend services in your environment."
 sidebar_position: 14
 ---
 

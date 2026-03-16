@@ -1,4 +1,5 @@
 ---
+description: "Understand the networking requirements for Speedscale, including webhook access and traffic configurations necessary for optimal operation in Kubernetes environments."
 sidebar_position: 11
 ---
 

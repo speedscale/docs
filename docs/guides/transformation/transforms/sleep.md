@@ -1,4 +1,5 @@
 ---
+description: "Pause the current request for a specified duration using the sleep function in Speedscale to control traffic replay timing effectively"
 sidebar_position: 22
 ---
 

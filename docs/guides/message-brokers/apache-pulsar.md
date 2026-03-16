@@ -1,5 +1,6 @@
 ---
 title: Replaying Apache Pulsar
+description: "Replay Apache Pulsar traffic using Speedscale's standard replay capabilities with Kafka client libraries and learn to capture, snapshot, and replay your data."
 sidebar_position: 4
 ---
 

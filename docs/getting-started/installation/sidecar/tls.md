@@ -1,5 +1,6 @@
 ---
 title: TLS Support
+description: "Enable TLS support in Speedscale by configuring inbound and outbound interception with annotations for secure API traffic management."
 sidebar_position: 2
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Explore the Cluster Inspector in Speedscale to manage Kubernetes clusters, monitor traffic, and deploy sidecars for enhanced debugging and observability."
 sidebar_position: 3
 ---
 

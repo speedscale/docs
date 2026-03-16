@@ -1,4 +1,5 @@
 ---
+description: "Refine signatures in ProxyMock to enhance mock accuracy, ensuring your service mock returns correct responses for every incoming request."
 sidebar_position: 22
 ---
 

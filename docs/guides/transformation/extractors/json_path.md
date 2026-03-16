@@ -1,4 +1,5 @@
 ---
+description: "Utilize the json_path feature in Speedscale to flatten RRPair data and extract values using JSONPath locators and regex filters for advanced automation tasks"
 canonicalUrl: 'https://docs.speedscale.com/guides/transformation/extractors/json_path/'
 sidebar_position: 12
 ---

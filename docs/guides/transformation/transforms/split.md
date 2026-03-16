@@ -1,4 +1,5 @@
 ---
+description: "Use the split function in Speedscale to divide strings based on specified separators, ideal for processing comma or pipe delimited data."
 sidebar_position: 26
 ---
 

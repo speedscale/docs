@@ -1,4 +1,5 @@
 ---
+description: "Scrub date values in JSON payloads with Speedscale to eliminate flaky mock requests by replacing dynamic timestamps with \"*\" for cleaner API testing."
 sidebar_position: 21
 ---
 

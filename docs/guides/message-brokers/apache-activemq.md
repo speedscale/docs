@@ -1,5 +1,6 @@
 ---
 title: Replaying Apache ActiveMQ
+description: "Replay Apache ActiveMQ traffic using Speedscale by extracting message payloads with AMQP 1.0 client libraries and creating custom load producers."
 sidebar_position: 3
 ---
 

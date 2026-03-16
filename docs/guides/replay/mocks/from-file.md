@@ -1,5 +1,6 @@
 ---
 title: Replace Values from File
+description: "Replace values in API requests using a CSV file with Speedscale to ensure accurate traffic replay and maintain data integrity in your staging environment"
 sidebar_position: 9
 ---
 

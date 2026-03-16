@@ -1,5 +1,6 @@
 ---
 title: "GCP"
+description: "Integrate Speedscale with Google Cloud Platform's GKE to optimize API testing and traffic replay while adhering to Autopilot's strict security policies"
 sidebar_position: 4
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Extract query parameters by name using the http_queryparam feature in Speedscale, including options for handling multiple parameters efficiently"
 sidebar_position: 3
 ---
 

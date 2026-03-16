@@ -1,5 +1,6 @@
 ---
 title: Replaying RabbitMQ
+description: "Replay RabbitMQ traffic captured by Speedscale by extracting messages and creating a load producer to simulate original interactions effectively."
 sidebar_position: 13
 ---
 

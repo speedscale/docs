@@ -1,4 +1,5 @@
 ---
+description: "Prepare for production with Speedscale by exploring essential considerations for recording in a production environment using the Speedscale sidecar."
 sidebar_position: 20
 ---
 

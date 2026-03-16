@@ -1,4 +1,5 @@
 ---
+description: "Report security issues with Speedscale by contacting our team via email for prompt assistance and resolution of any vulnerabilities you may find"
 sidebar_position: 5
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Explore how to understand and manipulate request bodies in Speedscale, including decoding protocols and transforming data for API testing and traffic replay."
 sidebar_position: 4
 ---
 

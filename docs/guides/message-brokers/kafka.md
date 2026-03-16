@@ -1,5 +1,6 @@
 ---
 title: Replaying Kafka
+description: "Replay Kafka traffic seamlessly using Speedscale by following our guide to utilize the replay wizard or ProxyMock for efficient traffic simulation."
 sidebar_position: 12
 ---
 

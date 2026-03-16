@@ -1,4 +1,5 @@
 ---
+description: "Explore the Access Model in Speedscale to understand role-based permissions, including Administrator and User functionalities for effective API testing management"
 sidebar_position: 2
 ---
 

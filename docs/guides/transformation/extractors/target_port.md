@@ -1,4 +1,5 @@
 ---
+description: "Extract the target port from an RRPair to modify request URLs during replay with Speedscale's target_port functionality for enhanced API testing."
 sidebar_position: 18
 ---
 

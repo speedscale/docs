@@ -1,5 +1,6 @@
 ---
 title: Signature Matching
+description: "Implement signature matching with Speedscale to create realistic service mocks, ensuring accurate API responses for effective testing in microservices architectures."
 sidebar_position: 2
 ---
 

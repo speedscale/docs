@@ -1,5 +1,6 @@
 ---
 title: Proxy Modes
+description: "Explore Proxy Modes in Speedscale to learn about default and inline proxy configurations for Kubernetes, including reverse and forward proxy setups."
 sidebar_position: 3
 ---
 

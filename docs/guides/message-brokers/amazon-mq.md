@@ -1,5 +1,6 @@
 ---
 title: Replaying Amazon MQ
+description: "Replay Amazon MQ traffic using Speedscale to capture, snapshot, and replay interactions with ActiveMQ or RabbitMQ for effective API testing and load simulation"
 sidebar_position: 2
 ---
 

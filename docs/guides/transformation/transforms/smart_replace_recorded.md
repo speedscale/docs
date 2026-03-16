@@ -1,4 +1,5 @@
 ---
+description: "Utilize smart_replace_recorded in Speedscale to dynamically replace recorded values during traffic replay, ensuring accurate API testing with variable request IDs."
 sidebar_position: 25
 ---
 

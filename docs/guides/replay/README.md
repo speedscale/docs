@@ -1,4 +1,5 @@
 ---
+description: "Explore the Speedscale Dashboard to replay recorded traffic, configure settings, and view detailed reports for effective API testing and traffic management"
 sidebar_position: 1
 ---
 # Dashboard

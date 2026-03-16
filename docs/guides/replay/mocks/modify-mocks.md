@@ -1,5 +1,6 @@
 ---
 title: Modifying Responses
+description: "Modify mock responses in Speedscale by editing Snapshots with JSON to customize expected outputs for your API testing and traffic replay needs."
 sidebar_position: 21
 ---
 

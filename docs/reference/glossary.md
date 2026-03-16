@@ -1,4 +1,5 @@
 ---
+description: "Explore the Speedscale glossary to understand key terms like Action File, Collector, and Generator related to API testing and traffic replay."
 sidebar_position: 1
 ---
 

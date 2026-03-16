@@ -1,4 +1,5 @@
 ---
+description: "Analyze Collector Resource Utilization in Speedscale to optimize Kubernetes DaemonSet performance and plan for capacity based on observed resource usage metrics."
 sidebar_position: 1
 ---
 

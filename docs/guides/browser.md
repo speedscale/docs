@@ -1,5 +1,6 @@
 ---
 title: Capture and Replay on Browser
+description: "Set up traffic capture and replay in Firefox using Speedscale by installing Speedctl, configuring TLS certificates, and adjusting proxy settings."
 sidebar_position: 3
 ---
 

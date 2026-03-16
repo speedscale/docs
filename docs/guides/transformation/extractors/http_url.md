@@ -1,4 +1,5 @@
 ---
+description: "Extract the HTTP URL from an RRPair request with the http_url function, and learn how to handle path segments effectively in Speedscale."
 sidebar_position: 11
 ---
 

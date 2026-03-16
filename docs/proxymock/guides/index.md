@@ -1,5 +1,6 @@
 ---
 title: Guides
+description: "Explore practical how-to guides for using ProxyMock effectively in your API testing and traffic replay scenarios."
 sidebar_position: 3
 ---
 

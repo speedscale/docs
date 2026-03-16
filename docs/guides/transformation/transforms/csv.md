@@ -1,4 +1,5 @@
 ---
+description: "Parse CSV data with Speedscale to extract values from a specified column, supporting both index and header name selection for seamless API testing."
 sidebar_position: 4
 ---
 

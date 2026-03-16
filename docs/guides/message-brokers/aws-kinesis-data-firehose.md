@@ -1,5 +1,6 @@
 ---
 title: Replaying AWS Kinesis Data Firehose
+description: "Replay AWS Kinesis Data Firehose traffic using Speedscale's standard replay capabilities for effective API testing and traffic simulation solutions."
 sidebar_position: 6
 ---
 

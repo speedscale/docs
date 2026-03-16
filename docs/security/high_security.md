@@ -1,4 +1,5 @@
 ---
+description: "Configure highly secure environments in Speedscale by selectively disabling features for compliance, managing encryption keys, and limiting secret access."
 sidebar_position: 6
 ---
 

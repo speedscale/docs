@@ -1,4 +1,5 @@
 ---
+description: "Configure and run load tests with Speedscale to prepare your service for high traffic by defining load patterns and stages for accurate performance analysis"
 sidebar_position: 5
 ---
 

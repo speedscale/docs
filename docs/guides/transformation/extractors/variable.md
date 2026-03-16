@@ -1,4 +1,5 @@
 ---
+description: "Extract or store values in the variable cache with Speedscale's variable feature, enabling efficient management of request/response data for API testing."
 sidebar_position: 19
 ---
 

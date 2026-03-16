@@ -1,4 +1,5 @@
 ---
+description: "Understand Speedscale's data retention policies, including tiered storage options and access methods for Traffic Viewer and long-term data management."
 sidebar_position: 3
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: Replaying AWS Kinesis
+description: "Replay AWS Kinesis traffic using Speedscale's capabilities to capture, snapshot, and replay your application's interactions for effective API testing."
 sidebar_position: 5
 ---
 

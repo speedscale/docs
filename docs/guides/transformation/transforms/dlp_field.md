@@ -1,4 +1,5 @@
 ---
+description: "Redact sensitive information using the dlp_field transform in Speedscale, ensuring secure API testing by automatically masking specified input fields."
 sidebar_position: 10
 ---
 

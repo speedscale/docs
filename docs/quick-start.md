@@ -1,4 +1,5 @@
 ---
+description: "Install Speedscale in your environment with this quick start guide, covering API key retrieval, CLI installation, and traffic capture for demo applications"
 sidebar_position: 0
 ---
 

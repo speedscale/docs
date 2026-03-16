@@ -1,4 +1,5 @@
 ---
+description: "Capture application traffic with Speedscale to enhance API testing, load testing, and chaos testing using real data for accurate diagnostics and replays"
 sidebar_position: 1
 ---
 # Capturing Traffic

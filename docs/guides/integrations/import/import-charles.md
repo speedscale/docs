@@ -1,5 +1,6 @@
 ---
 title: Import from Charles Proxy
+description: "Import traffic from Charles Proxy into Speedscale by converting session files to HAR format and generating tests or mocks for your API testing needs"
 sidebar_position: 3
 ---
 

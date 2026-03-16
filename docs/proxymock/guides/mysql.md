@@ -1,4 +1,5 @@
 ---
+description: "Mock MySQL database connections and queries for local development using ProxyMock to streamline your API testing and enhance your testing environment."
 sidebar_position: 6
 ---
 

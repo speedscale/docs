@@ -1,4 +1,5 @@
 ---
+description: "Explore the open source licenses and credits for Speedscale components, detailing various libraries and their respective licenses for your development needs"
 sidebar_position: 10
 ---
 

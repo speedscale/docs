@@ -1,5 +1,6 @@
 ---
 title: Recommendations
+description: "Discover how Speedscale identifies common patterns and provides actionable recommendations to enhance accuracy in your API testing and traffic replay efforts."
 sidebar_position: 6
 ---
 

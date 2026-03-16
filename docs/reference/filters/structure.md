@@ -1,4 +1,5 @@
 ---
+description: "Understand the structure of filter rule sets in Speedscale, including conditions, criteria, and operators for effective API testing and traffic replay."
 sidebar_position: 2
 ---
 

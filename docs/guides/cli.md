@@ -1,5 +1,6 @@
 ---
 title: Speedscale on the CLI
+description: "Capture traffic, run replays, and create local mocks using Speedscale's CLI tool speedctl in this comprehensive guide for developers."
 sidebar_position: 21
 ---
 

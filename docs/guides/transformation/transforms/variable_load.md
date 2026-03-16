@@ -1,4 +1,5 @@
 ---
+description: "Use var_load to replace tokens with values from persistent variables in Speedscale, enhancing your API testing and traffic replay capabilities."
 sidebar_position: 32
 ---
 

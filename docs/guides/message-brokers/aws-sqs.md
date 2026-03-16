@@ -1,5 +1,6 @@
 ---
 title: Replaying AWS SQS
+description: "Replay AWS SQS traffic using Speedscale's standard replay capabilities to capture, snapshot, and replay your application's interactions efficiently"
 sidebar_position: 8
 ---
 

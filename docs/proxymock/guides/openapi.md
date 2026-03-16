@@ -1,4 +1,5 @@
 ---
+description: "Generate mocks from OpenAPI specifications using ProxyMock to create instant mock API responses for rapid testing and development."
 sidebar_position: 7
 ---
 

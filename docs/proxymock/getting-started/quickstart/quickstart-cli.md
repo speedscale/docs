@@ -1,4 +1,5 @@
 ---
+description: "Get started with ProxyMock CLI by following this quickstart guide to create a mock server and tests for your Go application in various environments."
 sidebar_position: 3
 ---
 

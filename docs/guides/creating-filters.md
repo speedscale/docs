@@ -1,4 +1,5 @@
 ---
+description: "Create and apply traffic filters in Speedscale to control network traffic and enhance your API testing by using the intuitive dashboard or CLI tools."
 sidebar_position: 15
 ---
 

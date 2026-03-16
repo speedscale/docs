@@ -1,4 +1,5 @@
 ---
+description: "Configure traffic replay settings with Test Configs in Speedscale, allowing you to customize templates for efficient API testing and integration."
 sidebar_position: 8
 ---
 

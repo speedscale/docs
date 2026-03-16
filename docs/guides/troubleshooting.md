@@ -1,5 +1,6 @@
 ---
 title: Troubleshooting Broken Pods
+description: "Troubleshoot broken Kubernetes pods with this guide to diagnose issues preventing them from reaching the \"Ready\" state and affecting Speedscale replays."
 sidebar_position: 20
 ---
 

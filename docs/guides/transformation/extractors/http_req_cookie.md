@@ -1,4 +1,5 @@
 ---
+description: "Extract HTTP cookies from request portions using the http_req_cookie function in Speedscale for efficient API testing and traffic replay."
 sidebar_position: 4
 ---
 

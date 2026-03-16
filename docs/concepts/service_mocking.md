@@ -1,4 +1,5 @@
 ---
+description: "Implement service mocking with Speedscale to simulate external APIs and databases, ensuring realistic responses for your microservices during testing."
 sidebar_position: 7
 ---
 

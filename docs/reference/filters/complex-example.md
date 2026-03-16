@@ -1,4 +1,5 @@
 ---
+description: "Explore the Complex Example page to understand how Speedscale's default Forwarder configuration combines multiple filter rules for effective traffic management"
 sidebar_position: 4
 ---
 

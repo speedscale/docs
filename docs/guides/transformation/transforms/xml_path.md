@@ -1,4 +1,5 @@
 ---
+description: "Extract data from XML documents using XPath with Speedscale's xml_path, enabling precise extraction for API testing and traffic replay scenarios."
 sidebar_position: 34
 ---
 

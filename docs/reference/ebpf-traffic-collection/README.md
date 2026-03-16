@@ -1,4 +1,5 @@
 ---
+description: "Explore how Speedscale utilizes eBPF for efficient traffic collection in Kubernetes, capturing plaintext and TLS traffic without application changes."
 sidebar_position: 0
 ---
 

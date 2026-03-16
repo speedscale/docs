@@ -1,4 +1,5 @@
 ---
+description: "Select your environment from the main navigation to access supported enterprise distributions in Speedscale for effective API testing and traffic replay."
 sidebar_position: 0
 ---
 # Select Environment

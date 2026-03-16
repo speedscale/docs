@@ -1,4 +1,5 @@
 ---
+description: "Optimize your load testing with the Speedscale Generator Sizing Guide, detailing CPU requirements and factors affecting generator throughput for effective performance."
 sidebar_position: 6
 ---
 

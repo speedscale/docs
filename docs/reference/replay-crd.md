@@ -1,4 +1,5 @@
 ---
+description: "Explore the Custom Resource Definition for Speedscale to enable traffic replay in Kubernetes, allowing API traffic testing and validation against workloads."
 sidebar_position: 15
 ---
 

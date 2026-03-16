@@ -1,4 +1,5 @@
 ---
+description: "Explore the Performance Details page to analyze Speedscale metrics, including latency, throughput, and error rates, for optimizing your API performance."
 sidebar_position: 2
 ---
 

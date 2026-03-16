@@ -1,4 +1,5 @@
 ---
+description: "Configure the Speedscale Operator Helm chart with this guide, detailing options for traffic capture, isolation tests, and Kubernetes deployment settings."
 sidebar_position: 8
 ---
 

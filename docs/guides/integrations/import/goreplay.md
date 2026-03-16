@@ -1,4 +1,5 @@
 ---
+description: "Import GoReplay traffic into Speedscale to leverage familiar tools for sending test requests to your app with collected traffic data."
 sidebar_position: 1
 ---
 

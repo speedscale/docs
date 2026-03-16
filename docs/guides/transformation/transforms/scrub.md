@@ -1,4 +1,5 @@
 ---
+description: "Scrub incoming strings in Speedscale to enhance match rates by replacing sensitive values while preserving necessary data for API testing and traffic replay"
 sidebar_position: 20
 ---
 

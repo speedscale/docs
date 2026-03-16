@@ -1,4 +1,5 @@
 ---
+description: "Explore the FAQ for ProxyMock, covering supported protocols, Windows compatibility, differences from Speedscale Enterprise, and mock server functionality."
 sidebar_position: 4
 ---
 

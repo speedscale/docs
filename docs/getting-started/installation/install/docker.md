@@ -1,5 +1,6 @@
 ---
 title: Docker
+description: "Run Speedscale components using Docker Compose to capture and replay traffic, enabling seamless API testing and integration with your applications."
 sidebar_position: 8
 ---
 

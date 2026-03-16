@@ -1,5 +1,6 @@
 ---
 title: Triggers
+description: "Automate workflows in Speedscale by triggering actions based on mock requests, enhancing environment replication for asynchronous systems like RabbitMQ."
 sidebar_position: 12
 ---
 

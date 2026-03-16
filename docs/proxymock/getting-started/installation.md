@@ -1,4 +1,5 @@
 ---
+description: "Install ProxyMock via the command line to automate simulation environments, record traffic, and replay transactions efficiently for your API testing needs"
 sidebar_position: 2
 ---
 import Tabs from '@theme/Tabs';

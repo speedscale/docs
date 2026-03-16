@@ -1,4 +1,5 @@
 ---
+description: "Create and manage schedules in Speedscale to automate actions like snapshots and replays, enhancing your API testing and traffic replay processes."
 sidebar_position: 10
 ---
 

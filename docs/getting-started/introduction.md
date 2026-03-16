@@ -1,4 +1,5 @@
 ---
+description: "Get started with Speedscale to automate API quality testing, leveraging observability and AI for effortless traffic replay and test generation."
 slug: /
 sidebar_position: 1
 sidebar_label: Getting Started

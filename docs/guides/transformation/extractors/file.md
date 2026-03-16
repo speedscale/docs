@@ -1,4 +1,5 @@
 ---
+description: "Read local or user-defined files with Speedscale to extract small data items like secrets or configurations for your API testing and mocking needs"
 sidebar_position: 2
 ---
 

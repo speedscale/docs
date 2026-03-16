@@ -1,4 +1,5 @@
 ---
+description: "Define custom load patterns in Speedscale to shape traffic replay, including ramping requests per second and maintaining desired throughput."
 sidebar_position: 2
 ---
 

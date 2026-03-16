@@ -1,4 +1,5 @@
 ---
+description: "Get started with Speedscale by installing the Operator in your Kubernetes environment to capture, replay, and test API traffic efficiently."
 sidebar_position: 2
 ---
 import Tabs from '@theme/Tabs';

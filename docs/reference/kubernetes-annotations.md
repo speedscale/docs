@@ -1,5 +1,6 @@
 ---
 title: Kubernetes Annotations
+description: "Explore Kubernetes annotations for the Speedscale sidecar, including common and sidecar-specific annotations to control traffic replay with Custom Resource Definitions"
 sidebar_position: 9
 ---
 

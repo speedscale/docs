@@ -1,5 +1,6 @@
 ---
 title: Re-sign JWTs
+description: "Re-sign JWTs with Speedscale to ensure your Service Under Test authenticates correctly by following this detailed guide on configuring JWT re-signing."
 sidebar_position: 8
 ---
 

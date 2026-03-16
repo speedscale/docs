@@ -1,4 +1,5 @@
 ---
+description: "Explore Speedscale's Reports page to analyze replay results, view AI-generated summaries, and access detailed insights on performance and recommendations."
 sidebar_position: 0
 ---
 

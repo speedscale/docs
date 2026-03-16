@@ -1,4 +1,5 @@
 ---
+description: "Re-sign AWS Authorization v4 HTTP Headers with the aws_auth transform in Speedscale to ensure accurate signature generation for API requests"
 sidebar_position: 1
 ---
 

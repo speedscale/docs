@@ -1,4 +1,5 @@
 ---
+description: "Export traffic from Speedscale to Postman collections for seamless API testing and request management using familiar tools and formats."
 sidebar_position: 4
 ---
 

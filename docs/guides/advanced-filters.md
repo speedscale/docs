@@ -1,5 +1,6 @@
 ---
 title: Advanced Snapshot Filters
+description: "Utilize advanced snapshot filters in Speedscale to create targeted traffic snapshots based on HTTP headers and JSON payloads using the speedctl CLI."
 sidebar_position: 39
 ---
 

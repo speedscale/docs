@@ -1,5 +1,6 @@
 ---
 title: Replaying JWTs
+description: "Replay JWTs effectively with Speedscale by managing expiration issues and ensuring valid tokens during traffic replay for seamless API testing and authentication."
 sidebar_position: 1
 ---
 

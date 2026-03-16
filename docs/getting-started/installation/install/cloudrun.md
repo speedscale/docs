@@ -1,5 +1,6 @@
 ---
 title: Google Cloud Run
+description: "Set up Google Cloud Run with Speedscale by creating a GKE cluster, deploying components, and configuring your app for effective traffic capture and testing"
 sidebar_position: 9
 ---
 

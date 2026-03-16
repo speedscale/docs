@@ -1,4 +1,5 @@
 ---
+description: "Mock AWS SES connections for local development using ProxyMock to test email functionality without sending real emails or incurring costs with Speedscale."
 sidebar_position: 9
 ---
 

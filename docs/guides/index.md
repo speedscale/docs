@@ -1,5 +1,6 @@
 ---
 title: How-to Guides
+description: "Explore practical how-to guides for Speedscale's API testing platform, covering traffic capture, replay execution, and advanced feature configuration."
 sidebar_position: 1
 ---
 

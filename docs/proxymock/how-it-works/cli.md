@@ -1,4 +1,5 @@
 ---
+description: "Explore the CLI Documentation for ProxyMock to learn how to record, mock, and replay API traffic efficiently in local and CI/CD environments with Speedscale integration"
 sidebar_position: 1
 ---
 

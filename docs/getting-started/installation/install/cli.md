@@ -1,4 +1,5 @@
 ---
+description: "Utilize the speedctl command line tool to interact with Speedscale for setup actions like installing the Speedscale Operator and generating manifests."
 sidebar_position: 2
 ---
 import CLIInstall from './\_cli_install.mdx'

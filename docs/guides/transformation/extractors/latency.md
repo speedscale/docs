@@ -1,4 +1,5 @@
 ---
+description: "Extract expected latency for RRPair using Speedscale's latency extractor to modify response times before sending responses back to improve API testing accuracy"
 sidebar_position: 13
 ---
 

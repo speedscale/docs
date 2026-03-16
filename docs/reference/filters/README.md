@@ -1,4 +1,5 @@
 ---
+description: "Utilize filters in Speedscale to refine traffic collection, isolate snapshots, and tailor assertions for effective API testing and mocking solutions"
 sidebar_position: 0
 ---
 

@@ -1,4 +1,5 @@
 ---
+description: "Explore how to use assertions in Speedscale to compare application responses during testing with recorded traffic for accurate results."
 sidebar_position: 0
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: CI/CD
+description: "Integrate ProxyMock into your CI/CD pipeline to enhance deployment confidence with automated traffic replay and testing before production release."
 sidebar_position: 2
 ---
 

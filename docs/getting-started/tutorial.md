@@ -1,4 +1,5 @@
 ---
+description: "Install and configure Speedscale to capture, transform, and replay traffic with mocks using a Java Spring Boot app in this comprehensive tutorial."
 sidebar_position: 3
 ---
 import Tabs from '@theme/Tabs';
