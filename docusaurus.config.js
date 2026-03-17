@@ -261,10 +261,17 @@ const config = {
             from: "/guides/import-charles/",
             to: "/guides/integrations/import/import-charles/",
           },
-          { from: "/guides/smart_replace", to: "/guides/transformation/smart-replace/" },
+          {
+            from: "/guides/smart_replace",
+            to: "/guides/transformation/smart-replace/",
+          },
+          { from: "/guides/mocking/", to: "/guides/mocking/mocks/" },
           { from: "/guides/triggers/", to: "/guides/mocking/triggers/" },
           { from: "/guides/kafka/", to: "/guides/message-brokers/kafka/" },
-          { from: "/guides/rabbitmq/", to: "/guides/message-brokers/rabbitmq/" },
+          {
+            from: "/guides/rabbitmq/",
+            to: "/guides/message-brokers/rabbitmq/",
+          },
           {
             from: "/reference/integrations/goreplay/",
             to: "/guides/integrations/import/goreplay/",
@@ -297,7 +304,10 @@ const config = {
             from: "/guides/review-services/",
             to: "/guides/creating-a-snapshot/",
           },
-          { from: "/install/cli-speedctl/", to: "/getting-started/installation/install/cli/" },
+          {
+            from: "/install/cli-speedctl/",
+            to: "/getting-started/installation/install/cli/",
+          },
           {
             from: "/install/kubernetes-operator/",
             to: "/getting-started/installation/install/kubernetes-operator/",
@@ -366,8 +376,14 @@ const config = {
             from: "/reference/transform-traffic/transforms/csv",
             to: "/guides/transformation/transforms/csv/",
           },
-          { from: "/reference/integrations/gcp/", to: "/guides/integrations/gcp/" },
-          { from: "/reference/integrations/aws/", to: "/guides/integrations/aws/" },
+          {
+            from: "/reference/integrations/gcp/",
+            to: "/guides/integrations/gcp/",
+          },
+          {
+            from: "/reference/integrations/aws/",
+            to: "/guides/integrations/aws/",
+          },
           {
             from: "/reference/integrations/rancher-labs/",
             to: "/guides/integrations/rancher-labs/",
@@ -545,13 +561,20 @@ const config = {
           },
           { from: "/replay/reports/logs/", to: "/guides/reports/logs/" },
           { from: "/replay/start-replay/", to: "/guides/replay/" },
+          { from: "/concepts/reports/", to: "/guides/reports/" },
           { from: "/replay/viewing-reports-1/", to: "/guides/reports/" },
           {
             from: "/replay/viewing-reports-1/errors/",
             to: "/guides/reports/errors",
           },
-          { from: "/setup/sidecar/", to: "/getting-started/installation/sidecar/install/" },
-          { from: "/setup/sidecar/sidecar-trust/", to: "/getting-started/installation/sidecar/tls/" },
+          {
+            from: "/setup/sidecar/",
+            to: "/getting-started/installation/sidecar/install/",
+          },
+          {
+            from: "/setup/sidecar/sidecar-trust/",
+            to: "/getting-started/installation/sidecar/tls/",
+          },
           {
             from: "/setup/sidecar/using-with-istio/",
             to: "/getting-started/installation/install/istio/",
@@ -560,9 +583,18 @@ const config = {
             from: "/setup/upgrade/changed-annotations/",
             to: "/getting-started/installation/sidecar/annotations/",
           },
-          { from: "/upgrade/operator/", to: "/getting-started/upgrade/operator/" },
-          { from: "/guides/istio/", to: "/getting-started/installation/install/istio/" },
-          { from: "/guides/openshift/", to: "/getting-started/installation/install/openshift/" },
+          {
+            from: "/upgrade/operator/",
+            to: "/getting-started/upgrade/operator/",
+          },
+          {
+            from: "/guides/istio/",
+            to: "/getting-started/installation/install/istio/",
+          },
+          {
+            from: "/guides/openshift/",
+            to: "/getting-started/installation/install/openshift/",
+          },
           {
             from: "/proxymock/reference/architecture/",
             to: "/proxymock/how-it-works/architecture/",
