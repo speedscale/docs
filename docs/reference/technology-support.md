@@ -95,6 +95,22 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Twilio                      | API  | Full    |                                        |
 | Zapier                      | API  | Full    |                                        |
 
+### Supported LLM Providers
+
+Speedscale automatically detects and supports popular LLM (Large Language Model) provider APIs. This enables visibility into AI/LLM traffic and mocking of LLM responses for testing without live API calls.
+
+| Technology      | Type | Support | Notes                                                   |
+| --------------- | ---- | ------- | ------------------------------------------------------- |
+| Anthropic Claude | LLM  | Full    | Auto-detected via `api.anthropic.com`                   |
+| Google Gemini    | LLM  | Full    | Auto-detected via `generativelanguage.googleapis.com`   |
+| Grok (xAI)      | LLM  | Full    | Auto-detected via `api.x.ai`                            |
+| OpenAI           | LLM  | Full    | Auto-detected via `api.openai.com`                      |
+| OpenRouter       | LLM  | Full    | Auto-detected via `openrouter.ai`                       |
+
+:::tip
+LLM provider traffic is standard HTTP/HTTPS — no special configuration is required. Speedscale will automatically detect and label LLM API calls when traffic flows through the proxy.
+:::
+
 ### Environments <a href="#environments" id ="environments"></a>
 
 Most modern enterpise environments are supported by Speedscale and new ones are added upon request. This includes everything from desktops to Docker to Kubernetes.
