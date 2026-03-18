@@ -13,7 +13,7 @@ Speedscale Inc. was audited by Prescient Assurance, a leader in security and com
 
 An unqualified opinion on a SOC 2 Type I audit report demonstrates to the Speedscale Inc.’s current and future customers that they manage their data with the highest standard of security and compliance.
 
-![SOC2 Emblem](https://speedscale.com/wp-content/uploads/2021/10/socforserviceorganizationslogosos-150x150.jpg)
+![SOC2 Emblem](/img/soc2-badge.png)
 
 ## Laws and Regulations
 
