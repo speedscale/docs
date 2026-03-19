@@ -121,17 +121,18 @@ globalSecurityContext:
 # eBPF related settings
 ebpf:
   enabled: true
-  configuration:
+  nettap:
     capture:
-      # targets to be monitored and captured by the ebpf capture process
-      targets:
-        - name: example-service
-          namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: mynamespace
-          podSelector:
-            matchLabels:
-              app: myapp
+      podSecurityContext:
+        runAsGroup: null
+        runAsUser: null
+    ingest:
+      podSecurityContext:
+        runAsGroup: null
+        runAsUser: null
+    securityContext:
+      fsGroup: null
+      supplementalGroups: null
 ```
 
 ## Replaying Traffic
