@@ -253,6 +253,46 @@ For detailed resource utilization data, see [Resource Utilization](resource-util
 Choosing between sidecar-based and eBPF-based traffic collection depends on your environment and
 requirements.
 
+```mermaid
+graph TB
+    subgraph ebpf_approach["eBPF Approach"]
+        subgraph ebpf_node["Kubernetes Node"]
+            subgraph epod1["Pod A"]
+                eapp1["App Container"]
+            end
+            subgraph epod2["Pod B"]
+                eapp2["App Container"]
+            end
+            subgraph epod3["Pod C"]
+                eapp3["App Container"]
+            end
+            nettap["nettap DaemonSet\n(one per node)"]
+        end
+        nettap -. "kprobe / uprobe" .-> eapp1
+        nettap -. "kprobe / uprobe" .-> eapp2
+        nettap -. "kprobe / uprobe" .-> eapp3
+    end
+
+    ebpf_approach ~~~ sidecar_approach
+
+    subgraph sidecar_approach["Sidecar Proxy Approach"]
+        subgraph sc_node["Kubernetes Node"]
+            subgraph spod1["Pod A"]
+                direction TB
+                sapp1["App Container"] --> sproxy1["Sidecar Proxy"]
+            end
+            subgraph spod2["Pod B"]
+                direction TB
+                sapp2["App Container"] --> sproxy2["Sidecar Proxy"]
+            end
+            subgraph spod3["Pod C"]
+                direction TB
+                sapp3["App Container"] --> sproxy3["Sidecar Proxy"]
+            end
+        end
+    end
+```
+
 ### When to Use eBPF
 
 - You want **frictionless** traffic capture that does not require workload modifications
