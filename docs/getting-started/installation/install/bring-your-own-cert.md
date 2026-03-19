@@ -80,7 +80,7 @@ spec:
 
 Set `createTLSCerts: false` so the chart does not create or overwrite the secrets you just provisioned and set `webhookAnnotations` so cert-manager (or equivalent) keeps the CA bundle in the webhook configurations up to date automatically. The relevant section of `values.yaml` looks like this:
 
-::: warning
+:::warning
 
 Your cert provider must be able to inject a CA into the webhook configurations directly using an annotation. Validating and mutating webhook objects in Kubernetes have their CA bundle specified inline and can not reference external values.
 
