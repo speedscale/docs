@@ -957,7 +957,11 @@ const config = {
           },
           {
             from: "/setup/install/azure/",
-            to: "/getting-started/installation/install/azure/",
+            to: "/getting-started/installation/install/",
+          },
+          {
+            from: "/getting-started/installation/install/azure/",
+            to: "/getting-started/installation/install/",
           },
           {
             from: "/setup/install/beanstalk/",

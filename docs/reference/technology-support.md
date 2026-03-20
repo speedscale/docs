@@ -135,7 +135,6 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | Istio                                          | See [guide](../getting-started/installation/install/istio.md)                                                  |
 | MacOS Desktop                                  | See [CLI](../guides/cli.md)                                                             |
 | Microsoft Azure Kubernetes Service (AKS)       |                                                                                         |
-| Microsoft Azure App Services                   | See [guide](../getting-started/installation/install/azure.md)                                                  |
 | Postman Collections (v2+)                      | See [guide](/guides/integrations/import/import-postman)                                    |
 | Rancher Desktop                                |                                                                                         |
 | Rancher K3S                                    |                                                                                         |
