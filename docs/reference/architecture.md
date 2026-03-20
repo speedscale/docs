@@ -17,9 +17,53 @@ The Operator is usually installed via the helm [chart](https://github.com/speeds
 
 ## Shared Components
 
-By default, Speedscale's helm chart installs an operator and a complement of webhooks. This operator is necessary to both ingest data and perform replays. Components in the diagram with a caution icon are managed by the speedscale operator and typically should not be modified directly. These optional components are deployed by the operator and thus are not present in the helm [chart](https://github.com/speedscale/operator-helm). Keep in mind that your exact deployment may omit some of these components due to security constraints and other factors.
+By default, Speedscale's helm chart installs an operator and a complement of webhooks. This operator is necessary to both ingest data and perform replays. The managed components (Forwarder, Inspector, nettap) are deployed by the operator and typically should not be modified directly. These optional components are not present in the helm [chart](https://github.com/speedscale/operator-helm). Keep in mind that your exact deployment may omit some of these components due to security constraints and other factors.
 
-![common](./architecture/common.png)
+```mermaid
+graph TD
+    subgraph cluster["Kubernetes Cluster"]
+        subgraph ns["speedscale namespace"]
+            direction TB
+            subgraph webhooks[" "]
+                mwh["Mutating Webhook"]
+                vwh["Validating Webhook"]
+                rmwh["Replay Mutating Webhook"]
+            end
+
+            operator["Operator"]
+
+            subgraph managed["Managed Components"]
+                forwarder["Forwarder"]
+                inspector["Inspector<br/><i>optional</i>"]
+                nettap["nettap DaemonSet<br/><i>optional – eBPF</i>"]
+            end
+        end
+
+        subgraph app_ns["application namespace"]
+            pods["Pods"] ~~~ deploy["Deployments"]
+            sts["StatefulSets"] ~~~ ds["DaemonSets"]
+            jobs["Jobs"] ~~~ rs["ReplicaSets"]
+            rollout["Argo Rollouts"]
+        end
+    end
+
+    subgraph cloud["Speedscale Cloud"]
+        api["API / Dashboard"]
+    end
+
+    mwh -->|workload events| operator
+    vwh -->|CR validation| operator
+    rmwh -->|trafficreplay CRs| operator
+
+    operator --> forwarder
+    operator --> inspector
+    operator --> nettap
+    operator -->|"manages capture"| app_ns
+
+    forwarder -->|"data"| api
+    operator -->|"telemetry"| api
+    inspector -->|"control"| api
+```
 
 A full complement of Speedscale services deployed to the default `speedscale` namespace will produce output similar to this pod listing:
 ```bash
@@ -42,33 +86,73 @@ speedscale-operator-d9cc9c794-mtcdp     1/1     Running   0          7d6h
 
 **inspector (optional)** - Provides remote control services initiated from Speedscale cloud. This component is intentionally separate from the rest of Speedscale's system so it can be removed in secure environments. Once this component is disabled, Speedscale will work normally but remote environment control will be no longer be possible.
 
-**java-server/client (optional)** - A simple demo app provided by Speedscale that can be easily turned off.
+**java-server/client (optional)** - A simple demo app deployed in the `speedscale` namespace that can be easily turned off.
 
-The Speedscale sidecar is shown in this diagram to indicate connectivity but the operator installation does not automatically deploy a sidecar.
+The sidecar and eBPF DaemonSet capture methods are detailed in the [Ingest](#ingest-only) section below. The operator installation does not automatically deploy either capture method.
 
 :::note
 All connections to Speedscale Cloud are initiated outbound from your cluster. Speedscale does not require listener ports to be opened.
 :::
 
 :::note
-`telemetry` and `control` are very low bandwidth connections. `data` typically utilizes more bandwidth depending on your traffic ingest. Please see the helm [chart](https://github.com/speedscale/operator-helm) and networking [requirements](../reference/networking.md) for more information.
+`telemetry` and `control` are very low bandwidth connections. `data` typically utilizes more bandwidth depending on your traffic ingest. Please see the helm [chart](https://github.com/speedscale/operator-helm) and networking [requirements](./networking.md) for more information.
 :::
 
 ## Ingest Only
 
-During traffic ingest, Speedscale utilizes a data pipeline that is optimized for data masking, filtering and high volume. As a result, these components use additional network channels and components which are outlined below. It is technically possible to add these components manuallly but it is unusual. Typically, either a trafficreplay CR is created or the workload is annotated which lets the operator manage the sidecar injection.
+During traffic ingest, Speedscale utilizes a data pipeline that is optimized for data masking, filtering and high volume. Speedscale offers two capture methods: a **sidecar proxy** injected into each pod, or an **eBPF DaemonSet** (`nettap`) that observes traffic at the node level without modifying workloads. Both methods forward captured traffic to the in-cluster forwarder where DLP filtering and PII redaction occur before data leaves the cluster.
 
-![ingest](./architecture/ingest.png)
+### Sidecar Capture
 
-**sidecar** - This is the listener proxy, similar to an Envoy sidecar.
+```mermaid
+graph LR
+    subgraph pod["Application Pod"]
+        app["App Container"]
+        sidecar["Sidecar<br/>speedscale-goproxy"]
+    end
 
-Each sidecar connects to the in-cluster forwarder in the `speedscale` namespace. Data is filtered and forwarded to Speedscale Cloud by the forwarder itself.
+    forwarder["Forwarder<br/>DLP & Filtering"]
+    cloud["Speedscale Cloud"]
 
-Pods with the speedscale sidecar injected should have a new container named `speedscale-goproxy`.
+    app <-->|traffic| sidecar
+    sidecar -->|traffic data| forwarder
+    forwarder -->|"filtered data<br/>PII redacted"| cloud
+```
+
+**sidecar** - A listener proxy injected into each application pod, similar to an Envoy sidecar. The sidecar intercepts inbound and outbound traffic and forwards it to the in-cluster forwarder.
+
+Pods with the speedscale sidecar injected will have a new container named `speedscale-goproxy`:
 
 ```bash
 kubectl -n speedscale get pods java-server-5786d56974-pv765 -o jsonpath='{.spec.containers[*].name}'
 speedscale-goproxy java-server
+```
+
+### eBPF Capture
+
+```mermaid
+graph LR
+    subgraph node["Kubernetes Node"]
+        nettap["nettap DaemonSet"]
+        subgraph pod["Application Pod"]
+            app["App Container"]
+        end
+    end
+
+    forwarder["Forwarder<br/>DLP & Filtering"]
+    cloud["Speedscale Cloud"]
+
+    nettap -.->|"kprobe / uprobe<br/>(passive observe)"| app
+    nettap -->|traffic data| forwarder
+    forwarder -->|"filtered data<br/>PII redacted"| cloud
+```
+
+**nettap (eBPF DaemonSet)** - A per-node DaemonSet that uses eBPF kprobes and uprobes to passively observe network traffic without proxies or application changes. No sidecar is injected into the pod. See [eBPF Traffic Collection](/reference/ebpf-traffic-collection) for details.
+
+Verify the nettap DaemonSet is running:
+
+```bash
+kubectl -n speedscale get daemonset nettap
 ```
 
 :::tip
@@ -77,7 +161,32 @@ Speedscale can dynamically prevent PII data from leaving your environment during
 
 ## Replay Only
 
-![replay](./architecture/replay.png)
+```mermaid
+graph TB
+    subgraph cloud["Speedscale Cloud"]
+        api["API / Dashboard"]
+    end
+
+    subgraph cluster["Kubernetes Cluster"]
+        subgraph test_ns["test namespace"]
+            generator["speedscale-generator<br/><i>optional</i>"]
+            responder["speedscale-responder<br/><i>optional</i>"]
+            redis["Redis"]
+            collector["speedscale-collector<br/><i>optional</i>"]
+
+            subgraph pod["Application Pod"]
+                app["App Container"]
+            end
+        end
+    end
+
+    generator -->|"inbound test traffic"| app
+    app -->|"outbound calls"| responder
+    responder -->|mock data| redis
+    collector -->|report data| api
+    generator -->|results| api
+    responder -->|results| api
+```
 
 During replay, the operator starts a collector to retrieve logs and other events from the Kubernetes API. The load generator only starts if tests are being executed. The responder only starts if service mocking is enabled.
 
@@ -101,15 +210,17 @@ speedscale-responder-abstract-yucca-ffc7a8ffec-f11av   1/1     Running          
 
 ## Data Security
 
-Speedscale's Data Loss Prevention (DLP) engine protects sensitive information by redacting personally identifiable information (PII) and other sensitive data before it leaves your network. The DLP engine runs within the forwarder component, inspecting all traffic data received from sidecars and automatically detecting and redacting sensitive patterns such as email addresses, credit card numbers, Social Security Numbers, and other PII.
+Speedscale's Data Loss Prevention (DLP) engine protects sensitive information by redacting personally identifiable information (PII) and other sensitive data before it leaves your network. The DLP engine runs within the forwarder component, inspecting all traffic data received from sidecars or the eBPF DaemonSet and automatically detecting and redacting sensitive patterns such as email addresses, credit card numbers, Social Security Numbers, and other PII.
 
 ```mermaid
 graph LR
     Sidecar[Sidecar<br/>speedscale-goproxy]
+    Nettap[nettap<br/>eBPF DaemonSet]
     Forwarder[Forwarder<br/>Cache<br/>DLP Engine]
     Kinesis[AWS Kinesis<br/>Firehose]
     
     Sidecar -->|traffic data| Forwarder
+    Nettap -->|traffic data| Forwarder
     Forwarder -->|filtered data<br/>PII redacted| Kinesis
 ```
 
