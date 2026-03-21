@@ -106,6 +106,7 @@ Speedscale automatically detects and supports popular LLM (Large Language Model)
 | Grok (xAI)      | LLM  | Full    | Auto-detected via `api.x.ai`                            |
 | OpenAI           | LLM  | Full    | Auto-detected via `api.openai.com`                      |
 | OpenRouter       | LLM  | Full    | Auto-detected via `openrouter.ai`                       |
+| Perplexity       | LLM  | Full    | Auto-detected via `api.perplexity.ai`                   |
 
 :::tip
 LLM provider traffic is standard HTTP/HTTPS — no special configuration is required. Speedscale will automatically detect and label LLM API calls when traffic flows through the proxy.
