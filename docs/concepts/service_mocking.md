@@ -74,3 +74,7 @@ You can request new protocol support in the Speedscale [community Slack](https:/
 Custom built service mocks tend to fall out of date quickly because the data or the API contract changes. For this reason we recommend Speedscale regenerate your mocks automatically every sprint (if possible).
 
 For more information see our [tutorial](https://speedscale.com/how-to-mock-apis-in-kubernetes/) on mock APIs.
+
+## LLM Simulation
+
+LLM providers like OpenAI, Anthropic, and Gemini are some of the most expensive dependencies to mock in non-production environments. Speedscale automatically detects LLM provider traffic and generates realistic mocks from captured responses, eliminating non-production AI spend while preserving the behavior your application depends on. See the [LLM Simulation guide](../guides/mocking/llm-simulation.md) for details.
