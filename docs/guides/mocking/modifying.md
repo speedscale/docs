@@ -136,3 +136,7 @@ signature to be created if the HTTP header `name` contains the value `nate`:
 The key assigned to the signature is a semi-random number, in this case 5. You can specify your own key for readability by
 passing a parameter to `store_sig`. The number/key itself is not important for signature matching
 and is added only to ensure uniqueness.
+
+:::tip
+The examples on this page use `api.openai.com` requests. If you are mocking LLM provider APIs, see the [LLM Simulation guide](./llm-simulation.md) for a complete walkthrough of capturing and replaying AI traffic.
+:::

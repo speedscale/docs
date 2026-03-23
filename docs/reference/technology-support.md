@@ -109,7 +109,7 @@ Speedscale automatically detects and supports popular LLM (Large Language Model)
 | Perplexity       | LLM  | Full    | Auto-detected via `api.perplexity.ai`                   |
 
 :::tip
-LLM provider traffic is standard HTTP/HTTPS — no special configuration is required. Speedscale will automatically detect and label LLM API calls when traffic flows through the proxy.
+LLM provider traffic is standard HTTP/HTTPS — no special configuration is required. Speedscale will automatically detect and label LLM API calls when traffic flows through the proxy. See the [LLM Simulation guide](../guides/mocking/llm-simulation.md) for how to use recorded LLM traffic as mocks in development, CI, and load testing.
 :::
 
 ### Environments <a href="#environments" id ="environments"></a>
