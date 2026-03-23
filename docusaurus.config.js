@@ -266,7 +266,7 @@ const config = {
             to: "/guides/transformation/smart-replace/",
           },
           { from: "/guides/mocking/", to: "/guides/mocking/mocks/" },
-          { from: "/guides/triggers/", to: "/guides/mocking/triggers/" },
+          { from: "/guides/triggers/", to: "/guides/mocking/mocks/" },
           { from: "/guides/kafka/", to: "/guides/message-brokers/kafka/" },
           {
             from: "/guides/rabbitmq/",
