@@ -22,16 +22,16 @@ Admins have full control over the Speedscale platform. They can do everything a 
 | Activity | Notes |
 |----------|-------|
 | Add / modify / remove users | Includes inviting users at any role level |
-| Add / modify DLP rules | Data loss prevention configuration |
 | Add / modify traffic filters | Block traffic from ingest at the cluster level |
 | Manage usage thresholds and billing alerts | |
 
 ### Maintainer
 
-Maintainers manage infrastructure and automation. They can do everything a Developer can do, plus:
+Maintainers manage infrastructure and data protection. They can do everything a Developer can do, plus:
 
 | Activity | Notes |
 |----------|-------|
+| Add / modify DLP rules | DLP rules are consumed by the forwarder and affect live traffic processing |
 | Install / remove sidecars from the UI | Sidecars can also be installed via CRDs or the local CLI without Maintainer access |
 | Enable / disable local capture on a forwarder | |
 | Update operator configuration | |
@@ -47,7 +47,7 @@ Developers can perform all day-to-day testing and observation tasks:
 | View and search captured traffic | |
 | Create and edit snapshots | |
 | Run replays and view reports | |
-| Manage transforms and DLP configurations on snapshots | |
+| Manage transforms on snapshots | Snapshot transforms only — creating DLP rules from transforms requires Maintainer or above |
 | Invite other Developers | |
 
 ## Inviting users
