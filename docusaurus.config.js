@@ -821,7 +821,7 @@ const config = {
           },
           {
             from: "/mocks/triggers/",
-            to: "/guides/mocking/triggers/",
+            to: "/guides/mocking/mocks/",
           },
           {
             from: "/observe/bodies/",
