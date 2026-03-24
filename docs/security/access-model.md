@@ -13,6 +13,37 @@ Speedscale uses role-based access control (RBAC) with three pre-defined roles: *
 | Maintainer | Infrastructure engineers who manage clusters and schedules |
 | Developer | Day-to-day testers and developers running replays |
 
+## Permission overview
+
+```mermaid
+flowchart LR
+    Admin([Admin])
+    Maintainer([Maintainer])
+    Developer([Developer])
+
+    Admin --> A1[User management]
+    Admin --> A2[Billing & usage thresholds]
+    Admin --> A3[DLP & filter rules]
+    Admin --> A4[Deploy sidecars & eBPF capture]
+    Admin --> A5[Operator & cron job config]
+    Admin --> A6[Run replays]
+    Admin --> A7[Create & edit snapshots]
+    Admin --> A8[View infrastructure status]
+    Admin --> A9[View reports & dashboards]
+
+    Maintainer --> M1[Deploy sidecars & eBPF capture]
+    Maintainer --> M2[Operator & cron job config]
+    Maintainer --> M3[Run replays]
+    Maintainer --> M4[Create & edit snapshots]
+    Maintainer --> M5[View infrastructure status]
+    Maintainer --> M6[View reports & dashboards]
+
+    Developer --> D1[Run replays]
+    Developer --> D2[Create & edit snapshots]
+    Developer --> D3[View infrastructure status]
+    Developer --> D4[View reports & dashboards]
+```
+
 ## Roles
 
 ### Admin
