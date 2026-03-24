@@ -121,18 +121,6 @@ globalSecurityContext:
 # eBPF related settings
 ebpf:
   enabled: true
-  nettap:
-    capture:
-      podSecurityContext:
-        runAsGroup: null
-        runAsUser: null
-    ingest:
-      podSecurityContext:
-        runAsGroup: null
-        runAsUser: null
-    securityContext:
-      fsGroup: null
-      supplementalGroups: null
 ```
 
 ## Replaying Traffic
