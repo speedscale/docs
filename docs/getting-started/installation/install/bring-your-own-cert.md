@@ -89,5 +89,5 @@ Your cert provider must be able to inject a CA into the webhook configurations d
 ```yaml
 createTLSCerts: false
 webhookAnnotations:
-  cert-manager.io/inject-ca-from-secret: speedscale-webhook-certs
+  cert-manager.io/inject-ca-from: speedscale/speedscale-operator-ca
 ```
