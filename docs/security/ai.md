@@ -13,9 +13,9 @@ Models built by customers based on their data are scoped to their secure tenant 
 
 ## Generative AI
 
-This feature can be turned off by Speedscale and cannot be re-enabled by users or customers without written authorization from the account holder. Generative AI features are provided for test data generation and may involve calls to third party services. If you are running in a highly secure environment please notify Speedscale to disable Generative AI completely.
+This feature can be turned off by Speedscale and cannot be re-enabled by users or customers without written authorization from the account holder. Generative AI features are provided for test data generation and AI-powered analysis.
 
-Enterprise customers also have the option of running a full LLM within their secure Speedscale tenant. This removes the need for third party services. This provides the best of both security and capability but requires special provisioning. Please contact Speedscale support for additional information.
+All AI and LLM processing runs within a SOC 2 compliant system hosted on AWS Bedrock. This means customer data never leaves your hosted environment and is never sent to external LLM providers such as OpenAI (ChatGPT) or Anthropic. Speedscale does not train AI models on customer data.
 
 ## Governance
 

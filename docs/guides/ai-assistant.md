@@ -101,6 +101,7 @@ The assistant can pull up throughput and latency data from a snapshot, giving yo
 The AI assistant follows Speedscale's [AI governance policies](/security/ai):
 
 - **Enterprise customers:** Your data is never shared between tenants or used for general model training
+- **Secure AI infrastructure:** All LLM processing runs on AWS Bedrock in a SOC 2 compliant environment. Customer data never leaves your hosted environment and is never sent to external providers like OpenAI or Anthropic
 - **Human in the loop:** The assistant suggests actions, but you confirm before anything is executed
 - **Disable if needed:** The AI assistant can be turned off for your account by contacting Speedscale support
 

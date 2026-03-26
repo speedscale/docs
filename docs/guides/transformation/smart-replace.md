@@ -17,7 +17,7 @@ In this section we'll work through a use case of replacing each user ID in a sna
 Now let's get started with the multiple-email replacement use case.
 
 :::note
-Remember, Speedscale Enterprise ensures data separation for AI models. Speedscale's shared models are not built by training on your private Enterprise customer data.
+Speedscale Enterprise ensures data separation for AI models. All AI processing runs on AWS Bedrock in a SOC 2 compliant environment — customer data never leaves your hosted environment and is never sent to external LLM providers. Speedscale does not train on your private data.
 :::
 
 ## Features

@@ -22,7 +22,7 @@ User data is stored on your local filesystem along with the rest of your cli dat
 Speedscale supports generative AI test data generation. Click on the User Data -> Generate data with AI to go through this workflow. AI generated data will be stored as userdata in CSV format.
 
 :::tip
-Generative AI features can be turned off globally for your tenant upon request. This is provided for highly sensitive and secure environments as an extra layer of security.
+All AI processing runs on AWS Bedrock in a SOC 2 compliant environment. Customer data never leaves your hosted environment and is not sent to external providers like OpenAI or Anthropic. Generative AI features can be turned off globally for your tenant upon request.
 :::
 
 ## Use in Transforms
