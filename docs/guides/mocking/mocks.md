@@ -22,5 +22,5 @@ For these reasons and others, many organizations have moved away from the entire
 In the following sections we will discuss Speedscale's unique approach to service virtualization as well as explore common usage patterns.
 
 :::tip Selective mocking via CLI
-Starting with the latest `speedctl`, you can selectively control which outbound services are mocked during a replay. Use `--mock-only` to mock only specific backends (e.g., rate-limited APIs or third-party services with idempotent transactions), or `--mock-except` to mock everything except services you want to call live. You can also exclude specific inbound services from replay with `--exclude-in`. See [Replay With speedctl — Controlling Outbound Mocks](/guides/replay/via-speedctl#controlling-outbound-mocks) for full details.
+Use `--mock-only` to mock only specific backends (e.g., rate-limited APIs or third-party services with idempotent transactions), or `--mock-except` to mock everything except services you want to call live. You can also exclude specific inbound services from replay with `--exclude-in`. See [Replay With speedctl — Controlling Outbound Mocks](/guides/replay/via-speedctl#controlling-outbound-mocks) for full details.
 :::
