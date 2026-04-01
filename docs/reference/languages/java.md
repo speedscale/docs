@@ -15,7 +15,7 @@ Java is fully supported by Speedscale. Use this page for Java-specific proxy set
 
 ## Demo App
 
-- Public demo: [speedscale/demo/java](https://github.com/speedscale/demo/tree/main/java)
+- Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`java` directory)
 - Stack: Spring Boot
 - Local run: `make local`
 - Traffic generator: `make client` or `make client-capture`
