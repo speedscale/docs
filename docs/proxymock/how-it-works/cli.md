@@ -55,9 +55,9 @@ proxymock record [flags]
 - `--log-to string`: File path to redirect all proxymock output
 - `--out string`: Directory to write recorded files (default: `proxymock/recorded-<timestamp>`)
 - `--out-format string`: Output format [markdown, json] (default "markdown")
+- `--map stringToString`: Create a reverse proxy that listens on a local port and forwards traffic to a backend
 - `--proxy-in-port uint32`: Port for inbound traffic proxy (default 4143)
 - `--proxy-out-port int`: Port for outbound traffic proxy (default 4140)
-- `--reverse-proxy strings`: TCP reverse proxy targets
 - `--svc-name string`: Service name for cloud integration (default "my-app")
 - `--timeout duration`: Command timeout (default 12h0m0s)
 
@@ -74,8 +74,11 @@ proxymock record -- go run .
 proxymock record -- npm start
 proxymock record -- python app.py
 
-# Setup reverse proxy for Postgres
-proxymock record --reverse-proxy 65432=localhost:5432
+# Setup a mapped port for Postgres
+proxymock record --map 65432=localhost:5432
+
+# Point your application at the mapped port instead of the real service
+export PGPORT=65432
 ```
 
 **Environment Variables for Recording:**
@@ -85,12 +88,16 @@ export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
 export grpc_proxy=http://$(hostname):4140
 
-# For SOCKS (supports more protocols)
+# For SOCKS-capable clients
 export http_proxy=socks5h://localhost:4140
 export https_proxy=socks5h://localhost:4140
-export tcp_proxy=socks5h://localhost:4140
+export all_proxy=socks5h://localhost:4140
 export grpc_proxy=http://$(hostname):4140
 ```
+
+These examples use lowercase shell variables to match `proxymock record --help`. Many proxy-aware clients also accept uppercase variants such as `HTTP_PROXY`, `HTTPS_PROXY`, and `ALL_PROXY`.
+
+If your client ignores proxy environment variables, use `--map` instead and point the client at the mapped port.
 
 ### mock
 
@@ -565,13 +572,17 @@ export https_proxy=http://localhost:4140
 export grpc_proxy=http://$(hostname):4140
 ```
 
-**SOCKS (supports more protocols):**
+**SOCKS-capable clients:**
 ```bash
 export http_proxy=socks5h://localhost:4140
 export https_proxy=socks5h://localhost:4140
-export tcp_proxy=socks5h://localhost:4140
+export all_proxy=socks5h://localhost:4140
 export grpc_proxy=http://$(hostname):4140
 ```
+
+These examples use lowercase shell variables to match `proxymock record --help`. Many proxy-aware clients also accept uppercase variants such as `HTTP_PROXY`, `HTTPS_PROXY`, and `ALL_PROXY`.
+
+If your client ignores proxy environment variables, use `proxymock record --map <listen_port>=<backend_host>:<backend_port>` and point your app at the mapped port.
 
 ## Testing with cURL
 

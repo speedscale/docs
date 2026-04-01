@@ -46,7 +46,7 @@ This tells the recorder to listen on port 13306 for MySQL traffic and forward it
 
 If you are using the demo app, make sure you have MySQL running and you have created the database. The instructions are in the demo [readme](https://github.com/speedscale/demo/tree/master/java-auth).
 
-For proxymock to capture MySQL traffic, configure your application to route database connections through the proxy using environment variables. Start a new terminal window that will run the demo app server:
+For proxymock to capture MySQL traffic, point your application at the mapped host and port. Start a new terminal window that will run the demo app server:
 
 ```bash
 export MYSQL_PORT=13306
@@ -55,7 +55,7 @@ export MYSQL_DATABASE=auth_db
 java -jar target/auth-1.1.7.jar
 ```
 
-Normally *MYSQL_PORT* and *MYSQL_HOST* will point at an external system or at your local machine port 3306. Since *proxymock* is intercepting traffic on port `localhost:13306` we set MYSQL to those connection parameters. This is the key ingredient for redirecting traffic to the proxymock recorder.
+Normally *MYSQL_PORT* and *MYSQL_HOST* will point at an external system or at your local machine port 3306. Since *proxymock* is intercepting traffic on port `localhost:13306` we set MYSQL to those connection parameters. This is the key ingredient for redirecting traffic to the proxymock recorder with `--map`.
 
 ### What Gets Recorded
 
@@ -77,8 +77,8 @@ The actual wire protocol is binary but proxymock displays request and response d
 
 ### Troubleshooting Recording
 
-- Ensure your MySQL driver supports SOCKS5 proxy or use reverse proxy mapping
-- Check that `tcp_proxy` environment variable is set correctly
+- Ensure your MySQL driver supports SOCKS5 proxy or use `--map`
+- If you are using SOCKS, check that `ALL_PROXY` or your driver's SOCKS configuration is set correctly
 - Verify MySQL server is accessible from proxymock
 
 ## Starting the Mock Server {#start-mocks}

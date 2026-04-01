@@ -25,6 +25,37 @@ As the name implies, **proxymock** is a proxy which works by routing traffic fro
 
 Record inbound traffic by setting the `--app-port` flag and making requests to port `4143` instead of your application's port.
 
+### When to use `--map` {#map}
+
+Use `--map` when your client ignores proxy environment variables or when it is easier to point the client at a different host and port than configure proxy support.
+
+Pick your recording mode like this:
+
+- HTTP, HTTPS, or gRPC clients that honor proxy environment variables: set `HTTP_PROXY`, `HTTPS_PROXY`, and `grpc_proxy`
+- Clients that support SOCKS: set `ALL_PROXY`
+- Clients that ignore proxy environment variables or use raw TCP protocols such as Redis: use `proxymock record --map`
+
+Examples on this page follow the casing conventions commonly used by each runtime. The [CLI reference](../how-it-works/cli.md) uses lowercase shell examples, and many proxy-aware clients accept uppercase and lowercase variants.
+
+`--map` tells **proxymock** to listen on a local port and forward traffic to the real backend. Then point your application at the mapped port instead of the real service.
+
+For example, to record Redis traffic, start **proxymock** with a port mapping and point your app at that mapped port:
+
+```shell
+proxymock record --out ./proxymock --map 56379=127.0.0.1:6379
+export REDIS_ADDR=127.0.0.1:56379
+./my-app
+```
+
+If the backend protocol matters, you can also include it explicitly:
+
+```shell
+proxymock record --map 65432=postgres://localhost:5432
+proxymock record --map 1443=https://httpbin.org:443
+```
+
+For more database examples, see the [MySQL guide](../guides/mysql.md) and [PostgreSQL guide](../guides/postgres.md).
+
 <Tabs groupId="language">
 <TabItem value="golang" label="Go">
 
