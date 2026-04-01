@@ -15,10 +15,10 @@ const ReferenceCard = () => {
         <h3 style={{ margin: 0, marginBottom: '1rem' }}>📚 Reference</h3>
       </CardHeader>
       <CardBody className="padding-vert--md">
-        See the <a href="./how-it-works">reference</a> for details on more advanced features.
+        See the <a href="/proxymock/how-it-works">reference</a> for details on more advanced features.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./how-it-works" className="button button--secondary">View Reference</a>
+        <a href="/proxymock/how-it-works" className="button button--secondary">View Reference</a>
       </CardFooter>
     </Card>
   );

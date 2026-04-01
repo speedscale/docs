@@ -19,7 +19,7 @@ const DlpCard = () => {
         Automatically redact PII and sensitive information from traffic.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./dlp" className="button button--primary">Secure Data</a>
+        <a href="/guides/dlp/introduction" className="button button--primary">Secure Data</a>
       </CardFooter>
     </Card>
   );

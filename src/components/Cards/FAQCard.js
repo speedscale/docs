@@ -15,10 +15,10 @@ const FAQCard = () => {
         <h3 style={{ margin: 0, marginBottom: '1rem' }}>❓ FAQ</h3>
       </CardHeader>
       <CardBody className="padding-vert--md">
-        Find <a href="./getting-started/faq">answers</a> to common questions about <strong>proxymock</strong>.
+        Find <a href="/proxymock/getting-started/faq">answers</a> to common questions about <strong>proxymock</strong>.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./getting-started/faq" className="button button--secondary">View FAQ</a>
+        <a href="/proxymock/getting-started/faq" className="button button--secondary">View FAQ</a>
       </CardFooter>
     </Card>
   );

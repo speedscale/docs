@@ -19,7 +19,7 @@ const BrowserCaptureCard = () => {
         web applications and frontend API interactions.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./browser" className="button button--primary">Test Browsers</a>
+        <a href="/guides/browser" className="button button--primary">Test Browsers</a>
       </CardFooter>
     </Card>
   );

@@ -19,7 +19,7 @@ const OpenApiCard = () => {
         Generate tests and mocks from your API schemas and validate responses.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./openapi" className="button button--primary">Learn OpenAPI</a>
+        <a href="/proxymock/guides/openapi" className="button button--primary">Learn OpenAPI</a>
       </CardFooter>
     </Card>
   );

@@ -19,7 +19,7 @@ const SnapshotCard = () => {
         Set up recording sessions and capture real traffic patterns.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./creating-a-snapshot" className="button button--primary">Create Snapshots</a>
+        <a href="/guides/creating-a-snapshot" className="button button--primary">Create Snapshots</a>
       </CardFooter>
     </Card>
   );

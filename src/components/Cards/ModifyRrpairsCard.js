@@ -19,7 +19,7 @@ const ModifyRrpairsCard = () => {
         Transform data, update headers, and adapt traffic for different environments.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./modify-rrpairs" className="button button--primary">Learn Modifications</a>
+        <a href="/proxymock/guides/modify-rrpairs" className="button button--primary">Learn Modifications</a>
       </CardFooter>
     </Card>
   );

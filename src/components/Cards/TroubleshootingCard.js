@@ -19,7 +19,7 @@ const TroubleshootingCard = () => {
         Resolve pod problems and configuration errors.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./troubleshooting" className="button button--primary">Fix Issues</a>
+        <a href="/guides/troubleshooting" className="button button--primary">Fix Issues</a>
       </CardFooter>
     </Card>
   );

@@ -16,11 +16,11 @@ const QuickstartCard = () => {
       </CardHeader>
       <CardBody className="padding-vert--md">
         Get started with <strong>proxymock</strong> by following the{' '}
-        <a href="./getting-started/quickstart-cli">quickstart guide</a>. 
+        <a href="/proxymock/getting-started/quickstart/quickstart-cli">quickstart guide</a>. 
         You will learn how to create mocks and tests using a demo application.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./getting-started/quickstart-cli" className="button button--primary">Get Started</a>
+        <a href="/proxymock/getting-started/quickstart/quickstart-cli" className="button button--primary">Get Started</a>
       </CardFooter>
     </Card>
   );

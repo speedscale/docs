@@ -15,7 +15,7 @@ import ProxymockLanguageWorkflow from '@site/src/components/ProxymockLanguageWor
 
 ## Demo App
 
-- Public demo: [speedscale/demo/csharp](https://github.com/speedscale/demo/tree/main/csharp)
+- Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`csharp` directory)
 - Stack: .NET 8 minimal API
 - Local run: `dotnet run`
 - Quick validation: `curl http://localhost:5128/health`

@@ -19,7 +19,7 @@ const LocalCaptureCard = () => {
         Capture desktop application traffic for testing and analysis.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./local-capture" className="button button--primary">Record Locally</a>
+        <a href="/guides/local-capture" className="button button--primary">Record Locally</a>
       </CardFooter>
     </Card>
   );

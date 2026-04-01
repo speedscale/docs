@@ -19,7 +19,7 @@ const SessionCard = () => {
         Handle authentication flows and session-based testing scenarios.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./identify-session" className="button button--primary">Manage Sessions</a>
+        <a href="/guides/identify-session" className="button button--primary">Manage Sessions</a>
       </CardFooter>
     </Card>
   );

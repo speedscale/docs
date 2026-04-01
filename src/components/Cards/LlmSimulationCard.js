@@ -19,7 +19,7 @@ const LlmSimulationCard = () => {
         Eliminate AI spend in development and CI.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./llm-simulation" className="button button--primary">Mock LLM APIs</a>
+        <a href="/proxymock/guides/llm-simulation" className="button button--primary">Mock LLM APIs</a>
       </CardFooter>
     </Card>
   );
