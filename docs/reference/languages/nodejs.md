@@ -15,7 +15,7 @@ Node.js is fully supported by Speedscale, but proxy behavior depends on the HTTP
 
 ## Demo App
 
-- Public demo: [speedscale/demo/node](https://github.com/speedscale/demo/tree/main/node)
+- Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`node` directory)
 - Stack: Express
 - Local run: `npm install && npm start`
 - Quick validation: `curl http://localhost:3000/`
