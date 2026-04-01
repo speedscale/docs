@@ -36,7 +36,7 @@ The `proxymock record` command creates RRPair files from real PostgreSQL interac
 Start a dedicated terminal window to run the proxymock recorder:
 
 ```bash
-proxymock record --reverse-proxy 15432=localhost:5432 --app-port 8080
+proxymock record --map 15432=localhost:5432 --app-port 8080
 ```
 
 This tells the recorder to listen on port 15432 for PostgreSQL traffic and forward it to the real PostgreSQL server at 5432. Your can learn more about the how *proxymock* records on the [architecture page](../how-it-works/architecture.md).
@@ -45,13 +45,13 @@ This tells the recorder to listen on port 15432 for PostgreSQL traffic and forwa
 
 If you are using the demo app, make sure you have PostgreSQL running and you have created the database. The instructions are in the demo [readme](https://github.com/speedscale/demo/tree/master/go-postgres).
 
-For proxymock to capture PostgreSQL traffic, configure your application to route database connections through the proxy using environment variables. Start a new terminal window that will run the demo app server:
+For proxymock to capture PostgreSQL traffic, point your application at the mapped port. Start a new terminal window that will run the demo app server:
 
 ```bash
 PGUSER=<user> PGPORT=15432 go run main.go
 ```
 
-Normally *PGPORT* and *PGUSER* will default to the default postgres installation values. With homebrew on mac that means your $username and 5432. Since *proxymock* is intercepting traffic on port `localhost:15432` we set PGPORT to use those connection parameters. This is the key ingredient for redirecting traffic to the proxymock recorder.
+Normally *PGPORT* and *PGUSER* will default to the default postgres installation values. With homebrew on mac that means your $username and 5432. Since *proxymock* is intercepting traffic on port `localhost:15432` we set PGPORT to use those connection parameters. This is the key ingredient for redirecting traffic to the proxymock recorder with `--map`.
 
 ### What Gets Recorded
 
@@ -73,8 +73,8 @@ The actual wire protocol is binary but proxymock displays request and response d
 
 ### Troubleshooting Recording
 
-- Ensure your PostgreSQL driver supports SOCKS5 proxy or use reverse proxy mapping
-- Check that `tcp_proxy` environment variable is set correctly
+- Ensure your PostgreSQL driver supports SOCKS5 proxy or use `--map`
+- If you are using SOCKS, check that `ALL_PROXY` or your driver's SOCKS configuration is set correctly
 - Verify PostgreSQL server is accessible from proxymock
 
 ## Starting the Mock Server {#start-mocks}
