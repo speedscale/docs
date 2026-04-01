@@ -15,10 +15,10 @@ const HelpCard = () => {
         <h3 style={{ margin: 0, marginBottom: '1rem' }}>🆘 Help</h3>
       </CardHeader>
       <CardBody className="padding-vert--md">
-        Computers are hard, but we're here to <a href="./getting-started/help">help</a> with details both free and paid support options.
+        Computers are hard, but we're here to <a href="/proxymock/getting-started/help">help</a> with details both free and paid support options.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./getting-started/help" className="button button--secondary">Get Help</a>
+        <a href="/proxymock/getting-started/help" className="button button--secondary">Get Help</a>
       </CardFooter>
     </Card>
   );

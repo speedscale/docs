@@ -18,7 +18,7 @@ Speedscale integrates with all major Identity Providers, including but not limit
     - Okta
     - Ping Identity
     - Active Directory Federation Services (ADFS)
-A full list of supported Identity Providers can be found [here]https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers.
+A full list of supported Identity Providers can be found [here](https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers).
 - Enhanced Security
     - By leveraging your organization’s existing IdP, Speedscale reduces the risk of compromised credentials and ensures compliance with security standards like SAML, OAuth, and OpenID Connect.
 

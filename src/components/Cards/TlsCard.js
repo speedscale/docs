@@ -19,7 +19,7 @@ const TlsCard = () => {
         Handle encrypted connections and certificate management.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./tls" className="button button--primary">Configure TLS</a>
+        <a href="/guides/tls" className="button button--primary">Configure TLS</a>
       </CardFooter>
     </Card>
   );

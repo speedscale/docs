@@ -19,7 +19,7 @@ const GrpcCard = () => {
         Record, replay, and mock gRPC calls with full protocol buffer support.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./grpc" className="button button--primary">Learn gRPC</a>
+        <a href="/proxymock/guides/grpc" className="button button--primary">Learn gRPC</a>
       </CardFooter>
     </Card>
   );

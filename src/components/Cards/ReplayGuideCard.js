@@ -19,7 +19,7 @@ const ReplayGuideCard = () => {
         and multi-service replays for comprehensive API testing.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="./replay/" className="button button--primary">Learn Replay</a>
+        <a href="/guides/replay" className="button button--primary">Learn Replay</a>
       </CardFooter>
     </Card>
   );
