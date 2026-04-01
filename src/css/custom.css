@@ -91,3 +91,13 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
     padding-bottom: 10px;
     text-decoration: none;
 }
+
+.theme-doc-markdown iframe {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  min-height: 315px;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  margin: 1rem auto;
+}

@@ -9,6 +9,7 @@ import TabItem from '@theme/TabItem';
 import MacCLIInstall from '../../index/\_cli_macos_minified.mdx'
 import LinuxCLIInstall from '../../index/\_cli_linux_minified.mdx'
 import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@site/src/components/Cards';
+import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
 
 # Quickstart (CLI)
 
@@ -106,9 +107,9 @@ Need another OS like Windows or are you having issues? See advanced [installatio
 
 ## Step 2: Get and register your API key {#api-key}
 
-**Easiest (new users):** Run `proxymock init` with no arguments. You'll be prompted to sign up or sign in; your API key is then saved. We don't sell marketing data or share your email.
+**Easiest path:** Run `proxymock init` with no arguments and use the browser sign-in flow. Your configuration is saved automatically.
 
-**If you already have a key:** Get it from [sign up](https://app.speedscale.com/proxymock/signup) or, for enterprise customers, the [Profile page](https://app.speedscale.com/profile). Then register it:
+**If you already have a key or need a headless flow:** Get it from [sign up](https://app.speedscale.com/proxymock/signup) or, for enterprise customers, the [Profile page](https://app.speedscale.com/profile). Then register it:
 
 ![Where to find your API key](../api-key.png)
 
@@ -117,6 +118,10 @@ proxymock init --api-key <your key>
 ```
 
 For more detail (enterprise, CI, troubleshooting), see [Initialize API Key](/proxymock/guides/initialize.md).
+
+If you want the language-specific landing pages after this Go-first quickstart, jump here:
+
+<ProxymockLanguageLinks className="space-y-1 mt-3" />
 
 ## Step 3: Install the demo app and start recording {#recording}
 

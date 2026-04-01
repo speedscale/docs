@@ -12,7 +12,7 @@ Smart Replace is a powerful tool designed to streamline the process of updating 
 In this section we'll work through a use case of replacing each user ID in a snapshot with a new test user ID. This is a common use case when user names or other IDs need to be replaced with test IDs to work in lower environments. Keep in mind that if you need to alter your data in other ways, you can use the [transform](/guides/transformation/overview) system. If you're looking to do things like replacing JWT tokens through your traffic you may want to check out this video instead:
 
 <iframe src="https://player.vimeo.com/video/1117518907?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/986454551">smart_replace_recorded example</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<p><a href="https://vimeo.com/1117518907">Watch the Smart Replace walkthrough on Vimeo</a>.</p>
 
 Now let's get started with the multiple-email replacement use case.
 
@@ -80,11 +80,11 @@ speedctl push userdata new_data.csv
 
 Smart Replace works using the Speedscale transform system but you don't need to understand the broader system to use this feature. Many tasks you would have normally accomplished with scripting can be accomplished with Smart Replace and for everything more complicated there are [transforms](/guides/transformation/overview).
 
-Before executing our replay, we want to train the system to perform our replacement. To do that, we add a `train_csv` transform to our snapshot in the Variables (Tests) sectionn. From the snapshot transform editor, add this chain `empty <-> train_csv()`. It should look something like this in the UI
+Before executing our replay, we want to train the system to perform our replacement. To do that, we add a `train_csv` transform to our snapshot in the Variables (Tests) section. From the snapshot transform editor, add this chain `empty <-> train_csv()`. It should look something like this in the UI.
 
 ![transform_example](./smart-replace/transform_example.png)
 
-`s3://` tells Speedscale to pull the data from Speedscale cloud. This should match the name of the CSV uploaded in thte previous step. This transform chain tells the Load Generator to read a file (Read File) from Speedsdcale cloud and then train Smart Replace on each row in the CSV (train_csv). The name of the variable is not important for this use case.
+`s3://` tells Speedscale to pull the data from Speedscale cloud. This should match the name of the CSV uploaded in the previous step. This transform chain tells the load generator to read a file from Speedscale cloud and then train Smart Replace on each row in the CSV (`train_csv`). The name of the variable is not important for this use case.
 
 ### Step 4: Run Replay and View Report
 
@@ -95,7 +95,7 @@ Before executing our replay, we want to train the system to perform our replacem
 
 ## Support
 
-For additional assistance, please refer to our [Support Page](#) or contact our support team at support@example.com.
+For additional assistance, contact [Speedscale Support](mailto:support@speedscale.com) or ask in the [Speedscale Community](https://slack.speedscale.com).
 
 ## FAQ
 
@@ -105,7 +105,7 @@ Yes, Smart Replace is designed to efficiently process large snapshot files.
 
 ### Will Smart Replace work when I create a new snapshot?
 
-Yes, although your new snapshot will need the same transform rules applies. This system is designed to be part of Speedscale's automatic traffic refresh system.
+Yes, although your new snapshot will need the same transform rules applied. This system is designed to be part of Speedscale's automatic traffic refresh system.
 
 ### Is there a limit to the number of replacements that can be specified in the CSV file?
 
@@ -121,4 +121,4 @@ Smart Replace uses the same mappings for all [vUsers](/reference/glossary.md#vus
 
 ### What if my mappings change as the snapshot is replayed?
 
-This situation usually arises when you record one user flow and want to multiply it. In that situation, you want a new ID to be replaced in the traffic during that flow and then replaced as the next flow starts. This is handled by the `train` transform with `overwrite=true`. This guide is designed fro persistent replacement.
+This situation usually arises when you record one user flow and want to multiply it. In that situation, you want a new ID to be replaced in the traffic during that flow and then replaced as the next flow starts. This is handled by the `train` transform with `overwrite=true`. This guide is designed for persistent replacement.

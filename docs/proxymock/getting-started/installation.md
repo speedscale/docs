@@ -8,6 +8,7 @@ import MacCLIInstall from './installation/\_cli_macos.mdx'
 import LinuxCLIInstall from './installation/\_cli_linux.mdx'
 import WindowsCLIInstall from './installation/\_cli_windows.mdx'
 import BinaryCLIInstall from './installation/\_cli_binary.mdx'
+import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
 
 # Installation
 
@@ -36,10 +37,11 @@ Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `pr
 
 ## After installing
 
-**proxymock** requires an API key. If you don't have one, [get one here](https://app.speedscale.com/proxymock/signup). Then save it in one step:
+Initialize once before your first recording. Browser sign-in is the default path:
 
-- **New users:** Run `proxymock init` and follow the prompts (you can sign up when prompted).
-- **Existing key:** Run `proxymock init --api-key <your key>`.
+- Run `proxymock init` and use the browser sign-in flow.
+- Use `proxymock init --api-key <your key>` only for CI or other headless environments.
 
-For more options (enterprise profile, CI, troubleshooting), see [Initialize API Key](/proxymock/guides/initialize.md). Then continue with the [Quickstart](/proxymock/getting-started/quickstart) to run your first recording.
+For more options (enterprise profile, CI, troubleshooting), see [Initialize API Key](/proxymock/guides/initialize.md). Then continue with the [Quickstart](/proxymock/getting-started/quickstart) or use a language-specific first-success path:
 
+<ProxymockLanguageLinks className="space-y-1 mt-3" />
