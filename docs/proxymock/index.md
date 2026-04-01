@@ -6,6 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import MacCLIInstall from './index/\_cli_macos_minified.mdx'
 import LinuxCLIInstall from './index/\_cli_linux_minified.mdx'
+import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
 import { 
   QuickstartCard, 
   FAQCard, 
@@ -16,7 +17,7 @@ import {
 
 # Overview
 
-This guide provides a step by step guide to creating an sandbox for testing your code. This involves automatic generation of tests and a [mock server](/reference/glossary.md#mock-server) for a simple Go application using only the **proxymock** CLI.
+This guide is the Proxymock entry point. Start with the install and quickstart flow, or jump straight to the language-specific first-success path that matches your app.
 
 ## [Getting started in 30 seconds](./getting-started/quickstart) {#getting-started}
 
@@ -33,6 +34,10 @@ This guide provides a step by step guide to creating an sandbox for testing your
 </Tabs>
 
 Need another OS like Windows or are you having issues? See advanced [installation](./getting-started/installation.md).
+
+## Language-specific guides
+
+<ProxymockLanguageLinks className="space-y-1 mt-3" />
 
 ## What proxymock does for you
 

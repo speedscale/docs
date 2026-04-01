@@ -13,11 +13,11 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology | Type     | Support | Notes                          |
 | ---------- | -------- | ------- | ------------------------------ |
-| .NET       | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| .NET       | Language | Full    | See [.NET](/reference/languages/dotnet#proxymock) and [TLS](/reference/languages/dotnet#tls-trust) |
 | C++        | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
-| Go         | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
-| Java       | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
-| Node.js    | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| Go         | Language | Full    | See [Go](/reference/languages/golang#proxymock) and [TLS](/reference/languages/golang#tls-trust) |
+| Java       | Language | Full    | See [Java](/reference/languages/java#proxymock) and [TLS](/reference/languages/java#tls-trust) |
+| Node.js    | Language | Full    | See [Node.js](/reference/languages/nodejs#proxymock) and [TLS](/reference/languages/nodejs#tls-trust) |
 | Python     | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
 | Ruby       | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
 

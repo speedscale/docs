@@ -7,8 +7,13 @@ description: "Configure language-specific settings for ProxyMock to route traffi
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import LanguageSpecificTLSConfiguration from '../../getting-started/installation/sidecar/_language_specific_tls_config.mdx';
+import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
 
 Some language-specific environment configuration may be necessary but you should not need to modify your application code to use **proxymock**.
+
+If you want the full language-specific first-success path, start here:
+
+<ProxymockLanguageLinks className="space-y-1 mt-3" />
 
 ### Configuring the Proxy
 
@@ -232,11 +237,10 @@ reqwest = { version = "your_version_here", features = ["socks"] }
 </TabItem>
 </Tabs>
 
-### Decrypting TLS
+### Decrypting TLS {#tls-trust}
 
 **proxymock** attempts to automatically configure TLS on the desktop so manual configuration is only necessary in special environments like CI/CD or when TLS decryption does not work out of the box.
 
 Commands and flags should be run in the environment where your application is running.
 
 <LanguageSpecificTLSConfiguration />
-

@@ -5,16 +5,17 @@ sidebar_position: 1
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
 
 # Initialize API Key
 
-To initialize proxymock, run the following command and follow the prompts
+For most developers, the easiest path is to run the following command and use the browser sign-in flow:
 
 ```bash
 proxymock init
 ```
 
-That's all you need to do! You can view or modify your API key by editing the `~/.speedscale/config.yaml` file.
+That is usually all you need. You can view or modify your configuration in `~/.speedscale/config.yaml`.
 
 Speedscale does not share or sell your email address, although we might send you updates or announcements if we can ever figure out this marketing thing. Engineering is more our wheelhouse.
 
@@ -31,21 +32,25 @@ proxymock does not send your recorded data to any third party. All data is store
 
 ## CI and other non interactive modes
 
-If you're trying to initialize **proxymock** without any prompts, just specify the api key on the command line
+If you're trying to initialize **proxymock** without any prompts, specify the API key on the command line:
 
 ```bash
 proxymock init --api-key <Your API Key>
 ```
 
+For the full workflow after initialization, see the [Quickstart](/proxymock/getting-started/quickstart). If you want a language-specific landing page instead, use one of these:
+
+<ProxymockLanguageLinks className="space-y-1 mt-3" />
+
 ### Getting an API Key
 
 <Tabs>
   <TabItem value="Existing Enterprise Customer">
-If you already have a Speedscale account, get your personal API key from your [Profile page](https://app.speedscale.com/profile) (API Key section). Copy the key, then run `proxymock init --api-key <your key>`.
+If you already have a Speedscale account, get your personal API key from your [Profile page](https://app.speedscale.com/profile) (API Key section). Copy the key, then run `proxymock init --api-key <your key>`. If you are on a developer workstation, `proxymock init` with browser sign-in is usually simpler.
   </TabItem>
 
   <TabItem value="New User">
-[Sign up for an API key](https://app.speedscale.com/proxymock/signup). After signup, copy your key from the page (see below) and run `proxymock init --api-key <your key>`, or run `proxymock init` and paste the key when prompted.
+[Sign up for an API key](https://app.speedscale.com/proxymock/signup). For local workstation setup, it is usually faster to run `proxymock init` and complete the browser flow. If you need a manual or headless setup, copy your key from the page (see below) and run `proxymock init --api-key <your key>`.
 
 ![Where to find your API key](../getting-started/api-key.png)
   </TabItem>
