@@ -24,7 +24,7 @@ In all future transactions, Speedscale will replace the recorded value with the 
 
 ### Example
 <iframe src="https://player.vimeo.com/video/1117518907?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/986454551">smart_replace_recorded example</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<p><a href="https://vimeo.com/1117518907">Watch the Smart Replace walkthrough on Vimeo</a>.</p>
 
 
 #### Configuration

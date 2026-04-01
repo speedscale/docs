@@ -37,8 +37,8 @@ proxymock init`,
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/demo
 cd demo/csharp
-proxymock record --app-port 5128`,
-      note: 'The app listens on port 5128 while proxymock records inbound traffic on 4143.',
+proxymock record --app-port 5128 --out ./proxymock/recorded`,
+      note: 'The app listens on port 5128 while proxymock records inbound traffic on 4143 and saves the capture in `./proxymock/recorded`.',
     },
     {
       title: 'Route .NET traffic through the proxy and run the app',
@@ -57,7 +57,7 @@ curl http://localhost:4143/weatherforecast`,
     {
       title: 'Stop the recording, then run with mocks',
       command: `cd demo/csharp
-proxymock mock --in-dir ./proxymock/recorded
+proxymock mock --in ./proxymock/recorded
 export HTTP_PROXY=http://127.0.0.1:4140
 export HTTPS_PROXY=http://127.0.0.1:4140
 dotnet run`,
@@ -66,7 +66,7 @@ dotnet run`,
     {
       title: 'Replay the same traffic against a change',
       command: `cd demo/csharp
-proxymock replay --in-dir ./proxymock/recorded --test-against http://localhost:5128`,
+proxymock replay --in ./proxymock/recorded --test-against http://localhost:5128`,
       note: 'Use replay as the regression check before shipping .NET changes.',
     },
   ]}

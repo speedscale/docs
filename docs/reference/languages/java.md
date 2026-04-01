@@ -37,8 +37,8 @@ proxymock init`,
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/demo
 cd demo/java
-proxymock record --app-port 8080`,
-      note: 'The app listens on port 8080 while proxymock records inbound traffic on 4143.',
+proxymock record --app-port 8080 --out ./proxymock/recorded`,
+      note: 'The app listens on port 8080 while proxymock records inbound traffic on 4143 and saves the capture in `./proxymock/recorded`.',
     },
     {
       title: 'Route Java traffic through the proxy and run the app',
@@ -60,14 +60,14 @@ make client-capture`,
     {
       title: 'Stop the recording, then run with mocks',
       command: `cd demo/java
-proxymock mock --in-dir ./proxymock/recorded
+proxymock mock --in ./proxymock/recorded
 make local-capture`,
       note: 'The mocked run should no longer need live downstream access.',
     },
     {
       title: 'Replay the same traffic against a change',
       command: `cd demo/java
-proxymock replay --in-dir ./proxymock/recorded --test-against http://localhost:8080`,
+proxymock replay --in ./proxymock/recorded --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Java changes.',
     },
   ]}

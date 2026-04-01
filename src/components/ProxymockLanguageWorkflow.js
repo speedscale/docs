@@ -1,26 +1,27 @@
 import React from 'react';
+import styles from './ProxymockLanguageWorkflow.module.css';
 
 const CommandBlock = ({ command }) => (
-  <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm whitespace-pre-wrap break-words">
+  <pre className={styles.commandBlock}>
     <code>{command}</code>
   </pre>
 );
 
 const Step = ({ index, title, command, note }) => (
-  <li className="space-y-3">
-    <div className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+  <li className={styles.step}>
+    <div className={styles.stepTitle}>
       {index + 1}. {title}
     </div>
     {command ? <CommandBlock command={command} /> : null}
-    {note ? <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{note}</p> : null}
+    {note ? <p className={styles.note}>{note}</p> : null}
   </li>
 );
 
 const ProxymockLanguageWorkflow = ({ intro, steps }) => {
   return (
-    <section className="space-y-6">
+    <section className={styles.workflow}>
       {intro ? <p>{intro}</p> : null}
-      <ol className="space-y-6">
+      <ol className={styles.stepList}>
         {steps.map((step, index) => (
           <Step key={step.title} index={index} {...step} />
         ))}

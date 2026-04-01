@@ -37,8 +37,8 @@ proxymock init`,
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/demo
 cd demo/node
-proxymock record --app-port 3000`,
-      note: 'The app listens on port 3000 while proxymock records inbound traffic on 4143.',
+proxymock record --app-port 3000 --out ./proxymock/recorded`,
+      note: 'The app listens on port 3000 while proxymock records inbound traffic on 4143 and saves the capture in `./proxymock/recorded`.',
     },
     {
       title: 'Route traffic through the proxy and run the app',
@@ -60,7 +60,7 @@ curl http://localhost:4143/bin`,
     {
       title: 'Stop the recording, then run with mocks',
       command: `cd demo/node
-proxymock mock --in-dir ./proxymock/recorded
+proxymock mock --in ./proxymock/recorded
 export HTTP_PROXY=http://127.0.0.1:4140
 export HTTPS_PROXY=http://127.0.0.1:4140
 npm start`,
@@ -69,7 +69,7 @@ npm start`,
     {
       title: 'Replay the same traffic against a change',
       command: `cd demo/node
-proxymock replay --in-dir ./proxymock/recorded --test-against http://localhost:3000`,
+proxymock replay --in ./proxymock/recorded --test-against http://localhost:3000`,
       note: 'Use replay as the regression check before shipping Node.js changes.',
     },
   ]}
