@@ -7,41 +7,108 @@ sidebar_position: 1
 
 ## Overview
 
-proxymock is a tool that allows you to record, visualize, mock, and replay traffic on your local system. It provides desktop and CI/CD functionality for API traffic capture, replay, and testing.
+`proxymock` enables you to record, visualize, mock, and replay traffic on your local system.
 
-proxymock can record, mock, and replay locally for free, but also works with Speedscale Enterprise to record from a remote system (like a Kubernetes cluster) or integrate into your CI/CD system.
+For complete getting started instructions, see [Quickstart CLI](../getting-started/quickstart/quickstart-cli.md). To learn how it works, see [Architecture](/proxymock/how-it-works/architecture/).
 
-## Architecture
+`proxymock` can record, mock, and replay locally for free, and it also works with Speedscale Enterprise to record from remote systems such as Kubernetes clusters and integrate into CI/CD workflows.
 
-proxymock uses smart proxies to intercept and record traffic between your application and external services. It operates in two main modes:
+## Recommended workflow
 
-1. **Recording**: Captures traffic from your app using both inbound and outbound proxies
-2. **Mocking**: Uses recorded traffic to simulate external service responses
+Most users will want to:
 
-## Global Flags
+1. Use `proxymock record` to start recording.
+2. Start the app with the appropriate proxy environment variables set, or let `proxymock` wrap the app directly.
+3. Exercise the app so it calls remote systems.
+4. Inspect the traffic you recorded with `proxymock inspect`.
+5. Run `proxymock mock` to serve mock responses.
+6. Exercise the app again against the mock server.
+
+## Proxy behavior and caveats
+
+`proxymock` records and mocks traffic by running smart proxies that store and forward requests and responses.
+
+When a proxy connection arrives, the requested destination or host is checked against the mocked endpoints contained in the loaded mock data. If the destination is known, the request is routed to the appropriate responder. If it is not known, the request bypasses the responder and goes directly to the intended endpoint.
+
+You will see this behavior in proxymock output as:
+
+- `MATCH` - the request matched a known mock endpoint
+- `PASSTHROUGH` - the request bypassed the responder and went to the real endpoint
+
+Choosing between HTTP and SOCKS proxying is application-specific. For mocks that contain only HTTP or HTTPS traffic, use the HTTP proxy:
+
+```bash
+export http_proxy=http://localhost:4140
+export https_proxy=http://localhost:4140
+export grpc_proxy=http://$(hostname):4140
+```
+
+To capture database traffic, use the SOCKS proxy:
+
+```bash
+export all_proxy=socks5h://localhost:4140
+```
+
+See [Language Reference](/proxymock/getting-started/language-reference/) for language-specific examples.
+
+## Testing mock responses with curl
+
+When testing mock responses with `curl`, use `-k` / `--insecure` to trust the responder certificate and `-x` / `--proxy` to send the request to the responder without changing the request hostname.
+
+```bash
+curl -k -x http://localhost:4140 https://example.com/path/to/resource
+```
+
+You can also send `curl` requests directly to the provider endpoints that `proxymock mock` starts and skip the proxy flag entirely. Use the ports printed when `proxymock mock` starts to find those endpoints.
+
+## Global flags
 
 These flags are available for all commands:
 
-- `--app-url string`: URL of the speedscale app
-- `--config string`: Config file (default `${HOME}/.speedscale/config.yaml`)
-- `-c, --context string`: Uses a specific context from config file
-- `--exit-zero`: Always exit with status code 0
-- `-h, --help`: Help for proxymock
-- `-v, --verbose count`: Verbose output - pass more than once for more verbosity
+- `--app-url string` - URL of the speedscale app
+- `--config string` - Config file (default `${HOME}/.speedscale/config.yaml`)
+- `-c, --context string` - Uses a specific context from those listed in `${HOME}/.speedscale/config.yaml`
+- `--exit-zero` - always exit with status code 0
+- `-h, --help` - help for proxymock
+- `-v, --verbose count` - verbose output; pass more than once for more verbosity
 
-## Main Workflow Commands
+## Command overview
 
-### record
+Top-level commands:
 
-Record traffic from your app, turning it into test and mock files.
+- `certs` - Create proxymock TLS certificates
+- `cloud` - Manage your Speedscale Cloud resources
+- `completion` - Generate the autocompletion script for the specified shell
+- `files` - Utilities for working with RRPair files
+- `generate` - Generate RRPair files from OpenAPI specification
+- `help` - Help about any command
+- `import` - Import traffic from a snapshot file
+- `init` - Initializes proxymock installation and configuration
+- `inspect` - Inspect Speedscale traffic (test / mock files)
+- `mcp` - Model Context Protocol (MCP) server
+- `mock` - Run the mock server to respond to outbound requests from your app
+- `record` - Record traffic from your app, turning it into RRPair files
+- `replay` - Replay tests to make requests to your app
+- `send-one` - Send a single test (RRPair) to an arbitrary URL
+- `version` - Prints current version of client and cloud
 
-**Usage:**
-```bash
-proxymock record [flags]
-```
+Use `proxymock [command] --help` for more information about any command.
 
-**Architecture:**
-```
+## Main workflow commands
+
+### `record`
+
+Record traffic from your app, turning it into RRPair files that can later be used to mock responses or run a load test.
+
+**Typical workflow**
+
+1. Run `proxymock record -- <your-app-command>` or run your app with proxy environment variables.
+2. Make requests to your app. Use port `4143` and `--app-port` to also record inbound traffic.
+3. Run `proxymock inspect`.
+
+**Architecture**
+
+```text
 ┌───────────┐                    ┌──────────────────┐                       ┌───────────┐
 │           │──────request──────►│                  │───external request───►│           │
 │ proxymock │                    │ your application │                       │ proxymock │
@@ -49,69 +116,92 @@ proxymock record [flags]
 └───────────┘                    └──────────────────┘                       └───────────┘
 ```
 
-**Flags:**
-- `--app-port uint32`: Port your app is listening on (default 8080)
-- `--health-port int`: Port to expose proxymock health check endpoint
-- `--log-to string`: File path to redirect all proxymock output
-- `--out string`: Directory to write recorded files (default: `proxymock/recorded-<timestamp>`)
-- `--out-format string`: Output format [markdown, json] (default "markdown")
-- `--map stringToString`: Create a reverse proxy that listens on a local port and forwards traffic to a backend
-- `--proxy-in-port uint32`: Port for inbound traffic proxy (default 4143)
-- `--proxy-out-port int`: Port for outbound traffic proxy (default 4140)
-- `--svc-name string`: Service name for cloud integration (default "my-app")
-- `--timeout duration`: Command timeout (default 12h0m0s)
+Any requests and their associated responses routed through these proxies are recorded.
 
-**Examples:**
+**Environment**
+
+Environment variables can be used to configure the proxy, but the easiest way to get started is to launch your app with proxymock, for example:
+
 ```bash
-# Basic recording
+proxymock record -- my-app --arg foo
+```
+
+For HTTP and HTTPS traffic:
+
+```bash
+export http_proxy=http://localhost:4140
+export https_proxy=http://localhost:4140
+export grpc_proxy=http://$(hostname):4140
+```
+
+To record database traffic, use `--map` or a SOCKS proxy:
+
+```bash
+export all_proxy=socks5h://localhost:4140
+```
+
+If your language or client has poor support for proxy environment variables, use `--map` to host a dedicated local port for the backend and point your app at that port instead.
+
+**RRPairs**
+
+An RRPair (request / response pair) is proxymock's internal representation for stored traffic. RRPairs may contain complete requests and responses or partial request/response data when representing streams. `record` stores both inbound requests to your app and outbound requests from your app to external services as RRPairs.
+
+**Usage**
+
+```bash
+proxymock record [flags]
+```
+
+**Examples**
+
+```bash
 proxymock record
 
-# Write to specific directory
+# write to a specific directory
 proxymock record --out my-recording
 
-# Launch your application directly
+# launch your application directly
 proxymock record -- go run .
 proxymock record -- npm start
 proxymock record -- python app.py
 
-# Setup a mapped port for Postgres
+# set up a reverse proxy for Postgres
 proxymock record --map 65432=localhost:5432
 
-# Point your application at the mapped port instead of the real service
-export PGPORT=65432
+# optionally include a protocol for the reverse proxy
+proxymock record --map 65432=postgres://localhost:5432
+proxymock record --map 1443=https://httpbin.org:443
 ```
 
-**Environment Variables for Recording:**
-```bash
-# For HTTP(s) traffic
-export http_proxy=http://localhost:4140
-export https_proxy=http://localhost:4140
-export grpc_proxy=http://$(hostname):4140
+**Flags**
 
-# For SOCKS-capable clients
-export http_proxy=socks5h://localhost:4140
-export https_proxy=socks5h://localhost:4140
-export all_proxy=socks5h://localhost:4140
-export grpc_proxy=http://$(hostname):4140
-```
+- `--app-health-endpoint string` - Wait for an app health endpoint to return HTTP 200 before starting. Accepts a path like `/healthz` or a full URL.
+- `--app-host string` - Host where your app is running (default `localhost`)
+- `--app-log-to string` - File path to redirect wrapped application output to
+- `--app-port uint32` - Port your app is listening on (default `8080`)
+- `--health-port int` - Port to expose proxymock's own readiness endpoint
+- `--log-to string` - File path to redirect all proxymock output to
+- `-m, --map stringToString` - Create a reverse proxy mapping in the form `<LISTEN_PORT>=<BACKEND_HOST>:<BACKEND_PORT>` or `<LISTEN_PORT>=<PROTOCOL>://<BACKEND_HOST>:<BACKEND_PORT>`
+- `--out string` - Directory to write recorded test and mock request/response files to (default `proxymock/recorded-<timestamp>`)
+- `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
+- `--proxy-in-port uint32` - Port where proxymock listens for inbound traffic that it forwards to `--app-port` (default `4143`)
+- `--proxy-out-port int` - Port where proxymock listens for outbound traffic from your app to external services (default `4140`)
+- `--svc-name string` - Service name shown in snapshot details when pushed to Speedscale Cloud (default `my-app`)
+- `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 
-These examples use lowercase shell variables to match `proxymock record --help`. Many proxy-aware clients also accept uppercase variants such as `HTTP_PROXY`, `HTTPS_PROXY`, and `ALL_PROXY`.
+### `mock`
 
-If your client ignores proxy environment variables, use `--map` instead and point the client at the mapped port.
+Run the mock server to respond to outbound requests from your app with mock responses defined by mock files.
 
-### mock
+**Typical workflow**
 
-Run the mock server to respond to outbound requests from your app with mock responses.
+1. Run `proxymock mock`.
+2. Run your app with the proxy environment variables shown below.
+3. Exercise the app.
 
-**Usage:**
-```bash
-proxymock mock [flags]
-```
+**Architecture**
 
-**Aliases:** `run`
-
-**Architecture:**
-```
+```text
 ┌────────┐                    ┌──────────────────┐                       ┌───────────┐
 │        │──────request──────►│                  │───external request───►│           │
 │ client │                    │ your application │                       │ proxymock │
@@ -119,45 +209,88 @@ proxymock mock [flags]
 └────────┘                    └──────────────────┘                       └───────────┘
 ```
 
-**Flags:**
-- `--health-port int`: Port to expose proxymock health check endpoint
-- `--in strings`: Directories to read mock files from (default [.])
-- `--log-to string`: File path to redirect all proxymock output
-- `--no-out`: Do not write observed mock requests/responses to disk
-- `--out string`: Directory to write new mock files (default: `proxymock/mocked-<timestamp>`)
-- `--out-format string`: Output format [markdown, json] (default "markdown")
-- `--proxy-out-port int`: Port for outbound proxy (default 4140)
-- `-s, --service stringToString`: Port mapping for mocked backends
-- `--timeout duration`: Command timeout (default 12h0m0s)
+Any requests sent to the proxy are evaluated and either mocked or passed through to the real resource.
 
-**Examples:**
+**Environment**
+
+For HTTP and HTTPS traffic:
+
 ```bash
-# Start mock server with data from current directory
+export http_proxy=http://localhost:4140
+export https_proxy=http://localhost:4140
+```
+
+To capture database traffic, use SOCKS:
+
+```bash
+export all_proxy=socks5h://localhost:4140
+```
+
+If proxy environment variables do not work for a client, use `--map` and point the client at the mapped local port instead.
+
+**Signatures**
+
+Each mock definition has a signature derived from the request. When the signature matches, proxymock returns the mock response. When it does not match, the request is passed through to the real resource. You can modify the signature directly in the mock file to change what matches.
+
+**Usage**
+
+```bash
+proxymock mock [flags]
+```
+
+**Aliases**
+
+```text
+mock, run
+```
+
+**Examples**
+
+```bash
+# start mock server with data from the current working directory
 proxymock mock --verbose
 
-# Source mock data from one directory, write responses to another
+# source mock data from one directory and write observed requests and responses to another
 proxymock mock --in ./my-recordings --out ./mocked-responses
 
-# Launch your application directly
+# launch your application directly
 proxymock mock -- go run .
 proxymock mock -- npm start
 proxymock mock -- python app.py
 
-# Set up service port mappings
-proxymock mock --service mysql=3306 --service postgres=5432
+# set up a reverse proxy for Postgres while mocking
+proxymock mock --map 65432=localhost:5432
 ```
 
-### replay
+**Flags**
 
-Replay tests to make requests to your app based on test definitions.
+- `--app-health-endpoint string` - Wait for an app health endpoint to return HTTP 200 before starting
+- `--app-log-to string` - File path to redirect wrapped application output to
+- `--health-port int` - Port to expose proxymock's own readiness endpoint
+- `--in strings` - Directories to read mock files from recursively (default current directory)
+- `--log-to string` - File path to redirect all proxymock output to
+- `-m, --map stringToString` - Create a reverse proxy mapping for backends
+- `--mock-timing string` - Response timing behavior: `none`, `recorded`, or a multiplier such as `5x` or `.25x` (default `none`)
+- `--no-out` - Do not write observed mock requests or responses to disk
+- `--out string` - Directory to write observed `MATCH`, `NO_MATCH`, and `PASSTHROUGH` traffic to (default `proxymock/results/mocked-<timestamp>`)
+- `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
+- `--proxy-out-port int` - Port where proxymock listens for outbound connections from your app (default `4140`)
+- `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 
-**Usage:**
-```bash
-proxymock replay [flags]
-```
+### `replay`
 
-**Architecture:**
-```
+Replay requests against your app based on recorded test definitions.
+
+`replay` turns recorded test definitions, usually from the `localhost` proxymock directory, into live requests and sends them to your app. This is useful for exercising application behavior or creating realistic load tests.
+
+**Typical workflow**
+
+1. Start your app.
+2. Run `proxymock replay` to make requests from recorded tests.
+
+**Architecture**
+
+```text
 ┌───────────┐                       ┌──────────────────┐
 │ proxymock │───recorded request───►│                  │
 │    as     │                       │ your application │
@@ -165,472 +298,586 @@ proxymock replay [flags]
 └───────────┘                       └──────────────────┘
 ```
 
-**Flags:**
-- `--fail-if strings`: Fail the command if a metric check is true
-- `-f, --for duration`: How long to replay (default: runs each test once)
-- `--in strings`: Directories to read test files from (default [.])
-- `--log-to string`: File path to redirect all proxymock output
-- `--no-out`: Do not write observed replay requests/responses to disk
-- `--out string`: Directory to write observed replay files (default: `proxymock/replayed-<timestamp>`)
-- `--out-format string`: Output format [markdown, json] (default "markdown")
-- `-o, --output string`: Output format [pretty, json, yaml, csv] (default "json")
-- `--performance`: Performance mode - writes only sample of failed requests
-- `--test-against string`: URI to replay against (default "localhost")
-- `--timeout duration`: Command timeout (default 12h0m0s)
-- `-u, --vus uint`: Number of virtual users to run in parallel (default 1)
+Here proxymock acts as the client and sends requests to your application's listening address.
 
-**Examples:**
+**Validation**
+
+Use `--fail-if` to fail the command when a validation condition is true. For example:
+
 ```bash
-# Specify port to replay against
-proxymock replay --test-against localhost:8080
-
-# Specify scheme and port
-proxymock replay --test-against http://localhost:8080
-
-# Cycle through tests for 5 minutes
-proxymock replay --test-against http://localhost:8080 --for 5m
-
-# Run 10 virtual users in parallel
-proxymock replay --test-against http://localhost:8080 --vus 10
-
-# Launch your application directly
-proxymock replay --test-against http://localhost:8080 -- go run .
-proxymock replay --test-against localhost:8080 -- npm start
-
-# Add validation checks
 proxymock replay --fail-if "requests.failed != 0" --fail-if "latency.avg > 1"
 ```
 
-**Validation Metrics:**
-- `latency.avg`, `latency.max`, `latency.min`, `latency.p50`, `latency.p75`, `latency.p90`, `latency.p95`, `latency.p99`
-- `requests.failed`, `requests.per-minute`, `requests.per-second`, `requests.response-pct`, `requests.status-code-match-pct`, `requests.succeeded`, `requests.total`
+Checks use the form `<metric> <operator> <threshold>`. Examples:
 
-**Operators:** `==`, `!=`, `<`, `<=`, `>`, `>=`
+- `latency.p50<1.0`
+- `"latency.p50 < 1.0"`
 
-### inspect
+Supported operators:
 
-Inspect Speedscale traffic in a TUI (terminal user interface).
+- `==`
+- `!=`
+- `<`
+- `<=`
+- `>`
+- `>=`
 
-**Usage:**
+Supported metrics:
+
+- `latency.avg`
+- `latency.max`
+- `latency.min`
+- `latency.p50`
+- `latency.p75`
+- `latency.p90`
+- `latency.p95`
+- `latency.p99`
+- `requests.failed`
+- `requests.per-minute`
+- `requests.per-second`
+- `requests.response-pct`
+- `requests.result-match-pct`
+- `requests.succeeded`
+- `requests.total`
+
+For more targeted validation, use `--output json` and validate the results yourself.
+
+**Usage**
+
+```bash
+proxymock replay [flags]
+```
+
+**Examples**
+
+```bash
+# specify the port to replay against but use the recorded scheme
+proxymock replay --test-against localhost:8080
+
+# specify the scheme and port to replay against
+proxymock replay --test-against http://localhost:8080
+
+# cycle through tests for 5 minutes
+proxymock replay --test-against http://localhost:8080 --for 5m
+
+# run 10 virtual users in parallel
+proxymock replay --test-against http://localhost:8080 --vus 10
+
+# direct traffic by service name
+proxymock replay \
+  --test-against auth=auth.example.com \
+  --test-against frontend=http://localhost:8080 \
+  --test-against http://localhost:9000
+
+# launch your application directly
+proxymock replay --test-against http://localhost:8080 -- go run .
+proxymock replay --test-against localhost:8080 -- npm start
+proxymock replay --test-against localhost:3000 -- python app.py
+
+# produce recorded Kafka traffic to a broker so your application can consume it
+proxymock replay --test-against localhost:9092
+```
+
+**Flags**
+
+- `--app-log-to string` - File path to redirect wrapped application output to
+- `--fail-if strings` - Fail with exit code `1` when a validation condition is true
+- `-f, --for duration` - How long to replay in Go duration format; by default each test runs once
+- `--in strings` - Directories to read test files from recursively (default current directory)
+- `--log-to string` - File path to redirect all proxymock output to
+- `--no-out` - Do not write observed replay requests or responses to disk
+- `--out string` - Directory to write observed replay request/response files to (default `proxymock/results/replayed-<timestamp>`)
+- `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+- `--performance` - Sample failed or non-matching requests instead of writing all replay traffic to disk
+- `--rewrite-host` - Rewrite the HTTP `Host` header to match the target host and port
+- `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
+- `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
+- `-n, --times uint` - Number of times to replay the traffic (default `1`)
+- `-u, --vus uint` - Number of virtual users to run in parallel (default `1`)
+
+`--test-against` accepts several forms:
+
+- `--test-against localhost:8080` or `--test-against http://localhost` applies one address to all traffic
+- `--test-against frontend=http://localhost:8080` applies only to matching service traffic
+- Leave `--test-against` empty to replay traffic exactly as recorded
+
+### `inspect`
+
+Inspect Speedscale traffic in a TUI. Sources can be directories containing RRPair files or a snapshot ID.
+
+**Usage**
+
 ```bash
 proxymock inspect [flags]
 ```
 
-**Flags:**
-- `--demo`: Use demo data to explore the TUI
-- `--in strings`: Directories to read test and mock files from (default [.])
-- `--log-to string`: File path to write logs to
-- `--snapshot string`: Snapshot ID to target (advanced)
-- `--timeout duration`: Command timeout (default 12h0m0s)
+**Examples**
 
-**Examples:**
 ```bash
-# Inspect demo data
+# inspect demo data
 proxymock inspect --demo
 
-# Inspect test and mock files from a directory
+# inspect RRPair files from a directory
 proxymock inspect --in ./my-recording
 
-# Inspect a snapshot file on disk
+# inspect a snapshot file on disk
 proxymock inspect --snapshot ~/.speedscale/data/snapshots/<uuid>/raw.jsonl
 
-# Inspect a snapshot by ID
+# inspect a snapshot from the local snapshot repository by ID
 proxymock inspect --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
 ```
 
-## Utility Commands
+**Flags**
 
-### generate
+- `--demo` - Use demo data to explore the TUI without recording traffic first
+- `--in strings` - Directories to recursively read RRPair files from (default current directory)
+- `--log-to string` - File path to write logs to
+- `--snapshot string` - Snapshot ID to target
+- `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 
-Generate RRPair markdown files from an OpenAPI specification.
+## Utility commands
 
-**Usage:**
+### `generate`
+
+Generate RRPair mock files from an OpenAPI 3.0+ specification in JSON or YAML.
+
+Generated files are **outbound** mock definitions intended for `proxymock mock`. They are not inbound test definitions for `proxymock replay`; use `proxymock record` to capture inbound test traffic for replay.
+
+**Usage**
+
 ```bash
 proxymock generate [flags] <openapi-spec-file>
 ```
 
-**Flags:**
-- `--examples-only`: Generate only responses with explicit examples
-- `--exclude-paths string`: Comma-separated path patterns to exclude
-- `--host string`: Override host from OpenAPI spec
-- `--include-optional`: Include optional properties in generated schemas
-- `--include-paths string`: Comma-separated path patterns to include
-- `-o, --out string`: Output directory for generated RRPair files
-- `--port int`: Override port for mock server
-- `--tag-filter string`: Only generate endpoints with specific tags
+**Examples**
 
-**Examples:**
 ```bash
-# Generate from OpenAPI spec with default settings
+# generate mocks from OpenAPI spec, then start a mock server
+proxymock generate --out ./mocks api-spec.yaml
+proxymock mock --in ./mocks
+
+# generate from OpenAPI spec with default settings
 proxymock generate api-spec.yaml
 
-# Generate to specific output directory
+# generate to a specific output directory
 proxymock generate --out ./mocks api-spec.json
 
-# Generate only endpoints with examples
+# generate only endpoints with examples
 proxymock generate --examples-only api-spec.yaml
 
-# Filter by OpenAPI tags
+# filter by OpenAPI tags
 proxymock generate --tag-filter "users,orders" api-spec.yaml
 
-# Override host for generated requests
+# override host for generated requests
 proxymock generate --host api.staging.com api-spec.yaml
+
+# include optional properties in schemas
+proxymock generate --include-optional api-spec.yaml
 ```
 
-### import
+**Flags**
+
+- `--examples-only` - Generate only responses with explicit examples
+- `--exclude-paths string` - Comma-separated path patterns to exclude
+- `--host string` - Override the host from the OpenAPI spec
+- `--include-optional` - Include optional properties in generated schemas
+- `--include-paths string` - Comma-separated path patterns to include
+- `-o, --out string` - Output directory for generated RRPair files
+- `--port int` - Override the port for generated requests (default comes from the spec or `80` / `443`)
+- `--tag-filter string` - Generate only endpoints with specific tags
+
+### `import`
 
 Import traffic from a snapshot file into a local directory.
 
-**Usage:**
+This is similar to unzipping an archive: proxymock unpacks RRPairs into a directory structure organized by hostname.
+
+**Usage**
+
 ```bash
 proxymock import [flags]
 ```
 
-**Flags:**
-- `--file string`: File to import into the proxymock repository
-- `--out string`: Directory where imported files will be written (default: `proxymock/imported-<filename>`)
-- `-o, --output string`: Output format [pretty, json, yaml, csv] (default "json")
+**Examples**
 
-**Examples:**
 ```bash
-# Import from a file to default directory
+# import from a file, writing RRPair files to the default directory under ./proxymock
 proxymock import --file /path/to/snapshot.json
 
-# Specify output directory
+# specify the output directory
 proxymock import --file /path/to/snapshot.json --out some/local/path
 ```
 
-### send-one
+**Flags**
+
+- `--file string` - File to import into the proxymock repository
+- `--out string` - Directory where imported RRPair files will be written (default `proxymock/imported-<filename>`)
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+### `send-one`
 
 Send a single request based on the contents of a test or mock file.
 
-**Usage:**
+RRPair files are usually created automatically by captured traffic. Tests usually represent inbound traffic to your app, while mocks represent outbound traffic from your app to external resources. In most cases, `send-one` is used with test files rather than mock files.
+
+See the [RRPair glossary entry](https://docs.speedscale.com/reference/glossary/#rrpair) for more background.
+
+**Usage**
+
 ```bash
 proxymock send-one [path] [URL] [flags]
 ```
 
-**Examples:**
+**Examples**
+
 ```bash
-# Send a request to the orders service
+# send a request to the orders service
 proxymock send-one path/to/test.json http://orders:8080/foo/bar
 ```
 
-## File Management Commands
+**Flags**
 
-### files
+- `-h, --help` - help for send-one
 
-Utilities for working with test and mock files.
+## File management commands
 
-**Usage:**
+### `files`
+
+Utilities for working with RRPair files, including aggregate analysis and comparison.
+
+**Usage**
+
 ```bash
 proxymock files [command]
 ```
 
-**Available Commands:**
-- `compare`: Compare proxymock files
-- `convert`: Convert RRPair files between formats
-- `update-mocks`: Update mock signatures for RRPair files
+**Available subcommands**
 
-#### files compare
+- `compare` - Compare proxymock files
+- `convert` - Convert RRPair files between formats
+- `update-mocks` - Update mock signatures for RRPair files
+
+### `files compare`
 
 Compare proxymock RRPair files for differences.
 
-**Usage:**
+An RRPair can reference another RRPair through a `refUuid` tag. For example, `proxymock replay` can generate RRPairs that reference the original RRPairs they were created from. `files compare` uses those reference relationships when comparing files.
+
+This command exits non-zero when differences are found.
+
+**Usage**
+
 ```bash
 proxymock files compare [flags]
 ```
 
-**Flags:**
-- `--in strings`: Directories or files to read from (default [.])
+**Examples**
 
-**Examples:**
 ```bash
-# Compare files in current directory
+# compare files in the current directory
 proxymock files compare
 
-# Compare files from two directories
+# compare files from two distinct directories
 proxymock files compare --in recorded/ --in replayed/
 
-# Very verbose output
+# very verbose output
 proxymock files compare -vvv
 ```
 
-#### files convert
+**Flags**
 
-Convert RRPair files between different formats.
+- `--in strings` - Directories or files to read from (default current directory)
 
-**Usage:**
+### `files convert`
+
+Convert RRPair files between formats, such as JSON and markdown. Output files use the appropriate extension for the selected output format.
+
+**Usage**
+
 ```bash
 proxymock files convert [flags]
 ```
 
-**Flags:**
-- `--in strings`: Directories or files to convert
-- `--keep-original`: Keep original files after conversion
-- `--out-format string`: Output format [markdown, json] (default "markdown")
-- `-o, --output string`: Output format [pretty, json, yaml, csv] (default "json")
+**Examples**
 
-**Examples:**
 ```bash
-# Convert all files in current directory
+# convert all files in the current directory
 proxymock files convert
 
-# Convert single JSON file to markdown
+# convert a single JSON file to markdown
 proxymock files convert --in file.json
 
-# Convert markdown files to JSON
+# convert markdown files in the proxymock directory to JSON
 proxymock files convert --in proxymock --out-format json
 ```
 
-#### files update-mocks
+**Flags**
 
-Update the mock signatures for all RRPair files, resetting the signature to match the contents of the RRPair. This is useful when you have modified the contents of an RRPair file and the signature no longer matches.
+- `--in strings` - Directories or files to convert
+- `--keep-original` - Keep original files after conversion
+- `--out-format string` - Output file format, `markdown` or `json` (default `markdown`)
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
 
-The mock signature of an RRPair determines whether a request sent to the mock server will return a matching response. For a markdown RRPair file the signature is listed under the `### SIGNATURE ###` section.
+### `files update-mocks`
 
-**Usage:**
+Update mock signatures so they match the current contents of each RRPair.
+
+Use `--in` to pass individual RRPair files, directories containing RRPair files, or JSONL files with one RRPair per line.
+
+For markdown RRPair files, the signature is stored under the `### SIGNATURE ###` section. See [How signatures work](/proxymock/how-it-works/signature/) for more detail.
+
+**Usage**
+
 ```bash
 proxymock files update-mocks [flags]
 ```
 
-**Flags:**
-- `--in strings`: Directories or files to process
-- `-o, --output string`: Output format [pretty, json] (default "json")
+**Examples**
 
-**Examples:**
 ```bash
-# Reset signatures for files in the current directory
+# update mocks for files in the current directory
 proxymock files update-mocks
 
-# Reset the signature for a single RRPair file
+# update a single RRPair file
 proxymock files update-mocks --in file.md
 
-# Reset signatures for files in multiple directories
+# update mocks for files in multiple directories
 proxymock files update-mocks --in recorded/ --in replayed/
 
-# Reset signatures for a JSONL file (one RRPair per line)
+# update mock signatures in a JSONL file
 proxymock files update-mocks --in rrs.jsonl
 ```
 
-## Cloud Integration Commands
+**Flags**
 
-### cloud
+- `--in strings` - Directories or files to process
+- `--normalize` - Normalize the RRPair after updating the signature
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+## Cloud integration commands
+
+### `cloud`
 
 Manage your Speedscale Cloud resources.
 
-**Usage:**
+**Usage**
+
 ```bash
 proxymock cloud [command]
 ```
 
-**Available Commands:**
-- `pull`: Pull artifacts from Speedscale cloud
-- `push`: Push artifacts to Speedscale cloud
+**Available subcommands**
 
-#### cloud pull
+- `pull` - Pull artifacts from Speedscale Cloud
+- `push` - Push artifacts to Speedscale Cloud
 
-Pull downloads artifacts from Speedscale cloud and caches them locally.
+### `cloud pull`
 
-**Usage:**
+Download artifacts such as snapshots from Speedscale Cloud and cache them locally in `$SPEEDSCALE_HOME`.
+
+**Usage**
+
 ```bash
 proxymock cloud pull [command]
 ```
 
-**Available Commands:**
-- `cron-job`: Pull a cron job
-- `dlp`: Pull a DLP rule set
-- `filter`: Pull a filter rule set
-- `report`: Pull a report and its artifacts
-- `snapshot`: Pull a snapshot and its artifacts
-- `test-config`: Pull a test config
-- `transform`: Pull a transform set
-- `user-data`: Pull user defined documents
+**Aliases**
 
-#### cloud push
+```text
+pull, download
+```
 
-Push uploads artifacts to Speedscale cloud.
+**Available subcommands**
 
-**Usage:**
+- `cron-job` - Pull a cron job
+- `dlp` - Pull a DLP rule set
+- `filter` - Pull a filter rule set
+- `report` - Pull a report and its artifacts
+- `snapshot` - Pull a snapshot and its artifacts
+- `test-config` - Pull a test config
+- `transform` - Pull a transform set
+- `user-data` - Pull user-defined documents
+
+### `cloud push`
+
+Upload artifacts such as snapshots to Speedscale Cloud.
+
+**Usage**
+
 ```bash
 proxymock cloud push [command]
 ```
 
-**Available Commands:**
-- `cron-job`: Push a cron job
-- `dlp`: Push a DLP rule
-- `filter`: Push a filter
-- `report`: Push a report and its artifacts
-- `snapshot`: Create and push a snapshot from test and mock files
-- `test-config`: Push a test-config
-- `transform`: Push a transform set
-- `user-data`: Push user defined documents
+**Available subcommands**
 
-## System Commands
+- `cron-job` - Push a cron job to Speedscale Cloud
+- `dlp` - Push a DLP rule to Speedscale Cloud
+- `filter` - Push a filter to Speedscale Cloud
+- `report` - Push a report and its artifacts
+- `snapshot` - Create and push a snapshot from RRPair files
+- `test-config` - Push a test config to Speedscale Cloud
+- `transform` - Push a transform set to Speedscale Cloud
+- `user-data` - Push user-defined documents
 
-### certs
+## System commands
 
-Create proxymock TLS certificates.
+### `certs`
 
-**Usage:**
+Create a self-signed certificate and key pair suitable for use as a Speedscale root CA, and add it to your certificate store if necessary. Existing Speedscale root CAs are not overwritten.
+
+**Usage**
+
 ```bash
 proxymock certs [flags]
 ```
 
-**Flags:**
-- `--force`: Regenerate certs and overwrite existing ones
-- `--jks`: Use keytool to create a Java keystore file
+**Examples**
 
-**Examples:**
 ```bash
 proxymock certs
 ```
 
-### init
+**Flags**
 
-Initialize proxymock installation and configuration.
+- `--force` - Regenerate certificates and overwrite the current ones if they exist
+- `--jks` - Create a Java truststore file that includes proxymock certificates
 
-**Usage:**
+### `init`
+
+Initialize proxymock installation and configuration by authorizing your Speedscale account.
+
+**Usage**
+
 ```bash
 proxymock init [flags]
 ```
 
-**Flags:**
-- `--api-key string`: Set the API key without being prompted
-- `--email string`: Email address for non-interactive registration
-- `--home string`: Path of speedscale home dir (default `${HOME}/.speedscale`)
-- `--overwrite`: Overwrite any existing config.yaml file
-- `--rcfile string`: Shell rcfile to update (default `${HOME}/.zshrc`)
-- `-y, --yes`: Answer yes to all optional prompts
+**Flags**
 
-### mcp
+- `--api-key string` - Set the API key without being prompted
+- `--home string` - Path of the Speedscale home directory (default `${HOME}/.speedscale`)
+- `--no-rcfile-update` - Do not automatically update your shell rc file with Speedscale environment variables
+- `--overwrite` - Overwrite any existing `config.yaml` file. By default proxymock creates a backup.
+- `--quiet` - Suppress all output except fatal errors
+- `--rcfile string` - Shell rc file to update with Speedscale environment variables (default `${HOME}/.zshrc`)
+- `-y, --yes` - Answer yes to all optional prompts
 
-Install or run the MCP (Model Context Protocol) server.
+### `mcp`
 
-**Usage:**
+The Model Context Protocol (MCP) command group. Use it to install, print, or run the proxymock MCP server.
+
+See [modelcontextprotocol.io](https://modelcontextprotocol.io/) for more information about MCP.
+
+**Usage**
+
 ```bash
 proxymock mcp [flags]
+proxymock mcp [command]
 ```
 
-**Flags:**
-- `--install`: Install (rather than run) the MCP server for common clients
-- `--port int`: Port to run the MCP server on when using SSE transport (default 8080)
-- `--sse`: Use the SSE transport (default is stdio)
-- `--work-dir string`: Working directory to run MCP server in
+**Available subcommands**
 
-**Examples:**
+- `install` - Install the MCP server configuration for IDEs
+- `json` - Print MCP JSON for manual configuration
+- `run` - Run the MCP server
+
+### `mcp install`
+
+Install the proxymock MCP server configuration for AI assistants such as Claude Code, Cursor, and Copilot.
+
+**Usage**
+
 ```bash
-# Install stdio MCP server
-proxymock mcp --install
-
-# Install SSE MCP server
-proxymock mcp --install --sse
-
-# Run MCP server over stdio transport
-proxymock mcp
-
-# Run MCP server over SSE transport
-proxymock mcp --sse --port 8080
+proxymock mcp install [flags]
 ```
 
-### completion
+**Examples**
 
-Generate autocompletion scripts for various shells.
+```bash
+# install the stdio MCP server
+proxymock mcp install
 
-**Usage:**
+# install the SSE MCP server
+proxymock mcp install --sse
+```
+
+**Flags**
+
+- `--port int` - Port to use when installing the SSE transport (default `8080`)
+- `--sse` - Install the SSE transport instead of stdio
+
+### `mcp json`
+
+Print the MCP JSON configuration to the console for manual installation.
+
+Use this when you want more control than `proxymock mcp install`.
+
+**Usage**
+
+```bash
+proxymock mcp json [flags]
+```
+
+**Flags**
+
+- `--port int` - Port to use when generating SSE configuration (default `8080`)
+- `--sse` - Generate JSON for the SSE transport instead of stdio
+
+### `mcp run`
+
+Run the MCP server for AI assistants such as Claude Code, Cursor, and Copilot.
+
+**Usage**
+
+```bash
+proxymock mcp run [flags]
+```
+
+**Examples**
+
+```bash
+# run the MCP server over stdio
+proxymock mcp run
+
+# run the MCP server over SSE
+proxymock mcp run --sse --port 8080
+```
+
+**Flags**
+
+- `--port int` - Port to use when serving the SSE transport (default `8080`)
+- `--sse` - Serve MCP over SSE instead of stdio
+- `--work-dir string` - Working directory to run the MCP server in
+
+### `completion`
+
+Generate shell completion scripts.
+
+**Usage**
+
 ```bash
 proxymock completion [command]
 ```
 
-**Available Commands:**
-- `bash`: Generate autocompletion script for bash
-- `fish`: Generate autocompletion script for fish
-- `powershell`: Generate autocompletion script for powershell
-- `zsh`: Generate autocompletion script for zsh
+**Available subcommands**
 
-### version
+- `bash` - Generate the autocompletion script for bash
+- `fish` - Generate the autocompletion script for fish
+- `powershell` - Generate the autocompletion script for powershell
+- `zsh` - Generate the autocompletion script for zsh
 
-Print current version of client and cloud.
+### `version`
 
-**Usage:**
+Print the current version of the client and cloud.
+
+**Usage**
+
 ```bash
 proxymock version [flags]
 ```
 
-**Flags:**
-- `--client`: Show the local client version only
-- `-o, --output string`: Output format [pretty, json, yaml, csv] (default "json")
+**Flags**
 
-## Environment Variables
-
-### Recording and Mocking
-For applications to use proxymock's smart proxy:
-
-**HTTP(s) traffic:**
-```bash
-export http_proxy=http://localhost:4140
-export https_proxy=http://localhost:4140
-export grpc_proxy=http://$(hostname):4140
-```
-
-**SOCKS-capable clients:**
-```bash
-export http_proxy=socks5h://localhost:4140
-export https_proxy=socks5h://localhost:4140
-export all_proxy=socks5h://localhost:4140
-export grpc_proxy=http://$(hostname):4140
-```
-
-These examples use lowercase shell variables to match `proxymock record --help`. Many proxy-aware clients also accept uppercase variants such as `HTTP_PROXY`, `HTTPS_PROXY`, and `ALL_PROXY`.
-
-If your client ignores proxy environment variables, use `proxymock record --map <listen_port>=<backend_host>:<backend_port>` and point your app at the mapped port.
-
-## Testing with cURL
-
-When testing mock responses with cURL, use additional flags for TLS:
-
-```bash
-# Use -k for insecure connections and -x for proxy
-curl -k -x http://localhost:4140 https://example.com/path/to/resource
-
-# Or connect directly to provider endpoints (check port when mock server starts)
-curl http://localhost:<provider-port>/path/to/resource
-```
-
-## Proxy Behavior
-
-proxymock's smart proxy behaves like Kubernetes host aliases or `/etc/hosts` entries:
-
-- **MATCH**: Request signature matches a mock endpoint, returns mock response
-- **NO_MATCH**: Request doesn't match any mock, passes through to real endpoint
-- **PASSTHROUGH**: Request bypasses responder and goes directly to intended endpoint
-
-## Common Workflows
-
-1. **Basic Recording and Mocking:**
-   ```bash
-   # 1. Record traffic
-   proxymock record -- your-app
-
-   # 2. Inspect recorded traffic
-   proxymock inspect
-
-   # 3. Run mock server
-   proxymock mock
-
-   # 4. Test with your app using proxy env vars
-   ```
-
-2. **Load Testing:**
-   ```bash
-   # Record traffic first, then replay with multiple users
-   proxymock replay --test-against localhost:8080 --vus 10 --for 5m
-   ```
-
-3. **CI/CD Integration:**
-   ```bash
-   # Generate mocks from OpenAPI, then test
-   proxymock generate api-spec.yaml --out ./mocks
-   proxymock mock --in ./mocks --no-out
-   ```
-
-This documentation covers all the main commands and functionality of the proxymock CLI tool.
+- `--client` - Show only the local client version
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
