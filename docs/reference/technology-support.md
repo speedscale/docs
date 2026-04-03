@@ -18,7 +18,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Go         | Language | Full    | See [Go](/reference/languages/golang#proxymock) and [TLS](/reference/languages/golang#tls-trust) |
 | Java       | Language | Full    | See [Java](/reference/languages/java#proxymock) and [TLS](/reference/languages/java#tls-trust) |
 | Node.js    | Language | Full    | See [Node.js](/reference/languages/nodejs#proxymock) and [TLS](/reference/languages/nodejs#tls-trust) |
-| Python     | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
+| Python     | Language | Full    | See [Python](/reference/languages/python#proxymock) and [TLS](/reference/languages/python#tls-trust) |
 | Ruby       | Language | Full    | See [TLS](/getting-started/installation/sidecar/tls/) |
 
 ### Supported Protocols

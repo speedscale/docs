@@ -21,6 +21,11 @@ const languageLinks = [
     href: '/reference/languages/golang#proxymock',
     description: 'outerspace-go demo with Go-native record, mock, and replay steps.',
   },
+  {
+    label: 'Python',
+    href: '/reference/languages/python#proxymock',
+    description: 'Flask SpaceX demo with a lightweight Makefile-backed capture flow.',
+  },
 ];
 
 const ProxymockLanguageLinks = ({ className = '' }) => {
