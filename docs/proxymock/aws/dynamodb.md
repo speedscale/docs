@@ -20,7 +20,7 @@ proxymock import --file default.jsonl
 Take note of the snapshot ID that is returned. Run the following command to view the mock:
 
 ```bash
-proxymock inspect snapshot <snapshot-id>
+proxymock inspect --snapshot <snapshot-id>
 ```
 
 ![list](./dynamodb/dynamodb-list.png)
