@@ -81,10 +81,10 @@ metadata:
 If the above secret is missing, one can easily be created with `speedctl` and `kubectl`:
 
 ```shell
-speedctl create certs -o .
+speedctl create certs
 kubectl create -n ingress-nginx secret ingress-nginx-admission \
-    --from-file=key=tls.key \
-    --from-file=cert=tls.crt
+    --from-file=key=$HOME/.speedscale/certs/tls.key \
+    --from-file=cert=$HOME/.speedscale/certs/tls.crt
 ```
 
 :::

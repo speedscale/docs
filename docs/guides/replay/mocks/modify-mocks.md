@@ -23,7 +23,7 @@ speedctl pull snapshot {SNAPSHOT_ID}
 You’ll want to open the raw file for your snapshot in your favorite editor like VSCode. If you have an editor configured in your terminal you can do this by running:
 
 ```bash
-speedctl edit {SNAPSHOT_ID}
+speedctl edit snapshot raw {SNAPSHOT_ID}
 ```
 
 If you don't have an editor configured then you can open the file directly with VSCode (or another text editor) by inserting SNAPSHOT_ID into the folowing command:

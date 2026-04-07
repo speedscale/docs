@@ -45,24 +45,17 @@ By default, the comparison shows all RRPairs. Use the filter controls to narrow 
 
 ## Comparing via the CLI
 
-The proxymock CLI includes a `compare` command for diffing RRPair files locally:
+The proxymock CLI includes a `files compare` command for diffing RRPair files locally when they share `refUuid` relationships - for example, traffic recorded with proxymock and the replay results generated from it:
 
 ```bash
-proxymock compare --baseline ./dataset-a --target ./dataset-b
+proxymock files compare --in recorded/ --in replayed/
 ```
 
-This compares RRPair files in the two directories and outputs a summary of differences. Options include:
-
-- `--output json` — output the diff as structured JSON for programmatic use
-- `--ignore-headers` — exclude headers from the comparison (useful when headers contain timestamps or request IDs)
-- `--ignore-fields` — exclude specific JSON fields from body comparison
+This compares RRPair files from the supplied directories or files and exits non-zero when differences are found. Add more verbosity if you want a more detailed diff:
 
 ```bash
-# Compare only response bodies, ignoring timestamps
-proxymock compare \
-  --baseline ./before-deploy \
-  --target ./after-deploy \
-  --ignore-fields "$.timestamp,$.requestId"
+# Compare recorded traffic and replay results with very verbose output
+proxymock files compare --in recorded/ --in replayed/ -vvv
 ```
 
 ## Interpreting Diffs
@@ -81,7 +74,7 @@ Not all body changes are regressions. Common expected changes include:
 - **Request IDs and correlation IDs** — unique per request
 - **Ordering** — array elements may appear in a different order
 
-Use the `--ignore-fields` flag (CLI) or the field ignore controls (dashboard) to suppress expected noise.
+If you expect noisy fields such as timestamps or request IDs, normalize that data before comparing, or use the field ignore controls in the dashboard.
 
 ### Latency Changes
 

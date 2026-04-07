@@ -25,7 +25,7 @@ Most definitely, but for that you need to consider an Enterprise subscription. B
 
 ## What happens if the mock server doesn't have a response for a request?
 
-**proxymock** defaults to **passthrough** mode which means it will reach out to the real system and return the response. The request and response will then be added to the `./proxymock` directory. You can modify the response if you like using the RRPair editor and then save. Run `proxymock analyze` to process mocks so they will be used when **proxymock** is run. You thought we were going to tell you to write a script, right? We like you too much for that. To learn more about signature matching, see the [signatures](../how-it-works/signature.md) section.
+**proxymock** defaults to **passthrough** mode which means it will reach out to the real system and return the response. The new request and response data will be written to proxymock's mock results directory (by default `proxymock/results/mocked-<timestamp>`). If you want to reuse those responses on the next run, inspect or edit that output and then pass it back to `proxymock mock` with `--in` (or merge the files into your existing input directory). You thought we were going to tell you to write a script, right? We like you too much for that. To learn more about signature matching, see the [signatures](../how-it-works/signature.md) section.
 
 ## What language support is there?
 
