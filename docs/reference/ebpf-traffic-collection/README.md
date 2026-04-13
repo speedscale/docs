@@ -110,17 +110,24 @@ This allows `nettap` to locate and attach probes to the statically linked OpenSS
 - **Architecture:** `x86_64` or `arm64`
 - **Linux Kernel 5.17+** with BTF (BPF Type Format) support enabled. BTF provides portable type information
   that allows the `nettap` probes to work across different kernel versions without recompilation
+- **Host access:** when running in Kubernetes, the collector must be able to read host `procfs`,
+  `cgroupv2`, and kernel BTF paths
 
 ### Capabilities
 
-`nettap` requires the following Linux capabilities:
+Speedscale's eBPF collection uses two runtime components with different capability requirements:
+the `nettap` capture container needs the eBPF and cross-process inspection capabilities, while
+the ingest/proxy side only needs raw socket access.
 
-| Capability        | Purpose                                          |
-|-------------------|--------------------------------------------------|
-| `CAP_BPF`         | Load and manage eBPF programs                    |
-| `CAP_PERFMON`     | Access perf events and ring buffers              |
-| `CAP_NET_ADMIN`   | Attach network-related probes                    |
-| `CAP_SYS_PTRACE`  | PID namespace identification                     |
+| Component | Capability | Purpose |
+|---|---|---|
+| `nettap` capture | `CAP_BPF` | Load eBPF programs and create/manage BPF maps, including ring buffers and hash maps |
+| `nettap` capture | `CAP_PERFMON` | Attach kprobes, kretprobes, uprobes, and fentry/fexit programs |
+| `nettap` capture | `CAP_NET_ADMIN` | Perform network-related BPF operations and read kernel socket state used for flow resolution |
+| `nettap` capture | `CAP_SYS_ADMIN` | Access kernel BTF and handle namespace-related operations that still require a broad capability |
+| `nettap` capture | `CAP_SYS_PTRACE` | Inspect other processes via `/proc/<pid>/maps` and `/proc/<pid>/root` to find TLS libraries and attach cross-process uprobes |
+| `nettap` capture | `CAP_SYS_RESOURCE` | Lift `RLIMIT_MEMLOCK` so BPF maps can allocate enough locked memory |
+| ingest/proxy | `CAP_NET_RAW` | Open raw sockets for low-level packet inspection and forwarding |
 
 ### Kubernetes Deployment
 
