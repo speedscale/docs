@@ -19,16 +19,13 @@ Java is fully supported by Speedscale. Use this page for Java-specific proxy set
 
 There are four common Java setups, and they do not use the same annotations or runtime configuration:
 
-1. **eBPF / Java agent**: best Kubernetes option when eBPF capture is available. No sidecar proxy settings, no
-   `tls-out`, and no Java proxy host configuration.
-2. **Transparent sidecar**: default sidecar mode. No Java proxy host configuration. Add `tls-out` and the Java
-   TLS helper only if you need outbound TLS decryption.
-3. **Dual sidecar**: exception path for environments where transparent mode is unavailable, such as
-   [GKE Autopilot](/guides/integrations/gcp.md). Requires both Java proxy flags and Java truststore settings.
-4. **Proxymock**: local development and CI workflow. Common for Java, but it does not use Kubernetes
-   annotations.
+1. [**eBPF / Java agent**](#ebpf-java-agent): best Kubernetes option when eBPF capture is available.
+2. [**Transparent sidecar**](#transparent-sidecar): default sidecar mode.
+3. [**Dual sidecar**](#dual-sidecar): exception path for environments where transparent mode is unavailable,
+   such as [GKE Autopilot](/guides/integrations/gcp.md).
+4. [**Proxymock**](#proxymock): local development and CI workflow.
 
-## eBPF / Java Agent
+## eBPF / Java Agent {#ebpf-java-agent}
 
 Use this when your cluster supports [eBPF traffic collection](/reference/ebpf-traffic-collection) and you
 want the least application-specific configuration in Kubernetes.
@@ -41,20 +38,13 @@ capture.speedscale.com/enabled: "true"
 capture.speedscale.com/java-agent: "true"
 ```
 
-What this means for Java:
-
-- no sidecar injection
-- no `sidecar.speedscale.com/tls-out`
-- no `sidecar.speedscale.com/tls-java-tool-options`
-- no `-Dhttp.proxyHost` or `-Dhttps.proxyHost`
-
 :::warning
 `capture.speedscale.com/java-agent: "true"` is mutually exclusive with
 `sidecar.speedscale.com/inject: "true"`. Do not combine Java-agent capture and sidecar injection on the same
 workload.
 :::
 
-## Transparent Sidecar
+## Transparent Sidecar {#transparent-sidecar}
 
 Transparent proxy is the default sidecar mode and should be the primary sidecar path for Java when your
 environment allows it.
@@ -73,9 +63,6 @@ sidecar.speedscale.com/tls-out: "true"
 sidecar.speedscale.com/tls-java-tool-options: "true"
 ```
 
-In transparent mode, Java does **not** need `-Dhttp.proxyHost`, `-Dhttp.proxyPort`, `-Dhttps.proxyHost`, or
-`-Dhttps.proxyPort`. The sidecar handles routing transparently.
-
 Use `sidecar.speedscale.com/tls-java-tool-options-value` only if you need to override the default truststore
 flags with a custom `JAVA_TOOL_OPTIONS` string, for example to preserve existing JVM settings:
 
@@ -92,7 +79,7 @@ sidecar.speedscale.com/tls-java-tool-options-value: >-
 If both `sidecar.speedscale.com/tls-java-tool-options` and
 `sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
 
-## Dual Sidecar
+## Dual Sidecar {#dual-sidecar}
 
 Use dual sidecar mode only when transparent proxy is unavailable. This is not the default Java sidecar path.
 
