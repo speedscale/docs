@@ -165,6 +165,17 @@ configuration and does not configure outbound proxy routing for `forward` or `du
 
 ---
 
+### `sidecar.speedscale.com/tls-java-tool-options-value`
+
+Overrides `JAVA_TOOL_OPTIONS` with a custom value. Use this when you need the operator to write the full
+merged JVM flag string, such as proxy flags, truststore flags, and your existing application-specific Java
+options.
+
+If both `sidecar.speedscale.com/tls-java-tool-options` and
+`sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
+
+---
+
 ### `sidecar.speedscale.com/tls-in-secret`
 
 Kubernetes [TLS secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets) containing

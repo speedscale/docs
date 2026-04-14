@@ -65,7 +65,7 @@ spec:
 This is the most explicit option because it keeps the outbound proxy settings and truststore settings in one
 place.
 
-### Using `tls-java-tool-options`
+### Default Truststore Helper
 
 If you enable the Java TLS helper annotation:
 
@@ -90,6 +90,48 @@ env:
 When available in your image, `SPEEDSCALE_JAVA_OPTS` exposes the truststore flags separately so they can be
 merged with your existing startup command. Keep any existing application-specific JVM options when adding the
 Speedscale flags.
+
+### Recommended: `tls-java-tool-options-value`
+
+If you want the operator to set the full `JAVA_TOOL_OPTIONS` value for you, use
+`sidecar.speedscale.com/tls-java-tool-options-value`. This is the cleanest option when you need one merged
+string that includes:
+
+- outbound proxy routing flags
+- Java truststore flags for `tls-out`
+- your existing application-specific JVM flags
+
+If both `sidecar.speedscale.com/tls-java-tool-options` and
+`sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-app
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.speedscale.com/inject: "true"
+        sidecar.speedscale.com/proxy-type: "dual"
+        sidecar.speedscale.com/proxy-protocol: "tcp:http"
+        sidecar.speedscale.com/proxy-port: "8080"
+        sidecar.speedscale.com/tls-out: "true"
+        sidecar.speedscale.com/tls-java-tool-options-value: >-
+          -Dhttp.proxyHost=127.0.0.1
+          -Dhttp.proxyPort=4140
+          -Dhttps.proxyHost=127.0.0.1
+          -Dhttps.proxyPort=4140
+          -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
+          -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
+          -Djavax.net.ssl.trustStorePassword=changeit
+          -javaagent:/opt/agent.jar
+          -Xmx512m
+```
+
+Because this annotation overrides the value completely, include every Java flag you still need. Do not assume
+the default truststore flags will be appended automatically.
 
 ## Demo App
 

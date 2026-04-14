@@ -106,8 +106,10 @@ runtime to use the sidecar's forward proxy, and proxy configuration alone does n
 Speedscale CA when `tls-out` is enabled.
 :::
 
-For Java specifically, `sidecar.speedscale.com/tls-java-tool-options: "true"` handles truststore settings
-only. It does not add `-Dhttp.proxyHost`, `-Dhttp.proxyPort`, `-Dhttps.proxyHost`, or `-Dhttps.proxyPort`.
+For Java specifically, `sidecar.speedscale.com/tls-java-tool-options: "true"` only adds the default
+truststore settings. It does not add `-Dhttp.proxyHost`, `-Dhttp.proxyPort`, `-Dhttps.proxyHost`, or
+`-Dhttps.proxyPort`. If you need the operator to write a fully merged `JAVA_TOOL_OPTIONS` value, use
+`sidecar.speedscale.com/tls-java-tool-options-value`; if both annotations are present, the custom value wins.
 See the [Java reference](/reference/languages/java.md) for the combined in-cluster example.
 
 <LanguageSpecificTLSConfiguration />

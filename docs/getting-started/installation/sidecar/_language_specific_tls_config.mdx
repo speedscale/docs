@@ -77,6 +77,10 @@ When running in-cluster, these flags are also surfaced as an environment variabl
 These truststore settings do not configure outbound proxy routing. If you are using `forward` or `dual`
 proxy mode, you still need the Java proxy flags described on the [Java reference](/reference/languages/java.md).
 
+If you need the operator to write a complete custom `JAVA_TOOL_OPTIONS` string instead of the default JKS
+flags, use `sidecar.speedscale.com/tls-java-tool-options-value`. If both Java TLS annotations are set, the
+custom value takes precedence.
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
