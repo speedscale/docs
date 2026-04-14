@@ -17,21 +17,19 @@ Java is fully supported by Speedscale. Use this page for Java-specific proxy set
 
 ## Choose Your Java Capture Mode
 
-There are four common Java setups, and they do not use the same annotations or runtime configuration:
+Quick links:
 
-1. [**eBPF / Java agent**](#ebpf-java-agent): best Kubernetes option when eBPF capture is available.
-2. [**Transparent sidecar**](#transparent-sidecar): default sidecar mode.
-3. [**Dual sidecar**](#dual-sidecar): exception path for environments where transparent mode is unavailable,
-   such as [GKE Autopilot](/guides/integrations/gcp.md).
-4. [**Proxymock**](#proxymock): local development and CI workflow.
+- [eBPF / Java agent](#ebpf-java-agent)
+- [Transparent sidecar](#transparent-sidecar)
+- [Dual sidecar](#dual-sidecar)
+- [Proxymock](#proxymock)
 
 ## eBPF / Java Agent {#ebpf-java-agent}
 
-Use this when your cluster supports [eBPF traffic collection](/reference/ebpf-traffic-collection) and you
-want the least application-specific configuration in Kubernetes.
+Use this when your cluster supports [eBPF traffic collection](/reference/ebpf-traffic-collection). For Java,
+Speedscale uses a Java agent for JVM traffic capture.
 
-Java is special here: Speedscale uses a Java agent for JVM traffic capture instead of relying only on generic
-TLS probes. The workload annotations are:
+Workload annotations:
 
 ```yaml
 capture.speedscale.com/enabled: "true"
