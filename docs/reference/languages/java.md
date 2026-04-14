@@ -28,74 +28,13 @@ If `tls-out` is enabled, Java must do two separate things:
 - route outbound traffic through the sidecar with JVM proxy flags
 - trust the Speedscale CA with the mounted JKS truststore
 
-### Manual In-Cluster JVM Flags
-
-If your container already defines `JAVA_TOOL_OPTIONS`, merge the Speedscale settings into that existing
-value. Kubernetes environment variables replace existing values; they do not append automatically.
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: spring-boot-app
-spec:
-  template:
-    metadata:
-      annotations:
-        sidecar.speedscale.com/inject: "true"
-        sidecar.speedscale.com/proxy-type: "dual"
-        sidecar.speedscale.com/proxy-protocol: "tcp:http"
-        sidecar.speedscale.com/proxy-port: "8080"
-        sidecar.speedscale.com/tls-out: "true"
-    spec:
-      containers:
-      - name: app
-        env:
-        - name: JAVA_TOOL_OPTIONS
-          value: >-
-            -Dhttp.proxyHost=127.0.0.1
-            -Dhttp.proxyPort=4140
-            -Dhttps.proxyHost=127.0.0.1
-            -Dhttps.proxyPort=4140
-            -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
-            -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
-            -Djavax.net.ssl.trustStorePassword=changeit
-```
-
-This is the most explicit option because it keeps the outbound proxy settings and truststore settings in one
-place.
-
-### Default Truststore Helper
-
-If you enable the Java TLS helper annotation:
-
-```yaml
-sidecar.speedscale.com/tls-out: "true"
-sidecar.speedscale.com/tls-java-tool-options: "true"
-```
-
-the operator handles the truststore flags, but you still must provide the proxy flags yourself, for example:
-
-```yaml
-env:
-- name: JAVA_TOOL_OPTIONS
-  value: >-
-    -Dhttp.proxyHost=127.0.0.1
-    -Dhttp.proxyPort=4140
-    -Dhttps.proxyHost=127.0.0.1
-    -Dhttps.proxyPort=4140
-    -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
-```
-
-When available in your image, `SPEEDSCALE_JAVA_OPTS` exposes the truststore flags separately so they can be
-merged with your existing startup command. Keep any existing application-specific JVM options when adding the
-Speedscale flags.
-
 ### Recommended: `tls-java-tool-options-value`
 
-If you want the operator to set the full `JAVA_TOOL_OPTIONS` value for you, use
-`sidecar.speedscale.com/tls-java-tool-options-value`. This is the cleanest option when you need one merged
-string that includes:
+Use `sidecar.speedscale.com/tls-java-tool-options-value` as the primary Kubernetes path. This lets the
+operator write the full merged `JAVA_TOOL_OPTIONS` value instead of making you patch the container `env`
+block manually.
+
+This is the cleanest option when you need one merged string that includes:
 
 - outbound proxy routing flags
 - Java truststore flags for `tls-out`
@@ -132,6 +71,56 @@ spec:
 
 Because this annotation overrides the value completely, include every Java flag you still need. Do not assume
 the default truststore flags will be appended automatically.
+
+### Default Truststore Helper
+
+If you enable the Java TLS helper annotation:
+
+```yaml
+sidecar.speedscale.com/tls-out: "true"
+sidecar.speedscale.com/tls-java-tool-options: "true"
+```
+
+the operator handles the truststore flags, but you still must provide the proxy flags yourself, for example:
+
+```yaml
+env:
+- name: JAVA_TOOL_OPTIONS
+  value: >-
+    -Dhttp.proxyHost=127.0.0.1
+    -Dhttp.proxyPort=4140
+    -Dhttps.proxyHost=127.0.0.1
+    -Dhttps.proxyPort=4140
+    -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
+```
+
+When available in your image, `SPEEDSCALE_JAVA_OPTS` exposes the truststore flags separately so they can be
+merged with your existing startup command. Keep any existing application-specific JVM options when adding the
+Speedscale flags.
+
+### Manual `env` Fallback
+
+If you cannot use the annotation-driven path, you can still set `JAVA_TOOL_OPTIONS` directly in the workload
+spec. If your container already defines `JAVA_TOOL_OPTIONS`, merge the Speedscale settings into that existing
+value. Kubernetes environment variables replace existing values; they do not append automatically.
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        env:
+        - name: JAVA_TOOL_OPTIONS
+          value: >-
+            -Dhttp.proxyHost=127.0.0.1
+            -Dhttp.proxyPort=4140
+            -Dhttps.proxyHost=127.0.0.1
+            -Dhttps.proxyPort=4140
+            -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
+            -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
+            -Djavax.net.ssl.trustStorePassword=changeit
+```
 
 ## Demo App
 
