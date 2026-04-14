@@ -16,6 +16,12 @@ In these instances, the Speedscale sidecar must be run as an inline proxy that e
 proxy rather than transparently intercepting them. There are two halves to this inline proxy operation: a
 reverse proxy for handling inbound traffic, and a forward proxy for handling outbound traffic.
 
+:::warning
+`forward` and `dual` modes do not automatically reconfigure your application. Sidecar injection can succeed
+while outbound capture stays empty if the workload runtime does not send traffic to the forward proxy on
+`127.0.0.1:4140` or your configured `proxy-out-port`.
+:::
+
 :::tip Remember
 When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload.
 :::
@@ -31,6 +37,15 @@ the sidecar should operate as: reverse, forward, or dual (both reverse and forwa
 
 Sidecar reverse and forward proxies support the following proxy protocols: `http`, `socks4`, and `socks5`.
 Authentication is not required.
+
+## Operator And Runtime Responsibilities
+
+Switching away from `transparent` mode introduces two separate pieces of configuration:
+
+- `reverse`: the operator configures the sidecar to accept inbound traffic and forward it to your app.
+- `forward`: your workload runtime must explicitly use the sidecar as its outbound proxy.
+- `dual`: both of the above apply. Inbound traffic reaches the sidecar, and outbound traffic must still be
+  configured in the application runtime.
 
 Reverse proxies can be configured to require no specific proxy protocol, but instead operate as a simple TCP
 proxy. When operating in this mode, the sidecar treats incoming requests are treated as opaque TCP connections
@@ -68,6 +83,26 @@ For outbound forward proxy requests, the sidecar will listen on port `4140`, whi
 an annotation:
 
 - `sidecar.speedscale.com/proxy-out-port: "11000"`
+
+## Runtime Configuration For Outbound Traffic
+
+For `forward` and `dual` modes, the workload must be configured to use the sidecar's forward proxy.
+
+Common patterns:
+
+- `HTTP_PROXY=http://127.0.0.1:4140`
+- `HTTPS_PROXY=http://127.0.0.1:4140`
+- `JAVA_TOOL_OPTIONS=-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=4140 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=4140`
+
+If you changed `sidecar.speedscale.com/proxy-out-port`, use that port in the runtime configuration too.
+
+Language-specific notes:
+
+- Java: [Java reference](/reference/languages/java.md)
+- Node.js: [Node.js reference](/reference/languages/nodejs.md)
+- Python: [Python reference](/reference/languages/python.md)
+- Go: [Go reference](/reference/languages/golang.md)
+- .NET: [.NET reference](/reference/languages/dotnet.md)
 
 ### Examples
 
@@ -111,6 +146,20 @@ annotations:
   sidecar.speedscale.com/proxy-port: "8080"
   sidecar.speedscale.com/proxy-in-port: "10000"
   sidecar.speedscale.com/proxy-out-port: "10001"
+```
+
+After applying the workload annotations above, the application still needs matching runtime settings. For
+example, if the forward proxy remains on `4140`, many workloads will need either:
+
+```bash
+export HTTP_PROXY=http://127.0.0.1:4140
+export HTTPS_PROXY=http://127.0.0.1:4140
+```
+
+or for Java:
+
+```bash
+export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=4140 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=4140"
 ```
 
 <ConfiguringProxy />

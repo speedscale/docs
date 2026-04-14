@@ -13,6 +13,24 @@ import ProxymockLanguageWorkflow from '@site/src/components/ProxymockLanguageWor
 - Support matrix: [Technology Support](/reference/technology-support)
 - Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 
+## Kubernetes Sidecar
+
+When .NET runs with the Speedscale sidecar in `forward` or `dual` mode, configure outbound traffic to use
+the sidecar's forward proxy on `127.0.0.1:4140` unless you changed `proxy-out-port`.
+
+Typical settings:
+
+```bash
+export HTTP_PROXY=http://127.0.0.1:4140
+export HTTPS_PROXY=http://127.0.0.1:4140
+```
+
+If `tls-out` is enabled, trust the Speedscale CA separately, commonly with `SSL_CERT_FILE` on Linux-based
+.NET containers.
+
+See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
+[TLS Support](/getting-started/installation/sidecar/tls.md) for the shared sidecar behavior.
+
 ## Demo App
 
 - Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`csharp` directory)

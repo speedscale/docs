@@ -156,7 +156,8 @@ viewable in the Speedscale UI. See [TLS](/getting-started/installation/sidecar/t
 ### `sidecar.speedscale.com/tls-java-tool-options`
 
 Configures the operator to add `JAVA_TOOL_OPTIONS` with TLS certificate overrides as additional
-container env vars. This setting is only used when `tls-out` is enabled.
+container env vars. This setting is only used when `tls-out` is enabled. It only covers Java truststore
+configuration and does not configure outbound proxy routing for `forward` or `dual` proxy modes.
 
 - Accepted Values:
   - `true`
