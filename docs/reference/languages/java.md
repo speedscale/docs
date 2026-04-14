@@ -22,6 +22,7 @@ Quick links:
 - [eBPF / Java agent](#ebpf-java-agent)
 - [Transparent sidecar](#transparent-sidecar)
 - [Dual sidecar](#dual-sidecar)
+- [TLS Trust](#tls-trust)
 - [Proxymock](#proxymock)
 
 ## eBPF / Java Agent {#ebpf-java-agent}
@@ -119,7 +120,26 @@ Why `tls-java-tool-options-value` is useful here:
 If you cannot use the annotation-driven path, you can still set `JAVA_TOOL_OPTIONS` directly in the
 container `env`, but that should be treated as a fallback.
 
-## Demo App
+## TLS Trust {#tls-trust}
+
+Java typically needs an explicit truststore when TLS interception is involved. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `proxymock certs --jks` command, JVM flags, and custom truststore workflow.
+
+How that trust is configured depends on the capture mode:
+
+- Transparent sidecar: use `sidecar.speedscale.com/tls-java-tool-options: "true"` for the default truststore
+  flags, or `sidecar.speedscale.com/tls-java-tool-options-value` if you need a custom `JAVA_TOOL_OPTIONS`
+  value.
+- Dual sidecar: truststore configuration alone is not enough. You also need the Java proxy flags shown in
+  [Dual Sidecar](#dual-sidecar).
+- Proxymock: use the local truststore flags shown in the shared
+  [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page.
+
+## Proxymock {#proxymock}
+
+Use this for local development and CI. Conceptually this is similar to dual proxy mode because Java sends
+traffic through a forward proxy and trusts the proxymock CA, but it does not use Kubernetes annotations.
+
+### Demo App
 
 - Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`java` directory)
 - Stack: Spring Boot
@@ -127,11 +147,6 @@ container `env`, but that should be treated as a fallback.
 - Traffic generator: `make client` or `make client-capture`
 
 This is the current public Java demo used for local Proxymock examples.
-
-## Proxymock {#proxymock}
-
-Use this for local development and CI. Conceptually this is similar to dual proxy mode because Java sends
-traffic through a forward proxy and trusts the proxymock CA, but it does not use Kubernetes annotations.
 
 <ProxymockLanguageWorkflow
   intro="Use this path for the fastest Java first success on a developer workstation."
@@ -181,18 +196,3 @@ proxymock replay --in ./proxymock/recorded --test-against http://localhost:8080`
     },
   ]}
 />
-
-## TLS Trust {#tls-trust}
-
-Java typically needs an explicit truststore when TLS interception is involved. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `proxymock certs --jks` command, JVM flags, and custom truststore workflow.
-
-How that trust is configured depends on the capture mode:
-
-- eBPF / Java agent: no sidecar TLS truststore settings are required on this page.
-- Transparent sidecar: use `sidecar.speedscale.com/tls-java-tool-options: "true"` for the default truststore
-  flags, or `sidecar.speedscale.com/tls-java-tool-options-value` if you need a custom `JAVA_TOOL_OPTIONS`
-  value.
-- Dual sidecar: truststore configuration alone is not enough. You also need the Java proxy flags shown in
-  [Dual Sidecar](#dual-sidecar).
-- Proxymock: use the local truststore flags shown in the shared
-  [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page.
