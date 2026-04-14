@@ -15,112 +15,124 @@ Java is fully supported by Speedscale. Use this page for Java-specific proxy set
 - Shared sidecar docs: [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and [TLS Support](/getting-started/installation/sidecar/tls.md)
 - GKE Autopilot guidance: [GCP](/guides/integrations/gcp.md)
 
-## Kubernetes Sidecar {#kubernetes-sidecar}
+## Choose Your Java Capture Mode
 
-Use this section when Java is running in Kubernetes with the Speedscale sidecar rather than local Proxymock.
+There are four common Java setups, and they do not use the same annotations or runtime configuration:
 
-For outbound HTTP(S) capture, configure the workload with `proxy-type: "forward"` or `proxy-type: "dual"`
-and use `proxy-protocol: "http"` or `proxy-protocol: "tcp:http"`. The sidecar listens for outbound traffic
-on `127.0.0.1:4140` by default.
+1. **eBPF / Java agent**: best Kubernetes option when eBPF capture is available. No sidecar proxy settings, no
+   `tls-out`, and no Java proxy host configuration.
+2. **Transparent sidecar**: default sidecar mode. No Java proxy host configuration. Add `tls-out` and the Java
+   TLS helper only if you need outbound TLS decryption.
+3. **Dual sidecar**: exception path for environments where transparent mode is unavailable, such as
+   [GKE Autopilot](/guides/integrations/gcp.md). Requires both Java proxy flags and Java truststore settings.
+4. **Proxymock**: local development and CI workflow. Common for Java, but it does not use Kubernetes
+   annotations.
 
-If `tls-out` is enabled, Java must do two separate things:
+## eBPF / Java Agent
 
-- route outbound traffic through the sidecar with JVM proxy flags
-- trust the Speedscale CA with the mounted JKS truststore
+Use this when your cluster supports [eBPF traffic collection](/reference/ebpf-traffic-collection) and you
+want the least application-specific configuration in Kubernetes.
 
-### Recommended: `tls-java-tool-options-value`
-
-Use `sidecar.speedscale.com/tls-java-tool-options-value` as the primary Kubernetes path. This lets the
-operator write the full merged `JAVA_TOOL_OPTIONS` value instead of making you patch the container `env`
-block manually.
-
-This is the cleanest option when you need one merged string that includes:
-
-- outbound proxy routing flags
-- Java truststore flags for `tls-out`
-- your existing application-specific JVM flags
-
-If both `sidecar.speedscale.com/tls-java-tool-options` and
-`sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
+Java is special here: Speedscale uses a Java agent for JVM traffic capture instead of relying only on generic
+TLS probes. The workload annotations are:
 
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: spring-boot-app
-spec:
-  template:
-    metadata:
-      annotations:
-        sidecar.speedscale.com/inject: "true"
-        sidecar.speedscale.com/proxy-type: "dual"
-        sidecar.speedscale.com/proxy-protocol: "tcp:http"
-        sidecar.speedscale.com/proxy-port: "8080"
-        sidecar.speedscale.com/tls-out: "true"
-        sidecar.speedscale.com/tls-java-tool-options-value: >-
-          -Dhttp.proxyHost=127.0.0.1
-          -Dhttp.proxyPort=4140
-          -Dhttps.proxyHost=127.0.0.1
-          -Dhttps.proxyPort=4140
-          -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
-          -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
-          -Djavax.net.ssl.trustStorePassword=changeit
-          -javaagent:/opt/agent.jar
-          -Xmx512m
+capture.speedscale.com/enabled: "true"
+capture.speedscale.com/java-agent: "true"
 ```
 
-Because this annotation overrides the value completely, include every Java flag you still need. Do not assume
-the default truststore flags will be appended automatically.
+What this means for Java:
 
-### Default Truststore Helper
+- no sidecar injection
+- no `sidecar.speedscale.com/tls-out`
+- no `sidecar.speedscale.com/tls-java-tool-options`
+- no `-Dhttp.proxyHost` or `-Dhttps.proxyHost`
 
-If you enable the Java TLS helper annotation:
+:::warning
+`capture.speedscale.com/java-agent: "true"` is mutually exclusive with
+`sidecar.speedscale.com/inject: "true"`. Do not combine Java-agent capture and sidecar injection on the same
+workload.
+:::
+
+## Transparent Sidecar
+
+Transparent proxy is the default sidecar mode and should be the primary sidecar path for Java when your
+environment allows it.
+
+For plain HTTP capture or non-decrypted TLS passthrough, sidecar injection is enough:
 
 ```yaml
+sidecar.speedscale.com/inject: "true"
+```
+
+If you need outbound TLS decryption, add:
+
+```yaml
+sidecar.speedscale.com/inject: "true"
 sidecar.speedscale.com/tls-out: "true"
 sidecar.speedscale.com/tls-java-tool-options: "true"
 ```
 
-the operator handles the truststore flags, but you still must provide the proxy flags yourself, for example:
+In transparent mode, Java does **not** need `-Dhttp.proxyHost`, `-Dhttp.proxyPort`, `-Dhttps.proxyHost`, or
+`-Dhttps.proxyPort`. The sidecar handles routing transparently.
+
+Use `sidecar.speedscale.com/tls-java-tool-options-value` only if you need to override the default truststore
+flags with a custom `JAVA_TOOL_OPTIONS` string, for example to preserve existing JVM settings:
 
 ```yaml
-env:
-- name: JAVA_TOOL_OPTIONS
-  value: >-
-    -Dhttp.proxyHost=127.0.0.1
-    -Dhttp.proxyPort=4140
-    -Dhttps.proxyHost=127.0.0.1
-    -Dhttps.proxyPort=4140
-    -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
+sidecar.speedscale.com/inject: "true"
+sidecar.speedscale.com/tls-out: "true"
+sidecar.speedscale.com/tls-java-tool-options-value: >-
+  -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
+  -Djavax.net.ssl.trustStorePassword=changeit
+  -Xmx512m
+  -Dspring.profiles.active=prod
 ```
 
-When available in your image, `SPEEDSCALE_JAVA_OPTS` exposes the truststore flags separately so they can be
-merged with your existing startup command. Keep any existing application-specific JVM options when adding the
-Speedscale flags.
+If both `sidecar.speedscale.com/tls-java-tool-options` and
+`sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
 
-### Manual `env` Fallback
+## Dual Sidecar
 
-If you cannot use the annotation-driven path, you can still set `JAVA_TOOL_OPTIONS` directly in the workload
-spec. If your container already defines `JAVA_TOOL_OPTIONS`, merge the Speedscale settings into that existing
-value. Kubernetes environment variables replace existing values; they do not append automatically.
+Use dual sidecar mode only when transparent proxy is unavailable. This is not the default Java sidecar path.
+
+Common examples:
+
+- GKE Autopilot
+- platforms that block the networking changes required for transparent proxy
+- workloads with other environment-specific restrictions called out in [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md)
+
+In dual mode, Java must do two separate things:
+
+- route outbound traffic through the sidecar forward proxy
+- trust the Speedscale CA when `tls-out` is enabled
+
+This is the annotation-driven example for Java in dual mode:
 
 ```yaml
-spec:
-  template:
-    spec:
-      containers:
-      - name: app
-        env:
-        - name: JAVA_TOOL_OPTIONS
-          value: >-
-            -Dhttp.proxyHost=127.0.0.1
-            -Dhttp.proxyPort=4140
-            -Dhttps.proxyHost=127.0.0.1
-            -Dhttps.proxyPort=4140
-            -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
-            -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
-            -Djavax.net.ssl.trustStorePassword=changeit
+sidecar.speedscale.com/inject: "true"
+sidecar.speedscale.com/proxy-type: "dual"
+sidecar.speedscale.com/proxy-protocol: "tcp:http"
+sidecar.speedscale.com/proxy-port: "8080"
+sidecar.speedscale.com/tls-out: "true"
+sidecar.speedscale.com/tls-java-tool-options-value: >-
+  -Dhttp.proxyHost=127.0.0.1
+  -Dhttp.proxyPort=4140
+  -Dhttps.proxyHost=127.0.0.1
+  -Dhttps.proxyPort=4140
+  -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
+  -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
+  -Djavax.net.ssl.trustStorePassword=changeit
 ```
+
+Why `tls-java-tool-options-value` is useful here:
+
+- dual mode needs proxy flags that `tls-java-tool-options: "true"` does not add
+- the annotation lets the operator write one merged `JAVA_TOOL_OPTIONS` value
+- you avoid manually patching the container `env` block in the workload spec
+
+If you cannot use the annotation-driven path, you can still set `JAVA_TOOL_OPTIONS` directly in the
+container `env`, but that should be treated as a fallback.
 
 ## Demo App
 
@@ -132,6 +144,9 @@ spec:
 This is the current public Java demo used for local Proxymock examples.
 
 ## Proxymock {#proxymock}
+
+Use this for local development and CI. Conceptually this is similar to dual proxy mode because Java sends
+traffic through a forward proxy and trusts the proxymock CA, but it does not use Kubernetes annotations.
 
 <ProxymockLanguageWorkflow
   intro="Use this path for the fastest Java first success on a developer workstation."
@@ -186,5 +201,13 @@ proxymock replay --in ./proxymock/recorded --test-against http://localhost:8080`
 
 Java typically needs an explicit truststore when TLS interception is involved. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `proxymock certs --jks` command, JVM flags, and custom truststore workflow.
 
-For Kubernetes sidecar mode, truststore configuration alone is not enough. You also need the proxy flags
-shown in [Kubernetes Sidecar](#kubernetes-sidecar).
+How that trust is configured depends on the capture mode:
+
+- eBPF / Java agent: no sidecar TLS truststore settings are required on this page.
+- Transparent sidecar: use `sidecar.speedscale.com/tls-java-tool-options: "true"` for the default truststore
+  flags, or `sidecar.speedscale.com/tls-java-tool-options-value` if you need a custom `JAVA_TOOL_OPTIONS`
+  value.
+- Dual sidecar: truststore configuration alone is not enough. You also need the Java proxy flags shown in
+  [Dual Sidecar](#dual-sidecar).
+- Proxymock: use the local truststore flags shown in the shared
+  [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page.
