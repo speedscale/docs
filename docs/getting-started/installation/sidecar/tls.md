@@ -46,6 +46,8 @@ To unwrap outbound TLS calls there are multiple steps required:
 
 - Configure the sidecar to enable outbound TLS interception
 - Configure your application to trust the new TLS Certificates
+- If you are using `forward` or `dual` proxy mode, separately configure the application runtime to route
+  outbound traffic through the sidecar
 
 When your deployment is injected, the sidecar will have an extra environment variable `TLS_OUT_UNWRAP=true`
 and a volume mount to access the files from the `speedscale-certs` secret. The operator will automatically
@@ -57,6 +59,9 @@ annotations:
   sidecar.speedscale.com/inject: "true"
   sidecar.speedscale.com/tls-out: "true"
 ```
+
+Enabling `tls-out` does not change how the application routes outbound traffic. It only enables TLS
+interception after traffic is already flowing through the sidecar.
 
 ## Mutual Authentication for Outbound Calls
 
@@ -94,6 +99,18 @@ calls to be handled automatically.
 :::danger
 Configuring TLS trust is, in most cases, language specific. Every runtime language has different characteristics and if you do not configure this correctly you will get TLS/SSL errors. Always configure this in a controlled environment first.
 :::
+
+:::note
+TLS trust and outbound proxy routing are separate requirements. Trusting the Speedscale CA does not tell the
+runtime to use the sidecar's forward proxy, and proxy configuration alone does not make the runtime trust the
+Speedscale CA when `tls-out` is enabled.
+:::
+
+For Java specifically, `sidecar.speedscale.com/tls-java-tool-options: "true"` only adds the default
+truststore settings. It does not add `-Dhttp.proxyHost`, `-Dhttp.proxyPort`, `-Dhttps.proxyHost`, or
+`-Dhttps.proxyPort`. If you need the operator to write a fully merged `JAVA_TOOL_OPTIONS` value, use
+`sidecar.speedscale.com/tls-java-tool-options-value`; if both annotations are present, the custom value wins.
+See the [Java reference](/reference/languages/java.md) for the combined in-cluster example.
 
 <LanguageSpecificTLSConfiguration />
 

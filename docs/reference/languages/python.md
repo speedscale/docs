@@ -13,6 +13,24 @@ Python is fully supported by Speedscale. Use this page for Python-specific proxy
 - Support matrix: [Technology Support](/reference/technology-support)
 - Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 
+## Kubernetes Sidecar
+
+When Python runs with the Speedscale sidecar in `forward` or `dual` mode, configure the runtime to use the
+sidecar's forward proxy on `127.0.0.1:4140` unless you changed `proxy-out-port`.
+
+Typical settings:
+
+```bash
+export HTTP_PROXY=http://127.0.0.1:4140
+export HTTPS_PROXY=http://127.0.0.1:4140
+```
+
+If `tls-out` is enabled, also trust the Speedscale CA separately, commonly with `REQUESTS_CA_BUNDLE` for
+`requests`-based applications.
+
+See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
+[TLS Support](/getting-started/installation/sidecar/tls.md) for the shared sidecar behavior.
+
 ## Demo App
 
 - Public demo: [speedscale/demo/python](https://github.com/speedscale/demo/tree/main/python)

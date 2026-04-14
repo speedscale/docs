@@ -13,6 +13,20 @@ Go is fully supported by Speedscale. Use this page for Go-specific proxy setting
 - Support matrix: [Technology Support](/reference/technology-support)
 - Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 
+## Kubernetes Sidecar
+
+When Go runs with the Speedscale sidecar in `forward` or `dual` mode, the Go runtime must still send
+outbound traffic to the sidecar. Set `HTTP_PROXY` and `HTTPS_PROXY` to `http://127.0.0.1:4140` unless you
+changed `proxy-out-port`.
+
+If `tls-out` is enabled, trust and routing are separate concerns:
+
+- routing: `HTTP_PROXY` and `HTTPS_PROXY`
+- TLS trust: `SSL_CERT_FILE` or the language-specific trust mechanism in your image
+
+See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
+[TLS Support](/getting-started/installation/sidecar/tls.md) for the shared sidecar behavior.
+
 ## Demo App
 
 - Public demo: [speedscale/outerspace-go](https://github.com/speedscale/outerspace-go)

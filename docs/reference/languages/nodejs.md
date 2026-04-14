@@ -13,6 +13,25 @@ Node.js is fully supported by Speedscale, but proxy behavior depends on the HTTP
 - Support matrix: [Technology Support](/reference/technology-support)
 - Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 
+## Kubernetes Sidecar
+
+When Node.js runs with the Speedscale sidecar in `forward` or `dual` mode, sidecar injection alone is not
+enough for outbound capture. The Node runtime or client library must still use the sidecar's forward proxy on
+`127.0.0.1:4140`.
+
+For many apps this starts with:
+
+```bash
+export HTTP_PROXY=http://127.0.0.1:4140
+export HTTPS_PROXY=http://127.0.0.1:4140
+```
+
+Some Node.js HTTP clients ignore those variables unless you also configure an agent or library-specific proxy
+setting. If `tls-out` is enabled, also trust the Speedscale CA with `NODE_EXTRA_CA_CERTS`.
+
+See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
+[TLS Support](/getting-started/installation/sidecar/tls.md) for the shared sidecar behavior.
+
 ## Demo App
 
 - Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`node` directory)

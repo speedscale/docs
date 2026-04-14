@@ -156,11 +156,23 @@ viewable in the Speedscale UI. See [TLS](/getting-started/installation/sidecar/t
 ### `sidecar.speedscale.com/tls-java-tool-options`
 
 Configures the operator to add `JAVA_TOOL_OPTIONS` with TLS certificate overrides as additional
-container env vars. This setting is only used when `tls-out` is enabled.
+container env vars. This setting is only used when `tls-out` is enabled. It only covers Java truststore
+configuration and does not configure outbound proxy routing for `forward` or `dual` proxy modes.
 
 - Accepted Values:
   - `true`
   - `false` (default)
+
+---
+
+### `sidecar.speedscale.com/tls-java-tool-options-value`
+
+Overrides `JAVA_TOOL_OPTIONS` with a custom value. Use this when you need the operator to write the full
+merged JVM flag string, such as proxy flags, truststore flags, and your existing application-specific Java
+options.
+
+If both `sidecar.speedscale.com/tls-java-tool-options` and
+`sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
 
 ---
 

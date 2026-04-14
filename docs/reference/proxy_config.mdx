@@ -147,8 +147,9 @@ export NODE_EXTRA_CA_CERTS=${HOME}/.speedscale/certs/tls.crt
 
 <TabItem value="java" label="Java">
 
-When using Java, you need to set `proxy-protocol` to `socks` or `tcp:socks`. Java has built-in system
-properties for configuring the socks proxy server, add the following `-D` system property flags:
+For HTTP or HTTPS traffic in Kubernetes, use `proxy-protocol: "http"` or `proxy-protocol: "tcp:http"` and
+configure the JVM with the standard HTTP proxy flags. For raw TCP clients that support SOCKS, use `socks` or
+`tcp:socks` instead.
 
 <Tabs>
 <TabItem value="k8s" label="Kubernetes">
@@ -174,7 +175,16 @@ spec:
 
 <TabItem value="not-k8s" label="Outside of Kubernetes">
 
+```bash
+-Dhttp.proxyHost=127.0.0.1
+-Dhttp.proxyPort=4140
+-Dhttps.proxyHost=127.0.0.1
+-Dhttps.proxyPort=4140
 ```
+
+Use SOCKS instead for clients or protocols that require it:
+
+```bash
 -DsocksProxyHost=127.0.0.1
 -DsocksProxyPort=4140
 ```
