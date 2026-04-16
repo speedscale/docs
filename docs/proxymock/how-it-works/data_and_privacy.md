@@ -6,10 +6,11 @@ sidebar_position: 11
 
 # Data and Privacy
 
-We take data security and privacy seriously. **proxymock** is designed to handle
-your data responsibly, ensuring that all interactions comply with strict
+We take data security and privacy seriously. **proxymock** is designed to
+handle your data responsibly, ensuring that all interactions comply with strict
 security and privacy best practices. Traffic captured by **proxymock** will not
-be shared with anyone, not even us, unless you explicitly authorize. See the
+be shared with anyone, not even us, unless you explicitly authorize.  Your
+traffic will **never** be shared with a third party. See the
 [license](./license.md) for more detailed information.
 
 # Telemetry
