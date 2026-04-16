@@ -13,6 +13,34 @@ This is an enterprise only feature that must be enabled by the Speedscale team a
 
 In this guide we'll show you how to set up exporters for Speedscale RRPair data via OpenTelemetry logs. For this guide, we'll setup [FluentBit](https://fluentbit.io) as our OTel collector but you can use any collector you choose that supports log collection.
 
+## What Is “Bring Your Own Cloud” (BYOC)?
+
+Bring Your Own Cloud is a deployment model where Speedscale software runs inside your own cloud account (your AWS, GCP, or Azure VPC) instead of a vendor-hosted multi-tenant SaaS. You keep data, networking, and runtime boundaries under your control while still receiving managed software updates and support from Speedscale.
+
+### Advantages
+
+- Data sovereignty and compliance — sensitive payloads and metadata never leave your VPC.
+- Lower latency — collectors and exporters run near your apps, reducing egress and round trips.
+- Cost control — leverage your cloud pricing (reserved, spot, private links) and avoid generic “SaaS tax.”
+
+### Tradeoffs
+
+- You manage the cloud surface area — Kubernetes/containers, ingress, IAM, and network policies must exist.
+- Shared responsibilities — upgrades are simple, but you still own cluster health, scale, and access control.
+- Integration work — SSO, networking, and security reviews are usually part of the rollout.
+
+For a deeper perspective on why enterprises choose BYOC for modern AI/observability workloads, see: 
+- Why autonomous agents require BYOC: https://www.speedscale.com/blog/byoc-autonomous-agents-sovereign-ai-factory/
+- Software delivery for BYOC environments (Replicated): https://www.replicated.com/
+
+## A Quick Note on OpenTelemetry
+
+[OpenTelemetry](https://opentelemetry.io/) (CNCF) is the open standard for collecting and exporting telemetry data — traces, metrics, and logs — using a common protocol (OTLP). In this integration, Speedscale’s forwarder emits RRPair data as OpenTelemetry logs to an OTLP endpoint you host. From there, your collector (e.g., [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) or [Fluent Bit](https://fluentbit.io)) fans out to destinations like object storage, SIEM, or analytics.
+
+- Protocol: [OTLP/HTTP and OTLP/gRPC](https://opentelemetry.io/docs/specs/otlp/)
+- Signal used here: Logs (wrapping Speedscale RRPairs)
+- Pattern: Forwarder → OTLP collector → one or more export backends
+
 ## Architecture
 
 ```mermaid
