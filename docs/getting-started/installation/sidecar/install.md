@@ -20,8 +20,8 @@ used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
 
-:::tip
-Speedscale also supports [eBPF-based traffic collection](/reference/ebpf-traffic-collection) which captures TLS traffic without certificates, proxies, or application changes.
+:::info Recommended for Kubernetes
+Prefer the [eBPF collector](/reference/ebpf-traffic-collection) for Kubernetes traffic capture. It runs as a DaemonSet, requires no app changes, and captures plaintext and TLS without cert management. Use the sidecar only when eBPF is not suitable for your workload or cluster.
 :::
 
 
@@ -32,7 +32,7 @@ Speedscale also supports [eBPF-based traffic collection](/reference/ebpf-traffic
 The [envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/listeners/listeners#tcp) proxy (aka Istio) uses the same architecture to redirect traffic. Your platform or security team may already be familiar with this approach.
 :::
 
-## Installation
+## Installation (fallback)
 
 There are several ways to install the sidecar in your cluster.  See the [proxy
 configuration reference](../../../reference/proxy_config.mdx) for proxy configuration

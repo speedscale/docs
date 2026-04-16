@@ -9,4 +9,8 @@ import SidecarAnnotations from '@site/src/partials/reference/sidecar-annotations
 The Speedscale sidecar can be configured with the use of annotations added to your Kubernetes workload. The
 following are the currently supported annotations:
 
+:::info Prefer eBPF in Kubernetes
+For Kubernetes traffic capture, enable the [eBPF collector](/reference/ebpf-traffic-collection) when possible. The annotations below apply when using the sidecar as a fallback.
+:::
+
 <SidecarAnnotations />

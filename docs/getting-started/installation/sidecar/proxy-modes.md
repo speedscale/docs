@@ -26,6 +26,10 @@ while outbound capture stays empty if the workload runtime does not send traffic
 When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload.
 :::
 
+:::info Prefer eBPF in Kubernetes
+For Kubernetes traffic capture, enable the [eBPF collector](/reference/ebpf-traffic-collection) when possible. The proxy modes below apply when using the sidecar as a fallback.
+:::
+
 ## Proxy Configuration
 
 Configuration for this operation mode is managed with workload annotations. You must specify the type of proxy

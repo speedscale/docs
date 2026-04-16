@@ -35,7 +35,8 @@ Make sure you navigate to the `java` subdirectory within the `demo` repository.
 <TabItem value="Kubernetes">
 
 1. [Install the operator](./quick-start.md#install-speedscale-operator-optional)
-2. To deploy the demo app and sidecar, run:
+2. Recommended: enable the [eBPF collector](/reference/ebpf-traffic-collection) to capture traffic without proxies or app changes. Follow the Helm-based setup to target the demo namespace/workload.
+   - Fallback: if eBPF is not suitable in your cluster, deploy the demo app with the Speedscale sidecar by running:
 
 ```bash
 make kube-capture
@@ -47,7 +48,7 @@ make kube-capture
 kubectl -n default get pods
 ```
 
-Which should show `2/2` for the java-server pod indicating there are 2 containers (the application and the sidecar).
+Depending on your chosen capture method you may see either `1/1` (eBPF collector) or `2/2` (application + sidecar) for the `java-server` pod.
 
 ```bash
 NAME                           READY   STATUS    RESTARTS   AGE

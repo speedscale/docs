@@ -64,8 +64,12 @@ for all configuration options available for the Helm chart.
 Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
 The install wizard will walk you through installing the
-[Speedscale Kubernetes Operator](./getting-started/installation/install/kubernetes-operator.md)
-and adding the [Speedscale Sidecar](./getting-started/installation/sidecar/install.md) to your deployment.
+[Speedscale Kubernetes Operator](./getting-started/installation/install/kubernetes-operator.md).
+
+Recommended next step: enable the [eBPF collector](/reference/ebpf-traffic-collection)
+to capture traffic in Kubernetes without proxies or app changes. If your
+environment or workload cannot use eBPF, fall back to the
+[Sidecar installation](./getting-started/installation/sidecar/install.md).
 
 ### (Optional) Adding Image Pull Secrets
 
@@ -84,8 +88,11 @@ speedctl install --imgpullsecrets my-secret1,my-secret2p
 
 If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
 The install wizard will walk you through installing the
-[Speedscale Kubernetes Operator](./getting-started/installation/install/kubernetes-operator.md)
-and adding the [Speedscale Sidecar](./getting-started/installation/sidecar/install.md) to your deployment.
+[Speedscale Kubernetes Operator](./getting-started/installation/install/kubernetes-operator.md).
+
+Recommended next step: enable the [eBPF collector](/reference/ebpf-traffic-collection)
+to capture traffic in Kubernetes. If eBPF is not suitable for your
+workload or kernel, use the [Sidecar installation](./getting-started/installation/sidecar/install.md) instead.
 
 Speedscale can also be used with [Docker](./getting-started/installation/install/docker.md) and [locally](./guides/cli.md).
 
@@ -169,4 +176,4 @@ If you have any issues installing, check out the [troubleshooting guide](./getti
 
 At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
 
-If you're already an expert you can click the `Add Service` button in the UI to automatically add sidecars or install them [manually](./getting-started/installation/sidecar/install.md).
+If you're already an expert you can click the `Add Service` button in the UI to target workloads for capture. Prefer enabling the [eBPF collector](/reference/ebpf-traffic-collection); if not possible, add sidecars [manually](./getting-started/installation/sidecar/install.md).
