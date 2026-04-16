@@ -15,7 +15,13 @@ demonstrate how to do this specifically for clusters using
 1. A cluster with the Speedscale operator installed and with `ingress-nginx` configured as its ingress controller
 1. TLS connections are terminated at the `ingress-nginx` controller
 
-## Install the Speedscale Sidecar
+## Enable eBPF Collector (recommended)
+
+For Kubernetes ingress traffic, prefer enabling the [eBPF collector](/reference/ebpf-traffic-collection) to capture requests without modifying the ingress controller deployment. Use Helm values to enable eBPF and target the `ingress-nginx` namespace or specific workloads via capture targets or annotations.
+
+If your cluster or ingress setup cannot support eBPF, use the sidecar approach below.
+
+## Fallback: Install the Speedscale Sidecar
 
 To begin, the Speedscale sidecar must be installed on the ingress controller deployment
 `ingress-nginx-controller` in the `ingress-nginx` namespace. Begin by creating a patch YAML file for the

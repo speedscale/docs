@@ -11,13 +11,17 @@ exact impact of the proxy will vary based upon your workload and conditions. For
 testing the sidecar in pre-production and then using a progressive rollout strategy in production. Due to high
 variability, Speedscale does not currently publish benchmarks.
 
+:::info Prefer eBPF in Kubernetes
+When running in Kubernetes, enable the [eBPF collector](/reference/ebpf-traffic-collection) when possible to avoid proxy-induced latency. Use the sidecar only when eBPF is not suitable for your workload or cluster.
+:::
+
 ### Testing sidecar latency in pre-production
 
 We recommend testing latency and overhead on a pre-production workload using this procedure:
 1. Add monitoring for CPU and memory to your service. Just watching a tool like [k9s](https://k9scli.io/) and is sometimes sufficient. If you want to get fancy you use other tools like [ContainIQ](https://www.containiq.com/) or [Pixie](https://github.com/pixie-io/pixie).
 2. Establish a baseline by running a consistent workload like a load test. Using Speedscale to replay and scale up volume is a great idea but you can also use existing load testing scripts.
 3. Record the CPU, memory usage and **average latency** over the course of the load test.
-4. Install the Speedscale sidecar
+4. Enable the [eBPF collector](/reference/ebpf-traffic-collection) (preferred) or install the Speedscale sidecar (fallback)
 5. Re-run the same load test.
 6. Compare results.
 

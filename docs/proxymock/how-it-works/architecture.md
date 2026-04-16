@@ -6,11 +6,6 @@ sidebar_position: 1
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import AppNoProxymock from './architecture/app-no-proxymock.svg';
-import AppCapturingOutbound from './architecture/app-capturing-outbound.svg';
-import AppCapturingInbound from './architecture/app-capturing-inbound.svg';
-import AppWithMocks from './architecture/app-with-mocks.svg';
-import AppWithLoadGenerator from './architecture/app-with-load-generator.svg';
 
 # Architecture
 
@@ -25,7 +20,11 @@ This is probably close what your setup looks like.  A client making requests to
 your app's API (listening on port `8080` in this case) and your app making
 requests to various other services, APIs, databases, etc.
 
-    <AppNoProxymock />
+```mermaid
+flowchart LR
+  Client[client] --> App[your app 8080]
+  App --> Deps[dependencies API, database, etc]
+```
 
   </TabItem>
   <TabItem value="proxymock-capturing-outbound" label="Record Mocks">
@@ -34,7 +33,13 @@ your app makes to other services and the associated responses.  Once captured
 these are called [mocks](/reference/glossary.md#mock) and are written to
 artifacts in a local directory.
 
-    <AppCapturingOutbound />
+```mermaid
+flowchart LR
+  Client[client] --> App[your app 8080] --> PM[proxymock 4140]
+  PM --> Deps[dependencies API, database, etc]
+  PM --> Local[local directory]
+  style Local fill:#FDE68A,stroke:#D97706,stroke-width:1px,color:#111
+```
 
 Once the necessary env vars are set in the environment where "your app" is
 running outbound traffic from your app is routed through **proxymock** and
@@ -47,7 +52,13 @@ makes to your app the associated responses.  Once captured these are called
 [tests](/reference/glossary.md#test) and are written to artifacts in a local
 directory.
 
-    <AppCapturingInbound />
+```mermaid
+flowchart LR
+  Client[client] --> PM[proxymock 4143]
+  PM --> Local[local directory]
+  PM --> App[your app 8080] --> Deps[dependencies API, database, etc]
+  style Local fill:#FDE68A,stroke:#D97706,stroke-width:1px,color:#111
+```
 
 Requests from the client are routed through **proxymock** and captured in the
 process, but unlike outbound traffic where we can just set env vars the client
@@ -62,7 +73,12 @@ server](/reference/glossary.md#mock-server) to respond to requests from your
 app.  Mock [signatures](/proxymock/how-it-works/signature.md) are generated from the
 mock artifacts captured earlier.
 
-    <AppWithMocks />
+```mermaid
+flowchart LR
+  Client[client] --> App[your app 8080] --> PM[proxymock 4140] --> Deps[dependencies API, database, etc]
+  PM --> Local[local directory]
+  style Local fill:#FDE68A,stroke:#D97706,stroke-width:1px,color:#111
+```
 
 While dependencies can be fully replace by **proxymock**, there is a dotted line
 to indicate "passthrough", which is what happens when a request to the mock
@@ -75,7 +91,12 @@ Once **proxymock** has created [tests](/reference/glossary.md#test) from inbound
 traffic it can replay those requests back to your app. Requests are
 generated from the test artifacts captured earlier.
 
-    <AppWithLoadGenerator />
+```mermaid
+flowchart LR
+  Local[local directory] --> PM[proxymock]
+  PM --> App[your app 8080] --> Deps[dependencies API, database, etc]
+  style Local fill:#FDE68A,stroke:#D97706,stroke-width:1px,color:#111
+```
 
 In this configuration the client is fully replaced by **proxymock** which makes
 requests to your app on port `8080`.

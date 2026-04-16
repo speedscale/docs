@@ -16,7 +16,7 @@ There should be little or no difference between the capabilities offered using e
 
 Speedscale is designed to either run standalone or as part of a wider testing platform. For example, let's imagine we want to record new traffic from production every hour and make it available in a staging environment. This is accomplished using only Speedscale by setting up an hourly [schedule](https://app.speedscale.com/schedules) for recording and/or replay. No external components or tools are required for the full lifecycle of this activity.
 
-However, many larger enterprises wish to use an existing test orchestration platform that was likely built in-house. This is fully supported and allows whatever degree of control is desired. Using the same example as above, the custom orchestrator can use its own scheduler and call the `speedctl infra sidecar` command every hour to trigger Speedscale. Either approach will produce an hourly snapshot of production data except one is controlled by an outside system and one is fully contained within Speedscale.
+However, many larger enterprises wish to use an existing test orchestration platform that was likely built in-house. This is fully supported and allows whatever degree of control is desired. Using the same example as above, the custom orchestrator can manage eBPF-based capture via Helm values/annotations (preferred in Kubernetes; see [eBPF collector](/reference/ebpf-traffic-collection)) or, if eBPF is not suitable, invoke sidecar-based workflows (e.g., `speedctl infra sidecar`). Either approach will produce an hourly snapshot of production data except one is controlled by an outside system and one is fully contained within Speedscale.
 
 # Exporting Data
 
