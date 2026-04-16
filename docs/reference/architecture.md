@@ -88,7 +88,7 @@ speedscale-operator-d9cc9c794-mtcdp     1/1     Running   0          7d6h
 
 **java-server/client (optional)** - A simple demo app deployed in the `speedscale` namespace that can be easily turned off.
 
-The sidecar and eBPF DaemonSet capture methods are detailed in the [Ingest](#ingest-only) section below. The operator installation does not automatically deploy either capture method.
+The eBPF DaemonSet and sidecar capture methods are detailed in the [Ingest](#ingest-only) section below. The operator installation does not automatically deploy either capture method.
 
 :::note
 All connections to Speedscale Cloud are initiated outbound from your cluster. Speedscale does not require listener ports to be opened.
@@ -100,33 +100,7 @@ All connections to Speedscale Cloud are initiated outbound from your cluster. Sp
 
 ## Ingest Only
 
-During traffic ingest, Speedscale utilizes a data pipeline that is optimized for data masking, filtering and high volume. Speedscale offers two capture methods: a **sidecar proxy** injected into each pod, or an **eBPF DaemonSet** (`nettap`) that observes traffic at the node level without modifying workloads. Both methods forward captured traffic to the in-cluster forwarder where DLP filtering and PII redaction occur before data leaves the cluster.
-
-### Sidecar Capture
-
-```mermaid
-graph LR
-    subgraph pod["Application Pod"]
-        app["App Container"]
-        sidecar["Sidecar<br/>speedscale-goproxy"]
-    end
-
-    forwarder["Forwarder<br/>DLP & Filtering"]
-    cloud["Speedscale Cloud"]
-
-    app <-->|traffic| sidecar
-    sidecar -->|traffic data| forwarder
-    forwarder -->|"filtered data<br/>PII redacted"| cloud
-```
-
-**sidecar** - A listener proxy injected into each application pod, similar to an Envoy sidecar. The sidecar intercepts inbound and outbound traffic and forwards it to the in-cluster forwarder.
-
-Pods with the speedscale sidecar injected will have a new container named `speedscale-goproxy`:
-
-```bash
-kubectl -n speedscale get pods java-server-5786d56974-pv765 -o jsonpath='{.spec.containers[*].name}'
-speedscale-goproxy java-server
-```
+During traffic ingest, Speedscale utilizes a data pipeline that is optimized for data masking, filtering and high volume. Speedscale offers two capture methods: an **eBPF DaemonSet** (`nettap`) that observes traffic at the node level without modifying workloads, or a **sidecar proxy** injected into each pod. Both methods forward captured traffic to the in-cluster forwarder where DLP filtering and PII redaction occur before data leaves the cluster.
 
 ### eBPF Capture
 
@@ -153,6 +127,32 @@ Verify the nettap DaemonSet is running:
 
 ```bash
 kubectl -n speedscale get daemonset nettap
+```
+
+### Sidecar Capture
+
+```mermaid
+graph LR
+    subgraph pod["Application Pod"]
+        app["App Container"]
+        sidecar["Sidecar<br/>speedscale-goproxy"]
+    end
+
+    forwarder["Forwarder<br/>DLP & Filtering"]
+    cloud["Speedscale Cloud"]
+
+    app <-->|traffic| sidecar
+    sidecar -->|traffic data| forwarder
+    forwarder -->|"filtered data<br/>PII redacted"| cloud
+```
+
+**sidecar** - A listener proxy injected into each application pod, similar to an Envoy sidecar. The sidecar intercepts inbound and outbound traffic and forwards it to the in-cluster forwarder.
+
+Pods with the speedscale sidecar injected will have a new container named `speedscale-goproxy`:
+
+```bash
+kubectl -n speedscale get pods java-server-5786d56974-pv765 -o jsonpath='{.spec.containers[*].name}'
+speedscale-goproxy java-server
 ```
 
 :::tip
