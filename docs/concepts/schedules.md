@@ -91,7 +91,11 @@ body is a structured JSON object:
   "status": "failure",
   "failed_tasks": [
     { "index": 1, "message": "Error: report completed with errors: [timeout]" }
-  ]
+  ],
+  "snapshot_id": "abc123",
+  "report_id": "def456",
+  "schedule_url": "https://app.speedscale.com/schedules/my-job",
+  "report_url": "https://app.speedscale.com/reports/def456"
 }
 ```
 
@@ -115,6 +119,10 @@ Available template variables:
 | `{{.StartTime}}` | Execution start time (UTC) |
 | `{{.Status}}` | `success` or `failure` |
 | `{{.FailedTasks}}` | Slice of failed actions; each has `.Index` and `.Message` |
+| `{{.SnapshotID}}` | ID of the most recent snapshot created in this run |
+| `{{.ReportID}}` | ID of the most recent replay report created in this run |
+| `{{.ScheduleURL}}` | Link to this schedule in the Speedscale dashboard |
+| `{{.ReportURL}}` | Link to the most recent replay report in the dashboard |
 
 #### Slack
 
@@ -124,13 +132,18 @@ Available template variables:
 3. Set **Message template** to a string such as:
 
    ```
-   Job {{.JobID}} finished with status {{.Status}}
+   *{{.JobID}}* finished with status *{{.Status}}*
+   Started: {{.StartTime}}
+   Schedule: {{.ScheduleURL}}{{if .ReportURL}}
+   Report: {{.ReportURL}}{{end}}
    ```
+
+   The dashboard's **Use Slack default** button pre-fills this template for you.
 
    For failure details you can iterate over `FailedTasks`:
 
    ```
-   Job {{.JobID}} failed — {{range .FailedTasks}}task {{.Index}}: {{.Message}} {{end}}
+   *{{.JobID}}* failed — {{range .FailedTasks}}task {{.Index}}: {{.Message}} {{end}}
    ```
 
 Slack validates that the posted JSON contains a `text` field and returns
