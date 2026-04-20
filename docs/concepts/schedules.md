@@ -79,8 +79,8 @@ outcome, or immediately after a replay to alert on test failures.
 
 #### Channels
 
-**Webhook** sends an HTTP POST to a URL you provide. The request body is a JSON
-object with the following fields:
+**Webhook** sends an HTTP POST to a URL you provide. By default the request
+body is a structured JSON object:
 
 ```json
 {
@@ -95,12 +95,47 @@ object with the following fields:
 }
 ```
 
-You can point the webhook URL at any HTTP endpoint — a Slack incoming webhook,
-a PagerDuty event endpoint, a custom service, or a tool like
-[RequestBin](https://requestbin.com) for testing.
-
 To pass additional headers (for example, an authorization token) use the
 **Headers** field when configuring the action.
+
+#### Message template
+
+Some services — including Slack — require a specific JSON shape and will reject
+the default payload. Set the **Message template** field to a
+[Go template](https://pkg.go.dev/text/template) string; when present the
+request body becomes `{"text": "<rendered>"}` instead.
+
+Available template variables:
+
+| Variable | Description |
+|----------|-------------|
+| `{{.JobID}}` | Schedule ID |
+| `{{.JobDescription}}` | Schedule description |
+| `{{.ExecutionID}}` | Unique ID for this run |
+| `{{.StartTime}}` | Execution start time (UTC) |
+| `{{.Status}}` | `success` or `failure` |
+| `{{.FailedTasks}}` | Slice of failed actions; each has `.Index` and `.Message` |
+
+#### Slack
+
+1. [Create a Slack incoming webhook](https://api.slack.com/messaging/webhooks)
+   for the channel you want to post to and copy the webhook URL.
+2. Paste the URL into the **URL** field.
+3. Set **Message template** to a string such as:
+
+   ```
+   Job {{.JobID}} finished with status {{.Status}}
+   ```
+
+   For failure details you can iterate over `FailedTasks`:
+
+   ```
+   Job {{.JobID}} failed — {{range .FailedTasks}}task {{.Index}}: {{.Message}} {{end}}
+   ```
+
+Slack validates that the posted JSON contains a `text` field and returns
+`400 no_text` without one, so the Message template field is required when
+posting to Slack.
 
 **Email** support is coming in a future release.
 
