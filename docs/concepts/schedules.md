@@ -63,4 +63,51 @@ Waits before advancing to the next action. This is useful for waiting for
 traffic after ensuring a sidecar exists on a workload, or when some out of band
 work is performed in between actions.
 
+### Notify
+
+Sends a notification when the action is reached during execution. Place this
+action anywhere in the sequence — for example, at the end to report the overall
+outcome, or immediately after a replay to alert on test failures.
+
+#### Trigger conditions
+
+| Trigger | When it fires |
+|---------|---------------|
+| **Always** (default) | Every time the action is reached, regardless of prior results |
+| **On failure** | Only when at least one earlier action in the job recorded an error |
+| **On success** | Only when all earlier actions completed without error |
+
+#### Channels
+
+**Webhook** sends an HTTP POST to a URL you provide. The request body is a JSON
+object with the following fields:
+
+```json
+{
+  "job_id": "my-job",
+  "job_description": "Nightly regression",
+  "execution_id": "3f7a...",
+  "start_time": "2024-05-01T15:00:00Z",
+  "status": "failure",
+  "failed_tasks": [
+    { "index": 1, "message": "Error: report completed with errors: [timeout]" }
+  ]
+}
+```
+
+You can point the webhook URL at any HTTP endpoint — a Slack incoming webhook,
+a PagerDuty event endpoint, a custom service, or a tool like
+[RequestBin](https://requestbin.com) for testing.
+
+To pass additional headers (for example, an authorization token) use the
+**Headers** field when configuring the action.
+
+**Email** support is coming in a future release.
+
+:::tip
+Combine the Notify action with **On failure** and `continue_on_failure` enabled
+to get an alert any time a scheduled replay misses its goals without stopping
+the rest of the job.
+:::
+
 
