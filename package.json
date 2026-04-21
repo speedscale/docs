@@ -55,7 +55,7 @@
     "patch-package": "^8.0.1"
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=22.0.0"
   },
   "resolutions": {
     "cheerio": "1.2.0",
