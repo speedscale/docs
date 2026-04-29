@@ -112,6 +112,7 @@ Repeat for each global variable listed.
 | `--format` | `json` | Output format (`json` or `yaml`) |
 | `--bundle` | `single` | Bundle layout (`single` or `multistep`) |
 | `--service` | `` | Filter by HTTP Host header (case-insensitive) |
+| `--filter` | `` | Speedscale traffic filter query (e.g. `(header[X-Session-ID] IS "abc123")`) |
 | `--limit` | `-1` | Maximum tests to emit |
 | `--redact-headers` | `true` | Replace sensitive headers with placeholders |
 | `--auth-header` | 5 defaults | Additional headers to redact |
@@ -135,7 +136,50 @@ proxymock export datadog-synthetics --limit 50
 
 # Override URL scheme
 proxymock export datadog-synthetics --scheme https
+
+# Narrow to one user session (see "Isolate a Single User Session" below)
+proxymock export datadog-synthetics --filter '(header[X-Session-ID] IS "abc123")'
 ```
+
+### Isolate a Single User Session
+
+Use `--filter` to narrow the export to a single user, tenant, or any other slice of traffic that shares a stable correlation key. The flag takes the standard Speedscale traffic filter query language (the same grammar used by `proxymock search --filter-query` and `speedctl create snapshot --filter`).
+
+The most common use case is reproducing a customer-reported bug as a Datadog Synthetics multistep test:
+
+```bash
+# Replay one customer's session as a multistep API test
+proxymock export datadog-synthetics \
+  --in ./proxymock \
+  --out alice-session.json \
+  --bundle multistep \
+  --filter '(header[X-Session-ID] IS "alice-abc123")'
+```
+
+**Picking a correlation key.** A good filter predicate is one value that appears on every request a user makes within a session, and only on that user's requests. In practice this is one of:
+
+| Source | Filter |
+|---|---|
+| Gateway-issued session header | `(header[X-Session-ID] IS "abc123")` |
+| Sticky session cookie | `(header[Cookie] CONTAINS "sessionid=abc123")` |
+| JWT subject (substring match) | `(header[Authorization] CONTAINS "sub=abc123")` |
+| Query parameter | `(query_param[session] IS "abc123")` |
+| Tenant-scoped header | `(header[X-Tenant-Id] IS "tenant-42")` |
+
+**Combining predicates.** `AND` and `OR` combine clauses; each predicate must be wrapped in parentheses. Operators (`IS`, `NOT`, `CONTAINS`, `REGEX`) are uppercase and string values must be double-quoted.
+
+```bash
+# Just the writes a user attempted
+--filter '(header[X-Session-ID] IS "abc123") AND (command IS "POST")'
+
+# All of one user's failed requests across a window
+--filter '(header[X-Session-ID] IS "abc123") AND (status NOT "200")'
+
+# One user's checkout flow only (good for staying under the 10-step multistep cap)
+--filter '(header[X-Session-ID] IS "abc123") AND (url CONTAINS "/checkout")'
+```
+
+**Validating the filter.** Header keys are matched exact-case, so check that the header your gateway emits exactly matches the predicate (e.g. `X-Session-Id` vs. `X-Session-ID`). After running the export, open the generated `*.variables.md` sidecar — the **Skipped during export** section reports a `filtered by --filter` count. If every RRPair was skipped, the predicate did not match anything.
 
 ### Test Configuration Options
 
@@ -191,7 +235,17 @@ proxymock export datadog-synthetics \
   --out checkout-flow.json
 ```
 
-### Pattern 4: Tagged Export for CI/CD
+### Pattern 4: Reproduce a Customer-Reported Bug
+
+```bash
+# Pull just the affected user's session as a runnable multistep test
+proxymock export datadog-synthetics \
+  --bundle multistep \
+  --filter '(header[X-Session-ID] IS "alice-abc123")' \
+  --out alice-session.json
+```
+
+### Pattern 5: Tagged Export for CI/CD
 
 ```bash
 proxymock export datadog-synthetics \
