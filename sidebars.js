@@ -110,6 +110,7 @@ const sidebars = {
             "guides/prometheus",
             "guides/signature-refinement-guide",
             "guides/local-capture",
+            "proxymock/guides/datadog-synthetics/index",
             "guides/manual_snapshot",
             "guides/identify-session",
             "guides/extract-replace",
