@@ -69,12 +69,12 @@ This means your service's WebSocket dependencies are mocked just like HTTP depen
 For local development, proxymock can mock WebSocket endpoints:
 
 ```bash
-proxymock mock start \
-  --in-dir ./captured-traffic \
-  --port 8080
+proxymock mock \
+  --in ./captured-traffic \
+  --proxy-out-port 8080
 ```
 
-Your service connects to the mock server on port 8080. When it upgrades to a WebSocket connection, proxymock responds with the captured message sequence.
+Configure your service to use proxymock as its HTTP(S) proxy on port 8080. When it upgrades to a WebSocket connection, proxymock responds with the captured message sequence.
 
 ## Supported Frame Types
 

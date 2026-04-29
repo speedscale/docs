@@ -19,12 +19,13 @@ Now that you have `speedctl` installed, make sure you have TLS certificates crea
 ls -al ~/.speedscale/certs
 ```
 
-If you have certificates, great! If you got an error `No such file or directory` then you can create the certificates with the following steps. First create the directory, then create the certificates in that directory.
+If you have certificates, great! If you got an error `No such file or directory` then generate the default Speedscale certificates:
 
 ```
-mkdir ~/.speedscale/certs
-speedctl create certs --output-dir ~/.speedscale/certs
+speedctl create certs
 ```
+
+This writes `tls.crt` and `tls.key` to `~/.speedscale/certs`.
 
 You should be able to see your certs are in the directory:
 

@@ -150,10 +150,10 @@ The replay was manually canceled by a user before completion.
 
 ```bash
 # Wait for report completion and get exit code based on status
-speedctl wait <report-id>
+speedctl wait report <report-id>
 
-# List reports with status filtering
-speedctl report list --status "Passed"
+# List recent reports for a specific service
+speedctl get reports --service my-service
 ```
 
 ### Using the UI

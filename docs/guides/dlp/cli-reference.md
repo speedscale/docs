@@ -14,43 +14,43 @@ This section provides CLI reference documentation for managing DLP rules using `
 
 ## Pulling DLP Rules
 
-Use `speedctl pull dlp-rule` to download a DLP rule from Speedscale to your local machine.
+Use `speedctl pull dlp` to download a DLP rule from Speedscale to your local machine.
 
 ```bash
-speedctl pull dlp-rule <rule-id>
+speedctl pull dlp <rule-id>
 ```
 
-By default, the rule is downloaded to `~/.speedscale/data/dlp-rules/<rule-id>.json`.
+By default, the rule is downloaded to `~/.speedscale/data/dlp/<rule-id>.json`.
 
 ### Example
 
 ```bash
-speedctl pull dlp-rule prod-payment-data-redaction
+speedctl pull dlp prod-payment-data-redaction
 ```
 
 After pulling, you can edit the rule file locally. The file contains the DLP configuration including transform chains, filters, and extractors.
 
 ## Pushing DLP Rules
 
-Use `speedctl push dlp-rule` to upload a modified DLP rule from your local machine back to Speedscale.
+Use `speedctl push dlp` to upload a modified DLP rule from your local machine back to Speedscale.
 
 ```bash
-speedctl push dlp-rule <rule-id>
+speedctl push dlp <rule-id>
 ```
 
 ### Example
 
 ```bash
-speedctl push dlp-rule prod-payment-data-redaction
+speedctl push dlp prod-payment-data-redaction
 ```
 
 After pushing, the updated rule is available in Speedscale. Forwarders that reference the rule will automatically apply the changes; no manual refresh or redeployment is required.
 
 ## Typical Workflow
 
-1. **Pull** the rule from Speedscale: `speedctl pull dlp-rule my-dlp-rule`
-2. **Edit** the rule file locally (e.g., `~/.speedscale/data/dlp-rules/my-dlp-rule.json`)
-3. **Push** the updated rule back: `speedctl push dlp-rule my-dlp-rule`
+1. **Pull** the rule from Speedscale: `speedctl pull dlp my-dlp-rule`
+2. **Edit** the rule file locally (e.g., `~/.speedscale/data/dlp/my-dlp-rule.json`)
+3. **Push** the updated rule back: `speedctl push dlp my-dlp-rule`
 4. **Apply** the rule to forwarders via the UI or your deployment configuration
 
 ## Next Steps
