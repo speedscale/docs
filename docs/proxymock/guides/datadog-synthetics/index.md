@@ -1,361 +1,313 @@
-# Datadog Synthetics Guide
+# Datadog Synthetics
 
-Create a full Datadog Synthetics test suite from your Speedscale recorded traffic.
+Convert recorded proxymock traffic into a Datadog Synthetics test suite — one multistep API test per snapshot, with all auth headers redacted into global variables and automatic variable chaining between steps.
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Record traffic (already done if you have existing RRPair files)
-
-# 2. Export to Datadog Synthetics
+# Export and publish directly to Datadog
 proxymock export datadog-synthetics \
-  --in ./proxymock \
-  --out tests.json \
-  --format json
+  --in ./proxymock/snapshot-<id> \
+  --publish
 
-# 3. Create global variables - see output in tests.variables.md
+# Output:
+#   Variables: datadog/snapshot-<id>.vars.md
+#   View:      https://app.datadoghq.com/synthetics/details/<public-id>
+#   Run:       datadog-ci synthetics run-tests --public-id <public-id>
+```
 
-# 4. Run tests in Datadog
-datadog-ci synthetics run-tests --files tests.json
+Set your Datadog keys once via environment variables and they are picked up automatically:
+
+```bash
+export DATADOG_API_KEY=...
+export DATADOG_APP_KEY=...
 ```
 
 ---
 
-## Detailed Steps
+## How It Works
 
-### 1. Single Test Export (Default)
+Each export run targets one snapshot directory and writes three files into `datadog/` alongside it:
 
-Creates individual API tests, one per recorded request.
+| File | Purpose |
+|---|---|
+| `datadog/snapshot-<id>.json` | Datadog Synthetics bundle (the test definition) |
+| `datadog/snapshot-<id>.vars.md` | Global variables to create before running |
+
+The bundle defaults to **multistep mode**: one Synthetics API test with one step per recorded request, ordered by capture time. Sensitive headers (`Authorization`, `Cookie`, etc.) are automatically replaced with `{{ AUTHORIZATION_1 }}` placeholders; the sidecar lists the values.
+
+### Output path
+
+The output path is derived from `--in` automatically:
+
+```
+--in ./proxymock/snapshot-e77c31c9-fc5a-48c8-ad22-2000c9ce4574
+→   datadog/snapshot-e77c31c9.json
+    datadog/snapshot-e77c31c9.vars.md
+```
+
+Each snapshot gets its own files, so re-exporting a different snapshot never overwrites previous work. Override with `--out` if needed.
+
+---
+
+## Publish to Datadog
+
+Add `--publish` to create or update the tests directly in your Datadog account:
 
 ```bash
 proxymock export datadog-synthetics \
-  --in ./proxymock \
-  --out tests.json \
-  --format json \
+  --in ./proxymock/snapshot-e77c31c9-fc5a-48c8-ad22-2000c9ce4574 \
+  --publish
+```
+
+On success the command prints the exact Datadog UI link and CLI run command:
+
+```
+multistep test with 8 step(s) written to datadog/snapshot-e77c31c9.json
+
+  Variables: datadog/snapshot-e77c31c9.vars.md
+  View:      https://app.datadoghq.com/synthetics/details/abc-def-ghi
+  Run:       datadog-ci synthetics run-tests --public-id abc-def-ghi
+```
+
+### Keys
+
+Pass keys via environment variables (recommended) or flags:
+
+```bash
+# via env (recommended)
+export DATADOG_API_KEY=...
+export DATADOG_APP_KEY=...
+
+# or via flags
+proxymock export datadog-synthetics --datadog-api-key ... --datadog-app-key ...
+```
+
+### Global variables
+
+By default `--publish` also creates or updates Datadog Synthetics global variables for any redacted headers. Disable with `--publish-variables=false` if you manage variables separately.
+
+### Re-publishing
+
+Use `--force` to overwrite the local bundle file on subsequent runs:
+
+```bash
+proxymock export datadog-synthetics \
+  --in ./proxymock/snapshot-e77c31c9-fc5a-48c8-ad22-2000c9ce4574 \
+  --publish --force
+```
+
+---
+
+## Bundle Layouts
+
+### Multistep (default)
+
+One Synthetics API test, one step per recorded request. Steps are ordered by capture time. The exporter wires automatic variable extraction between steps (see [Automatic variable chaining](#automatic-variable-chaining)).
+
+```bash
+proxymock export datadog-synthetics \
+  --in ./proxymock/snapshot-<id> \
+  --bundle multistep
+```
+
+**Limit:** Datadog caps multistep API tests at 10 steps. If the snapshot has more eligible requests, the first 10 are used and a warning is printed. Narrow the input with `--limit` or `--service`.
+
+### Single
+
+One independent Synthetics API test per recorded request. No step cap.
+
+```bash
+proxymock export datadog-synthetics \
+  --in ./proxymock/snapshot-<id> \
   --bundle single
 ```
 
-**Output:**
-- `tests.json` - Datadog Synthetics bundle (importable via UI, API, or CLI)
-- `tests.variables.md` - Sidecar file listing global variables to create
-
-### 2. Multistep Test Export
-
-Creates a single multistep test with automatic variable extraction between steps.
-
-```bash
-proxymock export datadog-synthetics \
-  --in ./proxymock \
-  --out flow.json \
-  --bundle multistep \
-  --limit 10
-```
-
-**Limit:** Multistep tests are capped at 10 steps (Datadog limit). Use `--limit` or `--service` to narrow input.
-
-### 3. Upload Bundle to Datadog
-
-#### Using CLI
-
-```bash
-datadog-ci synthetics run-tests \
-  --files tests.json \
-  --location pl:YOUR_DATACENTER_ID
-```
-
-#### Using API
-
-```bash
-curl -X POST https://api.datadoghq.com/api/v1/synthetics/tests/api \
-  -H "Auth-Token: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  --data-binary @tests.json
-```
-
-**Endpoint:** `POST /api/v1/synthetics/tests/api`
-
-### 4. Create Global Variables
-
-Before running tests, create global variables from the sidecar file:
-
-**Open** `tests.variables.md`:
+When published, the output shows a `--search` command that finds all tests from the export by tag:
 
 ```
-# Datadog Synthetics — Global Variables
-
-| Variable       | Source header | Hosts        | Sample value    |
-|----------------|---------------|--------------|-----------------|
-| AUTHORIZATION_1| Authorization| localhost    | Bearer eyJhbG...|
-| COOKIE_1       | Cookie        | localhost    | session=abc...  |
+  View: https://app.datadoghq.com/synthetics/tests?search=tag:proxymock_export_id:20260501t120000z
+  Run:  datadog-ci synthetics run-tests --public-id id1 --public-id id2 ...
 ```
-
-**Create in Datadog:**
-1. Go to **Synthetics** → **Settings** → **Global Variables**
-2. Click **New global variable**
-3. Name: `AUTHORIZATION_1`
-4. Value: The actual value from the sidecar (or paste if available)
-
-Repeat for each global variable listed.
 
 ---
 
-## Configuration Reference
+## Global Variables
 
-### Flags
+Sensitive headers are replaced with placeholders like `{{ AUTHORIZATION_1 }}`. The sidecar `.vars.md` lists the variable names, source headers, hosts, and sample values:
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--in` | `./proxymock` | Input directory with RRPair files |
-| `--out` | `datadog-synthetics.json` | Output bundle file |
-| `--format` | `json` | Output format (`json` or `yaml`) |
-| `--bundle` | `single` | Bundle layout (`single` or `multistep`) |
-| `--service` | `` | Filter by HTTP Host header (case-insensitive) |
-| `--filter` | `` | Speedscale traffic filter query (e.g. `(header[X-Session-ID] IS "abc123")`) |
-| `--limit` | `-1` | Maximum tests to emit |
-| `--redact-headers` | `true` | Replace sensitive headers with placeholders |
-| `--auth-header` | 5 defaults | Additional headers to redact |
-| `--allow-insecure` | `false` | Allow self-signed certificates |
-| `--tick-every` | `0` | Scheduled run interval |
-| `--assert-response-time` | `false` | Add response time assertion |
-
-**Default auth headers:** Authorization, Cookie, X-Api-Key, X-Auth-Token, Proxy-Authorization
-
-### Filter Options
-
-```bash
-# By host/service
-proxymock export datadog-synthetics --service api.example.com
-
-# By inbound traffic only (default)
-proxymock export datadog-synthetics --inbound-only false
-
-# With time limit
-proxymock export datadog-synthetics --limit 50
-
-# Override URL scheme
-proxymock export datadog-synthetics --scheme https
-
-# Narrow to one user session (see "Isolate a Single User Session" below)
-proxymock export datadog-synthetics --filter '(header[X-Session-ID] IS "abc123")'
+```markdown
+| Variable        | Source header | Hosts                       | Sample value             |
+|---|---|---|---|
+| `AUTHORIZATION_1` | `Authorization` | api.example.com          | `Bearer eyJhbGci...`     |
+| `COOKIE_1`        | `Cookie`        | api.example.com          | `session=abc123...`      |
 ```
 
-### Isolate a Single User Session
+**Default redacted headers:** `Authorization`, `Cookie`, `X-Api-Key`, `X-Auth-Token`, `Proxy-Authorization`
 
-Use `--filter` to narrow the export to a single user, tenant, or any other slice of traffic that shares a stable correlation key. The flag takes the standard Speedscale traffic filter query language (the same grammar used by `proxymock search --filter-query` and `speedctl create snapshot --filter`).
-
-The most common use case is reproducing a customer-reported bug as a Datadog Synthetics multistep test:
+Add more with `--auth-header`:
 
 ```bash
-# Replay one customer's session as a multistep API test
+proxymock export datadog-synthetics --auth-header "X-My-Token"
+```
+
+If `--publish` is used, global variables are created automatically in Datadog. Otherwise, create them manually:
+
+1. Go to **Synthetics → Settings → Global Variables → New Global Variable**
+2. Name: `AUTHORIZATION_1`, mark **Secure**
+3. Value: the actual value from the sidecar
+
+---
+
+## Automatic Variable Chaining
+
+In multistep mode, the exporter scans each step's JSON response for string values that appear verbatim in a later step's request. Those values are automatically extracted and reused:
+
+- Step 1: `POST /login` → response contains `"token": "abc123"`
+- Step 2: `GET /profile` with `Authorization: Bearer abc123`
+- Result: Step 1 gets a `$.token` extractor named `EXTRACTED_1`; Step 2's header becomes `Bearer {{ EXTRACTED_1 }}`
+
+---
+
+## Isolate a Single User Session
+
+Use `--filter` to narrow the export to one session before building the test:
+
+```bash
 proxymock export datadog-synthetics \
-  --in ./proxymock \
-  --out alice-session.json \
+  --in ./proxymock/snapshot-<id> \
   --bundle multistep \
-  --filter '(header[X-Session-ID] IS "alice-abc123")'
+  --filter '(header[X-Session-ID] IS "alice-abc123")' \
+  --publish
 ```
 
-**Picking a correlation key.** A good filter predicate is one value that appears on every request a user makes within a session, and only on that user's requests. In practice this is one of:
+Common filter predicates:
 
 | Source | Filter |
 |---|---|
-| Gateway-issued session header | `(header[X-Session-ID] IS "abc123")` |
-| Sticky session cookie | `(header[Cookie] CONTAINS "sessionid=abc123")` |
-| JWT subject (substring match) | `(header[Authorization] CONTAINS "sub=abc123")` |
-| Query parameter | `(query_param[session] IS "abc123")` |
-| Tenant-scoped header | `(header[X-Tenant-Id] IS "tenant-42")` |
+| Session header | `(header[X-Session-ID] IS "abc123")` |
+| Sticky cookie | `(header[Cookie] CONTAINS "sessionid=abc123")` |
+| JWT subject | `(header[Authorization] CONTAINS "sub=abc123")` |
+| Query param | `(query_param[session] IS "abc123")` |
+| HTTP method | `(command IS "POST")` |
+| URL path | `(url CONTAINS "/checkout")` |
 
-**Combining predicates.** `AND` and `OR` combine clauses; each predicate must be wrapped in parentheses. Operators (`IS`, `NOT`, `CONTAINS`, `REGEX`) are uppercase and string values must be double-quoted.
+Combine with `AND` / `OR`:
 
 ```bash
-# Just the writes a user attempted
---filter '(header[X-Session-ID] IS "abc123") AND (command IS "POST")'
-
-# All of one user's failed requests across a window
---filter '(header[X-Session-ID] IS "abc123") AND (status NOT "200")'
-
-# One user's checkout flow only (good for staying under the 10-step multistep cap)
 --filter '(header[X-Session-ID] IS "abc123") AND (url CONTAINS "/checkout")'
 ```
 
-**Validating the filter.** Header keys are matched exact-case, so check that the header your gateway emits exactly matches the predicate (e.g. `X-Session-Id` vs. `X-Session-ID`). After running the export, open the generated `*.variables.md` sidecar — the **Skipped during export** section reports a `filtered by --filter` count. If every RRPair was skipped, the predicate did not match anything.
+After export, the `Skipped during export` section in the `.vars.md` sidecar shows how many RRPairs were filtered. If all were skipped, the predicate matched nothing.
 
-### Test Configuration Options
+---
 
-```bash
-# Prefix all test names
-proxymock export datadog-synthetics --name-prefix "Production-"
+## Flag Reference
 
-# Add custom tags
-proxymock export datadog-synthetics --tag "env:prod" --tag "team:payments"
-
-# Set run location
-proxymock export datadog-synthetics --location "aws:us-east-1"
-
-# Schedule interval (tick_every)
-proxymock export datadog-synthetics --tick-every 60s
-
-# Fail if response time exceeds 2000ms (approx)
-proxymock export datadog-synthetics --assert-response-time
-```
+| Flag | Default | Description |
+|---|---|---|
+| `--in` | `.` | Snapshot directory containing RRPair files |
+| `--out` | `datadog/<snapshot-id>.json` | Output bundle path |
+| `--format` | `json` | `json` or `yaml` |
+| `--bundle` | `multistep` | `multistep` (one test, N steps) or `single` (one test per request) |
+| `--limit` | `10` | Max requests to include (`-1` for unlimited) |
+| `--inbound-only` | `true` | Skip outbound (proxied) requests |
+| `--service` | | Filter by HTTP Host header (case-insensitive) |
+| `--filter` | | Speedscale traffic filter expression |
+| `--scheme` | | Force `http` or `https` on all URLs |
+| `--name-prefix` | basename of `--in` | Prefix added to every test name |
+| `--tag` | | Extra Datadog tags (repeatable) |
+| `--location` | `aws:us-east-1` | Datadog test location(s) (repeatable) |
+| `--tick-every` | `0` (manual) | Scheduled run interval (e.g. `60s`, `1h`) |
+| `--redact-headers` | `true` | Replace sensitive headers with placeholders |
+| `--auth-header` | | Extra headers to redact (repeatable) |
+| `--allow-insecure` | `false` | Allow self-signed certificates |
+| `--assert-response-time` | `false` | Add a soft 2000 ms response-time assertion |
+| `--publish` | `false` | Create/update tests directly in Datadog |
+| `--publish-variables` | `true` | Create/update global variables when publishing |
+| `--datadog-site` | `datadoghq.com` | Datadog site (e.g. `datadoghq.eu`, `us3.datadoghq.com`) |
+| `--datadog-api-key` | `$DATADOG_API_KEY` | Datadog API key |
+| `--datadog-app-key` | `$DATADOG_APP_KEY` | Datadog application key |
+| `--force` | `false` | Overwrite existing output file |
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Export All Traffic
+### Export a specific snapshot and publish
 
 ```bash
-# Full export of recorded traffic
 proxymock export datadog-synthetics \
-  --in ./proxymock \
-  --out bundle.json \
-  --bundle single
+  --in ./proxymock/snapshot-e77c31c9-fc5a-48c8-ad22-2000c9ce4574 \
+  --publish --force
 ```
 
-### Pattern 2: Export Specific Service
+### Export one service's traffic only
 
 ```bash
-# Focus on one service for easier testing
 proxymock export datadog-synthetics \
+  --in ./proxymock/snapshot-<id> \
   --service api.example.com \
-  --out api-tests.json \
-  --limit 50
+  --publish
 ```
 
-### Pattern 3: Multistep Flow Export
+### Capture a customer-reported bug as a runnable test
 
 ```bash
-# Create one test covering an entire user flow
 proxymock export datadog-synthetics \
-  --bundle multistep \
-  --service checkout.example.com \
-  --limit 8 \
-  --out checkout-flow.json
-```
-
-### Pattern 4: Reproduce a Customer-Reported Bug
-
-```bash
-# Pull just the affected user's session as a runnable multistep test
-proxymock export datadog-synthetics \
+  --in ./proxymock/snapshot-<id> \
   --bundle multistep \
   --filter '(header[X-Session-ID] IS "alice-abc123")' \
-  --out alice-session.json
+  --publish
 ```
 
-### Pattern 5: Tagged Export for CI/CD
+### Schedule the test to run hourly
 
 ```bash
 proxymock export datadog-synthetics \
+  --in ./proxymock/snapshot-<id> \
+  --tick-every 1h \
+  --publish
+```
+
+### CI/CD pipeline
+
+```bash
+proxymock export datadog-synthetics \
+  --in ./proxymock/snapshot-<id> \
   --name-prefix "$SERVICE_NAME-" \
   --tag "env:$ENVIRONMENT" \
   --tag "build:$CI_BUILD_NUMBER" \
-  --out integration-tests.json
+  --publish --force
 ```
 
 ---
 
-## Filtering and Limitations
+## Limitations
 
-### Body Size Limit
-- **Maximum:** 50KB per request body
-- **Result:** Larger bodies are omitted with tag `body-omitted:too-large`
-
-### Non-Text Bodies
-- **Supported:** JSON, XML, form-urlencoded, GraphQL
-- **Result:** Binary content with unknown Content-Type is omitted
-
-### Multistep Limit
-- **Maximum:** 10 steps (Datadog Synthetics API limit)
-- **Result:** Extra requests are dropped with warning in output
-
-### Service Filtering
-Use `--service` to filter by the HTTP Host header. This is case-insensitive and handles subdomains appropriately.
-
----
-
-## Multistep Features
-
-### Automatic Variable Extraction
-
-In multistep mode, the exporter:
-1. Scans each step's JSON response for string values
-2. Checks if those values appear in later steps' requests
-3. Replaces them with `{{ EXTRACTED_1 }}`, `{{ EXTRACTED_2 }}`, etc.
-4. Automatically wires up the parser to extract at the producing step
-
-**Example flow:**
-- Step 1: GET /users → Response contains `"token": "abc123"`
-- Step 2: POST /orders with `Authorization: Bearer abc123`
-- Result: Step 2 references `{{ EXTRACTED_1 }}`, Step 1 extracts from `.token`
-
-### When to Use Multistep
-
-✅ **Ideal for:**
-- Complete user workflows (login → purchase → confirmation)
-- Multi-step API sequences where variables flow between calls
-- Testing end-to-end scenarios as single tests
-
-❌ **Avoid when:**
-- Large traffic sets (>10 steps)
-- Independent API tests needed
-- Different services with minimal correlation
+| Constraint | Value | Notes |
+|---|---|---|
+| Steps per multistep test | 10 | Datadog API limit; use `--limit` or `--service` to stay under |
+| Request body size | 50 KB | Larger bodies are omitted with tag `body-omitted:too-large` |
+| Supported body types | JSON, XML, form-urlencoded, GraphQL | Binary bodies are omitted |
 
 ---
 
 ## Troubleshooting
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `no eligible RRPairs to export` | Filter removed all traffic | Check `--service` filter; increase `--limit` |
-| `multistep truncated` | More than 10 steps | Use `--service` or `--limit` |
-| `body omitted:too-large` | Request >50KB | Use `--limit` for smaller subsets |
-| `tests fail with 403` | Missing global variables | Create variables from sidecar file |
-| `connection refused` | Wrong scheme | Use `--scheme http` or `https` |
-
-### Verification Checklist
-
-- [ ] Global variables created in order (AUTHORIZATION_1, COOKIE_1, etc.)
-- [ ] Test locations set correctly
-- [ ] Auth headers redact with `--redact-headers` enabled
-- [ ] Scheme matches actual endpoint
-- [ ] Response time assertion set appropriately
+| Symptom | Cause | Fix |
+|---|---|---|
+| `no eligible RRPairs to export` | All traffic was filtered | Check `--service`; try `--inbound-only=false`; inspect sidecar skip counts |
+| `warning: multistep test capped at 10 steps` | Snapshot has >10 eligible requests | Use `--limit` or `--service` |
+| Test fails with 401/403 | Missing global variables | Create variables from `.vars.md` in Datadog |
+| `connection refused` | Wrong URL scheme | Use `--scheme https` or `--scheme http` |
+| `400 Bad Request` on publish | Stale/partial bundle | Re-export with `--force` |
 
 ---
 
-## Example Demo Setup
+## Related
 
-### Quick Test with Node-Auth Demo
-
-```bash
-# 1. Start demo server
-cd /Users/matthewleray/dev/demo/node-auth
-npm install && npm start &
-
-# 2. Record traffic
-go run ~/dev/speedscale/go/run . -- curl \
-  -s -X POST http://localhost:3000/oauth/token \
-  && curl -s http://localhost:3000/public
-
-# 3. Inspect captured traffic
-ls -la ./proxymock/recorded-*.md
-
-# 4. Export to Datadog Synthetics
-proxymock export datadog-synthetics \
-  --in ./proxymock \
-  --out demo-test.json \
-  --service localhost \
-  --limit 5
-
-# 5. View generated global variables
-cat demo-test.variables.md
-```
-
----
-
-## Related Documentation
-
-- [Datadog Synthetics API Docs](https://docs.datadoghq.com/synthetics/)
-- [datadog-ci CLI Reference](https://docs.datadoghq.com/cli/synthetics/)
+- [Datadog Synthetics documentation](https://docs.datadoghq.com/synthetics/)
+- [datadog-ci CLI reference](https://docs.datadoghq.com/continuous_testing/cicd_integrations/configuration/)
