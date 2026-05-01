@@ -8,6 +8,12 @@ import TabItem from '@theme/TabItem';
 
 # Tutorial
 
+:::tip Security-first setup options
+- **Local-first recording:** use `proxymock` for desktop workflows when you want captured traffic to stay local by default.
+- **Enterprise boundary control:** use [Bring Your Own Cloud (BYOC)](/guides/byoc/) when you need customer-controlled cloud isolation.
+- **Sensitive data controls:** enable [DLP](/guides/dlp/) so sensitive fields are redacted before data leaves your network.
+:::
+
 <iframe src="https://player.vimeo.com/video/984892688?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 <p><a href="https://vimeo.com/984892688">Watch the tutorial walkthrough on Vimeo</a>.</p>
 
@@ -24,7 +30,7 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 
 ## The App
 
-The app is a Java Spring Boot web server with authenticated endpoints that makes requests out to a few external services. The project README (at `java/README.md`) shows ways to run the app locally, in Docker and in Kubernetes. Speedscale can be configured to be compatible with whichever way you choose to deploy the app. Note that for this test run we'll disable DLP but you can find instructions on how to enable it near the end.
+The app is a Java Spring Boot web server with authenticated endpoints that makes requests out to a few external services. The project README (at `java/README.md`) shows ways to run the app locally, in Docker and in Kubernetes. Speedscale can be configured to be compatible with whichever way you choose to deploy the app. Note that for this test run we'll disable DLP for simplicity, but production workflows should enable DLP before sending captured traffic outside your environment.
 
 ## Capture
 

@@ -1,5 +1,5 @@
 ---
-description: "Get started with ProxyMock CLI by following this quickstart guide to create a mock server and tests for your Go application in various environments."
+description: "Get started with proxymock CLI to create local mocks and tests for a Go app, with clear paths for local-only recording and cloud workflows when needed."
 sidebar_position: 3
 ---
 
@@ -14,6 +14,12 @@ import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks'
 # Quickstart (CLI)
 
 This guide provides a step-by-step approach to creating a [mock server](/reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
+
+:::tip Security model
+- **Local-first:** proxymock keeps recorded traffic local by default.
+- **Optional cloud sync:** push snapshots only when you explicitly choose to.
+- **Enterprise controls:** if your org requires cloud boundary ownership, pair workflows with [BYOC](/guides/byoc/) and use [DLP](/guides/dlp/) for sensitive fields.
+:::
 
 ## Choose Your Environment
 

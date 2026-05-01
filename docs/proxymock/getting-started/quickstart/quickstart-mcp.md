@@ -1,5 +1,5 @@
 ---
-description: "Create a mock server and tests for a Go application using ProxyMock's MCP integration with AI coding assistants in this quickstart guide."
+description: "Create a mock server and tests for a Go app using proxymock MCP integration, with local-first recording and security control options."
 sidebar_position: 4
 ---
 import Tabs from '@theme/Tabs';
@@ -12,6 +12,12 @@ import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@sit
 # Quickstart (MCP)
 
 This guide provides a step-by-step approach to creating a [mock server](/reference/glossary.md#mock-server) and tests for a simple Go application using proxymock's MCP (Model Context Protocol) integration with AI coding assistants like Cursor, Claude, or GitHub Copilot.
+
+:::tip Security model
+- **Local-first:** proxymock recordings stay local unless you explicitly push them.
+- **Sensitive data controls:** use [DLP](/guides/dlp/) in platform ingest/replay workflows before data egress.
+- **Cloud boundary control:** for enterprise isolation requirements, use [BYOC](/guides/byoc/).
+:::
 
 ## Before you begin
 
