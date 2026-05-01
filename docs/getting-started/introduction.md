@@ -7,7 +7,7 @@ sidebar_label: Getting Started
 
 # Getting Started
 
-Speedscale captures real API traffic from your running services and replays it against code changes before release. It is built for teams that want production-like regression and performance validation without hand-maintaining large test suites.
+Speedscale captures real API traffic from your running services and replays it against code changes before release. In Kubernetes environments, Speedscale can collect traffic with goproxy sidecars and eBPF-based collection, including encrypted traffic paths, so teams can validate behavior without rewriting services.
 
 Use Speedscale if you need to:
 
