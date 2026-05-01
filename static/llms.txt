@@ -1,17 +1,21 @@
 # Speedscale Documentation
 
-> Technical documentation for Speedscale, a runtime validation platform for cloud-native APIs. Speedscale captures real production traffic and replays it against code changes in CI/CD pipelines to catch behavioral regressions. This site covers the Speedscale Platform, ProxyMock (free local mocking tool), and QABot.
+> Documentation for Speedscale, a runtime validation platform for API changes. Speedscale captures real traffic and replays it against new code to catch behavioral regressions before release. This documentation covers Speedscale Platform, proxymock, and supporting workflows.
 
-## Getting Started
+## Product definition
+
+- **What it does:** records API behavior and validates new builds with replay.
+- **Who it serves:** engineering, platform, DevOps, and SRE teams.
+- **How it differs:** uses real traffic and runtime comparison, not only synthetic tests.
+
+## Getting started
 
 - [Introduction](https://docs.speedscale.com/getting-started/introduction/)
 - [Quick Start](https://docs.speedscale.com/getting-started/quick-start/)
 - [Tutorial](https://docs.speedscale.com/getting-started/tutorial/)
 - [Installation](https://docs.speedscale.com/getting-started/installation/)
 
-## Core Concepts
-
-Learn how Speedscale works: traffic capture, snapshots, transforms, replay, mocking, and assertions.
+## Core concepts
 
 - [Traffic Capture](https://docs.speedscale.com/concepts/capture/)
 - [Traffic Replay](https://docs.speedscale.com/concepts/traffic-replay/)
@@ -22,80 +26,54 @@ Learn how Speedscale works: traffic capture, snapshots, transforms, replay, mock
 
 ## Guides
 
-Step-by-step how-to guides for common tasks.
+### Capture and transformation
 
-### Traffic Capture
 - [Capture Infrastructure](https://docs.speedscale.com/guides/capture/infra/)
 - [Capture Traffic](https://docs.speedscale.com/guides/capture/traffic/)
 - [Capture Filtering](https://docs.speedscale.com/guides/capture/filter/)
-
-### Traffic Transformation
 - [Transformation Overview](https://docs.speedscale.com/guides/transformation/overview/)
 - [Extractors](https://docs.speedscale.com/guides/transformation/extractors/)
 - [Generators](https://docs.speedscale.com/guides/transformation/generators/)
 
-### Traffic Replay
+### Replay and validation
+
 - [Replay Guides](https://docs.speedscale.com/guides/replay/)
-
-### Service Mocking
-- [Mock Services](https://docs.speedscale.com/guides/mocking/mocks/)
-- [Mock Triggers](https://docs.speedscale.com/guides/mocking/triggers/)
-- [Idempotent Mocking](https://docs.speedscale.com/guides/mocking/idempotent/)
-
-### Data Loss Prevention
+- [Service Mocking Guides](https://docs.speedscale.com/guides/mocking/mocks/)
 - [DLP Guides](https://docs.speedscale.com/guides/dlp/)
+- [Troubleshooting](https://docs.speedscale.com/guides/troubleshooting/)
 
-### CI/CD Integrations
+### Integrations and advanced topics
+
 - [CI/CD Integration](https://docs.speedscale.com/guides/integrations/cicd/)
 - [AWS Integration](https://docs.speedscale.com/guides/integrations/aws/)
 - [GCP Integration](https://docs.speedscale.com/guides/integrations/gcp/)
-- [Import](https://docs.speedscale.com/guides/integrations/import/)
-- [Export](https://docs.speedscale.com/guides/integrations/export/)
-
-### Advanced Topics
 - [GraphQL](https://docs.speedscale.com/guides/graphql/)
 - [TLS / Encrypted Traffic](https://docs.speedscale.com/guides/tls/)
 - [WebSockets](https://docs.speedscale.com/guides/websocket/)
-- [Message Brokers (Kafka, RabbitMQ)](https://docs.speedscale.com/guides/message-brokers/)
-- [CLI Reference](https://docs.speedscale.com/guides/cli/)
-- [Troubleshooting](https://docs.speedscale.com/guides/troubleshooting/)
 
-## ProxyMock (Free Local Dev Tool)
+## proxymock (local CLI)
 
-ProxyMock is a free, open-source CLI tool for local API mocking and traffic recording. It captures real API traffic and replays it locally without external dependencies.
+proxymock is the local record/mock/replay CLI for development and CI.
 
-- [ProxyMock Overview](https://docs.speedscale.com/proxymock/)
+- [proxymock Overview](https://docs.speedscale.com/proxymock/)
 - [Installation](https://docs.speedscale.com/proxymock/getting-started/installation/)
 - [Quickstart (CLI)](https://docs.speedscale.com/proxymock/getting-started/quickstart/quickstart-cli/)
 - [Quickstart (MCP)](https://docs.speedscale.com/proxymock/getting-started/quickstart/quickstart-mcp/)
 - [FAQ](https://docs.speedscale.com/proxymock/getting-started/faq/)
 - [Language Reference](https://docs.speedscale.com/proxymock/getting-started/language-reference/)
 - [How It Works](https://docs.speedscale.com/proxymock/how-it-works/)
-- [Guides](https://docs.speedscale.com/proxymock/guides/)
-- [AWS Integration](https://docs.speedscale.com/proxymock/aws/)
 
-## QABot
-
-AI-powered test assistant for Speedscale.
-
-- [QABot](https://docs.speedscale.com/qabot/)
-
-## Reference
-
-Technical reference for configuration, filters, transforms, and eBPF traffic collection.
+## Reference and security
 
 - [Reference](https://docs.speedscale.com/reference/)
 - [Technology Support](https://docs.speedscale.com/reference/technology-support/)
 - [Configuration](https://docs.speedscale.com/reference/configuration/)
 - [Filters](https://docs.speedscale.com/reference/filters/)
 - [eBPF Traffic Collection](https://docs.speedscale.com/reference/ebpf-traffic-collection/)
-
-## Security
-
 - [Security Overview](https://docs.speedscale.com/security/)
 - [Data Protection](https://docs.speedscale.com/security/data_protection/)
 
-## Related Resources
+## Related resources
 
 - [Speedscale Website](https://speedscale.com)
 - [Blog](https://speedscale.com/blog/)

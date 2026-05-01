@@ -7,13 +7,15 @@ sidebar_label: Getting Started
 
 # Getting Started
 
-You've got to start somewhere. Why not here?
+Speedscale captures real API traffic from your running services and replays it against code changes before release. It is built for teams that want production-like regression and performance validation without hand-maintaining large test suites.
 
-For the first time in the space, Speedscale provides a modern way to develop, execute and scale API quality automation as fast as
-releases take place. The old days of manually generating and maintaining load / chaos, smoke, and integration tests are gone.
+Use Speedscale if you need to:
 
-Speedscale combines observability technology with cloud data warehouses to make test maintenance obsolete. The cost to generate
-regression and performance validation suites is so low, you no longer edit/modify old tests -- you simply generate a new one.
+- Reproduce production behavior in a controlled test environment
+- Catch API regressions before merge or deploy
+- Validate AI-generated code changes against real traffic patterns
+
+Speedscale is different from static checks and synthetic-only tests because it validates runtime behavior using real request and response data.
 
 ![Speedscale home screen](./home-screen.png)
 
@@ -21,31 +23,27 @@ regression and performance validation suites is so low, you no longer edit/modif
 
 The fastest way to get started is the **AI assistant** on the home screen. Ask it questions in natural language — it can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
 
-Speedscale is a 3 part process: **Observe**, **Analyze**, and **Replay**.
+Speedscale follows a 3-part workflow: **Observe**, **Analyze**, and **Replay**.
 
 ### Observe <a href="#observe" id="observe"></a>
 
-In **Observe**, the Speedscale proxy (goproxy) picks up traffic in a late stage environment (eg. UAT, Staging, or even Production). The
-environment is instrumented via Kubernetes sidecars or proxy servers, depending on your platform.
+In **Observe**, the Speedscale proxy (goproxy) captures traffic in a late-stage environment (for example UAT, staging, or production). The environment is instrumented via Kubernetes sidecars or proxy servers, depending on your platform.
 
 ![](../speedscale-data-capture.png)
 
-The proxy is picking up 2 things -- inbound traffic into your API, as well as outbound traffic to its dependencies and the resulting responses.
-We do this so we can transform inbound requests into replayable test cases, and the backend requests/responses into mocked services to
-stand in for the real systems during traffic replay.
+The proxy captures two data flows: inbound traffic to your API and outbound traffic to dependencies, including responses. This allows Speedscale to transform inbound requests into replayable tests and dependency traffic into mocked services for isolated replay.
 
-The data we observe is being sent to Speedscale’s cloud data warehouse for storage and analysis.
+Captured traffic is sent to Speedscale for storage and analysis.
 
 Once you have Speedscale installed, [view your services](https://app.speedscale.com/).
 
 ### Analyze <a href="#analyze" id="analyze"></a>
 
-In the **Analyze** step, you peruse the historical data collected on a per-API basis. Users can explore this data and learn how a system really works.
-The traffic is broken down into understandable components like requests and responses.
+In **Analyze**, you inspect historical traffic by API to understand real system behavior. Traffic is broken into requests and responses so you can investigate normal and failure paths.
 
 ![](../observe-rrpair.png)
 
-There are a variety of ways to filter and subset the data to find the really interesting traffic.
+Use filters to isolate the specific traffic patterns you want to test.
 
 ![](../select-service-map.png)
 
@@ -53,13 +51,10 @@ Once your application receives traffic, [view your traffic in Speedscale](https:
 
 ### Replay <a href="#playback" id="playback"></a>
 
-In the **Replay** step, you replay your recorded application traffic back against your running application, like the same service on the version
-that's about to be released to production! Speedscale can orchestrate the replay environment and run the replay test automatically.
+In **Replay**, you run recorded traffic against the candidate version of your service before release. Speedscale can orchestrate this replay environment and execute the run automatically.
 
 ![](../100-pct-report.png)
 
-But what if you don't want to make the same outbound requests to your database or another web service?  A responder can be used to stand in for
-those dependencies during traffic replay, responding with your captured traffic.
+If you do not want outbound calls to hit real dependencies during replay, use a responder to stand in for those systems with captured responses.
 
 Once you have run a replay, [view your test reports](https://app.speedscale.com/reports).
-
