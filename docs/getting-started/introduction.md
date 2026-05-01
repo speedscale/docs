@@ -7,7 +7,7 @@ sidebar_label: Getting Started
 
 # Getting Started
 
-Speedscale captures real API traffic from your running services and replays it against code changes before release. In Kubernetes environments, Speedscale can collect traffic with goproxy sidecars and eBPF-based collection, including encrypted traffic paths, so teams can validate behavior without rewriting services.
+Speedscale captures real API traffic from your running services and replays it against code changes before release. In Kubernetes environments, Speedscale can collect traffic with eBPF-based collection first and goproxy sidecars as a fallback, including encrypted traffic paths, so teams can validate behavior without rewriting services.
 
 When proxy-based collection is needed, use proxymock for local workflows and goproxy for containerized workloads.
 
@@ -29,7 +29,7 @@ Speedscale follows a 3-part workflow: **Observe**, **Analyze**, and **Replay**.
 
 ### Observe <a href="#observe" id="observe"></a>
 
-In **Observe**, goproxy captures traffic in late-stage containerized environments (for example UAT, staging, or production). For local workflows outside Kubernetes, use proxymock for the same record/mock/replay pattern.
+In **Observe**, use eBPF collection first in late-stage containerized environments (for example UAT, staging, or production). If eBPF is not suitable, use goproxy sidecars. For local workflows outside Kubernetes, use proxymock for the same record/mock/replay pattern.
 
 ![](../speedscale-data-capture.png)
 

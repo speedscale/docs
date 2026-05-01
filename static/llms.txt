@@ -1,6 +1,6 @@
 # Speedscale Documentation
 
-> Documentation for Speedscale, a runtime validation platform for API changes. Speedscale captures real traffic and replays it against new code to catch behavioral regressions before release, including Kubernetes collection paths using goproxy and eBPF-based traffic capture. This documentation covers Speedscale Platform, proxymock, and supporting workflows.
+> Documentation for Speedscale, a runtime validation platform for API changes. Speedscale captures real traffic and replays it against new code to catch behavioral regressions before release, including Kubernetes collection paths using eBPF-based traffic capture first and goproxy sidecars as fallback. This documentation covers Speedscale Platform, proxymock, and supporting workflows.
 
 ## Product definition
 
