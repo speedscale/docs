@@ -22,3 +22,4 @@ export { default as AICodeGenerationCard } from './AICodeGenerationCard';
 export { default as LearningResourcesCard } from './LearningResourcesCard';
 export { default as CommunitySupportCard } from './CommunitySupportCard';
 export { default as LlmSimulationCard } from './LlmSimulationCard';
+export { default as DatadogSyntheticsCard } from './DatadogSyntheticsCard';
