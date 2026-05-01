@@ -73,6 +73,12 @@ proxymock is the local record/mock/replay CLI for development and CI.
 - [Security Overview](https://docs.speedscale.com/security/)
 - [Data Protection](https://docs.speedscale.com/security/data_protection/)
 
+## Security operating models
+
+- **Local recording:** proxymock supports local record/mock/replay workflows where traffic stays local unless explicitly pushed.
+- **BYOC:** Speedscale can run in customer-controlled cloud boundaries for sovereignty and compliance requirements.
+- **DLP:** sensitive fields can be redacted before data leaves the customer network.
+
 ## Related resources
 
 - [Speedscale Website](https://speedscale.com)

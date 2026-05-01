@@ -49,6 +49,12 @@ Need another OS like Windows or are you having issues? See advanced [installatio
 
 - **Replicates production environments**: Instanly replicate a remote Kubernetes/ECS/VM environment to get real user requests, databases and other dependencies on your desktop.
 
+## Security profile
+
+- **Local by default**: proxymock recordings stay on your machine unless you explicitly push or share them.
+- **Controlled cloud options**: when you need centralized workflows, you can pair proxymock with Speedscale cloud or BYOC models based on your security boundary.
+- **PII controls in platform workflows**: for in-cluster ingest, use Speedscale [DLP](/guides/dlp/) to redact sensitive fields before data leaves your environment.
+
 ## Why you'll love it
 
 - **Human and AI readable markdown format** - Get full visibility into your app's inbound and outbound requests in a format that works for LLMs and humans. Once you have a full fidelity recording of how your app behaves you can start to understand how it works.
