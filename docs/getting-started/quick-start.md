@@ -1,5 +1,5 @@
 ---
-description: "Get started with Speedscale by installing the Operator in your Kubernetes environment to capture, replay, and test API traffic efficiently."
+description: "Get started with Speedscale in Kubernetes using the Operator, with eBPF collection as the default path and goproxy sidecars as a fallback when needed."
 sidebar_position: 2
 ---
 import Tabs from '@theme/Tabs';
@@ -14,6 +14,8 @@ For local development and testing without a cloud cluster, use **proxymock** to 
 :::
 
 This guide walks through installing Speedscale into a Kubernetes (cloud or on-prem) environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./tutorial.md) to record, replay and view results for a demo application.
+
+For traffic collection in Kubernetes, the recommended path is the eBPF collector. If eBPF is not suitable for your kernel or environment, use goproxy sidecars.
 
 Speedscale is tested with apps hosted on the local desktop all the way up to high scale enterprise Kubernetes clusters. Keep in mind that it is very common to record traffic in one environment (like a production Kubernetes cluster) and replay it somewhere else (like a local mock server).
 
