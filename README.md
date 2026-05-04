@@ -50,3 +50,13 @@ If you are using GitHub pages for hosting, this command is a convenient way to b
 
 If you delete a page you should create a redirect for it so that it doesn't break links.  This configuration is located in the [docusaurus config](./docusaurus.config.js)
 
+### AI Citation Readiness Checklist
+
+Use this checklist when adding or updating docs pages:
+
+- Start with a plain-language definition of what the feature does.
+- State who should use it and when to use it.
+- Keep terminology consistent with canonical terms (`Speedscale`, `proxymock`, `snapshot`, `replay`, `transform`).
+- Use clear headings and short sections that can be quoted out of context.
+- Prefer decision/comparison tables for "which option should I choose" content.
+- Align product descriptions with `speedscale.com` and `llms.txt` wording.

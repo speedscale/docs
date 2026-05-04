@@ -1,5 +1,5 @@
 ---
-description: "Install Speedscale in your environment with this quick start guide, covering API key retrieval, CLI installation, and traffic capture for demo applications"
+description: "Install Speedscale with API key and operator setup, using eBPF collection by default and goproxy sidecars when eBPF is not available."
 sidebar_position: 0
 ---
 
@@ -10,7 +10,19 @@ import ApiKey from './getting-started/installation/install/api-key.png'
 
 # Quick Start
 
+:::info Local installation
+For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. See **[Local Development (AI) – Getting Started](/proxymock/)** to install proxymock and get started in about 30 seconds.
+:::
+
+:::tip Security options
+- **Local-first:** proxymock keeps recording local by default for desktop workflows. See [Data and Privacy](/proxymock/how-it-works/data_and_privacy/).
+- **Enterprise isolation:** use [Bring Your Own Cloud (BYOC)](/guides/byoc/) when data residency and cloud boundary control are required.
+- **Sensitive data controls:** enable [DLP](/guides/dlp/) so sensitive fields are redacted before data leaves your network.
+:::
+
 This guide walks through installing Speedscale into a new environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./tutorial.md) to record, replay and view results for a demo application.
+
+For Kubernetes traffic collection, start with the eBPF collector. If your environment cannot run eBPF, use goproxy sidecars instead.
 
 Speedscale is tested with apps hosted on the local desktop all the way up to high scale enterprise Kubernetes clusters. If this is your first time working with Speedscale, it's easiest to just run on your local desktop and record traffic from a local process. Keep in mind that it is very common to record traffic in one environment (like a production Kubernetes cluster) and replay it somewhere else (like a local mock server).
 
