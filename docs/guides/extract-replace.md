@@ -96,6 +96,10 @@ Navigate to the Speedscale UI and locate the snapshot you used in Step 1.
 2.	**Go to Transform Tab:** Click on the snapshot’s transform tab and then the `Variables (Tests)` tab.
 4.  **Create a transform chain:** consisting of these components `source=read_file("s3://<userdata id>") : train_csv()`. In the UI it should look like this:
 
+    :::tip Use `dataframe:` for portability across local + cloud
+    If you also replay this snapshot locally with `proxymock`, swap `s3://<userdata id>` for the portable `dataframe:<id>__<file>` form. proxymock resolves the same reference to a local workspace file under `proxymock/dataframes/<id>/<file>`, while the Speedscale cloud still resolves it to user data — so the same transform works in both environments. See the [file extractor](/guides/transformation/extractors/file) for the full description.
+    :::
+
 ![example_transforms](./dlp/example_transforms.png)
 4.	**Save and Apply:**
 

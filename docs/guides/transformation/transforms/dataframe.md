@@ -20,7 +20,7 @@ So if we use `Name` as our primary key then we would do something like
 
 ```
 Initial variable setup:
-my_dataframe = file("s3://dataframe.csv) -> csv_dataframe("Name")
+my_dataframe = file("dataframe:lookup__people.csv") -> csv_dataframe("Name")
 
 Transforms:
 dataframe_lookup("my_dataframe", "Bob Brown", "Email") -> "bob.brown@example.com"
@@ -30,11 +30,13 @@ We may want to use `ID` as our primary key in which case we'd get something like
 
 ```
 Initial variable setup:
-my_dataframe = file("s3://dataframe.csv) -> csv_dataframe("ID")
+my_dataframe = file("dataframe:lookup__people.csv") -> csv_dataframe("ID")
 
 Transforms:
 dataframe_lookup("my_dataframe", "12345", "Email") -> "john.doe@example.com"
 ```
+
+The `dataframe:` prefix is a **portable** filename scheme: proxymock resolves it to a local file under `proxymock/dataframes/lookup/people.csv` (with `__` standing in for the path separator), and the Speedscale cloud resolves the same key to [user data](../../../reference/glossary.md#user-data). You can also use a plain `s3://lookup.csv` for cloud-only use, or an absolute local path for local-only use — see the [file extractor](../extractors/file.md) for the full description of all three forms.
 
 ### Usage
 
