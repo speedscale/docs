@@ -19,10 +19,10 @@ sidebar_position: 5
 We'd setup our variables like this
 
 ```
-my_csv = file("dataframe:employees__data.csv") -> csv(hasHeader=True, header="Email")
+my_csv = file("dataframe:employees.csv") -> csv(hasHeader=True, header="Email")
 ```
 
-The `dataframe:` prefix is a portable filename — it resolves to user data in the Speedscale cloud and to a local workspace file under `proxymock/dataframes/` during a local proxymock replay. You can also reference cloud-only user data directly with `s3://employees.csv`, or use an absolute local path. See the [file extractor](../extractors/file.md) for the full description of all three forms.
+The `dataframe:` prefix is a portable filename — it resolves to user data in the Speedscale cloud and to a local workspace file under `proxymock/dataframes/` during a local proxymock replay. You can also reference cloud-only user data directly with `s3://employees.csv`, or use an absolute local path. For files in a subdirectory under `proxymock/dataframes/`, encode the path separator as `__` (e.g. `dataframe:employees__data.csv` for `proxymock/dataframes/employees/data.csv`). See the [file extractor](../extractors/file.md) for the full description of all three forms.
 
 And then when we use it in our transforms we'd get
 

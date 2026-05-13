@@ -40,7 +40,7 @@ The `${{s3://<userdata>}}` syntax permits us to pull the user data (in its entir
 When the same transform needs to work both in the Speedscale cloud and during a local proxymock replay, prefer the `dataframe:` scheme over `s3://`. proxymock resolves it to a file under the local workspace (`proxymock/dataframes/<id>/<file>`), and the cloud resolves the same key to user data. See the [file extractor](./extractors/file.md) for the full description of all three filename forms.
 
 ```
-http_header(name="name") <-> csv("${{dataframe:new_names__data.csv}}")
+http_header(name="name") <-> csv("${{dataframe:new_names.csv}}")
 ```
 
-The `__` separator stands in for a path separator in the workspace layout. This is what `proxymock cloud push snapshot` writes when it migrates a local recording's absolute filenames to the portable form, and what `proxymock automation` workflows emit out of the box.
+For files inside a subdirectory under `proxymock/dataframes/`, encode the path separator as `__` — e.g. `dataframe:credentials__basic.csv` resolves to `proxymock/dataframes/credentials/basic.csv` locally. This is the form `proxymock cloud push snapshot` writes when it migrates a local recording's absolute filenames to the portable form, and what `proxymock automation` workflows emit out of the box.
