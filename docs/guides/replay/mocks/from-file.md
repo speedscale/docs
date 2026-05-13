@@ -80,7 +80,10 @@ cat > replace-from-csv.json << EOF
         "extractor": {
           "type": "file",
           "config": {
-            # s3:// is relative to the Speedscale user data directory for your tenant
+            # s3:// is relative to the Speedscale user data directory for your tenant.
+            # Use "dataframe:<id>__<file>" instead if you want the same transform to
+            # work for a local proxymock replay against the file in
+            # proxymock/dataframes/<id>/<file>. See guides/transformation/extractors/file.md.
             "filename": "s3://staging-order-ids.csv"
           }
         },

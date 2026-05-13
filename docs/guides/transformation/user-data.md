@@ -33,4 +33,14 @@ Userdata is usually referenced using a special keyword inside the transform chai
 http_header(name="name") <-> csv("${{s3://new_names.csv}})
 ```
 
-The `${{s3://<userdata>}}` syntax permits us to pull the user data (in its entirely) into the CSV transform. For a more complete example please see the [guide](../transformation/smart-replace.md).
+The `${{s3://<userdata>}}` syntax permits us to pull the user data (in its entirety) into the CSV transform. For a more complete example please see the [guide](../transformation/smart-replace.md).
+
+### Portable references with `dataframe:`
+
+When the same transform needs to work both in the Speedscale cloud and during a local proxymock replay, prefer the `dataframe:` scheme over `s3://`. proxymock resolves it to a file under the local workspace (`proxymock/dataframes/<id>/<file>`), and the cloud resolves the same key to user data. See the [file extractor](./extractors/file.md) for the full description of all three filename forms.
+
+```
+http_header(name="name") <-> csv("${{dataframe:new_names.csv}}")
+```
+
+For files inside a subdirectory under `proxymock/dataframes/`, encode the path separator as `__` — e.g. `dataframe:credentials__basic.csv` resolves to `proxymock/dataframes/credentials/basic.csv` locally. This is the form `proxymock cloud push snapshot` writes when it migrates a local recording's absolute filenames to the portable form, and what `proxymock automation` workflows emit out of the box.

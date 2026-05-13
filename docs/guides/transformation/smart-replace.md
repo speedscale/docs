@@ -86,6 +86,10 @@ Before executing our replay, we want to train the system to perform our replacem
 
 `s3://` tells Speedscale to pull the data from Speedscale cloud. This should match the name of the CSV uploaded in the previous step. This transform chain tells the load generator to read a file from Speedscale cloud and then train Smart Replace on each row in the CSV (`train_csv`). The name of the variable is not important for this use case.
 
+:::tip Portable filename for proxymock + cloud
+If you also run this snapshot through `proxymock replay` locally, use the portable `dataframe:<id>__<file>` form instead of `s3://`. proxymock resolves the same reference against `proxymock/dataframes/<id>/<file>` in the workspace, and the cloud still resolves it to user data — so a single transform chain works in both environments. See the [file extractor](../transformation/extractors/file.md) for details.
+:::
+
 ### Step 4: Run Replay and View Report
 
 1. Start a replay using the snapshot you just edited. It's best to start by running a simple regression to make sure values are replaced before running a more complex scenario.
