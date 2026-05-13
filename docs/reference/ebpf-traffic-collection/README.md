@@ -89,14 +89,14 @@ This allows `nettap` to locate and attach probes to the statically linked OpenSS
 
 ### Language Support Matrix
 
-| Language | Capture Method | TLS Support | Min Kernel | Notes |
-|---|---|---|---|---|
-| Go | eBPF uprobe (`crypto/tls`) | Native | 5.17 | Best supported; requires unstripped binaries |
-| Java | JVMTI agent | JSSE hook | 5.17 | Requires nettap Java agent on classpath |
-| PHP | eBPF uprobe (OpenSSL) | OpenSSL | 5.17 | Requires OpenSSL shared library |
-| .NET | eBPF uprobe (OpenSSL) | OpenSSL | 5.17 | Linux only; SChannel not supported |
-| Python | eBPF uprobe (`ssl` / OpenSSL) | OpenSSL | 5.17 | Static builds need `NETTAP_OPENSSL_STATIC` |
-| Node.js | Static OpenSSL uprobe | OpenSSL | 5.17 | Set `NETTAP_OPENSSL_STATIC=true` and binary path |
+| Language | Capture Method                | TLS Support | Min Kernel | Notes                                            |
+| -------- | ----------------------------- | ----------- | ---------- | ------------------------------------------------ |
+| Go       | eBPF uprobe (`crypto/tls`)    | Native      | 5.17       | Best supported; requires unstripped binaries     |
+| Java     | JVMTI agent                   | JSSE hook   | 5.17       | Requires nettap Java agent on classpath          |
+| PHP      | eBPF uprobe (OpenSSL)         | OpenSSL     | 5.17       | Requires OpenSSL shared library                  |
+| .NET     | eBPF uprobe (OpenSSL)         | OpenSSL     | 5.17       | Linux only; SChannel not supported               |
+| Python   | eBPF uprobe (`ssl` / OpenSSL) | OpenSSL     | 5.17       | Static builds need `NETTAP_OPENSSL_STATIC`       |
+| Node.js  | Static OpenSSL uprobe         | OpenSSL     | 5.17       | Set `NETTAP_OPENSSL_STATIC=true` and binary path |
 
 ### What This Means in Practice
 
@@ -119,15 +119,15 @@ Speedscale's eBPF collection uses two runtime components with different capabili
 the `nettap` capture container needs the eBPF and cross-process inspection capabilities, while
 the ingest/proxy side only needs raw socket access.
 
-| Component | Capability | Purpose |
-|---|---|---|
-| `nettap` capture | `CAP_BPF` | Load eBPF programs and create/manage BPF maps, including ring buffers and hash maps |
-| `nettap` capture | `CAP_PERFMON` | Attach kprobes, kretprobes, uprobes, and fentry/fexit programs |
-| `nettap` capture | `CAP_NET_ADMIN` | Perform network-related BPF operations and read kernel socket state used for flow resolution |
-| `nettap` capture | `CAP_SYS_ADMIN` | Access kernel BTF and handle namespace-related operations that still require a broad capability |
-| `nettap` capture | `CAP_SYS_PTRACE` | Inspect other processes via `/proc/<pid>/maps` and `/proc/<pid>/root` to find TLS libraries and attach cross-process uprobes |
-| `nettap` capture | `CAP_SYS_RESOURCE` | Lift `RLIMIT_MEMLOCK` so BPF maps can allocate enough locked memory |
-| ingest/proxy | `CAP_NET_RAW` | Open raw sockets for low-level packet inspection and forwarding |
+| Component        | Capability         | Purpose                                                                                                                      |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `nettap` capture | `CAP_BPF`          | Load eBPF programs and create/manage BPF maps, including ring buffers and hash maps                                          |
+| `nettap` capture | `CAP_PERFMON`      | Attach kprobes, kretprobes, uprobes, and fentry/fexit programs                                                               |
+| `nettap` capture | `CAP_NET_ADMIN`    | Perform network-related BPF operations and read kernel socket state used for flow resolution                                 |
+| `nettap` capture | `CAP_SYS_ADMIN`    | Access kernel BTF and handle namespace-related operations that still require a broad capability                              |
+| `nettap` capture | `CAP_SYS_PTRACE`   | Inspect other processes via `/proc/<pid>/maps` and `/proc/<pid>/root` to find TLS libraries and attach cross-process uprobes |
+| `nettap` capture | `CAP_SYS_RESOURCE` | Lift `RLIMIT_MEMLOCK` so BPF maps can allocate enough locked memory                                                          |
+| ingest/proxy     | `CAP_NET_RAW`      | Open raw sockets for low-level packet inspection and forwarding                                                              |
 
 ### Kubernetes Deployment
 
@@ -177,21 +177,21 @@ You can also enable eBPF capture on a per-workload basis using Kubernetes annota
 
 ```bash
 kubectl annotate deployment my-app -n my-namespace \
-  ebpf.speedscale.com/capture="true"
+  capture.speedscale.com/enabled="true"
 ```
 
 To control which ports are captured via eBPF:
 
 ```bash
 kubectl annotate deployment my-app -n my-namespace \
-  ebpf.speedscale.com/port-filter="8080,8443"
+  capture.speedscale.com/ignore-ports="8080,8443"
 ```
 
 To disable eBPF capture on a workload:
 
 ```bash
 kubectl annotate deployment my-app -n my-namespace \
-  ebpf.speedscale.com/capture="false" --overwrite
+  capture.speedscale.com/enabled="false" --overwrite
 ```
 
 :::tip
