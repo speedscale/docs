@@ -74,6 +74,19 @@ CPU throttling will limit the maximum throughput the generator can achieve, but 
 
 See the [sizing guide](./generator-sizing-guide.md) for general recommendations on generator sizing.
 
+### What if I use Bottlerocket OS? <a href="#bottlerocket" id="bottlerocket"></a>
+
+[Bottlerocket](https://bottlerocket.dev/) is a minimal, security-focused Linux-based OS designed for running containers. Because of its locked-down nature, Speedscale's eBPF-based network tap requires `super_t` SELinux permissions to function properly. Add the following to your `values.yaml` when installing the Speedscale Helm chart:
+
+```yaml
+ebpf:
+  enabled: true
+  nettap:
+    securityContext:
+      seLinuxOptions:
+        type: super_t
+```
+
 ### Not seeing traffic when using a port forward? <a href="#port-forward" id="port-forward"></a>
 
 If you are using [**port forwarding**](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) to call a service, then `goproxy` will not be able to detect the traffic. Enabling port forwarding will circumvent `goproxy` and prevent us from seeing any traffic.
