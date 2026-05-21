@@ -27,7 +27,7 @@ A Span ID is a unique identifier that marks a single unit of work within a trace
 
 Speedscale allows you to search for any substring of data, anywhere in your API requests, across all services. You can find any trace ID or span ID using this capability. Here is a video showing how the feature works for general filtering:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/SxZ7DFSM89Y" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/SxZ7DFSM89Y?rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 Here are the steps for filtering for an OpenTelemetry trace:
 1. Create a Notebook from the traffic viewer

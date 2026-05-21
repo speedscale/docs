@@ -14,8 +14,7 @@ import TabItem from '@theme/TabItem';
 - **Sensitive data controls:** enable [DLP](/guides/dlp/) so sensitive fields are redacted before data leaves your network.
 :::
 
-<iframe src="https://player.vimeo.com/video/984892688?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/984892688">Watch the tutorial walkthrough on Vimeo</a>.</p>
+<iframe src="https://www.youtube.com/embed/DHoZaXWEhws?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 In this guide we're going to use [this repo's](https://github.com/speedscale/demo) example app in the `java` directory to [capture](./concepts/capture.md), [transform](./concepts/transforms.md) and [replay](./concepts/replay.md) traffic with [mocks](./concepts/service_mocking.md).
 
@@ -148,8 +147,7 @@ proxymock cloud push snapshot --in proxymock/recorded-YOUR_TIMESTAMP
 
 ## Analyze
 
-<iframe src="https://player.vimeo.com/video/983558864" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/983558864">Exploring Speedscale Traffic Viewer</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<iframe src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 After a few minutes you should be able to see your traffic in the [Speedscale dashboard](https://app.speedscale.com). Make sure to select the the same service name that you entered in `speedctl install` from the traffic dropdown. You should be able to see the inbound and outbound calls for this app as shown below.
 

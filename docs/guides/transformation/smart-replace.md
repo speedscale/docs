@@ -11,8 +11,7 @@ Smart Replace is a powerful tool designed to streamline the process of updating 
 
 In this section we'll work through a use case of replacing each user ID in a snapshot with a new test user ID. This is a common use case when user names or other IDs need to be replaced with test IDs to work in lower environments. Keep in mind that if you need to alter your data in other ways, you can use the [transform](/guides/transformation/overview) system. If you're looking to do things like replacing JWT tokens through your traffic you may want to check out this video instead:
 
-<iframe src="https://player.vimeo.com/video/1117518907?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/1117518907">Watch the Smart Replace walkthrough on Vimeo</a>.</p>
+<iframe src="https://www.youtube.com/embed/sLRPEkzgH1A?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 Now let's get started with the multiple-email replacement use case.
 
