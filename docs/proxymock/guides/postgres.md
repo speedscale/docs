@@ -24,7 +24,7 @@ git clone https://github.com/speedscale/demo && cd demo/go-postgres
 Start PostgreSQL on your local machine (instructions in the README). Don't worry if you don't have go installed and can't use this app. Just apply the environment variables to your own PostgreSQL client app.
 
 <div style={{textAlign: 'center'}}>
-  <iframe src="https://player.vimeo.com/video/1121659640" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+  <iframe src="https://www.youtube.com/embed/hNbeoyiTmbs?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 </div>
 
 ## Recording PostgreSQL Traffic {#recording-intro}

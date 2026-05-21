@@ -23,8 +23,7 @@ In all future transactions, Speedscale will replace the recorded value with the 
 - **overwrite** - If false, the key=value mapping will be made permanently. If true, the key=value mapping will be rewritten each time `smart_replace_recorded` is called. This is helpful if you want to rotate values through a CSV continuously. For most use cases, overwrite=false (the default) is desired.
 
 ### Example
-<iframe src="https://player.vimeo.com/video/1117518907?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/1117518907">Watch the Smart Replace walkthrough on Vimeo</a>.</p>
+<iframe src="https://www.youtube.com/embed/sLRPEkzgH1A?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 
 #### Configuration

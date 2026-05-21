@@ -19,8 +19,7 @@ When possible, use the [eBPF collector](/reference/ebpf-traffic-collection) to c
 When using the annotation examples below, be sure to _add_ them to any existing annotations on your workload. It's common to delete existing annotations or add the annotations in the wrong place (like on the pod instead of the deployment) in this step.
 :::
 
-<iframe src="https://player.vimeo.com/video/1035399678?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-<p><a href="https://vimeo.com/1035399678">How Speedscale reads TLS requests</a> from <a href="https://vimeo.com/speedscale">Speedscale</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<iframe src="https://www.youtube.com/embed/CyeBytH_U7A?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 ## TLS Inbound Interception
 

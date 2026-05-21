@@ -9,6 +9,10 @@ import TabItem from '@theme/TabItem';
 
 # Mocking LLM APIs
 
+<div style={{textAlign: 'center'}}>
+  <iframe src="https://www.youtube.com/embed/9RoP7Bp1qnI?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+</div>
+
 If your application calls an LLM provider like OpenAI, Anthropic, or Gemini, every request costs money -- even during development and testing. **proxymock** eliminates that cost by recording real LLM responses once and replaying them locally.
 
 This is useful when you are:
