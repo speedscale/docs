@@ -103,6 +103,59 @@ forwarder:
       dlp_config_id: ""
 ```
 
+### Choosing the OTLP transport
+
+OTLP comes in two transports, on two different well-known ports:
+
+| Transport | Default port | When to use |
+|---|---|---|
+| OTLP/HTTP (protobuf over HTTP) | `4318` | Fluent Bit's `opentelemetry` input only supports HTTP. Most non-OTel-Collector receivers do too. |
+| OTLP/gRPC | `4317` | OpenTelemetry Collector with the `otlp` receiver's `grpc:` protocol enabled. |
+
+The Speedscale forwarder's `byoc_otel` exporter speaks **both** transports and picks one automatically from the port in `otel_endpoint`:
+
+- `…:4318` → OTLP/HTTP
+- `…:4317` → OTLP/gRPC
+- no port specified → defaults to gRPC (for backward compatibility with older configs)
+
+The chosen transport is logged at forwarder startup so you can verify it without trial-and-error. Look for:
+
+```
+INFO  starting OTLP log exporter  endpoint=… transport=http  transportReason="endpoint port :4318 is the OTLP/HTTP default"
+```
+
+:::caution
+
+The two transports are **not** interchangeable on the wire. A gRPC client cannot talk to an HTTP receiver (and vice versa) — the connection appears to succeed but no log records ever arrive. If you change `otel_endpoint`, also confirm your collector's receiver has the matching protocol enabled.
+
+:::
+
+#### OTel Collector example (both transports)
+
+If you're using the OpenTelemetry Collector instead of Fluent Bit, enable both protocols on the receiver so either port works:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+```
+
+Then point `otel_endpoint` at whichever port matches the transport you want:
+
+```yaml
+forwarder:
+  exporters:
+    everything:
+      # OTLP/gRPC
+      otel_endpoint: http://otel-collector.observability.svc.cluster.local:4317
+      filter_rule: standard
+      dlp_config_id: ""
+```
+
 ## Step 2: Verify the output
 
 In your final output destination, verify that data is being forwarded. In our example we can verify by tailing fluent logs (because we configured stdout as an output) or by looking for files in S3 that should contain OTel logs wrapping RRPair data.
