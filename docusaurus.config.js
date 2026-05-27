@@ -1544,6 +1544,18 @@ const config = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
+        sitemap: {
+          // Exclude Docusaurus default scaffolding pages and legacy artifacts
+          // from the sitemap so search engines don't waste crawl budget
+          // on low-value URLs (and so GSC/Bing don't flag them as
+          // soft-404 or thin-content).
+          ignorePatterns: [
+            "/index_old/**",
+            "/markdown-page/**",
+            "/search/**",
+          ],
+          filename: "sitemap.xml",
+        },
       }),
     ],
   ],
