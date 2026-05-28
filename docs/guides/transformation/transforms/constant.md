@@ -20,6 +20,19 @@ sidebar_position: 3
 
 - **new** - string to insert into token
 
+The `new` value is free-form text, so it can contain anything. It also supports the embedded
+`${{...}}` substitution syntax, which is resolved at runtime. In addition to plain variables you can
+use special keywords here, for example:
+
+- `${{access_token}}` — substitute a [variable](../variables.md)
+- `${{env_var:BUILD_VERSION}}` — read an environment variable
+- `${{rand_string:"order-[a-z0-9]{12}"}}` — generate a random string
+- `${{file:s3://payload.json}}` — inline an entire file, including [user data](../../../reference/glossary.md#user-data) from the cloud
+- `${{dataframe:people:${{id}}:Email}}` — look up a cell in a [dataframe](./dataframe.md)
+- `${{secret:mongo-creds/password}}` — read a mounted secret
+
+See [Embedded Syntax](../embedded-syntax.md) for the complete reference.
+
 ### Example
 
 ### Before and After Example

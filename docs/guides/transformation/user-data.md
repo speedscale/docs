@@ -27,7 +27,7 @@ All AI processing runs on AWS Bedrock in a SOC 2 compliant environment. Customer
 
 ## Use in Transforms
 
-Userdata is usually referenced using a special keyword inside the transform chain. For example, let's say there was a CSV file stored in userdata named `new_names.csv`. A transform chain for this might be:
+Userdata is usually referenced using a special keyword inside the transform chain (see [Embedded Syntax](./embedded-syntax.md) for the full set of keywords). For example, let's say there was a CSV file stored in userdata named `new_names.csv`. A transform chain for this might be:
 
 ```
 http_header(name="name") <-> csv("${{s3://new_names.csv}})

@@ -114,13 +114,14 @@ If you need more of a "global replace" functionality you should use variables fr
 
 ### Embedded
 
-Variable values can be embedded within other transforms with the following format:
+Variable values — and several special keywords — can be embedded within other transform
+configuration fields using the `${{...}}` syntax. The simplest form replaces a placeholder with the
+value of a variable (if known) wherever it is found in the transform configuration. For example, you
+may want to embed a variable inside of a constant to produce `new_value=<some value from variable 1>`:
 
 ```
 ${{variable1}}
 ```
-
-This string will be replaced with the value of that variable (if known) wherever it is found in the transform configuration. For example, you may want to embed a variable inside of another constant to produce the result `new_value=<some new value from variable 1>`:
 
 ![constant](./transforms/constant_example.png)
 
@@ -128,4 +129,6 @@ This also works inside of configuration fields in other transforms, like `jwt_re
 
 ![jwt_example](./transforms/jwt_example.png)
 
-By understanding these scoping rules, engineers using the Speedscale transform system can effectively replicate some aspects of scripting languages.
+In addition to plain variables, the syntax supports special keywords for environment variables,
+random strings, files, [user data](/reference/glossary.md#user-data), dataframe lookups, and secrets.
+See [Embedded Syntax](/guides/transformation/embedded-syntax) for the complete reference.

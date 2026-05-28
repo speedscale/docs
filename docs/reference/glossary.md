@@ -29,6 +29,16 @@ A Speedscale component that collects logs and metric data from pods during a
 [generator](#generator) and [responder](#responder) during the replay and
 communicates with the Kubernetes API.
 
+### Embedded Syntax
+
+The `${{...}}` placeholders that can be embedded in [transform](#transform)
+configuration fields and are resolved at runtime against the
+[variable cache](#variable-cache). Besides plain variables, the syntax supports
+special keywords for environment variables, random strings, files,
+[user data](#user-data), dataframe lookups, and secrets. See
+[Embedded Syntax](../guides/transformation/embedded-syntax.md) for the full
+reference.
+
 ### Endpoint
 
 A partial representation of a URI, endpoints often group similar requests
