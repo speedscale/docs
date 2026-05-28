@@ -1,138 +1,206 @@
 ---
 title: Bring Your Own Cloud
-description: "Send data to your own cloud via an otel log exporter"
+description: "Route Speedscale RRPair data to your own storage — Loki, Elasticsearch, Amazon S3, or Google Cloud Storage — using public Helm charts and OpenTelemetry."
 ---
 
 # Bring Your Own Cloud
 
-:::danger
+Speedscale's **Bring Your Own Cloud (BYOC)** mode lets you keep all captured traffic inside your own infrastructure. The Speedscale Forwarder ships RRPairs as OTLP log records to a collector you run, which fans out to the storage backend of your choice. No traffic ever leaves your VPC.
 
-This is an enterprise only feature that must be enabled by the Speedscale team and will not work out of the box.
+:::info
+
+BYOC requires a Speedscale Enterprise plan. Contact [support@speedscale.com](mailto:support@speedscale.com) to enable the `byoc_otel` exporter on your account.
 
 :::
 
-In this guide we'll show you how to set up exporters for Speedscale RRPair data via OpenTelemetry logs. For this guide, we'll setup [FluentBit](https://fluentbit.io) as our OTel collector but you can use any collector you choose that supports log collection.
+## How it works
 
-## What Is “Bring Your Own Cloud” (BYOC)?
+The Forwarder exports captured traffic through an OpenTelemetry log exporter (`byoc_otel`) over OTLP/gRPC to a collector inside your cluster. The collector forwards to your chosen storage backend.
 
-Bring Your Own Cloud is a deployment model where Speedscale software runs inside your own cloud account (your AWS, GCP, or Azure VPC) instead of a vendor-hosted multi-tenant SaaS. You keep data, networking, and runtime boundaries under your control while still receiving managed software updates and support from Speedscale.
+```mermaid
+flowchart LR
+    apps([Your apps]) --> fwd[Speedscale Forwarder]
+    fwd -->|OTLP gRPC :4317| col[OTel Collector]
+    col --> storage[(Your storage<br/>Loki · ES · S3 · GCS)]
+```
 
-### Advantages
+## What Is BYOC?
+
+Bring Your Own Cloud is a deployment model where Speedscale software runs inside your own cloud account instead of a vendor-hosted SaaS. You keep data, networking, and runtime boundaries under your control while still receiving managed software updates and support from Speedscale.
+
+**Advantages**
 
 - Data sovereignty and compliance — sensitive payloads and metadata never leave your VPC.
 - Lower latency — collectors and exporters run near your apps, reducing egress and round trips.
-- Cost control — leverage your cloud pricing (reserved, spot, private links) and avoid generic “SaaS tax.”
+- Cost control — leverage your cloud pricing (reserved, spot, private links).
 
-### Tradeoffs
+**Tradeoffs**
 
-- You manage the cloud surface area — Kubernetes/containers, ingress, IAM, and network policies must exist.
-- Shared responsibilities — upgrades are simple, but you still own cluster health, scale, and access control.
+- You manage the cloud surface area — Kubernetes, ingress, IAM, and network policies must exist.
+- Upgrades are simple, but you own cluster health, scale, and access control.
 - Integration work — SSO, networking, and security reviews are usually part of the rollout.
 
-For a deeper perspective on why enterprises choose BYOC for modern AI/observability workloads, see: 
-- Why autonomous agents require BYOC: https://www.speedscale.com/blog/byoc-autonomous-agents-sovereign-ai-factory/
-- Software delivery for BYOC environments (Replicated): https://www.replicated.com/
+## Reference architectures
 
-## A Quick Note on OpenTelemetry
+Speedscale publishes four ready-to-install Helm charts at [github.com/speedscale/speedscale-byoc](https://github.com/speedscale/speedscale-byoc). Pick the one that matches your infrastructure:
 
-[OpenTelemetry](https://opentelemetry.io/) (CNCF) is the open standard for collecting and exporting telemetry data — traces, metrics, and logs — using a common protocol (OTLP). In this integration, Speedscale’s forwarder emits RRPair data as OpenTelemetry logs to an OTLP endpoint you host. From there, your collector (e.g., [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) or [Fluent Bit](https://fluentbit.io)) fans out to destinations like object storage, SIEM, or analytics.
+| Chart | Stack | Best for |
+|-------|-------|----------|
+| `grafana` | OTel Collector → Loki → Grafana | Live dashboards, ad-hoc log queries, proxymock replay |
+| `elasticsearch` | OTel Collector → Elasticsearch → Kibana | Full-text search, Kibana Discover, existing ES clusters |
+| `fluentbit-gcs` | OTel Collector → Fluent Bit → Google Cloud Storage | GCS data lake, BigQuery external tables, compliance retention |
+| `fluentbit-s3` | OTel Collector → Fluent Bit → Amazon S3 | S3 data lake, Athena/Glue queries, IRSA-native EKS |
 
-- Protocol: [OTLP/HTTP and OTLP/gRPC](https://opentelemetry.io/docs/specs/otlp/)
-- Signal used here: Logs (wrapping Speedscale RRPairs)
-- Pattern: Forwarder → OTLP collector → one or more export backends
+Each chart ships its own OTel Collector ConfigMap pre-wired for its backend — you only supply credentials and bucket/cluster names.
 
-## Architecture
+## Prerequisites
 
-```mermaid
-graph TD
-    goproxy -->|data| forwarder
-    forwarder --> speedscale[Speedscale Cloud]
-    forwarder --> collector[OTel Log Collector]
-    collector --> output
+- Kubernetes cluster (any flavor — minikube, EKS, GKE, AKS, k3s)
+- `kubectl` pointed at the cluster and `helm` v3
+- Speedscale API key with BYOC enabled
+- Cloud credentials for your chosen backend (S3 bucket, GCS bucket — none needed for Grafana or Elasticsearch)
 
-    output@{ shape: processes, label: "Destinations" }
+## Install
 
-```
-
-## Step 0: Setup your collector (optional)
-
-For our setup, we are going to configure FluentBit to accept OpenTelemetry logs (on default port 4318) and output them to stdout as well as S3
-
-```yaml
-extraPorts:
-  - name: otel
-    port: 4318
-    containerPort: 4318
-    protocol: TCP
-config:
-  inputs: |
-    [INPUT]
-        Name opentelemetry
-  outputs: |
-    [OUTPUT]
-        Name   stdout
-        Match  *
-    [OUTPUT]
-        Name                         s3
-        Match                        *
-        Bucket                       my-bucket
-        Region                       us-west-2
-        Total_File_Size              250M
-        S3_Key_Format                /%Y/%m/%d/%H/%M/%S/$UUID.gz
-        S3_Key_Format_Tag_Delimiters .-
-```
-
-We use this `values.yaml` in our FluentBit installation via Helm.
+### 1. Add the Helm repos
 
 ```bash
- helm upgrade --install fluent-bit oci://ghcr.io/fluent/helm-charts/fluent-bit -f values.yaml
+helm repo add speedscale https://speedscale.github.io/operator-helm/
+helm repo add speedscale-byoc https://speedscale.github.io/speedscale-byoc/
+helm repo update
 ```
 
-## Step 1: Configure the Speedscale Helm chart
+### 2. Create the API key secret
 
-Along with our other settings, we add an `exporters` section, which is a map of exporter names to exporter configs, to the `forwarder` section of our `values.yaml`.
+```bash
+kubectl create namespace speedscale
+kubectl -n speedscale create secret generic speedscale-apikey \
+  --from-literal=SPEEDSCALE_API_KEY="<YOUR_API_KEY>" \
+  --from-literal=SPEEDSCALE_APP_URL="app.speedscale.com"
+```
 
-From our above collector installation where we installed FluentBit without a namespace (default) and with port 4318, we configure an exporter named `everything`.
+### 3. Install your chosen backend
+
+Each backend installs into its own namespace so you can run multiple side by side.
+
+**Grafana + Loki**
+
+```bash
+helm upgrade --install byoc-grafana speedscale-byoc/grafana \
+  -n byoc-grafana --create-namespace
+```
+
+**Elasticsearch + Kibana**
+
+```bash
+helm upgrade --install byoc-elasticsearch speedscale-byoc/elasticsearch \
+  -n byoc-elasticsearch --create-namespace
+```
+
+**Fluent Bit → Google Cloud Storage**
+
+```bash
+# Create a Kubernetes secret with your GCS HMAC credentials first:
+kubectl create namespace byoc-fluentbit-gcs
+kubectl -n byoc-fluentbit-gcs create secret generic gcs-hmac \
+  --from-literal=accessKeyId="<HMAC_ACCESS_KEY>" \
+  --from-literal=secretAccessKey="<HMAC_SECRET>"
+
+helm upgrade --install byoc-fluentbit-gcs speedscale-byoc/fluentbit-gcs \
+  -n byoc-fluentbit-gcs --create-namespace \
+  --set gcs.bucket="<YOUR_GCS_BUCKET>" \
+  --set gcs.region="auto" \
+  --set gcs.credentialsSecret="gcs-hmac"
+```
+
+**Fluent Bit → Amazon S3 (static credentials)**
+
+```bash
+kubectl create namespace byoc-fluentbit-s3
+kubectl -n byoc-fluentbit-s3 create secret generic s3-creds \
+  --from-literal=accessKeyId="<AWS_ACCESS_KEY_ID>" \
+  --from-literal=secretAccessKey="<AWS_SECRET_ACCESS_KEY>"
+
+helm upgrade --install byoc-fluentbit-s3 speedscale-byoc/fluentbit-s3 \
+  -n byoc-fluentbit-s3 --create-namespace \
+  --set s3.bucket="<YOUR_S3_BUCKET>" \
+  --set s3.region="<YOUR_REGION>" \
+  --set s3.credentialsSecret="s3-creds"
+```
+
+**Fluent Bit → Amazon S3 (EKS IRSA — no credentials in cluster)**
+
+```bash
+helm upgrade --install byoc-fluentbit-s3 speedscale-byoc/fluentbit-s3 \
+  -n byoc-fluentbit-s3 --create-namespace \
+  --set s3.bucket="<YOUR_S3_BUCKET>" \
+  --set s3.region="<YOUR_REGION>" \
+  --set irsa.enabled=true \
+  --set irsa.roleArn="arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>"
+```
+
+See each chart's README on GitHub for full prerequisites, IAM policy examples, and verify steps.
+
+### 4. Install the Speedscale Operator wired to your backend
+
+Replace `<NAMESPACE>` with your backend namespace (e.g. `byoc-grafana`):
+
+```bash
+helm upgrade --install speedscale-operator speedscale/speedscale-operator \
+  -n speedscale --create-namespace \
+  --set apiKeySecret=speedscale-apikey \
+  --set clusterName=<YOUR_CLUSTER_NAME> \
+  --set 'forwarder.exporters.byoc_otel.otel_endpoint=http://otel-collector.<NAMESPACE>.svc.cluster.local:4317' \
+  --set 'forwarder.exporters.byoc_otel.filter_rule=standard' \
+  --set 'forwarder.exporters.byoc_otel.dlp_config_id=standard'
+```
+
+Or equivalently in `values.yaml`:
 
 ```yaml
 forwarder:
   exporters:
-    everything:
-      otel_endpoint: http://fluent-bit.default.svc.cluster.local:4318
+    byoc_otel:
+      otel_endpoint: "http://otel-collector.byoc-grafana.svc.cluster.local:4317"
       filter_rule: standard
-      dlp_config_id: ""
-```
-
-### Choosing the OTLP transport
-
-OTLP comes in two transports, on two different well-known ports:
-
-| Transport | Default port | When to use |
-|---|---|---|
-| OTLP/HTTP (protobuf over HTTP) | `4318` | Fluent Bit's `opentelemetry` input only supports HTTP. Most non-OTel-Collector receivers do too. |
-| OTLP/gRPC | `4317` | OpenTelemetry Collector with the `otlp` receiver's `grpc:` protocol enabled. |
-
-The Speedscale forwarder's `byoc_otel` exporter speaks **both** transports and picks one automatically from the port in `otel_endpoint`:
-
-- `…:4318` → OTLP/HTTP
-- `…:4317` → OTLP/gRPC
-- no port specified → defaults to gRPC (for backward compatibility with older configs)
-
-The chosen transport is logged at forwarder startup so you can verify it without trial-and-error. Look for:
-
-```
-INFO  starting OTLP log exporter  endpoint=… transport=http  transportReason="endpoint port :4318 is the OTLP/HTTP default"
+      dlp_config_id: standard
 ```
 
 :::caution
 
-The two transports are **not** interchangeable on the wire. A gRPC client cannot talk to an HTTP receiver (and vice versa) — the connection appears to succeed but no log records ever arrive. If you change `otel_endpoint`, also confirm your collector's receiver has the matching protocol enabled.
+The `otel_endpoint` value **must** include the `http://` scheme. A bare hostname causes a silent gRPC dial failure — traffic appears captured but nothing arrives at the collector.
 
 :::
 
-#### OTel Collector example (both transports)
+### 5. Annotate a workload to capture its traffic
 
-If you're using the OpenTelemetry Collector instead of Fluent Bit, enable both protocols on the receiver so either port works:
+```bash
+kubectl patch deployment my-app -p \
+  '{"spec":{"template":{"metadata":{"annotations":{"capture.speedscale.com/enabled":"true"}}}}}'
+```
+
+## OTLP transport: gRPC vs HTTP
+
+The OTel Collector inside each BYOC chart listens on **gRPC port 4317**. The Speedscale Forwarder infers the transport from the port in `otel_endpoint`:
+
+| Port in endpoint | Transport used |
+|-----------------|---------------|
+| `:4317` | OTLP/gRPC (recommended, used by all BYOC charts) |
+| `:4318` | OTLP/HTTP |
+
+The forwarder logs the chosen transport at startup:
+
+```
+INFO  starting OTLP log exporter  endpoint=… transport=grpc
+```
+
+:::caution
+
+The two transports are not interchangeable on the wire. A gRPC client cannot talk to an HTTP receiver. If traffic is captured but nothing arrives at your backend, verify that `otel_endpoint` uses the same port as the collector's receiver protocol.
+
+:::
+
+If you're wiring a custom OTel Collector (not from the BYOC charts), enable the gRPC receiver:
 
 ```yaml
 receivers:
@@ -144,24 +212,51 @@ receivers:
         endpoint: 0.0.0.0:4318
 ```
 
-Then point `otel_endpoint` at whichever port matches the transport you want:
+## Verify
 
-```yaml
-forwarder:
-  exporters:
-    everything:
-      # OTLP/gRPC
-      otel_endpoint: http://otel-collector.observability.svc.cluster.local:4317
-      filter_rule: standard
-      dlp_config_id: ""
+Check each hop in order after installation:
+
+**1. Forwarder is wired**
+
+```bash
+kubectl -n speedscale get cm speedscale-forwarder \
+  -o jsonpath='{.data.EXPORTERS}' | jq .
 ```
 
-## Step 2: Verify the output
+The output should contain `byoc_otel` with your endpoint. If `EXPORTERS` is missing `byoc_otel`, the Operator values were not applied — rerun step 4.
 
-In your final output destination, verify that data is being forwarded. In our example we can verify by tailing fluent logs (because we configured stdout as an output) or by looking for files in S3 that should contain OTel logs wrapping RRPair data.
+**2. OTel Collector is receiving**
 
-For eg.
-
+```bash
+kubectl -n <BACKEND_NAMESPACE> logs deploy/otel-collector | grep -i "log records"
 ```
-[1776173034.826199386, {"direction":"OUT","service":"java-client","tech":"JSON","msgType":"rrpair","resource":"java-client","uuid":"oJlIjhkLQM+if1ychK7GxA==","cluster":"cluster","status":"200","http":{"res":{"bodyBase64":"eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSklVekkxTmlKOS5leUpwYzNNaU9pSnFZWFpoTFhObGNuWmxjaUlzSW5OMVlpSTZJbUZrYldsdUlpd2lZWFZrSWpvaWMzQmhZMlY0TFdaaGJuTWlMQ0pwWVhRaU9qRTNOell4TnpNd016UXNJbVY0Y0NJNk1UYzNOakkxT1RRek5Dd2libUptSWpveE56YzJNVFk1TkRNMGZRLmZDck9VcXNaUGhnZ1hPQTlwNlI2WUJtenV1aU5zZ2JCS2M1TUtVdWJEdHMiLCJleHBpcmVzX2lkIjoiODY0MDAwMDAiLCJ0b2tlbl90eXBlIjoiQmVhcmVyIn0=","contentType":"application/json","statusCode":200.0,"statusMessage":"200 ","headers":{"X-Content-Type-Options":["nosniff"],"X-Frame-Options":["DENY"],"X-Xss-Protection":["0"],"Cache-Control":["no-cache, no-store, max-age=0, must-revalidate"],"Content-Type":["application/json"],"Date":["Tue, 14 Apr 2026 13:23:54 GMT"],"Expires":["0"],"Pragma":["no-cache"]}},"req":{"url":"/login","uri":"/login","version":"1.1","method":"POST","host":"java-server","headers":{"User-Agent":["curl/8.17.0"],"Accept":["*/*"],"Content-Length":["42"],"Content-Type":["application/json"],"Host":["java-server"]},"bodyBase64":"eyJ1c2VybmFtZSI6ICJhZG1pbiIsICJwYXNzd29yZCI6ICJwYXNzIiB9"}},"session":"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJqYXZhLXNlcnZlciIsInN1YiI6ImFkbWluIiwiYXVkIjoic3BhY2V4LWZhbnMiLCJpYXQiOjE3NzYxNzMwMzQsImV4cCI6MTc3NjI1OTQzNCwibmJmIjoxNzc2MTY5NDM0fQ.fCrOUqsZPhggXOA9p6R6YBmzuuiNsgbBKc5MKUubDts","ts":"2026-04-14T13:23:54.826199386Z","namespace":"speedscale","location":"/login","netinfo":{"id":"1","startTime":"2026-04-14T13:23:54.826010969Z","downstream":{"established":"2026-04-14T13:23:54.825380677Z","ipAddress":"10.244.1.206","port":39750.0,"bytesSent":"175"},"upstream":{"established":"2026-04-14T13:23:54.825883386Z","ipAddress":"10.99.78.6","port":80.0,"hostname":"java-server","bytesSent":"568"}},"l7protocol":"http","duration":5.0,"tags":{"proxyLocation":"out","proxyVersion":"v2.5.436","source":"goproxy","captureMode":"proxy","k8sAppLabel":"java-client","proxyId":"java-client-7c8878c48d-4dnr6","proxyProtocol":"","proxyType":"transparent","sequence":"2","k8sAppPodName":"java-client-7c8878c48d-4dnr6","k8sAppPodNamespace":"speedscale"},"command":"POST","signature":{"http:method":"UE9TVA==","http:queryparams":"","http:requestBodyJSON":"eyJwYXNzd29yZCI6InBhc3MiLCJ1c2VybmFtZSI6ImFkbWluIn0=","http:url":"L2xvZ2lu","http:host":"amF2YS1zZXJ2ZXI="}}]
+
+**3. Backend is writing**
+
+- **Grafana**: open Grafana → Explore → Loki data source → label filter `{exporter="OTLP"}`
+- **Elasticsearch**: `kubectl -n byoc-elasticsearch exec -it deploy/elasticsearch -- curl -s localhost:9200/rrpairs/_count`
+- **S3**: `aws s3 ls s3://<BUCKET>/year=`
+- **GCS**: `gcloud storage ls gs://<BUCKET>/year=`
+
+## Replay captured traffic with proxymock
+
+Each chart ships a companion Python gather script in the [speedscale-byoc repo](https://github.com/speedscale/speedscale-byoc/tree/main/scripts):
+
+| Backend | Script |
+|---------|--------|
+| Loki | `loki-gather.py` |
+| Elasticsearch | `es-gather.py` |
+| Google Cloud Storage | `gcs-gather.py` |
+| Amazon S3 | `s3-gather.py` |
+
+```bash
+# Example: pull traffic from Loki and replay it
+python3 scripts/loki-gather.py --service my-app --output ./snapshot
+proxymock mock --dir ./snapshot
 ```
+
+## Further reading
+
+- [speedscale-byoc on GitHub](https://github.com/speedscale/speedscale-byoc) — chart source, detailed READMEs per scenario
+- [speedscale.com/byoc](https://www.speedscale.com/byoc/) — product overview and use cases
+- [Why autonomous agents require BYOC](https://www.speedscale.com/blog/byoc-autonomous-agents-sovereign-ai-factory/)
