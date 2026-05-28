@@ -60,7 +60,7 @@ Transform lookup
 }
 ```
 
-Note that the `key` or `field` values can contain variables using the [embedded syntax](../../../concepts/transforms.md#embedded) so the key can be used dynamically for eg.
+Note that the `key` or `field` values can contain variables using the [embedded syntax](../embedded-syntax.md) so the key can be used dynamically for eg.
 
 ```
 # Extract the customer name from a json response body
@@ -68,4 +68,10 @@ res_body -> json_path(".customer.name") -> json_store("name")
 
 # Then modify a subsequent request using that variable
 req_body -> json_path(".customer.id") -> dataframe_lookup("my_dataframe", "${{name}}", "ID")
+```
+
+The same lookup is also available inline as an [embedded keyword](../embedded-syntax.md#dataframe-lookup), so you can reference a dataframe cell directly from any transform field — for example inside a `constant`:
+
+```
+${{dataframe:my_dataframe:${{name}}:Email}}
 ```

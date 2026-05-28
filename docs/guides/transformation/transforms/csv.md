@@ -60,3 +60,8 @@ Use the `index` config value to reference the first field of the CSV data when t
     "index": "0"
 }
 ```
+
+The CSV data itself is usually supplied to this transform using the embedded `${{...}}` syntax — for
+example `${{file:s3://new_names.csv}}` or the portable `${{dataframe:new_names.csv}}` — to pull a CSV
+stored as [user data](../../../reference/glossary.md#user-data). See [Embedded Syntax](../embedded-syntax.md)
+and [User Data](../user-data.md) for details.
