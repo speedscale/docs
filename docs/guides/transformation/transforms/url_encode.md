@@ -1,60 +1,111 @@
 ---
-description: "Transform plain text strings into URL encoded strings with the url_encode function in Speedscale for seamless API testing and traffic replay."
+description: "URL-encode a value with the url_encode transform in Speedscale — a one-way escape using Go's path-escape rules. Pair with url_decode to round-trip URL-escaped fields."
 sidebar_position: 31
 ---
 
 # url_encode
 
-### Purpose
+The `url_encode` transform URL-escapes a value using path-escape rules so reserved characters such as space, `/`, `?`, `&`, `=`, and `%` are percent-encoded. It is **one-way** — the second phase of the chain does not undo the encoding, so the field is left in its encoded form when it is written back to the RRPair.
 
-**url_encode** transforms a plain text string into a URL encoded string. Transforms downstream of this one will work with URL encoded data. Unlike other transforms, this modification is one-way meaning that once the data is transformed, it will not be "de-encoded" when the data is re-inserted into the RRPair. It is typical to create a chain that decodes URL data using [url_decode](./url_decode.md) and then re-encodes it using this transform. URL encoding and decoding are split into two transforms so that you can decide when the re-encoding should take place.
+URL encoding and decoding are deliberately split into two transforms ([`url_encode`](./url_encode.md) and [`url_decode`](./url_decode.md)) so a chain can decide exactly when to re-encode.
 
-### Usage
+- **Transform type name (config/API):** `url_encode`
+- **Shorthand format:** `url_encode()`
+
+## Quick Start
+
+Encode a field on the way out of the chain:
 
 ```json
 "type": "url_encode"
 ```
 
-### Example
+No configuration parameters.
 
-#### Example Chains
+## How It Works
+
+1. **First phase.** The extracted token is URL path-escaped and passed to the next transform.
+2. **Second phase.** No-op. The encoded value flows through to the RRPair unchanged.
+
+Because the second phase does not reverse the encoding, anything written back to the field stays encoded. The common pattern is `url_decode → (intermediate transforms) → url_encode`, where decoding happens first so the intermediate transforms see the plain value, and encoding happens last to re-wrap before re-insertion.
+
+### Escape Rules
+
+The transform escapes using path-escape semantics (Go `url.PathEscape`). Notably:
+
+| Character | Encoded as |
+|---|---|
+| space | `%20` |
+| `&` | `%26` |
+| `?` | `%3F` |
+| `=` | `%3D` (when not in the safe set) |
+| `*` | `%2A` |
+| `%` | `%25` |
+| `@` | `%40` |
+| `/` | `%2F` |
+| `+` | `%2B` |
+
+Note: path-escape is **stricter than query-escape**. Characters that are safe inside a path segment but reserved in a query string (such as `&`) are still escaped here. If you need query-string semantics specifically, escape the value manually or use a different transform.
+
+## Configuration
+
+No configuration parameters.
+
+## Examples
+
+### Example 1 — Encode a search term in a JSON body field
 
 ```
-req_body() -> json_path(path="user.searchTerm") -> url_encode()
+req_body() → json_path(path="user.searchTerm") → url_encode()
 ```
 
-This will extract the search term from the user object in the request body and URL encode it. Unless further transforms are added, the data re-inserted into the RRPair will remain URL encoded.
+- `hello world & special chars` → `hello%20world%20%26%20special%20chars`
+
+### Example 2 — Encode a header value
 
 ```
-req_header(name="X-Custom-Data") -> url_encode()
+req_header(name="X-Custom-Data") → url_encode()
 ```
 
-This will URL encode the value from a custom header.
+- `user@example.com?param=value` → `user%40example.com%3Fparam%3Dvalue`
+
+### Example 3 — Round-trip: decode, transform, re-encode
 
 ```
-req_body() -> json_path(path="user.encodedData") -> url_decode() -> constant(new="foo") -> url_encode()
+req_body() → json_path(path="user.encodedData") → url_decode() → constant(value="foo") → url_encode()
 ```
 
-This will extract encoded data from the user object in the request body, URL decode it, replace it with the text "foo" and then re-encode it.
+The field is decoded so downstream transforms see the plain value, replaced with a constant, then re-encoded before being written back.
 
-### Before and After Example
+### Example 4 — Encode a constant injected mid-chain
 
-#### Configuration
-
-```json
-{
-   "type": "url_encode"
-}
+```
+req_query(name="filter") → constant(value="name=value with spaces") → url_encode()
 ```
 
-#### Before (Original Values)
+- Output: `name%3Dvalue%20with%20spaces`
 
-- **Search Term**: `hello world & special chars`
-- **Custom Header Data**: `user@example.com?param=value`
-- **Query Parameter**: `product name with spaces`
+## Common Misconceptions
 
-#### After (URL Encoded)
+1. **"The chain auto-decodes on the way back."**
+   No. `url_encode` is one-way. To round-trip, pair it with [`url_decode`](./url_decode.md) at the start of the chain.
 
-- **Search Term**: `hello%20world%20%26%20special%20chars`
-- **Custom Header Data**: `user%40example.com%3Fparam%3Dvalue`
-- **Query Parameter**: `product%20name%20with%20spaces`
+2. **"It uses query-string escape rules."**
+   No. It uses path-escape rules. Characters like `&` are escaped even though they are sometimes legal unescaped in query values.
+
+3. **"It double-encodes if the input is already encoded."**
+   Yes — `%` becomes `%25`, so `hello%20world` becomes `hello%2520world`. If your value may already be encoded, decode first with [`url_decode`](./url_decode.md).
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Value is double-encoded | Input was already URL-encoded | Run [`url_decode`](./url_decode.md) first, then re-encode at the end |
+| Expected characters are not escaped | Path-escape considers them safe in path context | Escape manually with [`replace`](./replace.md), or use a regex-based approach |
+| Downstream transform sees encoded text instead of plain text | `url_encode` was placed at the start of the chain | Move it to the end; use [`url_decode`](./url_decode.md) at the start if decoding is needed |
+
+## Related Transforms
+
+- [`url_decode`](./url_decode.md) — the inverse first-phase transform. Pair with `url_encode` to round-trip.
+- [`base64`](./base64.md) — two-phase decode/re-encode for base64-wrapped fields.
+- [`replace`](./replace.md) — for ad-hoc character substitutions that path-escape rules do not cover.
