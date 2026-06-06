@@ -1,103 +1,185 @@
 ---
-description: "Extract data from XML documents using XPath with Speedscale's xml_path, enabling precise extraction for API testing and traffic replay scenarios."
+description: "Extract an XML value with XPath using the xml_path transform in Speedscale, let downstream transforms rewrite it, then re-insert the new value back into the same node — text, attribute, or element."
 sidebar_position: 34
 ---
 
 # xml_path
 
-### Purpose
+The `xml_path` transform extracts a value from an XML document using an XPath expression and acts as a window onto that value for the rest of the chain. Downstream transforms see only the extracted text; when they're done, `xml_path` writes the new value back into the same node of the original document.
 
-**xml_path** extracts a Data element from an XML document using XPath. The input token must be an XML document and the XPath must be valid. Note that we use the excellent [xml_path](https://github.com/antchfx/xmlquery) library but not all XPath combinations are supported. Check the github page to see if a more complicated XPath is supported.
+The same chain shape handles text nodes, attribute values, and full element bodies — the node type at the XPath target determines how the re-insertion is performed.
 
-### Usage
+- **Transform type name (config/API):** `xml_path`
+- **Shorthand format:** `xml_path(path=...)`
+- **Engine:** [`xmlquery`](https://github.com/antchfx/xmlquery) — supports XPath 1.0 plus several XPath 2.0 functions. See [XPath syntax](https://en.wikipedia.org/wiki/XPath) for the spec.
+
+## Quick Start
+
+Extract the text inside an element:
 
 ```json
 "type": "xml_path",
 "config": {
-    "path": "<XPath>"
+    "path": "/feed/entry/epoch/text()"
 }
 ```
 
-### Example
-
-#### Example Chains
-
-```
-req_body() -> xml_path(path="//user/email/text()")
-```
-
-This will extract the email text from a user element in the request body XML.
-
-```
-res_body() -> xml_path(path="//product[@id='123']/name/text()")
-```
-
-This will extract the name of a product with ID '123' from the response body XML.
-
-```
-req_body() -> xml_path(path="//items/item[1]/@value") -> constant(new="foo")
-```
-
-This will extract the value attribute from the first item element in the XML and replace it with the text "foo".
-
-### Before and After Example
-
-#### Configuration
+Extract an attribute value:
 
 ```json
-{
-  "type": "xml_path",
-  "config": {
-    "path": "/feed/entry/epoch/text()"
-  }
+"type": "xml_path",
+"config": {
+    "path": "//items/item[1]/@value"
 }
 ```
 
-#### Before (Original XML Values)
+## How It Works
 
-- **Request Body XML (User Data)**:
-```xml
-<user>
-  <email>john.doe@example.com</email>
-  <id>123</id>
-</user>
+The transform runs in two phases as a bookend around the rest of the chain.
+
+1. **First phase** — parse the XML document, run the XPath query, and return the inner text of the **first** matched node. The original document is remembered for re-insertion.
+2. **Second phase** — re-parse the original document, locate the same node, and write the downstream chain's output into that node. The re-serialized document is the chain's output.
+
+```
+input:  <feed><entry><epoch>1642534200468</epoch></entry></feed>
+        └─ 1st phase, path=/feed/entry/epoch/text():
+              extracted = "1642534200468"
+        └─ downstream produces "new-epoch"
+        └─ 2nd phase: writes "new-epoch" into the text node
+output: <feed><entry><epoch>new-epoch</epoch></entry></feed>
 ```
 
-- **Response Body XML (Product Catalog)**:
-```xml
-<catalog>
-  <product id="123">
-    <name>Laptop Computer</name>
-    <price>999.99</price>
-  </product>
-  <product id="456">
-    <name>Mouse</name>
-    <price>25.00</price>
-  </product>
-</catalog>
+### Node Type Handling
+
+The XPath result's node type determines how the new value is written:
+
+| Node type at the XPath result | Re-insertion behavior |
+|---|---|
+| Text / CharData / Comment | The node's text content is replaced with the new value verbatim. |
+| Attribute | The attribute's value on the parent element is replaced. |
+| Element | If the new value looks like XML (contains `<` and `>`), it is parsed and its children replace the element's children. Otherwise it is treated as text content. |
+
+The element-fragment parsing lets a downstream transform return either plain text or a sub-tree, and the chain produces a valid document either way. If parsing the fragment fails, the transform falls back to writing it as text.
+
+### Multiple Matches
+
+If the XPath query returns multiple nodes, only the **first** is used — both for extraction and for re-insertion. To rewrite every match, narrow the XPath until it points at a single node and run separate chains per match.
+
+### Missing Matches
+
+If the XPath query matches nothing in the first phase, the transform returns the original token with a "no data element returned by XPath" error. The second phase, run on the same instance, sees no matches and returns the original document unchanged.
+
+## Configuration
+
+```json
+"type": "xml_path",
+"config": {
+    "path": "<XPath expression>"
+}
 ```
 
-- **Feed XML (System Data)**:
-```xml
-<feed version="1.0" hasPendingRequests="false">
-  <status>Good</status>
-  <errmsg>OK</errmsg>
-  <entry type="data">
-    <epoch>1642534200468</epoch>
-    <hostname>127.0.0.1</hostname>
-    <type>normal</type>
-    <items>
-      <item name="Item1" datapointid="18480" value="19"/>
-      <item name="Item2" datapointid="18481" value="706714"/>
-      <item name="Item3" datapointid="18482" value="706713"/>
-    </items>
-  </entry>
-</feed>
+| Parameter | Required | Default | Description |
+|---|---|---|---|
+| `path` | **Yes** | — | XPath expression. Missing config fails chain initialization. Invalid XPath syntax fails per-token. |
+
+`path` supports `${{...}}` variable substitution, resolved at runtime against the variable cache. Both phases re-resolve the path, so a `${{var:...}}` reference always reflects the current cache.
+
+## Examples
+
+### Example 1 — Replace a text node
+
+```
+res_body() → xml_path(path="/feed/entry/epoch/text()") → date(layout=epoch_ms)
 ```
 
-#### After (XPath Extracted)
+- Input: `<feed><entry><epoch>1642534200468</epoch></entry></feed>`
+- `xml_path` extracts `1642534200468`.
+- `date` shifts the epoch relative to replay time.
+- `xml_path` writes the new epoch back into the same text node.
 
-- **User Email** (using `//user/email/text()`): `john.doe@example.com`
-- **Product Name** (using `//product[@id='123']/name/text()`): `Laptop Computer`
-- **Epoch Timestamp** (using `/feed/entry/epoch/text()`): `1642534200468`
-- **First Item Value** (using `//items/item[1]/@value`): `19`
+### Example 2 — Replace an attribute
+
+```
+req_body() → xml_path(path="//items/item[1]/@value") → constant(value="999")
+```
+
+- Input: `<items><item value="19"/><item value="20"/></items>`
+- Output: `<items><item value="999"></item><item value="20"></item></items>`
+
+Note: the serializer expands self-closing tags into full open/close tags. The document is semantically identical, but the bytes change.
+
+### Example 3 — Replace an element with raw XML
+
+```
+res_body() → xml_path(path="//user") → constant(value="<name>Jane</name><id>42</id>")
+```
+
+- Input: `<root><user><name>old</name><id>1</id></user></root>`
+- Output: `<root><user><name>Jane</name><id>42</id></user></root>`
+
+Because the new value contains XML markup, it is parsed and its children become the element's children.
+
+### Example 4 — Predicate to select a specific node
+
+```
+req_body() → xml_path(path="//product[@id='123']/name/text()") → constant(value="Updated Name")
+```
+
+- Input:
+  ```xml
+  <catalog>
+    <product id="123"><name>Laptop</name></product>
+    <product id="456"><name>Mouse</name></product>
+  </catalog>
+  ```
+- Output: the `name` text under the product with `id='123'` becomes `Updated Name`. The other product is untouched.
+
+### Example 5 — Combine with `smart_replace`
+
+```
+smart_replace() → res_body() → xml_path(path="//session/id/text()") → rand_string(pattern="sess_[a-z0-9]{16}")
+```
+
+`xml_path` extracts the session id; `rand_string` produces a replacement; `smart_replace` registers the mapping so the same id is rewritten everywhere it appears in the RRPair — headers, body, URL — even across XML/JSON boundaries. See [`smart_replace`](./smart_replace.md).
+
+## Common Misconceptions
+
+1. **"It rewrites every node matching the XPath."**
+   No. Only the first matched node is touched. Narrow the XPath or use a predicate to target the one you need.
+
+2. **"Output bytes are identical to input except for the replaced value."**
+   No. The document is re-serialized, which may normalize whitespace, expand self-closing tags (`<a/>` → `<a></a>`), and re-quote attributes. The structure and semantics are preserved, not the exact bytes.
+
+3. **"The new value is always written as text."**
+   For text nodes and attributes, yes. For element nodes, an XML-shaped value is parsed and inserted as a sub-tree. If you want literal `<` and `>` characters inside an element, escape them upstream (e.g. with `&lt;` / `&gt;`).
+
+4. **"Full XPath 2.0 / 3.0 is supported."**
+   The engine is XPath 1.0 with a subset of 2.0 functions. Complex 2.0/3.0 constructs (e.g. higher-order functions, regex match groups) are not available.
+
+5. **"Element selection without `/text()` returns just the inner text."**
+   It returns the *inner text* concatenation of all descendant text for extraction, but the re-insertion goes to the element node, not a text child. If you want to *only* operate on the immediate text content, use `/text()`.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Chain init: `missing parameter path` | `path` not set | Add `"path": "..."` |
+| Runtime error parsing XML | Input isn't well-formed XML | Verify the body is XML, check encoding and namespaces |
+| Error: `no data element returned by XPath` | The XPath didn't match | Test the XPath against a sample document |
+| Self-closing tags become full tags | Re-serialization expands `<a/>` to `<a></a>` | This is expected; the document is still semantically equivalent |
+| New value lands as text but should be a sub-tree | The new value doesn't start with `<` and end with `>` | Ensure the upstream transform produces XML-shaped output |
+| `unsupported node type, contact Speedscale support` | The XPath landed on a node type the transform doesn't know how to write to | Adjust the XPath to target a text node, attribute, or element |
+| Wrong node modified | XPath matches multiple nodes; the first is used | Use a predicate (`[@id='...']`, `[1]`, `[position()=N]`) to disambiguate |
+
+## Related Transforms
+
+- [`json_path`](./json_path.md) — JSON equivalent.
+- [`json_selector`](./json_selector.md) — for "find by key/value somewhere in the document" semantics.
+- [`regex`](./regex.md) — for non-structured extraction when XPath isn't ergonomic.
+- [`smart_replace`](./smart_replace.md) — propagate a rewritten value across the entire RRPair.
+
+## Advanced Notes
+
+- The XML document is parsed twice per chain (once per phase). For very large bodies in tight loops this matters, but it keeps the re-insertion working off a clean copy.
+- The transform does not require recorded response data.
+- The serializer emits the document with the standard `xmlquery` formatting. Downstream services should parse XML rather than byte-match the body.
