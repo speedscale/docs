@@ -1,5 +1,5 @@
 ---
-description: "Explore Speedscale's certifications, including SOC 2 Type I audit results, ensuring top-tier security and compliance for your API testing and traffic replay needs"
+description: "Explore Speedscale's certifications, including SOC 2 Type II audit results, ensuring top-tier security and compliance for your API testing and traffic replay needs"
 sidebar_position: 1
 ---
 
@@ -7,11 +7,11 @@ sidebar_position: 1
 
 ## Certifications and Attestations
 
-Speedscale Inc. successfully completed the AICPA Service Organization Control (SOC) 2 Type I audit. The audit confirms that Speedscale Inc.’s information security practices, policies, procedures, and operations meet the SOC 2 standards for security.
+Speedscale Inc. successfully completed the AICPA Service Organization Control (SOC) 2 Type II audit. The audit confirms that Speedscale Inc.’s information security practices, policies, procedures, and operations meet the SOC 2 standards for security.
 
 Speedscale Inc. was audited by Prescient Assurance, a leader in security and compliance certifications for B2B, SAAS companies worldwide. Prescient Assurance is a registered public accounting in the US and Canada and provide risk management and assurance services which includes but not limited to SOC 2, PCI, ISO, NIST, GDPR, CCPA, HIPAA, CSA STAR etc.
 
-An unqualified opinion on a SOC 2 Type I audit report demonstrates to the Speedscale Inc.’s current and future customers that they manage their data with the highest standard of security and compliance.
+An unqualified opinion on a SOC 2 Type II audit report demonstrates to the Speedscale Inc.’s current and future customers that they manage their data with the highest standard of security and compliance.
 
 ![SOC2 Emblem](/img/soc2-badge.png)
 
