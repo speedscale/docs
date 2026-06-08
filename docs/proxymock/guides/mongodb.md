@@ -79,6 +79,8 @@ You can inspect the recording using the inspect command:
 proxymock inspect
 ```
 
+![MongoDB RRPairs](./mongodb/mongodb-rrpairs.png)
+
 proxymock captures MongoDB wire protocol traffic as RRPair files containing:
 
 - **Request Data**: MongoDB commands — `hello`/`isMaster` handshake, SASL authentication (SCRAM-SHA-1/256), `find`, `insert`, `update`, `delete`, `aggregate`, `getMore`, and others
