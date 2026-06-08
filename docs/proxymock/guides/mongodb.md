@@ -127,3 +127,11 @@ proxymock cloud pull snapshot <id>
 ```
 
 You will notice a new `.metadata` directory containing your transform definitions. When you run `proxymock mock` again the transforms will be applied to your mock.
+
+## Kubernetes and eBPF {#kubernetes}
+
+In Kubernetes environments, Speedscale's eBPF collector (`nettap`) captures MongoDB traffic automatically at the kernel level — no `--map` configuration, SOCKS proxying, or application changes required. The collector uses kprobes and uprobes to observe TCP and TLS traffic directly, including MongoDB's binary wire protocol.
+
+This means the `--map` workflow described above applies to **local development** only. When your application is deployed in Kubernetes with the Speedscale operator, MongoDB traffic is captured transparently alongside all other protocols.
+
+For details on eBPF-based traffic collection, see the [eBPF Traffic Collection](/reference/ebpf-traffic-collection/) documentation.
