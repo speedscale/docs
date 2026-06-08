@@ -54,7 +54,7 @@ proxymock record --map 65432=postgres://localhost:5432
 proxymock record --map 1443=https://httpbin.org:443
 ```
 
-For more database examples, see the [MongoDB guide](../guides/mongodb.md), [MySQL guide](../guides/mysql.md), and [PostgreSQL guide](../guides/postgres.md).
+For more examples, see the [MongoDB guide](../guides/mongodb.md), [MySQL guide](../guides/mysql.md), [PostgreSQL guide](../guides/postgres.md), and [Kafka guide](/guides/message-brokers/kafka).
 
 <Tabs groupId="language">
 <TabItem value="golang" label="Go">
