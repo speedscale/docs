@@ -54,7 +54,7 @@ proxymock record --map 65432=postgres://localhost:5432
 proxymock record --map 1443=https://httpbin.org:443
 ```
 
-For more database examples, see the [MySQL guide](../guides/mysql.md) and [PostgreSQL guide](../guides/postgres.md).
+For more examples, see the [MongoDB guide](../guides/mongodb.md), [MySQL guide](../guides/mysql.md), [PostgreSQL guide](../guides/postgres.md), and [Kafka guide](/guides/message-brokers/kafka).
 
 <Tabs groupId="language">
 <TabItem value="golang" label="Go">
@@ -81,10 +81,14 @@ Java supports `-D` flags to set system properties, which can be set in an enviro
 export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=localhost -Dhttp.proxyPort=4140 -Dhttps.proxyHost=localhost -Dhttps.proxyPort=4140"
 ```
 
-Use the SOCKS proxy to capture database traffic:
+Use the SOCKS proxy to capture JDBC database traffic (MySQL, PostgreSQL):
 ```shell
 export JAVA_TOOL_OPTIONS="-DsocksProxyHost=localhost -DsocksProxyPort=4140"
 ```
+
+:::caution
+The **MongoDB Java driver** uses its own NIO/Netty transport that bypasses `java.net.Socket` entirely. JVM SOCKS flags (`-DsocksProxyHost`, `-DsocksProxyPort`) have no effect. Use `--map` instead for MongoDB traffic — see the [MongoDB guide](../guides/mongodb.md).
+:::
 
 With authentication and TLS certificates:
 ```shell

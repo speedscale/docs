@@ -1,12 +1,12 @@
 ---
-title: Replaying Kafka
-description: "Replay Kafka traffic seamlessly using Speedscale by following our guide to utilize the replay wizard or ProxyMock for efficient traffic simulation."
+title: Kafka
+description: "Record, mock, and replay Kafka traffic using Speedscale and ProxyMock for efficient traffic simulation and testing."
 sidebar_position: 12
 ---
 
 ## Background
 
-In this guide we will show you how to replay Kafka traffic using data captured by Speedscale. The network level modelling of Kafka does not match most people's mental model which leads to confusion and an undesirable replay scenario. Most people view their app interacting with Kafka like this.
+This guide covers how to record, mock, and replay Kafka traffic using Speedscale and proxymock. Kafka's network level modelling does not match most people's mental model which leads to confusion and an undesirable replay scenario. Most people view their app interacting with Kafka like this.
 
 For more information about Apache Kafka, see the [official Kafka documentation](https://kafka.apache.org/).
 
@@ -566,3 +566,66 @@ python main.py --csv out.csv --topic my-topic --brokers localhost:9092 --respect
 
 </TabItem>
 </Tabs>
+
+## Recording Kafka Traffic with proxymock {#recording}
+
+You can record Kafka traffic locally using proxymock's `--map` flag. This creates a reverse proxy that captures the Kafka wire protocol between your application and the broker.
+
+### Start the Recorder
+
+```bash
+proxymock record --map 19092=localhost:9092
+```
+
+This tells proxymock to listen on port 19092 and forward Kafka traffic to the real broker on port 9092.
+
+### Configure Your Application
+
+Point your Kafka client at the mapped port:
+
+```bash
+export KAFKA_BOOTSTRAP_SERVERS=localhost:19092
+./my-app
+```
+
+Or in your application configuration (Spring Boot example):
+
+```yaml
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+```
+
+Then start with the mapped port:
+
+```bash
+KAFKA_BROKERS=localhost:19092 java -jar target/my-app.jar
+```
+
+### What Gets Recorded
+
+proxymock captures the Kafka binary wire protocol including `ApiVersions`, `Metadata`, `Produce`, `Fetch`, `FindCoordinator`, `JoinGroup`, `SyncGroup`, and other API operations. Each request/response pair is stored as an RRPair file.
+
+## Mocking Kafka with proxymock {#mocking}
+
+After recording Kafka traffic, you can mock the broker for local development and testing. This lets your application run without a real Kafka broker.
+
+```bash
+proxymock mock
+```
+
+proxymock starts a Kafka mock provider on the port from the recording (typically 9092). Your application connects normally and receives recorded responses.
+
+To map to a different port:
+
+```bash
+proxymock mock --map 19092=localhost:9092
+```
+
+## Kubernetes and eBPF {#kubernetes}
+
+In Kubernetes environments, Speedscale's eBPF collector (`nettap`) captures Kafka traffic automatically at the kernel level — no `--map` configuration, proxy settings, or application changes required. The collector uses kprobes and uprobes to observe TCP and TLS traffic directly, including Kafka's binary wire protocol.
+
+This means the `--map` workflow described above applies to **local development** only. When your application is deployed in Kubernetes with the Speedscale operator, Kafka traffic is captured transparently alongside all other protocols.
+
+For details on eBPF-based traffic collection, see the [eBPF Traffic Collection](/reference/ebpf-traffic-collection/) documentation.

@@ -65,7 +65,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Google BigTable       | DBMS | Full         | If using the Google SDK with standard pagination |
 | Google Spanner        | DBMS | Full         | If using the Google SDK with standard pagination |
 | Microsoft Outlook 365 | API  | Full         |                                                  |
-| MongoDB               | DBMS | Capture Only |                                                  |
+| MongoDB               | DBMS | Full         | See [proxymock guide](/proxymock/guides/mongodb)  |
 | MySQL                 | DBMS | Full         |                                                  |
 | Postgres              | DBMS | Full         | See [details](/guides/capture/bodies#postgres)       |
 | Redis                 | DBMS | Capture Only | See [details](/guides/capture/bodies#redis)          |
