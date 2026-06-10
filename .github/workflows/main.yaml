@@ -39,7 +39,7 @@ jobs:
         install-command: yarn --frozen-lockfile --silent
 
     - name: check redirects
-      run: node scripts/check-redirects.mjs HEAD~1
+      run: node scripts/check-redirects.mjs ${{ github.before }}
 
     - name: build
       run: yarn build
