@@ -21,6 +21,8 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -31,6 +33,9 @@ jobs:
       uses: bahmutov/npm-install@v1
       with:
         install-command: yarn --frozen-lockfile --silent
+
+    - name: check redirects
+      run: node scripts/check-redirects.mjs ${{ github.event.pull_request.base.sha }}
 
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v4
