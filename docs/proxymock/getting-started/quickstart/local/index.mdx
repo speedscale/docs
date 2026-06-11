@@ -1,0 +1,64 @@
+---
+title: Local Recording (Desktop)
+description: Record locally on your desktop using proxymock CLI or MCP, then inspect and replay in proxymock web.
+---
+
+# Local Recording (Desktop)
+
+Record traffic on your machine and generate mocks/tests. Use the CLI or MCP to create a recording, then open proxymock web to explore, transform, and replay.
+
+## Overview
+- Record with CLI or MCP on your desktop
+- Inspect requests in proxymock web (Requests tab)
+- Replay locally or run in cluster (optional)
+
+## Prerequisites
+- proxymock installed (CLI) and API key configured
+- Your service can run locally
+- Optional: start proxymock web to browse results
+
+```bash title="Start the web UI (optional)"
+proxymock web
+# Open the printed http://127.0.0.1:XXXX URL
+```
+
+## Option A — CLI workflow
+Follow the end-to-end CLI quickstart for recording, inspecting, mocking, and replaying:
+
+- Quickstart (CLI): /proxymock/getting-started/quickstart/quickstart-cli/
+
+Key steps in brief:
+1) Install and init: `proxymock init`
+2) Record: `proxymock record -- <your run command>`
+3) Exercise your app: curl/tests hit proxymock IN port (default 4143)
+4) Inspect recordings in `./proxymock/recorded-*` and in proxymock web (Requests tab)
+5) Mock + Replay: `proxymock mock -- <run>` and `proxymock replay --test-against http://localhost:8080`
+
+Screenshot placeholder: ./images/proxymock-web-requests-list.png
+
+## Option B — MCP workflow
+Use your AI coding assistant (Cursor, Claude Code, Copilot Agent, etc.) to run the same steps via MCP:
+
+- Quickstart (MCP): /proxymock/getting-started/quickstart/quickstart-mcp/
+
+Example prompts:
+- “Record traffic for my service using proxymock, then show me the recorded files.”
+- “Start a mock server with proxymock and replay the recorded traffic against my app.”
+
+## View and iterate in proxymock web
+
+After recording, open proxymock web (if not already running):
+
+1) Start: `proxymock web` → open URL
+2) Requests tab: choose your `recorded-*` run from the Run selector
+3) Inspect a request/response pair and apply transforms as needed
+
+Screenshot placeholders:
+- ./images/proxymock-web-run-selector.png
+- ./images/proxymock-web-request-detail.png
+
+## Next steps
+- Run in Cluster: /proxymock/getting-started/quickstart/in-cluster/
+- Live Tail (Web): /proxymock/getting-started/quickstart/live-tail/
+- How It Works: /proxymock/how-it-works/
+- Guides: /proxymock/guides/

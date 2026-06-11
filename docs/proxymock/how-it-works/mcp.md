@@ -1,5 +1,5 @@
 ---
-description: "Explore the Model Context Protocol (MCP) for ProxyMock to enable seamless integration with AI tools and enhance your API testing and mocking capabilities."
+description: "Explore the Model Context Protocol (MCP) for proxymock to enable seamless integration with AI tools and enhance your API testing and mocking capabilities."
 sidebar_position: 6
 ---
 
@@ -87,7 +87,7 @@ The `proxymock init` command should automatically check for the presence of comm
 
 :::info
 
-If the `proxymock init` command fails or you are using an unknown IDE, you can manually configure the ProxyMock MCP server by modifying your client's `mcp.json`. This should not be necessary for most users.
+If the `proxymock init` command fails or you are using an unknown IDE, you can manually configure the proxymock MCP server by modifying your client's `mcp.json`. This should not be necessary for most users.
 
 ```json
 {

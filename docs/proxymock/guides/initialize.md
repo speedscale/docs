@@ -1,5 +1,5 @@
 ---
-description: "Initialize your API key for ProxyMock by following simple command prompts, ensuring secure management with Speedscale for your development needs."
+description: "Initialize your API key for proxymock by following simple command prompts, ensuring secure management with Speedscale for your development needs."
 sidebar_position: 1
 ---
 

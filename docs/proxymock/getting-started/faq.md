@@ -1,5 +1,5 @@
 ---
-description: "Explore the FAQ for ProxyMock, covering supported protocols, Windows compatibility, differences from Speedscale Enterprise, and mock server functionality."
+description: "Explore the FAQ for proxymock, covering supported protocols, Windows compatibility, differences from Speedscale Enterprise, and mock server functionality."
 sidebar_position: 4
 ---
 
@@ -19,7 +19,7 @@ Yes. The **proxymock** cli is available as a native Windows executable. Alternat
 
 Speedscale Enterprise is a cloud platform that allows you to create, manage, and scale mock servers. It allows you to record from a real production environment and bring that environment back to your desktop. That is a paid product that requires a subscription (and helps fund **proxymock** development).
 
-## Can Proxymock be used as a shared mock server to replace part of a dev environment?
+## Can proxymock be used as a shared mock server to replace part of a dev environment?
 
 Most definitely, but for that you need to consider an Enterprise subscription. Beyond licensing, you will need the more sophisticated tools provided by Speedscale Enterprise to manage that use case.
 

@@ -1,6 +1,6 @@
 ---
 title: Kafka
-description: "Record, mock, and replay Kafka traffic using Speedscale and ProxyMock for efficient traffic simulation and testing."
+description: "Record, mock, and replay Kafka traffic using Speedscale and proxymock for efficient traffic simulation and testing."
 sidebar_position: 12
 ---
 

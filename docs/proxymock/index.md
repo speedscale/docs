@@ -1,5 +1,5 @@
 ---
-description: "Create a sandbox for testing your Go application with ProxyMock, featuring automatic test generation and a mock server setup in just 30 seconds."
+description: "Create a sandbox for testing your Go application with proxymock, featuring automatic test generation and a mock server setup in just 30 seconds."
 sidebar_position: 1
 ---
 import Tabs from '@theme/Tabs';
@@ -17,7 +17,7 @@ import {
 
 # Overview
 
-This guide is the Proxymock entry point. Start with the install and quickstart flow, or jump straight to the language-specific first-success path that matches your app.
+This guide is the proxymock entry point. Start with the install and quickstart flow, or jump straight to the language-specific first-success path that matches your app.
 
 ## [Getting started in 30 seconds](./getting-started/quickstart) {#getting-started}
 

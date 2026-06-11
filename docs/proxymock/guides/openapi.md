@@ -1,5 +1,5 @@
 ---
-description: "Generate mocks from OpenAPI specifications using ProxyMock to create instant mock API responses for rapid testing and development."
+description: "Generate mocks from OpenAPI specifications using proxymock to create instant mock API responses for rapid testing and development."
 sidebar_position: 7
 ---
 
@@ -156,10 +156,10 @@ A: Simply edit the markdown files after generation. You can change any part of t
 ## Additional Resources
 
 - [OpenAPI Specification](https://swagger.io/specification/)
-- [Proxymock RRPair Markdown Format](https://docs.speedscale.com/proxymock/how-it-works/rrpair-format/)
+- [proxymock RRPair Markdown Format](https://docs.speedscale.com/proxymock/how-it-works/rrpair-format/)
 
 ## Summary
 
-The OpenAPI to RRPair feature is fast way to turn your API specification into a working mock server. It's ideal for rapid development, testing, and continuous integration. Try it out today and accelerate your API workflows! Proxymock paid tier plans allow running the mock server in Kubernetes or other long lived environments.
+The OpenAPI to RRPair feature is fast way to turn your API specification into a working mock server. It's ideal for rapid development, testing, and continuous integration. Try it out today and accelerate your API workflows! proxymock paid tier plans allow running the mock server in Kubernetes or other long lived environments.
 
 If you have questions or feedback, please reach out to the proxymock team in our [community](https://slack.speedscale.com).

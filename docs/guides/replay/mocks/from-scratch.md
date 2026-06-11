@@ -1,6 +1,6 @@
 ---
 title: From Scratch
-description: "Create mock services from scratch with ProxyMock by seeding and deleting mock responses, and configuring passthrough mode for effective API testing."
+description: "Create mock services from scratch with proxymock by seeding and deleting mock responses, and configuring passthrough mode for effective API testing."
 sidebar_position: 20
 ---
 

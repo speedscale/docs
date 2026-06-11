@@ -1,0 +1,62 @@
+---
+title: Live Tail (Web)
+description: Stream live RRPairs from your cluster in proxymock web, view counters and logs, and pivot to captured requests.
+---
+
+# Live Tail (Web)
+
+Live Tail streams requests from your cluster into proxymock web in real time. Use it to observe activity, verify traffic is flowing, and pivot to the captured requests for mocking or replay.
+
+## Prerequisites
+- proxymock web running locally: `proxymock web`
+- Connected cluster in Observability (Forwarder reachable)
+
+## 1) Connect to your cluster
+
+Open Observability → Topology. If needed, use Retry to connect (auto port-forward), or switch kube context.
+
+![Observability → Topology with the cluster connected](../in-cluster/images/proxymock-web-observability-connect.png)
+
+## 2) Start a Live Tail session (workload tap)
+
+From the Topology view:
+1) Pick a namespace, click a workload to open its pane
+2) Start a live tap session for that workload (the UI provides start/stop controls)
+3) Generate some load on the service
+
+The persistent “Live capture” card appears at the top of the content area showing broadcast/received/written counters and per-session actions.
+
+![Selected workload pane with Overview tab](../in-cluster/images/proxymock-web-workload-pane.png)
+
+![Persistent live-tap card with active session and counters](../in-cluster/images/proxymock-web-tap-card.png)
+
+Tips:
+- The tap card shows all active sessions. Click “View” to jump to Requests scoped to that run
+- Click “Stop” to end a session; previously captured data remains available
+
+## 3) Inspect captured requests
+
+Go to the Requests tab. Use the Run selector to scope to the current live-tail run; filter by host, method, path. Open details to view full request/response (headers, body, timing).
+
+![Requests grid with Run selector](../in-cluster/images/proxymock-web-requests-run.png)
+
+![Drilled-in RRPair detail pane](../in-cluster/images/proxymock-web-request-detail.png)
+
+## 4) Optional — Replay or mock
+
+With a live-tail run selected you can:
+- Replay locally against a URL
+- Or switch to the Replay tab and “Run in cluster” against a Workload/Service, with optional dependency mocking
+
+![Cluster namespace + Cluster Workload destination](../in-cluster/images/proxymock-web-replay-destination.png)
+
+![Run in cluster button in the replay toolbar](../in-cluster/images/proxymock-web-replay-cluster-button.png)
+
+## Data considerations
+- Live Tail streams metadata and payloads; apply DLP when exporting to cloud
+- Enterprise isolation: consider BYOC if data residency constraints apply
+
+## Next steps
+- In-Cluster (Web): /proxymock/getting-started/quickstart/in-cluster/
+- How It Works: /proxymock/how-it-works/
+- Guides: /proxymock/guides/

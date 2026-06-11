@@ -132,7 +132,7 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "Local Development (AI)",
+      label: "Local Development",
       items: [
         "proxymock/index",
         {
@@ -140,19 +140,20 @@ const sidebars = {
           label: "Getting Started",
           items: [
             "proxymock/getting-started/installation",
-            "proxymock/getting-started/faq",
-            "proxymock/getting-started/help",
-            "proxymock/getting-started/language-reference",
             {
               type: "category",
               label: "Quickstart",
               items: [
                 "proxymock/getting-started/quickstart/index",
-                "proxymock/getting-started/quickstart/quickstart-cli",
-                "proxymock/getting-started/quickstart/quickstart-mcp",
+                "proxymock/getting-started/quickstart/local/index",
+                "proxymock/getting-started/quickstart/in-cluster/index",
+                "proxymock/getting-started/quickstart/live-tail/index",
               ],
               collapsed: true,
             },
+            "proxymock/getting-started/faq",
+            "proxymock/getting-started/help",
+            "proxymock/getting-started/language-reference",
           ],
           collapsed: true,
         },
