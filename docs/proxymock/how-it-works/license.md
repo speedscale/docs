@@ -1,6 +1,6 @@
 ---
 title: License
-description: "Review the licensing terms for ProxyMock, including the End User License Agreement and usage restrictions for the closed-source CLI and open-source extension."
+description: "Review the licensing terms for proxymock, including the End User License Agreement and usage restrictions for the closed-source CLI and open-source extension."
 sidebar_position: 1000
 ---
 

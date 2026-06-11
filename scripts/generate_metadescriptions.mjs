@@ -103,7 +103,7 @@ async function generateDescription(title, plainText) {
         content: `You write SEO meta descriptions for technical documentation pages. Rules:
 - Exactly 1 sentence, 130-155 characters (hard limit)
 - Start with an action verb or the main topic
-- Include the product name "Speedscale" or "ProxyMock" when relevant
+- Include the product name "Speedscale" or "proxymock" when relevant
 - Be specific about what the page covers
 - No quotes, no markdown, no trailing period
 - Write for developers searching for API testing, traffic replay, or mocking solutions`,

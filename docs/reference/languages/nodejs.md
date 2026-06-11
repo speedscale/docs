@@ -1,6 +1,6 @@
 ---
 title: Node.js
-description: "Node.js guidance for Speedscale and Proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
+description: "Node.js guidance for Speedscale and proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
 sidebar_position: 3
 ---
 
@@ -8,10 +8,10 @@ import ProxymockLanguageWorkflow from '@site/src/components/ProxymockLanguageWor
 
 # Node.js
 
-Node.js is fully supported by Speedscale, but proxy behavior depends on the HTTP client library. Use this page for Node-specific proxy settings, TLS trust configuration, demo guidance, and the Proxymock local workflow.
+Node.js is fully supported by Speedscale, but proxy behavior depends on the HTTP client library. Use this page for Node-specific proxy settings, TLS trust configuration, demo guidance, and the proxymock local workflow.
 
 - Support matrix: [Technology Support](/reference/technology-support)
-- Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
+- Shared proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 
 ## Kubernetes Sidecar
 
@@ -39,15 +39,15 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 - Local run: `npm install && npm start`
 - Quick validation: `curl http://localhost:3000/`
 
-This is the current public Node.js demo used for local Proxymock examples.
+This is the current public Node.js demo used for local proxymock examples.
 
-## Proxymock {#proxymock}
+## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
   intro="Use this path for the fastest Node.js first success on a developer workstation."
   steps={[
     {
-      title: 'Install and initialize Proxymock',
+      title: 'Install and initialize proxymock',
       command: `brew install speedscale/tap/proxymock
 proxymock init`,
       note: 'Use browser sign-in by default. Use `proxymock init --api-key <your key>` only for CI or other headless environments.',

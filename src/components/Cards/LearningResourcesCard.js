@@ -20,7 +20,7 @@ const LearningResourcesCard = () => {
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
         <a href="https://modelcontextprotocol.io/docs/integrations" className="button button--primary">MCP Guide</a>
         <a href="https://github.com/features/copilot#best-practices" className="button button--secondary" style={{ marginLeft: '0.5rem' }}>Best Practices</a>
-        <a href="https://docs.speedscale.com/proxymock/" className="button button--secondary" style={{ marginLeft: '0.5rem' }}>Proxymock Docs</a>
+        <a href="https://docs.speedscale.com/proxymock/" className="button button--secondary" style={{ marginLeft: '0.5rem' }}>proxymock Docs</a>
       </CardFooter>
     </Card>
   );

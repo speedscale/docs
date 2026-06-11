@@ -1,14 +1,12 @@
 ---
-description: "Create a mock server and tests for your Go application with ProxyMock's quickstart guide, covering installation, traffic recording, and test execution."
+description: "Create a mock server and tests for your Go application with proxymock's quickstart guide, covering installation, traffic recording, and test execution."
 sidebar_position: 1
 ---
 import ArchitectureOverview from './outerspace-go.png'
 
-# Quickstart
+# Quickstart: Choose Your Path
 
-Welcome to proxymock!
-
-This guide provides a step-by-step approach to creating a [mock server](/reference/glossary.md#mock-server) and tests for a simple Go application. Choose your preferred workflow below:
+Welcome to proxymock! Pick the workflow that matches your environment. Each path helps you create a [mock server](/reference/glossary.md#mock-server) and tests from real traffic.
 
 ## What You'll Learn
 
@@ -22,16 +20,17 @@ Both workflows will teach you how to:
 
 ## Choose Your Workflow
 
-### 🖥️ Command Line Interface (CLI)
-**For software engineers who prefer traditional command-line tools**
+### 🖥️ Local Recording (Desktop)
+Record a local service and generate mocks/tests. Best for fast, single-machine workflows. Choose CLI or MCP.
 
-Use the proxymock CLI directly from your terminal to record traffic, create mocks, and run tests. This approach gives you full control over each step and is ideal for automation and scripting.
+**[Go to Local Recording →](./local/)**
 
-**[Start CLI Tutorial →](./quickstart-cli.md)**
+### ☸️ In-Cluster Recording (Web)
+Start a recording inside your Kubernetes cluster from proxymock web. Best for realistic, in-environment traffic.
 
-### 🤖 MCP Workflow (LLM-Driven)
-**For developers using AI coding assistants like Cursor, Claude, or GitHub Copilot**
+**[Go to In-Cluster →](./in-cluster/)**
 
-Leverage the power of AI coding assistants with proxymock's MCP (Model Context Protocol) integration. Simply describe what you want to do in natural language, and your LLM will execute the appropriate proxymock commands.
+### 📡 Live Tail (Web)
+Stream traffic live from proxymock web and selectively capture what you need for mocks and tests.
 
-**[Start MCP Tutorial →](./quickstart-mcp.md)**
+**[Go to Live Tail →](./live-tail/)**

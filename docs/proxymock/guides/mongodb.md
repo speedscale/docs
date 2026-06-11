@@ -1,5 +1,5 @@
 ---
-description: "Mock MongoDB database connections and queries for local development using ProxyMock to record and replay real MongoDB wire protocol traffic."
+description: "Mock MongoDB database connections and queries for local development using proxymock to record and replay real MongoDB wire protocol traffic."
 sidebar_position: 7
 ---
 

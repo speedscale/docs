@@ -1,6 +1,6 @@
 ---
 title: Python
-description: "Python guidance for Speedscale and Proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
+description: "Python guidance for Speedscale and proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
 sidebar_position: 5
 ---
 
@@ -8,10 +8,10 @@ import ProxymockLanguageWorkflow from '@site/src/components/ProxymockLanguageWor
 
 # Python
 
-Python is fully supported by Speedscale. Use this page for Python-specific proxy settings, TLS trust configuration, demo guidance, and the Proxymock local workflow.
+Python is fully supported by Speedscale. Use this page for Python-specific proxy settings, TLS trust configuration, demo guidance, and the proxymock local workflow.
 
 - Support matrix: [Technology Support](/reference/technology-support)
-- Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
+- Shared proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 
 ## Kubernetes Sidecar
 
@@ -38,15 +38,15 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 - Local run: `make local`
 - Traffic generator: `make capture`
 
-This is the current public Python demo used for local Proxymock examples.
+This is the current public Python demo used for local proxymock examples.
 
-## Proxymock {#proxymock}
+## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
   intro="Use this path for the fastest Python first success on a developer workstation."
   steps={[
     {
-      title: 'Install and initialize Proxymock',
+      title: 'Install and initialize proxymock',
       command: `brew install speedscale/tap/proxymock\nproxymock init`,
       note: 'Use browser sign-in by default. Use `proxymock init --api-key <your key>` only for CI or other headless environments.',
     },
@@ -63,7 +63,7 @@ This is the current public Python demo used for local Proxymock examples.
     {
       title: 'Capture a real workflow',
       command: `cd demo/python\nmake capture`,
-      note: 'The capture flow records outbound SpaceX traffic through Proxymock.',
+      note: 'The capture flow records outbound SpaceX traffic through proxymock.',
     },
     {
       title: 'Run with mocks',

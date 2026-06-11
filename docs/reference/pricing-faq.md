@@ -71,7 +71,7 @@ Limit sidecar injection to namespaces, clusters, or services with active testing
 Yes. Speedscale offers the ability to:
 
 - **Record once, replay many times**: Replays of previously recorded traffic do not count as new ingest, although the test artifacts will cause some minor ingest.
-- **Use local Proxymock recordings**: Capture and replay traffic locally during development without involving the sidecar or ingesting data into the Speedscale cloud. Limits apply but this is a good option for quick local regressions.
+- **Use local proxymock recordings**: Capture and replay traffic locally during development without involving the sidecar or ingesting data into the Speedscale cloud. Limits apply but this is a good option for quick local regressions.
 
 
 You can see current and historical usage by navigating to **Settings > Usage** in the Speedscale UI. Detailed breakdowns by service and namespace are available for the last seven days to help identify cost centers. Click on the main navigation -> Services for a list of services that have reported traffic in the last seven days.

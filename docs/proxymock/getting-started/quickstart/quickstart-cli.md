@@ -46,7 +46,7 @@ Select your environment below and all instructions will update accordingly. If y
     3. Select the **"Codespaces"** tab
     4. Click **"Create codespace on main"**
     5. Wait for the environment to initialize (usually 1-2 minutes)
-    6. Once ready, you'll have a VS Code environment in your browser with Go and ProxyMock pre-installed
+    6. Once ready, you'll have a VS Code environment in your browser with Go and proxymock pre-installed
 
   </TabItem>
   <TabItem value="binary" label="🔧 Other">
@@ -100,7 +100,7 @@ For this example we'll be using a simple demo app that accepts an API request, c
     No need to run any install scripts:
 
     :::note Codespaces Environment
-    ProxyMock is automatically available in the outerspace-go Codespace.
+    proxymock is automatically available in the outerspace-go Codespace.
     :::
 
   </TabItem>

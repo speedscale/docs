@@ -11,7 +11,7 @@ import ApiKey from './getting-started/installation/install/api-key.png'
 # Quick Start
 
 :::info Local installation
-For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. See **[Local Development (AI) – Getting Started](/proxymock/)** to install proxymock and get started in about 30 seconds.
+For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. See **[Local Development – Getting Started](/proxymock/)** to install proxymock and get started in about 30 seconds.
 :::
 
 :::tip Security options

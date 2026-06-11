@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: "Explore the architecture of ProxyMock to understand how it captures and replays traffic for API testing without modifying your application setup"
+description: "Explore the architecture of proxymock to understand how it captures and replays traffic for API testing without modifying your application setup"
 sidebar_position: 1
 ---
 
@@ -15,7 +15,7 @@ traffic to and from your application.
 Get a feel for the shape your local system with various **proxymock** configurations:
 
 <Tabs>
-  <TabItem value="no-proxymock" label="No Proxymock">
+  <TabItem value="no-proxymock" label="No proxymock">
 This is probably close what your setup looks like.  A client making requests to
 your app's API (listening on port `8080` in this case) and your app making
 requests to various other services, APIs, databases, etc.

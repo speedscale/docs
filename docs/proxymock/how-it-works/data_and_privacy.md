@@ -1,6 +1,6 @@
 ---
 title: Data and Privacy
-description: "Ensure data security and privacy with ProxyMock, which handles your data responsibly and complies with strict best practices during API testing."
+description: "Ensure data security and privacy with proxymock, which handles your data responsibly and complies with strict best practices during API testing."
 sidebar_position: 11
 ---
 

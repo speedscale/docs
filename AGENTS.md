@@ -13,7 +13,7 @@ This document orients any AI coding agent working in this repository. Follow the
 ## Project Overview
 This is Speedscale's documentation website built with Docusaurus 3 (currently 3.8.1). Speedscale is an API testing platform that uses traffic capture and replay for stress testing APIs with real-world scenarios. The documentation covers two main products:
 - **Speedscale Platform**: Full enterprise API testing platform  
-- **ProxyMock**: Local development tool for mocking APIs
+- **proxymock**: Local development tool for mocking APIs
 
 ## Development Commands
 
@@ -101,7 +101,7 @@ When deleting pages, always add redirects to `docusaurus.config.js` to prevent b
 
 #### **Phase 1: Critical Content Gaps**
 - **Setup/Upgrade Documentation**: Expand beyond operator upgrades to include CLI/Docker procedures, rollback guides
-- **ProxyMock Guides**: Currently minimal (4 files) - needs comprehensive getting started guides, troubleshooting, integration examples
+- **proxymock Guides**: Currently minimal (4 files) - needs comprehensive getting started guides, troubleshooting, integration examples
 - **Transform Documentation Consolidation**: Content split between `/transform/` and `/reference/transform-traffic/` - consolidate for clarity
 
 #### **Phase 2: Information Architecture**

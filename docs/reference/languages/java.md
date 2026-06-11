@@ -1,6 +1,6 @@
 ---
 title: Java
-description: "Java guidance for Speedscale and Proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
+description: "Java guidance for Speedscale and proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
 sidebar_position: 1
 ---
 
@@ -8,10 +8,10 @@ import ProxymockLanguageWorkflow from '@site/src/components/ProxymockLanguageWor
 
 # Java
 
-Java is fully supported by Speedscale. Use this page for Java-specific proxy settings, TLS trust configuration, demo guidance, and the Proxymock local workflow.
+Java is fully supported by Speedscale. Use this page for Java-specific proxy settings, TLS trust configuration, demo guidance, and the proxymock local workflow.
 
 - Support matrix: [Technology Support](/reference/technology-support)
-- Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
+- Shared proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 - Shared sidecar docs: [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and [TLS Support](/getting-started/installation/sidecar/tls.md)
 - GKE Autopilot guidance: [GCP](/guides/integrations/gcp.md)
 
@@ -23,7 +23,7 @@ Quick links:
 - [Transparent sidecar](#transparent-sidecar)
 - [Dual sidecar](#dual-sidecar)
 - [TLS Trust](#tls-trust)
-- [Proxymock](#proxymock)
+- [proxymock](#proxymock)
 
 ## eBPF / Java Agent {#ebpf-java-agent}
 
@@ -131,10 +131,10 @@ How that trust is configured depends on the capture mode:
   value.
 - Dual sidecar: truststore configuration alone is not enough. You also need the Java proxy flags shown in
   [Dual Sidecar](#dual-sidecar).
-- Proxymock: use the local truststore flags shown in the shared
+- proxymock: use the local truststore flags shown in the shared
   [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page.
 
-## Proxymock {#proxymock}
+## proxymock {#proxymock}
 
 Use this for local development and CI. Conceptually this is similar to dual proxy mode because Java sends
 traffic through a forward proxy and trusts the proxymock CA, but it does not use Kubernetes annotations.
@@ -146,13 +146,13 @@ traffic through a forward proxy and trusts the proxymock CA, but it does not use
 - Local run: `make local`
 - Traffic generator: `make client` or `make client-capture`
 
-This is the current public Java demo used for local Proxymock examples.
+This is the current public Java demo used for local proxymock examples.
 
 <ProxymockLanguageWorkflow
   intro="Use this path for the fastest Java first success on a developer workstation."
   steps={[
     {
-      title: 'Install and initialize Proxymock',
+      title: 'Install and initialize proxymock',
       command: `brew install speedscale/tap/proxymock
 proxymock init`,
       note: 'Use browser sign-in by default. Use `proxymock init --api-key <your key>` only for CI or other headless environments.',

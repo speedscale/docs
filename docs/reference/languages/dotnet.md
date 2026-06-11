@@ -1,6 +1,6 @@
 ---
 title: .NET
-description: ".NET guidance for Speedscale and Proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
+description: ".NET guidance for Speedscale and proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
 sidebar_position: 2
 ---
 
@@ -8,10 +8,10 @@ import ProxymockLanguageWorkflow from '@site/src/components/ProxymockLanguageWor
 
 # .NET
 
-.NET is fully supported by Speedscale. Use this page for .NET-specific proxy settings, TLS trust configuration, demo guidance, and the Proxymock local workflow.
+.NET is fully supported by Speedscale. Use this page for .NET-specific proxy settings, TLS trust configuration, demo guidance, and the proxymock local workflow.
 
 - Support matrix: [Technology Support](/reference/technology-support)
-- Shared Proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
+- Shared proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 
 ## Kubernetes Sidecar
 
@@ -38,15 +38,15 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 - Local run: `dotnet run`
 - Quick validation: `curl http://localhost:5128/health`
 
-This is the current public .NET demo used for local Proxymock examples.
+This is the current public .NET demo used for local proxymock examples.
 
-## Proxymock {#proxymock}
+## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
   intro="Use this path for the fastest .NET first success on a developer workstation."
   steps={[
     {
-      title: 'Install and initialize Proxymock',
+      title: 'Install and initialize proxymock',
       command: `brew install speedscale/tap/proxymock
 proxymock init`,
       note: 'Use browser sign-in by default. Use `proxymock init --api-key <your key>` only for CI or other headless environments.',
