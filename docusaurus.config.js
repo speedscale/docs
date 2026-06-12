@@ -1513,7 +1513,8 @@ const config = {
       attributes: {
         type: "text/javascript",
       },
-      innerHTML: `(function(h,o,u,n,d) {
+      innerHTML: `if (window.location.hostname === 'docs.speedscale.com') {
+  (function(h,o,u,n,d) {
     h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
     d=o.createElement(u);d.async=1;d.src=n
     n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
@@ -1529,8 +1530,21 @@ const config = {
       sessionReplaySampleRate: 0,
       trackBfcacheViews: true,
       defaultPrivacyLevel: 'mask-user-input',
+      beforeSend: function(event) {
+        if (event.type !== 'error' || !event.error) return true;
+        var msg = typeof event.error.message === 'string' ? event.error.message : '';
+        // ChunkLoadError: stale tab loaded an index.html that referenced
+        // chunks rotated by a later deploy. Standard Docusaurus pattern,
+        // not actionable in code.
+        if (msg.indexOf('ChunkLoadError') !== -1 || msg.indexOf('Loading chunk') !== -1) return false;
+        // webpack-dev-server WebSocket errors from localhost — belt &
+        // suspenders with the hostname gate above.
+        if (msg.indexOf('webpack-dev-server') !== -1) return false;
+        return true;
+      },
     });
-  })`,
+  });
+}`,
     },
   ],
 
