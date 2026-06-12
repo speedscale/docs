@@ -76,7 +76,6 @@ The site uses a hierarchical structure organized in `/docs/` with these main sec
 
 When deleting pages, always add redirects to `docusaurus.config.js` to prevent broken links. The site uses:
 - Algolia for search functionality
-- HubSpot integration for lead tracking  
 - Google Tag Manager for analytics
 - Mermaid for diagram rendering
 
@@ -86,7 +85,7 @@ When deleting pages, always add redirects to `docusaurus.config.js` to prevent b
 - **React**: 19.0.0  
 - **Node**: >=18.0 required
 - **Search**: Algolia DocSearch
-- **Analytics**: Google Tag Manager, HubSpot
+- **Analytics**: Google Tag Manager
 
 ## Documentation Improvement Plan
 
