@@ -1513,11 +1513,21 @@ const config = {
       attributes: {
         type: "text/javascript",
       },
-      innerHTML: `(function(h,o,u,n,d) {
+      innerHTML: `if (window.location.hostname === 'docs.speedscale.com') {
+  // Errors we know are not actionable in this codebase, so we drop them
+  // before reporting. Keeps the analytics dashboard focused on real bugs.
+  var ignoredErrors = [
+    /ChunkLoadError/,            // stale tab: a deploy rotated chunk filenames
+    /Loading chunk \\d+ failed/,  // same root cause, different message shape
+    /webpack-dev-server/,        // dev-server WebSocket warnings
+  ];
+
+  (function(h,o,u,n,d) {
     h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
     d=o.createElement(u);d.async=1;d.src=n
     n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n)
-  })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v6/datadog-rum.js','DD_RUM')
+  })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v6/datadog-rum.js','DD_RUM');
+
   window.DD_RUM.onReady(function() {
     window.DD_RUM.init({
       clientToken: 'pub2019c1346c7ab4080cf258cb4d94d3c9',
@@ -1529,8 +1539,14 @@ const config = {
       sessionReplaySampleRate: 0,
       trackBfcacheViews: true,
       defaultPrivacyLevel: 'mask-user-input',
+      beforeSend: function(event) {
+        if (event.type !== 'error') return true;
+        var msg = (event.error && event.error.message) || '';
+        return !ignoredErrors.some(function(re) { return re.test(msg); });
+      },
     });
-  })`,
+  });
+}`,
     },
   ],
 
