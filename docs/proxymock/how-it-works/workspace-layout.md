@@ -32,7 +32,7 @@ proxymock/
 ├── .metadata/                   # snapshot binding (transforms, tokenizer config)
 │   └── snapshot.json
 ├── .proxymock/                  # web-UI state (backups, dismissed hints, vendored assets)
-└── .proxymock-replay/           # transient replay scratch — regenerated every run
+└── .replay/                     # transient replay scratch — regenerated every run
     └── .metadata/snapshot.json
 ```
 
@@ -79,24 +79,34 @@ Web-UI state — backups taken before destructive edits, dismissed recommendatio
 hints, saved replay configurations, and vendored UI assets. This is bookkeeping
 for the `proxymock web` experience, not part of your traffic data.
 
-### `.proxymock-replay/`
+### `.replay/`
 Transient scratch written at the start of every replay. It holds the merged
-blueprint overlay (`.proxymock-replay/.metadata/snapshot.json`) that the replay
-runner layers on top of your recordings. It is regenerated from `blueprints/` and
-`.metadata/` on every run, so it is always safe to delete.
+blueprint overlay (`.replay/.metadata/snapshot.json`) that the replay runner
+layers on top of your recordings. It is regenerated from `blueprints/` and
+`.metadata/` on every run, so it is always safe to delete. (Workspaces created
+before this directory was renamed may still have a `.proxymock-replay/`; it is
+the same thing and equally safe to remove.)
 
 ## What is safe to delete
 
 | Path | Safe to delete? | What you lose |
 | --- | --- | --- |
-| `.proxymock-replay/` | **Yes** | Nothing — regenerated on the next replay |
+| `.replay/` | **Yes** | Nothing — regenerated on the next replay |
 | `results/` | **Yes** | Previous replay/mock output (re-created on the next run) |
 | `.proxymock/` | Mostly | Web-UI convenience state (backups, dismissed hints) |
 | `recorded-<timestamp>/` | **No** | Your recordings — the source of truth |
 | `.metadata/`, `blueprints/`, `dataframes/` | **No** | Transform and snapshot configuration |
 
-To prune everything that proxymock can regenerate while keeping your recordings
-and transforms, remove `results/` and `.proxymock-replay/`.
+The quickest way to prune everything proxymock can regenerate — `results/` and
+`.replay/` — while keeping your recordings and transforms is:
+
+```shell
+proxymock clean
+```
+
+It removes only the regenerable directories (and the legacy `.proxymock-replay/`),
+never your recordings or transform config. Pass `--dry-run` to preview, `--cache`
+to also clear `.proxymock/`, or `--in <dir>` to target a specific workspace.
 
 ## Recommended `.gitignore`
 
@@ -106,21 +116,23 @@ configuration but ignore the regenerable and machine-local directories:
 ```gitignore
 # proxymock — regenerable / machine-local
 proxymock/results/
-proxymock/.proxymock-replay/
+proxymock/.replay/
 proxymock/.proxymock/
 ```
 
 ## Keeping the workspace tidy
 
-A few habits avoid scattered or confusing directories:
+A few habits keep the workspace clean:
 
-- **Run proxymock from the same directory each time.** The default output
-  location is resolved relative to where you run the command, so running from the
-  workspace parent on one invocation and from inside `proxymock/` on the next can
-  drop directories in two places. Pick one and stick with it, or pass `--out`
-  explicitly.
-- **Use `--out` in scripts and CI** so output lands in a known, stable location
-  regardless of the working directory.
+- **`replay` and `mock` output follows `--in`.** Their default output location is
+  anchored to the workspace your input comes from, so it lands in the same place
+  regardless of which directory you launch from. `record` (which has no `--in`)
+  anchors to an existing `proxymock/` at or above the current directory — run it
+  from the same place each time, or pass `--out`, to avoid creating a second
+  workspace under a different directory.
+- **Use `--out` in scripts and CI** when you want output in a specific, fixed
+  location.
+- **Run `proxymock clean` periodically** to clear regenerable output and scratch.
 - **Sync recordings, not results.** When copying a workspace between machines or
   to cloud storage, exclude `results/` and the hidden scratch directories — they
   regenerate on the destination. See
