@@ -1,19 +1,21 @@
 ---
-description: "Fix authentication errors on replay with proxymock recommendations. proxymock detects an expired bearer/OAuth token handshake in your recording and generates a smart_replace blueprint that re-uses the freshly minted token on every protected request."
+description: "Fix replay failures with proxymock recommendations. proxymock detects values that change between runs — expired bearer tokens, dynamic cart/order/item IDs — and generates smart_replace blueprints that correlate the new value forward on every dependent request."
 sidebar_position: 7
 ---
 
-# Fix Auth Errors on Replay with Recommendations
+# Fix Replay Failures with Recommendations
 
-Walk through the same workflow on video:
+Replays break when something the recording captured is no longer valid: a bearer token expired, a cart ID was minted fresh on this run, an order ID does not match the recorded one. The response body and headers rarely tell you why, which makes these the most frustrating replay failures to diagnose.
+
+proxymock's **Recommendations** solve this without hand-writing transforms. After a replay, proxymock analyzes the run, spots the values that flow from one response into later requests, and offers a one-click fix: capture the value *this run* produced and substitute it into every downstream request. This is the same correlation the Speedscale cloud performs, run locally.
+
+The worked example below uses the open-source [java-auth demo](https://github.com/speedscale/demo/tree/master/java-auth) for an expired-token case. A [second example](#another-example-dynamic-resource-ids) covers dynamic resource IDs (cart, item, order) with the same mechanism.
+
+Walk through the auth example on video:
 
 <iframe src="https://www.youtube.com/embed/v4KqY16dC9A?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
-A recording captures the exact bearer token your app received at record time. Replay that traffic an hour later and the protected calls fail: the token expired, so every request after the login returns `401`/`403`. The response body and headers usually tell you nothing, which makes these the most frustrating replay failures to diagnose.
-
-proxymock's **Recommendations** solve this without hand-writing transforms. After a replay, proxymock analyzes the run, spots the OAuth/bearer handshake, and offers a one-click fix: capture the access token the login endpoint returned *during this replay* and substitute it into every downstream request. This is the same correlation the Speedscale cloud performs, run locally.
-
-This guide uses the open-source [java-auth demo](https://github.com/speedscale/demo/tree/master/java-auth), a Spring Boot service that issues JWT bearer tokens, but the workflow applies to any token-based auth.
+A recording captures the exact bearer token your app received at record time. Replay that traffic an hour later and the protected calls fail: the token expired, so every request after the login returns `401`/`403`. The [java-auth demo](https://github.com/speedscale/demo/tree/master/java-auth) is a Spring Boot service that issues JWT bearer tokens, but the workflow applies to any token-based auth.
 
 ## Before you begin
 
@@ -105,6 +107,29 @@ Everything the recommendation did is visible and editable in the **Blueprints** 
 | `Authorization: Basic <base64>` (HTTP Basic) | [Basic auth credentials swap](./credentials-swap.md) |
 
 Basic auth needs different credentials per environment, so it swaps from a CSV you edit. Bearer auth needs the *live* token from this run correlated forward, which is exactly what the recommendation automates.
+
+## Another example: dynamic resource IDs
+
+The same Recommendations workflow handles dynamic resource identifiers — cart IDs, item IDs, order IDs, anything the server mints fresh on each run. The pattern is identical: capture the value from the response that creates it, `smart_replace` it onto every later request that uses it.
+
+<iframe src="https://www.youtube.com/embed/_fZEq7tlsQI?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
+Imagine a checkout flow that creates a cart, adds an item, then submits an order. The recording captured a specific cart ID. On replay, the cart endpoint mints a *new* cart ID, but the recorded `POST /cart/{id}/items` and `POST /orders` still target the old one. Both fail.
+
+Open the Recommendations panel and proxymock has already detected the chain: the cart endpoint's response body contains a cart ID, and that same ID appears in the path of subsequent requests. Accept it, and proxymock writes a blueprint like:
+
+```
+(networkaddr CONTAINS "localhost"
+  AND location IS "/cart"
+  AND command IS "POST")
+| res_body()
+| json_path(path=cartId)
+| smart_replace_recorded(overwrite=true)
+```
+
+Repeat for item ID and order ID if those appear too — each is its own one-click recommendation. Replay again and the whole checkout flow runs green, because every downstream request now uses the IDs *this run* produced.
+
+This is what makes the workflow viable in CI: the same blueprint runs tomorrow against a different cart ID without manual edits. Wire `proxymock replay` into a pipeline step and you catch breakage from new code (the kind of breakage that vibe-coded changes love to introduce) without flake from naturally-rotating identifiers.
 
 ## Troubleshooting
 
