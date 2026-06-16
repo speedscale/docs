@@ -29,6 +29,8 @@ proxymock/
 ├── blueprints/                  # saved transform rules
 ├── dataframes/                  # payloads referenced by transforms
 │   └── <id>/payload.csv
+├── secrets/                     # local credentials for transforms — never commit
+│   └── <name>/<key>             #   one plain file per secret value
 ├── .metadata/                   # snapshot binding (transforms, tokenizer config)
 │   └── snapshot.json
 ├── .proxymock/                  # web-UI state (backups, dismissed hints, vendored assets)
@@ -67,6 +69,16 @@ transform draws values from, stored at `dataframes/<id>/payload.csv`. Removing a
 dataframe that a blueprint still references will break that transform, so treat
 this directory as configuration, not scratch.
 
+### `secrets/`
+Local credentials that transforms resolve at runtime via the
+`${{secret:name/key}}` syntax — database passwords, JWT signing keys, AWS access
+keys, and the like. Each secret is a plain file whose contents are the value,
+grouped one directory per secret (`secrets/<name>/<key>`). proxymock discovers
+this directory by walking up from `--in`, so transforms re-sign tokens or
+re-authenticate connections without hardcoding sensitive values into your
+recordings or blueprints. **Never commit `secrets/` to version control.** See
+[Secrets](/proxymock/guides/secrets.md) for the full reference.
+
 ### `.metadata/snapshot.json`
 The snapshot binding: tokenizer configuration and the transform set that applies
 to the workspace. It lives at the workspace root and applies to every recording
@@ -96,6 +108,7 @@ the same thing and equally safe to remove.)
 | `.proxymock/` | Mostly | Web-UI convenience state (backups, dismissed hints) |
 | `recorded-<timestamp>/` | **No** | Your recordings — the source of truth |
 | `.metadata/`, `blueprints/`, `dataframes/` | **No** | Transform and snapshot configuration |
+| `secrets/` | **No** | Your local credentials (not regenerable, not committed) |
 
 The quickest way to prune everything proxymock can regenerate — `results/` and
 `.replay/` — while keeping your recordings and transforms is:
@@ -111,13 +124,17 @@ to also clear `.proxymock/`, or `--in <dir>` to target a specific workspace.
 ## Recommended `.gitignore`
 
 If you commit a workspace to version control, keep the recordings and transform
-configuration but ignore the regenerable and machine-local directories:
+configuration but ignore the regenerable and machine-local directories — and
+always ignore `secrets/`, which holds plaintext credentials:
 
 ```gitignore
 # proxymock — regenerable / machine-local
 proxymock/results/
 proxymock/.replay/
 proxymock/.proxymock/
+
+# proxymock — secrets (never commit credentials)
+proxymock/secrets/
 ```
 
 ## Keeping the workspace tidy
