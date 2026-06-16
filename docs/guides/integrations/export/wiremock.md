@@ -47,7 +47,7 @@ speedctl export snapshot --type wiremock --limit 50 --output mappings.json {SNAP
 
 ### From local proxymock recordings
 
-If you recorded traffic locally with [proxymock](/proxymock/overview), export directly from the recorded RRPair files:
+If you recorded traffic locally with [proxymock](/proxymock/), export directly from the recorded RRPair files:
 
 ```
 proxymock export wiremock --in ./proxymock --out mappings.json
