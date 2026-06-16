@@ -5,6 +5,10 @@ sidebar_position: 7
 
 # Fix Auth Errors on Replay with Recommendations
 
+Walk through the same workflow on video:
+
+<iframe src="https://www.youtube.com/embed/v4KqY16dC9A?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+
 A recording captures the exact bearer token your app received at record time. Replay that traffic an hour later and the protected calls fail: the token expired, so every request after the login returns `401`/`403`. The response body and headers usually tell you nothing, which makes these the most frustrating replay failures to diagnose.
 
 proxymock's **Recommendations** solve this without hand-writing transforms. After a replay, proxymock analyzes the run, spots the OAuth/bearer handshake, and offers a one-click fix: capture the access token the login endpoint returned *during this replay* and substitute it into every downstream request. This is the same correlation the Speedscale cloud performs, run locally.
@@ -113,4 +117,4 @@ proxymock detects the handshake from the replay analysis. Make sure the recordin
 **My login path groups together with other endpoints.**
 proxymock groups requests by URL shape. If your login route is shallow (for example `/login`), deepen it or add a filter so the token extractor targets only the login response, not its siblings.
 
-If you have questions, reach out at [proxymock.io](https://proxymock.io).
+For the narrative version of this guide, see the blog post [Fixing 403 auth errors when you replay traffic](https://speedscale.com/blog/fix-403-auth-errors-traffic-replay-proxymock/). If you have questions, reach out at [proxymock.io](https://proxymock.io).
