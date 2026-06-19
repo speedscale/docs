@@ -65,7 +65,7 @@ Need another OS like Windows or are you having issues? See advanced [installatio
 
 - **MCP inegration** - proxymock makes its tools available via MCP. Check out our YouTube [channel](https://www.youtube.com/@speedscale) for prompt ideas that let your LLM use proxymock to analyze bugs.
 
-If you want to deploy any of these [mocks](/reference/glossary.md#mock) or [tests](/reference/glossary.md#test) in the cloud or CI/CD, you can sign up for a **free** account [here](https://app.speedscale.com/signup).
+proxymock runs entirely on your machine. The first time you run it you'll register a valid email to activate it (via `proxymock init`); it's free and your recorded traffic stays local. If you later want to deploy any of these [mocks](/reference/glossary.md#mock) or [tests](/reference/glossary.md#test) in the cloud or CI/CD, use that same **free** account [here](https://app.speedscale.com/signup).
 
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
   <QuickstartCard />

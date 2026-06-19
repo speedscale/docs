@@ -37,7 +37,7 @@ Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `pr
 
 ## After installing
 
-Initialize once before your first recording. Browser sign-in is the default path:
+Initialize once before your first recording. This registers a valid email to activate proxymock and is required even for fully local use; your recorded traffic stays on your machine. Browser sign-in is the default path:
 
 - Run `proxymock init` and use the browser sign-in flow.
 - Use `proxymock init --api-key <your key>` only for CI or other headless environments.
