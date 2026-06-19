@@ -17,6 +17,7 @@ This guide provides a step-by-step approach to creating a [mock server](/referen
 
 :::tip Security model
 - **Local-first:** proxymock keeps recorded traffic local by default.
+- **One-time activation:** proxymock runs locally, but you register a valid email once via `proxymock init` to activate it. It's free and your traffic stays on your machine.
 - **Optional cloud sync:** push snapshots only when you explicitly choose to.
 - **Enterprise controls:** if your org requires cloud boundary ownership, pair workflows with [BYOC](/guides/byoc/) and use [DLP](/guides/dlp/) for sensitive fields.
 :::
@@ -61,12 +62,14 @@ Select your environment below and all instructions will update accordingly. If y
     Make sure you have:
     - A terminal or command prompt open to run proxymock
     - A separate terminal or command prompt open to run the demo app
+    - [git](https://git-scm.com/downloads) installed
     - [go version 1.23.1](https://go.dev/doc/install) or newer installed
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
     Make sure you have:
     - A terminal or command prompt open to run proxymock
     - A separate terminal or command prompt open to run the demo app
+    - [git](https://git-scm.com/downloads) installed
     - [go version 1.23.1](https://go.dev/doc/install) or newer installed
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
@@ -79,6 +82,7 @@ Select your environment below and all instructions will update accordingly. If y
     Make sure you have:
     - A terminal or command prompt open to run proxymock
     - A separate terminal or command prompt open to run the demo app
+    - [git](https://git-scm.com/downloads) installed
     - [go version 1.23.1](https://go.dev/doc/install) or newer installed
   </TabItem>
 </Tabs>

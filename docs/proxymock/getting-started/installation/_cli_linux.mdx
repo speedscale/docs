@@ -10,3 +10,17 @@ Optionally, install a [specific version](/reference/release-notes.md) by passing
 sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)" -s v2.3.456
 ```
 
+After installing, confirm the CLI is available:
+
+```shell
+proxymock version
+```
+
+If you see `command not found`, proxymock was installed to `$HOME/.speedscale` but that directory is not yet on your `PATH`. Add it to the current shell:
+
+```shell
+export PATH="$PATH:$HOME/.speedscale"
+```
+
+To make it permanent, add that line to your shell profile (for example `~/.bashrc` or `~/.zshrc`).
+
