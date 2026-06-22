@@ -162,7 +162,7 @@ If you want the language-specific landing pages after this Go-first quickstart, 
   </TabItem>
 </Tabs>
 
-By running this you will start `proxymock` in recording mode while it runs the app as a child process. Now `proxymock` is now listening on port 4343 for incoming traffic. This traffic will be forwarded to the demo app running at 8080. You'll see first the `proxymock` logs then a line across the screen, then the logs for `outerspace-go`. It should look something like this:
+By running this you will start `proxymock` in recording mode while it runs the app as a child process. Now `proxymock` is listening on port 4143 for incoming traffic, which it forwards to the demo app running on port 8080. (proxymock also records outbound traffic on port 4140.) You'll see first the `proxymock` logs then a line across the screen, then the logs for `outerspace-go`. It should look something like this:
 
 ```shell jsx title="Output"
 $ proxymock record -- go run main.go
@@ -194,7 +194,7 @@ Start a _new_ terminal and run the following command.
     ```
 
     :::note Codespaces Port Forwarding
-    Make sure port 4343 is forwarded in your Codespace. You should see it automatically forwarded in the Ports tab.
+    Make sure port 4143 is forwarded in your Codespace. You should see it automatically forwarded in the Ports tab.
     :::
 
   </TabItem>
