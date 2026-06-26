@@ -132,6 +132,16 @@ export ALL_PROXY=socks5://localhost:4140
 
 Node.js HTTP libraries handle proxies differently. Environment variables are NOT automatically used by most libraries.
 
+On Node 24 (or 22.21+) the recommended path for **proxymock** is the built-in proxy support — set `NODE_USE_ENV_PROXY=1` so the runtime honors `HTTP_PROXY`/`HTTPS_PROXY`, and `NODE_EXTRA_CA_CERTS` to trust the proxymock certificate:
+```shell
+export NODE_USE_ENV_PROXY=1
+export HTTP_PROXY=http://localhost:4140
+export HTTPS_PROXY=http://localhost:4140
+export NODE_EXTRA_CA_CERTS=$HOME/.speedscale/certs/tls.crt
+```
+
+On older Node versions, configure the proxy at the client level.
+
 For axios (requires explicit configuration or `https-proxy-agent`):
 ```javascript
 const axios = require('axios');
@@ -171,13 +181,15 @@ const agent = new SocksProxyAgent('socks5://localhost:4140');
 </TabItem>
 <TabItem value="ruby" label="Ruby">
 
-Ruby's `Net::HTTP` does not automatically use proxy environment variables by default, but `:ENV` can be passed to `Net::HTTP.new`:
+Ruby's `Net::HTTP` honors the `http_proxy`/`https_proxy` environment variables by default, so setting them is usually all that is needed:
 
 ```shell
 export http_proxy=http://localhost:4140
 export https_proxy=http://localhost:4140
 export no_proxy=localhost,127.0.0.1
 ```
+
+If you need to opt in explicitly (for example, when the defaults have been overridden), pass `:ENV` to `Net::HTTP`:
 
 ```ruby
 require 'net/http'

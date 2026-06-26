@@ -1,9 +1,8 @@
 ---
-description: "Get started with proxymock CLI to create local mocks and tests for a Go app, with clear paths for local-only recording and cloud workflows when needed."
+description: "Get started with proxymock CLI to create local mocks and tests for a simple Go application that calls a CNCF projects API, with clear paths for local-only recording and cloud workflows when needed."
 sidebar_position: 3
 ---
 
-import ArchitectureOverview from './outerspace-go.png'
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import MacCLIInstall from '../../index/\_cli_macos_minified.mdx'
@@ -24,7 +23,7 @@ This guide provides a step-by-step approach to creating a [mock server](/referen
 
 ## Choose Your Environment
 
-Select your environment below and all instructions will update accordingly. If you prefer to run everything locally pick your operating system. If you want to access a pre-built environment in the cloud check out [GitHub Codespaces](https://github.com/speedscale/outerspace-go).
+Select your environment below and all instructions will update accordingly. If you prefer to run everything locally pick your operating system. If you want to access a pre-built environment in the cloud check out [GitHub Codespaces](https://github.com/speedscale/mock-lab).
 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
@@ -40,14 +39,14 @@ Select your environment below and all instructions will update accordingly. If y
 
     ### Setting up Codespaces
 
-    To get started with the outerspace-go Codespace:
+    To get started with the mock-lab Codespace:
 
-    1. Go to [github.com/speedscale/outerspace-go](https://github.com/speedscale/outerspace-go)
+    1. Go to [github.com/speedscale/mock-lab](https://github.com/speedscale/mock-lab)
     2. Click the green **"Code"** button
     3. Select the **"Codespaces"** tab
     4. Click **"Create codespace on main"**
     5. Wait for the environment to initialize (usually 1-2 minutes)
-    6. Once ready, you'll have a VS Code environment in your browser with Go and proxymock pre-installed
+    6. Once ready, you'll have a VS Code environment in your browser with all 7 runtimes and the proxymock CLI pre-installed
 
   </TabItem>
   <TabItem value="binary" label="🔧 Other">
@@ -75,7 +74,7 @@ Select your environment below and all instructions will update accordingly. If y
   <TabItem value="codespaces" label="☁️ Codespaces">
     Make sure you have:
     - A GitHub account with access to Codespaces
-    - The outerspace-go Codespace running (note that go and proxymock are pre-installed)
+    - The mock-lab Codespace running (note that go and proxymock are pre-installed)
     - Two terminal windows open in your Codespace
   </TabItem>
   <TabItem value="binary" label="🔧 Other">
@@ -87,9 +86,13 @@ Select your environment below and all instructions will update accordingly. If y
   </TabItem>
 </Tabs>
 
-<img src={ArchitectureOverview} alt="Architecture Overview" width="500" style={{ display: 'block', margin: '0 auto' }} />
+```mermaid
+flowchart LR
+  client[Test traffic] --> app[Go demo app :8080]
+  app --> downstream[demo-api.trafficreplay.com — CNCF projects API]
+```
 
-For this example we'll be using a simple demo app that accepts an API request, calls two downstream APIs and returns the results.
+For this example we'll be using a simple demo app that accepts an API request, calls a downstream API and returns the results.
 
 ## Step 1: Install proxymock {#install}
 
@@ -104,7 +107,7 @@ For this example we'll be using a simple demo app that accepts an API request, c
     No need to run any install scripts:
 
     :::note Codespaces Environment
-    proxymock is automatically available in the outerspace-go Codespace.
+    proxymock is automatically available in the mock-lab Codespace.
     :::
 
   </TabItem>
@@ -138,39 +141,38 @@ If you want the language-specific landing pages after this Go-first quickstart, 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
     ```shell
-    git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record -- go run main.go
+    git clone https://github.com/speedscale/mock-lab && cd mock-lab/go && proxymock record -- go run .
     ```
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
     ```shell
-    git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record -- go run main.go
+    git clone https://github.com/speedscale/mock-lab && cd mock-lab/go && proxymock record -- go run .
     ```
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
-    If you're using the outerspace-go Codespace, the repository is already cloned. Navigate to it and start recording:
+    If you're using the mock-lab Codespace, the repository is already cloned. Navigate to it and start recording:
 
     ```shell
     export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
-    proxymock record -- go run main.go
+    proxymock record -- go run .
     ```
 
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     ```shell
-    git clone https://github.com/speedscale/outerspace-go && cd outerspace-go && proxymock record -- go run main.go
+    git clone https://github.com/speedscale/mock-lab && cd mock-lab/go && proxymock record -- go run .
     ```
   </TabItem>
 </Tabs>
 
-By running this you will start `proxymock` in recording mode while it runs the app as a child process. Now `proxymock` is listening on port 4143 for incoming traffic, which it forwards to the demo app running on port 8080. (proxymock also records outbound traffic on port 4140.) You'll see first the `proxymock` logs then a line across the screen, then the logs for `outerspace-go`. It should look something like this:
+By running this you will start `proxymock` in recording mode while it runs the app as a child process. Now `proxymock` is listening on port 4143 for incoming traffic, which it forwards to the demo app running on port 8080. (proxymock also records outbound traffic on port 4140.) You'll see first the `proxymock` logs then a line across the screen, then the logs for the demo app. It should look something like this:
 
 ```shell jsx title="Output"
-$ proxymock record -- go run main.go
+$ proxymock record -- go run .
 proxymock output will be redirected to proxymock/recorded-2025-07-30_15-19-11.417616Z/proxymock.log
 Press ctrl-c to interrupt
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 2025/07/30 15:19:12 Starting HTTP server on :8080
-2025/07/30 15:19:13 Starting gRPC server on :50053
 ```
 
 ## Step 4: Run test transactions {#run-tests}
@@ -180,17 +182,20 @@ Start a _new_ terminal and run the following command.
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
     ```shell jsx title="Run in new terminal window"
-    cd outerspace-go && ./tests/run_http_tests.sh --recording
+    # from the mock-lab repo root
+    ./lab/tests/run_tests.sh --recording
     ```
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
     ```shell jsx title="Run in new terminal window"
-    cd outerspace-go && ./tests/run_http_tests.sh --recording
+    # from the mock-lab repo root
+    ./lab/tests/run_tests.sh --recording
     ```
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
     ```shell jsx title="Run in new terminal window"
-    ./tests/run_http_tests.sh --recording
+    # from the mock-lab repo root
+    ./lab/tests/run_tests.sh --recording
     ```
 
     :::note Codespaces Port Forwarding
@@ -200,7 +205,8 @@ Start a _new_ terminal and run the following command.
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     ```shell jsx title="Run in new terminal window"
-    cd outerspace-go && ./tests/run_http_tests.sh --recording
+    # from the mock-lab repo root
+    ./lab/tests/run_tests.sh --recording
     ```
   </TabItem>
 </Tabs>
@@ -208,13 +214,16 @@ Start a _new_ terminal and run the following command.
 You will now see a set of output from the tests:
 
 ```shell jsx title="Test output"
-$ ./tests/run_http_tests.sh --recording
+$ ./lab/tests/run_tests.sh --recording
 Recording mode enabled, using port 4143
-Testing http://localhost:4143/... OK (200)
-Testing http://localhost:4143/api/numbers... OK (200)
-Testing http://localhost:4143/api/latest-launch... OK (200)
-Testing http://localhost:4143/api/rockets... OK (200)
-Testing http://localhost:4143/api/rocket?id=5e9d0d96eda699382d09d1ee... OK (200)
+Testing GET  http://localhost:4143/... OK (200)
+Testing GET  http://localhost:4143/api/projects... OK (200)
+Testing GET  http://localhost:4143/api/projects/kubernetes... OK (200)
+Testing GET  http://localhost:4143/api/categories... OK (200)
+Testing GET  http://localhost:4143/api/stats... OK (200)
+Testing POST http://localhost:4143/oauth/token... OK (200)
+Testing POST http://localhost:4143/api/orders... OK (201)
+Testing GET  http://localhost:4143/api/orders/{order_id}... OK (200)
 Http tests passed.
 ```
 
@@ -223,17 +232,15 @@ You can now press CTRL-C in the `proxymock record` terminal window to shut down 
 You will also see some additional output in the original proxymock terminal window showing requests were handled by the demo app:
 
 ```shell jsx title="proxymock recording output"
-2025-07-30T15:31:57-04:00 INF Inbound latency=0.080292 method=GET path=/ query=
-2025-07-30T15:31:57-04:00 INF X-Header found header=X-Numbers-Api-Type values=["math"]
-2025-07-30T15:31:57-04:00 INF X-Header found header=X-Powered-By values=["Express"]
-2025-07-30T15:31:57-04:00 INF X-Header found header=X-Numbers-Api-Number values=["1804"]
-2025-07-30T15:31:57-04:00 INF Outbound host=numbersapi.com latency=64.452875 method=GET status=200
+2025-07-30T15:31:57-04:00 INF Inbound latency=0.080292 method=GET path=/api/projects query=
+2025-07-30T15:31:57-04:00 INF X-Header found header=Content-Type values=["application/json"]
+2025-07-30T15:31:57-04:00 INF Outbound host=demo-api.trafficreplay.com latency=64.452875 method=GET status=200
 ...
 ```
 
 ## Step 5: View recording results {#view-recording}
 
-There should be a new directory in the `proxymock` subdirectory inside `outerspace-go`.
+There should be a new directory in the `proxymock` subdirectory inside `mock-lab/go`. (An offline recording is also committed at `lab/proxymock/recording` if you'd rather skip recording and jump straight to mocking.)
 
 ```shell
 ls proxymock
@@ -262,22 +269,22 @@ Go back to your original terminal (running `proxymock record`), stop proxymock b
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
     ```shell
-    proxymock mock -- go run main.go
+    proxymock mock -- go run .
     ```
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
     ```shell
-    proxymock mock -- go run main.go
+    proxymock mock -- go run .
     ```
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
     ```shell
-    proxymock mock -- go run main.go
+    proxymock mock -- go run .
     ```
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     ```shell
-    proxymock mock -- go run main.go
+    proxymock mock -- go run .
     ```
   </TabItem>
 </Tabs>
@@ -315,7 +322,7 @@ Open your second terminal window and run the following:
   </TabItem>
 </Tabs>
 
-The `proxymock replay` command will now run the original inbound transactions directly against your demo app. The demo app no longer requires downstream systems for these tests as they are being simulated by proxymock. You should see a summary table like this:
+The `proxymock replay` command will now run the original inbound transactions directly against your demo app. (You can also kick off a replay from the proxymock web UI.) The demo app no longer requires downstream systems for these tests as they are being simulated by proxymock. You should see a summary table like this:
 
 ```
 LATENCY / THROUGHPUT
@@ -323,10 +330,10 @@ LATENCY / THROUGHPUT
 |      ENDPOINT      | METHOD |  AVG  |  P50  |  P90  |  P95  |  P99  | COUNT |  PCT  | PER-SECOND |
 +--------------------+--------+-------+-------+-------+-------+-------+-------+-------+------------+
 | /                  | GET    |  1.00 |  1.00 |  1.00 |  1.00 |  1.00 |     2 | 20.0% |       9.93 |
-| /api/rockets       | GET    | 12.00 |  9.00 |  9.00 |  9.00 |  9.00 |     2 | 20.0% |       9.93 |
-| /api/rocket        | GET    | 12.50 | 10.00 | 10.00 | 10.00 | 10.00 |     2 | 20.0% |       9.93 |
-| /api/numbers       | GET    | 14.00 | 13.00 | 13.00 | 13.00 | 13.00 |     2 | 20.0% |       9.93 |
-| /api/latest-launch | GET    | 53.50 | 14.00 | 14.00 | 14.00 | 14.00 |     2 | 20.0% |       9.93 |
+| /api/projects      | GET    | 12.00 |  9.00 |  9.00 |  9.00 |  9.00 |     2 | 20.0% |       9.93 |
+| /api/projects/{id} | GET    | 12.50 | 10.00 | 10.00 | 10.00 | 10.00 |     2 | 20.0% |       9.93 |
+| /api/categories    | GET    | 14.00 | 13.00 | 13.00 | 13.00 | 13.00 |     2 | 20.0% |       9.93 |
+| /api/stats         | GET    | 53.50 | 14.00 | 14.00 | 14.00 | 14.00 |     2 | 20.0% |       9.93 |
 +--------------------+--------+-------+-------+-------+-------+-------+-------+-------+------------+
 ```
 
