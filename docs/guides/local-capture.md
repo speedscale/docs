@@ -18,9 +18,9 @@ This guide will walk you through recording an environment from your local deskto
 
 ### Step 1: Set Up Your Application
 
-   - For this guide, we'll use a basic [application](https://github.com/speedscale/demo/tree/master/go) written in Golang. However, the instructions apply to any application. Just make sure you use the appropriate environment variables or flags for your language.
+   - For this guide, we'll use a basic [application](https://github.com/speedscale/mock-lab/tree/main/go) written in Golang. Clone it with `git clone https://github.com/speedscale/mock-lab`, then run it with `cd mock-lab/go` and `go run .` (it listens on port `8080`). However, the instructions apply to any application. Just make sure you use the appropriate environment variables or flags for your language.
 
-   We use JMeter to drive requests to our sample app. Requests sent to the sample app will trigger an outbound call to the spaceX API.
+   We use the bundled traffic driver to send requests to our sample app. Requests sent to the sample app will trigger an outbound call to the CNCF projects API at `demo-api.trafficreplay.com`.
 
 ![architecture](./local-capture/demo_arch.png)
 
@@ -69,15 +69,18 @@ MacOS users should add this certificate to the System keychain [settings](https:
 
 ### Step 4: Simulate Load
 
-1. **Select a script**:
-   - a simple `curl localhost:4143/spacex` will trigger the example application
-   - Alternatively, you can prepare a JMeter script to simulate load. This guide uses a simple JMeter script for demonstration purposes. You can find it [here](https://github.com/speedscale/demo/blob/master/go/HTTP%20Request.jmx)
+1. **Drive traffic with the bundled script**:
+   - A simple `curl localhost:4143/api/projects` will trigger the example application.
+   - For full coverage, mock-lab ships a traffic driver that exercises every endpoint in one pass (the read endpoints plus the OAuth handshake and order flow). Run it from the repo root, pointing it at the capture port with the `--recording` flag:
 
-2. **Configure JMeter**:
-   - Change your endpoint port to 4143. Here is an example screenshot showing where to change the port in a simple JMeter script ![screenshot](./local-capture/jmeter.png)
+   ```bash
+   ./lab/tests/run_tests.sh --recording
+   ```
 
-3. **Execute the JMeter Script**:
-   - Run the script multiple times to generate a variety of transactions.
+   The `--recording` flag sends requests to the speedctl capture port (`4143`) instead of the app's port (`8080`) so the traffic is intercepted. Any load tool works here (JMeter, k6, curl, etc.) — `run_tests.sh` is just the concrete example bundled with the demo.
+
+2. **Generate a variety of transactions**:
+   - Run the script multiple times to record a richer set of transactions.
 
 ### Step 5: Save as Snapshot
 
@@ -86,7 +89,7 @@ MacOS users should add this certificate to the System keychain [settings](https:
 
 2. **Observe Environment Modeling**:
    - Speedscale builds a model of the environment that mirrors your architectural diagram. 
-   - Each inbound call made with JMeter and the corresponding outbound transaction (e.g., to SpaceX) is recorded.
+   - Each inbound call made by the traffic driver and the corresponding outbound transaction (e.g., to the CNCF projects API at `demo-api.trafficreplay.com`) is recorded.
 
 ### Step 6: Utilize the Preview Environment
 

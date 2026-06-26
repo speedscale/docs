@@ -4,7 +4,6 @@ sidebar_position: 4
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import ArchitectureOverview from './outerspace-go.png'
 import MacCLIInstall from '../../index/_cli_macos_minified.mdx'
 import LinuxCLIInstall from '../../index/_cli_linux_minified.mdx'
 import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@site/src/components/Cards';
@@ -27,9 +26,13 @@ Make sure you have:
 - A terminal or command prompt open
 - [go version 1.23.1](https://go.dev/doc/install) or newer installed
 
-<img src={ArchitectureOverview} alt="Architecture Overview" width="500" style={{ display: 'block', margin: '0 auto' }} />
+```mermaid
+flowchart LR
+  client[Test traffic] --> app[Go demo app :8080]
+  app --> downstream[demo-api.trafficreplay.com — CNCF projects API]
+```
 
-For this example we'll be using a simple demo app that accepts an API request, calls two downstream APIs and returns the results.
+For this example we'll be using a simple demo app that accepts an API request, calls a downstream API and returns the results.
 
 ## How MCP Works with proxymock
 
@@ -76,19 +79,19 @@ This tutorial assumes you allow the MCP server configuration to be installed in 
     Open a chat session and instruct your AI assistant:
 
     ```
-    First, clone the git repository https://github.com/speedscale/outerspace-go. Next, open a new cursor window with only the outerspace-go directory in the workspace.
+    First, clone the git repository https://github.com/speedscale/mock-lab. Next, open a new cursor window with only the mock-lab/go directory in the workspace.
     ```
 
-    A new IDE window should open in the outerspace-go directory.
+    A new IDE window should open in the mock-lab/go directory.
   </TabItem>
   <TabItem value="claude" label="Claude Code">
     Open Claude Code from the command line and instruct your AI assistant:
 
     ```
-    First, clone the git repository https://github.com/speedscale/outerspace-go. Next, change your working directory to outerspace-go.
+    First, clone the git repository https://github.com/speedscale/mock-lab. Next, change your working directory to mock-lab/go.
     ```
 
-    Claude will change its working directory to outerspace-go.
+    Claude will change its working directory to mock-lab/go.
   </TabItem>
   <TabItem value="copilot" label="Visual Studio Copilot">
     Visual Studio Copilot Agent-mode does not currently support direct git repository cloning. For the moment, it may be easier to run the CLI-based [workflow](./quickstart-cli.md).
@@ -98,7 +101,7 @@ This tutorial assumes you allow the MCP server configuration to be installed in 
     If your LLM/IDE of choice supports Agent mode and can run commands like git directly then you can likely use the following prompt. Otherwise, check out the CLI-based [demo](./quickstart-cli.md).
 
     ```
-    First, clone the git repository https://github.com/speedscale/outerspace-go. Next, change your working directory to outerspace-go.
+    First, clone the git repository https://github.com/speedscale/mock-lab. Next, change your working directory to mock-lab/go.
     ```
 
     This should cause your chatbot to switch directories 
@@ -120,7 +123,7 @@ The LLM should take a series of steps:
 1. Start the proxymock recording
 1. Discover and run tests against the endpoint
 1. Investigate the proxymock logs
-1. Produce a new directory of recordings in a new directory `outerspace-go/proxymock/recorded-...`
+1. Produce a new directory of recordings in a new directory `mock-lab/go/proxymock/recorded-...`
 
 **Ask your AI assistant:**
 > "Show me the recorded traffic files"
@@ -128,16 +131,16 @@ The LLM should take a series of steps:
 Your AI assistant will point at the new directory of RRPairs and produce a summary. Your summary may look something like this (depending on which LLM you use):
 ```shell
 📊 Traffic Summary:
-Total files: 14 RRPair files
-Inbound requests: 10 (to your application)
-Outbound requests: 4 (to external APIs)
-External APIs called: SpaceX API (3 calls), Numbers API (1 call)
+Total files: 12 RRPair files
+Inbound requests: 6 (to your application)
+Outbound requests: 6 (to external APIs)
+External API called: demo-api.trafficreplay.com (CNCF projects API, 6 calls)
 Response times: 1ms to 690ms
 These files can now be used for:
 Mocking: Create a mock server with these responses
 Replay testing: Test your application against recorded traffic
 API change detection: Compare with future recordings
-The traffic capture successfully recorded both the requests made to your application and the external API calls your application made to SpaceX and Numbers APIs!ls proxymock
+The traffic capture successfully recorded both the requests made to your application and the external API calls your application made to the demo-api.trafficreplay.com CNCF projects API!ls proxymock
 ...
 recorded-2025-07-30_15-31-43.701537Z
 ```

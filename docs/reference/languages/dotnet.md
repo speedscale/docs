@@ -33,10 +33,10 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`csharp` directory)
-- Stack: .NET 8 minimal API
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`dotnet` directory)
+- Stack: .NET minimal API that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Local run: `dotnet run`
-- Quick validation: `curl http://localhost:5128/health`
+- Quick validation: `./lab/tests/run_tests.sh --recording`
 
 This is the current public .NET demo used for local proxymock examples.
 
@@ -53,38 +53,26 @@ proxymock init`,
     },
     {
       title: 'Start recording',
-      command: `git clone https://github.com/speedscale/demo
-cd demo/csharp
-proxymock record --app-port 5128 --out ./proxymock/recorded`,
-      note: 'The app listens on port 5128 while proxymock records inbound traffic on 4143 and saves the capture in `./proxymock/recorded`.',
-    },
-    {
-      title: 'Route .NET traffic through the proxy and run the app',
-      command: `cd demo/csharp
-export HTTP_PROXY=http://127.0.0.1:4140
-export HTTPS_PROXY=http://127.0.0.1:4140
-dotnet run`,
-      note: 'The HTTP_PROXY and HTTPS_PROXY variables are enough for the sample app and most .NET clients.',
+      command: `git clone https://github.com/speedscale/mock-lab
+cd mock-lab/dotnet
+proxymock record -- dotnet run`,
+      note: 'proxymock records the app while it starts the .NET service as a child process and injects the proxy and TLS settings automatically — HttpClient picks them up with no manual HTTP_PROXY/HTTPS_PROXY exports.',
     },
     {
       title: 'Generate one real workflow',
-      command: `curl http://localhost:4143/health
-curl http://localhost:4143/weatherforecast`,
-      note: 'Make one real pass through the demo so the recorded traffic contains a representative workflow.',
+      command: `./lab/tests/run_tests.sh --recording`,
+      note: 'Run the test driver from the repo root. It drives the requests that become the exported production-style trace.',
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd demo/csharp
-proxymock mock --in ./proxymock/recorded
-export HTTP_PROXY=http://127.0.0.1:4140
-export HTTPS_PROXY=http://127.0.0.1:4140
-dotnet run`,
+      command: `cd mock-lab/dotnet
+proxymock mock -- dotnet run`,
       note: 'The mocked run should no longer need live downstream access.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd demo/csharp
-proxymock replay --in ./proxymock/recorded --test-against http://localhost:5128`,
+      command: `cd mock-lab/dotnet
+proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping .NET changes.',
     },
   ]}

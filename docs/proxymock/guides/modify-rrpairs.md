@@ -15,7 +15,7 @@ Use this guide to  modify your tests or mock responses in an existing proxymock 
 Make sure you have:
 
 - proxymock [installed](../getting-started/quickstart/quickstart-cli.md)
-- existing proxymock recording (like this [one](https://github.com/speedscale/outerspace-go/tree/main/proxymock))
+- existing proxymock recording (like this [one](https://github.com/speedscale/mock-lab/tree/main/lab/proxymock))
 - (optional) set $EDITOR environment varaible inr your terminal (ex: `export EDITOR=code`)
 
 ## Editing from the TUI

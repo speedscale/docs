@@ -2,7 +2,6 @@
 description: "Create a mock server and tests for your Go application with proxymock's quickstart guide, covering installation, traffic recording, and test execution."
 sidebar_position: 1
 ---
-import ArchitectureOverview from './outerspace-go.png'
 
 # Quickstart: Choose Your Path
 

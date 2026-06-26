@@ -4,7 +4,7 @@ description: "Create a snapshot using the Speedscale API by following this guide
 sidebar_position: 38
 ---
 
-In this guide we will show you how to manually create a snapshot using the Speedscale API. There are much easier ways to create traffic snapshots, such as direct [recording](https://github.com/speedscale/demo) or by [importing a Postman collection](./integrations/import/import-postman.md). This guide is useful if you want to create an RRPair programmatically.
+In this guide we will show you how to manually create a snapshot using the Speedscale API. There are much easier ways to create traffic snapshots, such as direct [recording](https://github.com/speedscale/mock-lab) or by [importing a Postman collection](./integrations/import/import-postman.md). This guide is useful if you want to create an RRPair programmatically.
 
 The speedctl CLI tool has a local repository of snapshots that can be synchronized with Speedscale cloud. The process is similar to the `git` source control tool in that you modify snapshots locally and then push/pull them to the central repo. Editing snapshots is like working with text files full of JSON.
 
@@ -18,7 +18,7 @@ It is also possible to edit the snapshot metadata file stored at `<user director
 
 ## Prerequisites
 
-- Speedscale java [demo](https://github.com/speedscale/demo) is installed
+- The [mock-lab](https://github.com/speedscale/mock-lab) demo app is installed (clone with `git clone https://github.com/speedscale/mock-lab`, then `cd mock-lab/go` and `go run .` to run it on `localhost:8080`)
 - [speedctl](../getting-started/installation/install/cli.md) is installed
 
 ## Create a Sample Raw File
@@ -32,26 +32,25 @@ On your local machine create a file called `raw.jsonl`. The location of the file
 ```json
 {
   "msgType": "rrpair",
-  "resource": "MY_SERVICE",
-  "ts": "2023-07-19T21:42:35.974594462Z",
+  "resource": "mock-lab",
+  "ts": "2026-06-25T18:56:37.974594462Z",
   "l7protocol": "http",
   "duration": 5,
   "tags": {
-    "k8sClusterName": "MY_SERVICE",
+    "k8sClusterName": "mock-lab",
     "sequence": "530",
     "targetPort": "4143",
     "clientType": "goproxy",
     "proxyCID": "532",
-    "proxyId": "MY_SERVICE",
+    "proxyId": "mock-lab",
     "proxyProtocol": "tcp:http",
-    "k8sAppLabel": "MY_SERVICE",
-    "k8sAppPodNamespace": "matthewleray",
+    "k8sAppLabel": "mock-lab",
+    "k8sAppPodNamespace": "mock-lab",
     "proxyReqAddr": "192.168.240.1:50516",
     "reverseProxyHost": "host.docker.internal",
     "targetHost": "localhost",
     "captureMode": "proxy",
-    "compressed": "gzip",
-    "k8sAppPodName": "MY_SERVICE",
+    "k8sAppPodName": "mock-lab",
     "proxyLocation": "in",
     "proxyRespAddr": "192.168.65.254:8080",
     "proxyType": "dual",
@@ -62,19 +61,19 @@ On your local machine create a file called `raw.jsonl`. The location of the file
   "jsonLength": 1693,
   "uuid": "6U/+hd4oRH6am3zHkaPq+Q==",
   "direction": "IN",
-  "cluster": "MY_SERVICE",
-  "namespace": "matthewleray",
-  "service": "MY_SERVICE",
+  "cluster": "mock-lab",
+  "namespace": "mock-lab",
+  "service": "mock-lab",
   "tech": "JSON",
   "network_address": "localhost:4143",
   "command": "GET",
-  "location": "/spacex/ship",
+  "location": "/api/orders/order-1a2b3c4d",
   "status": "200",
   "detectedTech": ["HTTP", "JSON", "HTTP Auth", "Bearer", "JWT"],
   "http": {
     "req": {
-      "url": "/spacex/ship",
-      "uri": "/spacex/ship",
+      "url": "/api/orders/order-1a2b3c4d",
+      "uri": "/api/orders/order-1a2b3c4d",
       "version": "1.1",
       "method": "GET",
       "host": "localhost:4143",
@@ -91,16 +90,10 @@ On your local machine create a file called `raw.jsonl`. The location of the file
       "statusCode": 200,
       "statusMessage": "200 ",
       "headers": {
-        "X-Xss-Protection": ["0"],
-        "Cache-Control": ["no-cache, no-store, max-age=0, must-revalidate"],
         "Content-Type": ["application/json"],
-        "Date": ["Wed, 19 Jul 2023 21:42:35 GMT"],
-        "Expires": ["0"],
-        "Pragma": ["no-cache"],
-        "X-Content-Type-Options": ["nosniff"],
-        "X-Frame-Options": ["DENY"]
+        "Date": ["Thu, 25 Jun 2026 18:56:37 GMT"]
       },
-      "bodyBase64": "H4sIAAAAAAAE/wAmANn/eyJzaGlwX2lkIjoiNjE4ZmFkN2U1NjNkNjk1NzNlZDhjYWE5In0BAAD//7vdkzAmAAAA"
+      "bodyBase64": "eyJvcmRlcl9pZCI6Im9yZGVyLTFhMmIzYzRkIiwicHJvamVjdCI6Imt1YmVybmV0ZXMiLCJzdGF0dXMiOiJjcmVhdGVkIiwiY3JlYXRlZCI6IjIwMjYtMDYtMjVUMTg6NTY6MzdaIn0="
     }
   },
   "tokens": {
@@ -114,14 +107,14 @@ On your local machine create a file called `raw.jsonl`. The location of the file
 }
 ```
 
-Also, make sure that the Speedscale demo app was installed with the default service name `MY_SERVICE`. If that's not what you used, just find/replace each reference. The format of the RRPair is fairly self explanatory and in the real world you'll want to modify it to match the request you desire. You can add as many RRPairs, either inbound or outbound, as you like with each request occupying one line. Remember not to pretty print the JSON.
+This example uses the service name `mock-lab`. If you use a different name, just find/replace each reference. The example shows a bearer-authenticated `GET /api/orders/{order_id}` call against the mock-lab app — the `Authorization` header carries a bearer token (here a JWT, which Speedscale detects and tokenizes automatically). The format of the RRPair is fairly self explanatory and in the real world you'll want to modify it to match the request you desire. You can add as many RRPairs, either inbound or outbound, as you like with each request occupying one line. Remember not to pretty print the JSON.
 
 ## Create a Snapshot
 
 Use the speedctl create command to create a snapshot both locally and in the cloud.
 
 ```bash
-speedctl create snapshot --name testing --service MY_SERVICE --raw ~/Downloads/raw.jsonl
+speedctl create snapshot --name testing --service mock-lab --raw ~/Downloads/raw.jsonl
 ```
 
 A full snapshot metadata JSON will be printed. Look for the `id` key as this is the unique ID we'll use to identify this snapshot. If you look on your local machine at `~/.speedscale/data/snapshots`, you'll see a new subdirectory with the same snapshot ID as is printed by this command. Your raw file should be present in that directory. You should also see the snapshot appear in your snapshot list in Speedscale cloud.

@@ -4,27 +4,37 @@ const languageLinks = [
   {
     label: 'Java',
     href: '/reference/languages/java#proxymock',
-    description: 'Spring Boot demo, JVM proxy flags, and the exported production trace.',
+    description: 'Java demo app',
   },
   {
     label: '.NET',
     href: '/reference/languages/dotnet#proxymock',
-    description: 'Minimal API demo with HTTP_PROXY/HTTPS_PROXY and local replay.',
+    description: '.NET demo app',
   },
   {
     label: 'Node.js',
     href: '/reference/languages/nodejs#proxymock',
-    description: 'Express demo with client-specific proxy handling guidance.',
+    description: 'Node.js demo app',
   },
   {
     label: 'Go',
     href: '/reference/languages/golang#proxymock',
-    description: 'outerspace-go demo with Go-native record, mock, and replay steps.',
+    description: 'Go demo app',
   },
   {
     label: 'Python',
     href: '/reference/languages/python#proxymock',
-    description: 'Flask SpaceX demo with a lightweight Makefile-backed capture flow.',
+    description: 'Python demo app',
+  },
+  {
+    label: 'Ruby',
+    href: '/reference/languages/ruby#proxymock',
+    description: 'Ruby demo app',
+  },
+  {
+    label: 'C++',
+    href: '/reference/languages/cpp#proxymock',
+    description: 'C++ demo app',
   },
 ];
 

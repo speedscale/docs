@@ -33,10 +33,10 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/demo/python](https://github.com/speedscale/demo/tree/main/python)
-- Stack: Flask
-- Local run: `make local`
-- Traffic generator: `make capture`
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`python` directory)
+- Stack: standard-library Python (no Flask, no Makefile) that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
+- Local run: `python3 app.py`
+- Traffic generator: `./lab/tests/run_tests.sh --recording`
 
 This is the current public Python demo used for local proxymock examples.
 
@@ -51,28 +51,23 @@ This is the current public Python demo used for local proxymock examples.
       note: 'Use browser sign-in by default. Use `proxymock init --api-key <your key>` only for CI or other headless environments.',
     },
     {
-      title: 'Clone the Python demo and install dependencies',
-      command: `git clone https://github.com/speedscale/demo\ncd demo/python\nmake install`,
-      note: 'The Python demo now includes a small Makefile so setup is repeatable.',
+      title: 'Clone the demo and start recording',
+      command: `git clone https://github.com/speedscale/mock-lab\ncd mock-lab/python\nproxymock record -- python3 app.py`,
+      note: 'proxymock records the app while it starts the Python service as a child process. The app listens on port 8080 and calls the CNCF projects API downstream.',
     },
     {
-      title: 'Run the app',
-      command: `cd demo/python\nmake local`,
-      note: 'The app listens on port 5001 and exposes a health check plus the SpaceX proxy endpoint.',
+      title: 'Generate one real workflow',
+      command: `./lab/tests/run_tests.sh --recording`,
+      note: 'Run the test driver from the repo root. It drives the requests that become the exported production-style trace.',
     },
     {
-      title: 'Capture a real workflow',
-      command: `cd demo/python\nmake capture`,
-      note: 'The capture flow records outbound SpaceX traffic through proxymock.',
-    },
-    {
-      title: 'Run with mocks',
-      command: `cd demo/python\nmake mock`,
-      note: 'Mock mode replays the captured response without reaching the live SpaceX API.',
+      title: 'Stop the recording, then run with mocks',
+      command: `cd mock-lab/python\nproxymock mock -- python3 app.py`,
+      note: 'The mocked run should no longer need live outbound dependencies.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd demo/python\nmake replay`,
+      command: `cd mock-lab/python\nproxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Python changes.',
     },
   ]}
@@ -80,4 +75,4 @@ This is the current public Python demo used for local proxymock examples.
 
 ## TLS Trust {#tls-trust}
 
-Python applications that use `requests` should trust the Speedscale certificate bundle with `REQUESTS_CA_BUNDLE`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and related options.
+The demo app uses the standard-library `urllib` client and needs no manual CA configuration locally — proxymock injects the trusted bundle for you. For Python applications that use `requests`, trust the Speedscale certificate bundle with `REQUESTS_CA_BUNDLE`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and related options.

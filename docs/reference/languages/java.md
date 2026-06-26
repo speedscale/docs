@@ -141,12 +141,14 @@ traffic through a forward proxy and trusts the proxymock CA, but it does not use
 
 ### Demo App
 
-- Public demo: [speedscale/demo](https://github.com/speedscale/demo) (`java` directory)
-- Stack: Spring Boot
-- Local run: `make local`
-- Traffic generator: `make client` or `make client-capture`
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`java` directory)
+- Stack: single-file Java HTTP service that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
+- Local run: `java App.java` (JDK 11+ source-file mode, no Maven or other build tool)
+- Quick validation: `./lab/tests/run_tests.sh --recording`
 
-This is the current public Java demo used for local proxymock examples.
+This is the canonical public Java demo for the proxymock quickstart and local replay workflow.
+
+When proxymock wraps the JVM with `proxymock record -- java App.java`, it auto-injects `JAVA_TOOL_OPTIONS` for you, so no manual proxy host/port or truststore export is needed.
 
 <ProxymockLanguageWorkflow
   intro="Use this path for the fastest Java first success on a developer workstation."
@@ -159,39 +161,26 @@ proxymock init`,
     },
     {
       title: 'Start recording',
-      command: `git clone https://github.com/speedscale/demo
-cd demo/java
-proxymock record --app-port 8080 --out ./proxymock/recorded`,
-      note: 'The app listens on port 8080 while proxymock records inbound traffic on 4143 and saves the capture in `./proxymock/recorded`.',
-    },
-    {
-      title: 'Route Java traffic through the proxy and run the app',
-      command: `cd demo/java
-export JAVA_TOOL_OPTIONS="$JAVA_TOOL_OPTIONS \
--Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=4140 \
--Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=4140 \
--Djavax.net.ssl.trustStore=\${HOME}/.speedscale/certs/cacerts.jks \
--Djavax.net.ssl.trustStorePassword=changeit"
-make local`,
-      note: 'This keeps the JVM on the proxy path and uses the proxymock truststore for TLS interception.',
+      command: `git clone https://github.com/speedscale/mock-lab
+cd mock-lab/java
+proxymock record -- java App.java`,
+      note: 'proxymock records the app while it starts the Java service as a child process. It auto-injects `JAVA_TOOL_OPTIONS` for the proxy and truststore, so no manual export is needed.',
     },
     {
       title: 'Generate one real workflow',
-      command: `cd demo/java
-make client-capture`,
-      note: 'Exercise the SpaceX and Treasury requests once so the exported capture reflects the real demo flow.',
+      command: `./lab/tests/run_tests.sh --recording`,
+      note: 'Run the test driver from the repo root. It drives the requests that become the exported production-style trace.',
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd demo/java
-proxymock mock --in ./proxymock/recorded
-make local-capture`,
-      note: 'The mocked run should no longer need live downstream access.',
+      command: `cd mock-lab/java
+proxymock mock -- java App.java`,
+      note: 'The mocked run should no longer need live outbound dependencies.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd demo/java
-proxymock replay --in ./proxymock/recorded --test-against http://localhost:8080`,
+      command: `cd mock-lab/java
+proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Java changes.',
     },
   ]}
