@@ -104,6 +104,8 @@ proxymock mock --in proxymock/browser-recording --out proxymock/browser-mock-res
 
 Keep Firefox pointed at `localhost:4140` and reload the same pages. Requests that match the recording return local mock responses. Requests that do not match are passed through to the real destination by default and are written under `proxymock/browser-mock-results`.
 
+If Firefox serves a page from cache, it may not send a request to proxymock. Use a hard reload or clear browser cache again before validating that the mock is being used. A matched response is written under the mock output directory with `match: "HIT"` in the RRPair metadata.
+
 If you want the browser to fail instead of passing through unrecorded requests, run:
 
 ```shell
