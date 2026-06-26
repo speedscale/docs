@@ -33,7 +33,9 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 - Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`cpp` directory)
 - Stack: C++ HTTP service using POSIX sockets and libcurl that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
-- Build and run: `c++ -std=c++17 main.cpp -o app -lcurl && ./app` (requires `libcurl4-openssl-dev`)
+- Build and run: `c++ -std=c++17 main.cpp -o app -lcurl && ./app`
+  - **macOS**: libcurl ships with the Xcode Command Line Tools (`xcode-select --install`) — no extra package needed.
+  - **Linux**: install the libcurl development headers first, e.g. `sudo apt-get install libcurl4-openssl-dev` (Debian/Ubuntu) or `sudo dnf install libcurl-devel` (Fedora/RHEL).
 - Quick validation: `./lab/tests/run_tests.sh --recording`
 
 This is the canonical public C++ demo for the proxymock quickstart and local replay workflow.
@@ -55,7 +57,7 @@ proxymock init`,
 cd mock-lab/cpp
 c++ -std=c++17 main.cpp -o app -lcurl
 proxymock record -- ./app`,
-      note: 'Build first (install `libcurl4-openssl-dev` so the build can link libcurl), then let proxymock supervise the compiled `./app` binary as it records the downstream calls.',
+      note: 'Build first so the binary can link libcurl. macOS already has libcurl via the Xcode Command Line Tools; on Linux install the dev headers first (`sudo apt-get install libcurl4-openssl-dev` on Debian/Ubuntu, `sudo dnf install libcurl-devel` on Fedora/RHEL). Then let proxymock supervise the compiled `./app` binary as it records the downstream calls.',
     },
     {
       title: 'Generate one real workflow',
@@ -86,5 +88,7 @@ downstream HTTPS call, the demo passes the certificate to libcurl directly:
 curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
 ```
 
-This is already done in `mock-lab/cpp/main.cpp`. Without it, the downstream HTTPS call fails certificate
-verification on Linux. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `SSL_CERT_FILE` path.
+This is already done in `mock-lab/cpp/main.cpp` and works on both macOS and Linux. Without it, the
+downstream HTTPS call fails certificate verification on Linux (OpenSSL-backed libcurl); on macOS the
+system libcurl may fall back to the keychain, so passing the proxymock CA explicitly keeps the behavior
+consistent across platforms. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `SSL_CERT_FILE` path.
