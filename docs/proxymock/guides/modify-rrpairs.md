@@ -5,6 +5,8 @@ sidebar_position: 5
 
 import RRPairList from './modify-rrpairs/rrpair-list.png'
 import RRPairDetail from './modify-rrpairs/rrpair-response-detail.png'
+import FieldTransformMenu from './modify-rrpairs/field-transform-menu.png'
+import PreviewBlueprintsStepper from './modify-rrpairs/preview-blueprints-stepper.png'
 
 #  Modifying Tests/Mocks
 
@@ -58,7 +60,7 @@ Open a request in the **Requests** grid to see its RRPair detail, then add a tra
 
 Either opens a short menu of transforms — *Replace with constant*, *Smart replace*, *Store in variable*, and the rest of the [transform library](/guides/transformation/transforms). Pick one, fill in any value it needs, and proxymock writes a rule into a blueprint named **Field Transforms**, scoped to that request's endpoint and method. The rule is active immediately and applies on your next run.
 
-<!-- screenshot: RRPair detail with the field transform menu open on a response body field -->
+<img src={FieldTransformMenu} alt="Field transform menu open on a response body field in the RRPair detail" style={{ display: 'block', margin: '0 auto', maxWidth: '100%' }} />
 
 You can review and edit every rule in the **Blueprints** tab — the same place the [recommendations workflow](./recommendations.md) lands its rules.
 
@@ -68,6 +70,6 @@ Before you replay, you can see exactly what the active blueprints will change. I
 
 The card above the grid steps through each change one at a time. Use **‹** / **›** to walk them: each step opens the affected request, names the field and the rule that changes it, and highlights the change in the before/after view.
 
-<!-- screenshot: Preview blueprints lens with the change stepper card -->
+<img src={PreviewBlueprintsStepper} alt="Preview blueprints lens with the change stepper card and a before/after body diff" style={{ display: 'block', margin: '0 auto', maxWidth: '100%' }} />
 
 This is the quickest way to confirm a new rule does what you expect — and only what you expect — before committing to a full replay.
