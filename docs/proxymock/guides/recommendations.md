@@ -99,6 +99,8 @@ This time the token the app issues on the first call is the token used on all th
 
 Everything the recommendation did is visible and editable in the **Blueprints** tab. The transform chain is plain configuration: a filter that targets the login endpoint, an extractor (`res_body`), and the `json_path` + `smart_replace_recorded` transforms. proxymock ships a full library of [transforms](/guides/transformation/transforms) if you need to go further, whether that is re-signing a JWT, swapping a refresh token, or correlating a session id. But for getting a token-based flow green, accepting the recommendation is the quick path.
 
+You are not limited to accepting recommendations — you can author the same kind of rule by hand. In a request's detail, click the transform icon on a header or query field (or right-click a body field) to add a transform straight onto that field; proxymock saves it as a blueprint just like a recommendation does. See [Modifying Tests/Mocks](./modify-rrpairs.md#applying-transforms-in-proxymock-web) for that field-level workflow, and switch the Requests grid to the **Preview blueprints** lens to walk a before/after of every change the active blueprints make before you replay.
+
 ## How this relates to the credentials swap
 
 | Your recording carries… | Use… |
