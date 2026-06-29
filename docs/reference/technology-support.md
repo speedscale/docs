@@ -130,7 +130,7 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | DigitalOcean Kubernetes                        |                                                                                         |
 | Docker Desktop                                 | See [guide](../getting-started/installation/install/docker.md)                                                 |
 | DigitalOcean Managed Kubernetes                |                                                                                         |
-| GCP GKE Autopilot                              | Requires [Dual Proxy](/getting-started/installation/sidecar/proxy-modes)                                    |
+| GCP GKE Autopilot                              | See [GKE Autopilot guide](/getting-started/installation/install/gke-autopilot) (eBPF or dual proxy)         |
 | GCP GKE CloudRun                               |                                                                                         |
 | GCP GKE Standard                               |                                                                                         |
 | Istio                                          | See [guide](../getting-started/installation/install/istio.md)                                                  |

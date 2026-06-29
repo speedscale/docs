@@ -13,7 +13,7 @@ Java is fully supported by Speedscale. Use this page for Java-specific proxy set
 - Support matrix: [Technology Support](/reference/technology-support)
 - Shared proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
 - Shared sidecar docs: [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and [TLS Support](/getting-started/installation/sidecar/tls.md)
-- GKE Autopilot guidance: [GCP](/guides/integrations/gcp.md)
+- GKE Autopilot guidance: [GKE Autopilot](/getting-started/installation/install/gke-autopilot)
 
 ## Choose Your Java Capture Mode
 
@@ -84,7 +84,7 @@ Use dual sidecar mode only when transparent proxy is unavailable. This is not th
 
 Common examples:
 
-- GKE Autopilot
+- [GKE Autopilot](/getting-started/installation/install/gke-autopilot)
 - platforms that block the networking changes required for transparent proxy
 - workloads with other environment-specific restrictions called out in [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md)
 
