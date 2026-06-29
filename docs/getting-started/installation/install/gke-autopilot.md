@@ -1,6 +1,6 @@
 ---
 title: GKE Autopilot
-description: Install Speedscale with eBPF traffic capture on a GKE Autopilot cluster using a customer-owned WorkloadAllowlist. Covers the Google Cloud support request, org policy, AllowlistSynchronizer, and the Autopilot-specific Helm values required to pass Warden admission.
+description: The complete guide to running Speedscale on GKE Autopilot. Covers both capture paths — eBPF via a customer-owned WorkloadAllowlist (support request, org policy, AllowlistSynchronizer) and sidecar dual proxy mode — plus the Autopilot-specific Helm values required to pass Warden admission.
 sidebar_position: 12
 ---
 
@@ -12,9 +12,14 @@ This workflow is currently in preview status. Please provide feedback in our [Sl
 
 [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview) is Google's fully managed mode for GKE. Autopilot blocks privileged workloads by default through its Warden admission controller. The Speedscale eBPF capture agent (`nettap`) needs Linux capabilities, host namespace access, and a few `hostPath` mounts that Warden rejects unless the workload is explicitly allowed.
 
-This guide uses a **customer-owned [WorkloadAllowlist](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-privileged-allowlists)** to approve the Speedscale agent on your project. This path is needed until the Speedscale Autopilot partner allowlist is published globally.
+## Capture Options on Autopilot
 
-Expected timeline is about one week. Most of that is waiting for Google Cloud support to enable customer-owned WorkloadAllowlists on your project.
+Autopilot's restrictions affect how Speedscale captures traffic. There are two supported approaches — pick one:
+
+- **eBPF capture** (the main path on this page). A privileged `nettap` DaemonSet captures traffic for whole namespaces. It needs a **customer-owned [WorkloadAllowlist](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-privileged-allowlists)** to admit the privileged pods, which requires a one-time Google Cloud eligibility request (about one week of lead time). Best for broad, low-touch capture across many workloads. This path is needed until the Speedscale Autopilot partner allowlist is published globally.
+- **[Sidecar capture (dual proxy mode)](#sidecar-capture-dual-proxy-mode)**. A per-workload sidecar proxy — no privileged DaemonSet and no WorkloadAllowlist, so no eligibility request. Autopilot forbids the sidecar's transparent proxy, so you run it in `dual` proxy mode and point your app's outbound traffic at it. Best when you only need a few workloads and want to skip the eligibility step.
+
+The rest of this page walks through the eBPF path. Jump to [Sidecar Capture](#sidecar-capture-dual-proxy-mode) for the sidecar alternative.
 
 ## Prerequisites
 
@@ -278,6 +283,60 @@ On Autopilot, the operator's Java Agent init container can be rejected if the in
 | Replay init containers rejected by Warden | Missing `ephemeral-storage` values | Reinstall with the `sidecar.resources.*.ephemeral-storage=100Mi` values |
 | Nettap image digest mismatch after a chart upgrade | Installed chart version does not match the allowlist | Install the chart `--version` that matches your `workload-allowlist.yaml`, or upload the updated allowlist from Speedscale |
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
+
+## Sidecar Capture (Dual Proxy Mode)
+
+If you do not want to run the privileged eBPF DaemonSet (or want to avoid the WorkloadAllowlist eligibility request), you can capture per workload with the Speedscale sidecar instead. Autopilot does not allow the sidecar to make the networking changes a transparent proxy needs, so the sidecar must run in `dual` proxy mode, and your application must send its own outbound traffic to the sidecar's forward proxy.
+
+`transparent` proxy mode is **not** supported on Autopilot. See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) for how dual mode works.
+
+### Operator values
+
+Autopilot also blocks the sidecar's smart reverse DNS (it needs `NET_ADMIN`), and it enforces that every container's resource requests equal its limits, including `ephemeral-storage`. Set these operator values when you [install the operator](./kubernetes-operator.md):
+
+```yaml
+disableSidecarSmartReverseDNS: true
+
+sidecar:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 100Mi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 100Mi
+```
+
+See the [Helm reference](/reference/helm.md) for `disableSidecarSmartReverseDNS`.
+
+### Workload annotations
+
+Inject the sidecar in dual mode with matching request/limit annotations:
+
+```yaml
+sidecar.speedscale.com/inject: "true"
+sidecar.speedscale.com/proxy-type: "dual"
+sidecar.speedscale.com/proxy-protocol: "tcp:http"
+sidecar.speedscale.com/proxy-port: "8080"
+sidecar.speedscale.com/cpu-request: 500m
+sidecar.speedscale.com/cpu-limit: 500m
+sidecar.speedscale.com/memory-request: 1Gi
+sidecar.speedscale.com/memory-limit: 1Gi
+sidecar.speedscale.com/ephemeral-storage-request: 100Mi
+sidecar.speedscale.com/ephemeral-storage-limit: 100Mi
+```
+
+### Configure the application
+
+Dual mode does not reconfigure your runtime — the app must route outbound traffic to the sidecar's forward proxy on `127.0.0.1:4140` (unless you changed `proxy-out-port`):
+
+- **Java:** add `-Dhttp.proxyHost`, `-Dhttp.proxyPort`, `-Dhttps.proxyHost`, and `-Dhttps.proxyPort` via `JAVA_TOOL_OPTIONS`. If you enable `tls-out`, add the truststore flags from the [Java reference](/reference/languages/java.md).
+- **Runtimes that honor proxy env vars:** set `HTTP_PROXY` and `HTTPS_PROXY` to `http://127.0.0.1:4140`.
+- **Clients with custom proxy behavior:** configure the library directly so outbound traffic actually uses the sidecar.
+
+See [TLS Support](/getting-started/installation/sidecar/tls.md) for outbound TLS decryption details.
 
 ## Getting Help
 

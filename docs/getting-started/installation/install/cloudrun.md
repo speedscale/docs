@@ -22,7 +22,7 @@ In order to capture traffic from Cloud Run, we need to set up a few components s
 
 ### Create a cluster
 
-We need to create a GKE cluster in order to run our proxy and forwarding components. Follow the prompts in the Google Cloud console to create a standard GKE cluster. Do not create an Autopilot cluster. All other standard settings should be fine. Cluster creation can take a few minutes and we need to wait till it's finished in order to deploy Speedscale components to it. Once it's done, setup `kubectl` access by running
+We need to create a GKE cluster in order to run our proxy and forwarding components. Follow the prompts in the Google Cloud console to create a standard GKE cluster. Do not create an Autopilot cluster for this setup — if you specifically need Autopilot, follow the [GKE Autopilot guide](/getting-started/installation/install/gke-autopilot) instead. All other standard settings should be fine. Cluster creation can take a few minutes and we need to wait till it's finished in order to deploy Speedscale components to it. Once it's done, setup `kubectl` access by running
 
 ```
 gcloud container clusters get-credential <cluster-name> --region <region>
