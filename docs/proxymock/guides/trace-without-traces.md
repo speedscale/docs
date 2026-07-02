@@ -25,15 +25,25 @@ real recorded requests:
 ## What you'll need
 
 - proxymock installed ([installation](/proxymock/getting-started/installation.md)).
-- The **user-journey** demo from the Speedscale demo repo, under
-  `scenarios/otel-trace-replay-gate/user-journey/`. It's a four-service checkout
-  app — `gateway → auth`, `gateway → orders`, `orders → shipping` — that threads
-  the customer's email through an `X-User-Email` header, the request bodies, and
-  the response bodies. Nothing in it uses OpenTelemetry.
+- [Node.js](https://nodejs.org/) 18+ and `git`.
+- The **user-journey** demo from the [Speedscale demo repo](https://github.com/speedscale/demo),
+  under `scenarios/otel-trace-replay-gate/user-journey/`. It's a four-service
+  checkout app — `gateway → auth`, `gateway → orders`, `orders → shipping` — that
+  threads the customer's email through an `X-User-Email` header, the request
+  bodies, and the response bodies. Nothing in it uses OpenTelemetry.
 
-## Step 1 — Record the traffic
+## Step 1 — Get the demo
 
-From the demo's `user-journey/` directory:
+Clone the demo repo and move into the `user-journey` scenario:
+
+```bash
+git clone https://github.com/speedscale/demo.git
+cd demo/scenarios/otel-trace-replay-gate/user-journey
+```
+
+## Step 2 — Record the traffic
+
+From that `user-journey/` directory:
 
 ```bash
 npm install
@@ -46,7 +56,7 @@ Hopper, Alan Turing, Katherine Johnson, and Margaret Hamilton). Every request an
 response on every hop is captured to disk as real traffic — no application code
 changes required.
 
-## Step 2 — Open the recording
+## Step 3 — Open the recording
 
 ```bash
 proxymock web --in .
@@ -57,7 +67,7 @@ interleaved. This is the haystack: hundreds of requests across all four services
 
 ![The proxymock web Requests grid showing 278 recorded requests from all customers across the gateway, auth, orders, and shipping services](./trace-without-traces/01-unfiltered-grid.png)
 
-## Step 3 — Filter to one customer
+## Step 4 — Filter to one customer
 
 You don't need a trace ID to find one person — you need something that travels
 with their requests. Here that's their email, and it shows up in different places
@@ -75,7 +85,7 @@ across all four services:
 
 ![The Requests grid filtered to 35 rows, all belonging to ada.lovelace@example.com, spanning the gateway, auth, orders, and shipping services](./trace-without-traces/03-filtered-grid.png)
 
-## Step 4 — See where the identifier was found
+## Step 5 — See where the identifier was found
 
 Select any row and open the **Request** tab. On the checkout, the email is in the
 request **body**:
@@ -97,7 +107,7 @@ services, all found by the single Full Text filter. That's the part a trace ID
 can't do: it only works if every service agreed to propagate it. A business
 identifier survives across systems that were never instrumented.
 
-## Step 5 — Read the waterfall
+## Step 6 — Read the waterfall
 
 Switch the Requests view to the **Trace** lens. proxymock draws the filtered set
 as a time-ordered, nested waterfall — one customer's transaction across every
@@ -116,7 +126,7 @@ customer on that transaction.
 
 - **The filter does the correlation.** The Full Text filter narrows the Requests
   list, and the Trace lens is a pure renderer over that filtered set (see
-  [the Trace view](#step-5--read-the-waterfall)). Change the email to
+  [the Trace view](#step-6--read-the-waterfall)). Change the email to
   `grace.hopper@example.com` and you get Grace's journey instead. Any value that
   travels with the request works — an order id, an account number, a session
   token.
