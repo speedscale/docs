@@ -12,6 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
+    "gen:mcp-docs": "bash scripts/gen-mcp-docs.sh",
     "prepare": "husky",
     "postinstall": "node ./scripts/apply-patch.mjs"
   },

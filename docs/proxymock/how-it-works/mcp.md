@@ -40,6 +40,8 @@ MCP is a lightweight, open protocol that standardizes how AI applications (IDEs,
 
 Together these make agent integrations predictable across different AI applications ([Cursor](https://cursor.com), [Claude Desktop](https://claude.ai/download), [VS Code](https://code.visualstudio.com)/[Copilot Chat](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp)) without custom adapters.
 
+For the full list of tools, prompts, and resources the proxymock MCP server exposes — with parameters and read-only markers — see the [MCP Tools & Prompts Reference](./mcp-tools.md).
+
 ## Agentic vs IDE Assistants
 
 - Agentic tools (e.g., [Claude](https://claude.ai) with MCP): Plan multi‑step changes, call tools autonomously, and generate cohesive cross‑file updates. Best for scaffolding features, wiring integrations, or orchestrating proxymock actions end‑to‑end.
