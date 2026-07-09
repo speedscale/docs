@@ -50,54 +50,41 @@ Leave that process running. In another terminal from the repo root, drive the ap
 
 Stop the recording with `Ctrl-C`. The recorded RRPair files are now in `replay-work/recording`.
 
-## 3. Pick the mock set to tune
+A recording holds both directions of traffic: the inbound requests the app received, and the outbound calls it made to its dependencies. The tuning script cares about the outbound calls, and sorts them out for you.
 
-The tuning script needs two inputs:
+## 3. Run the tuning script
+
+The script takes one input:
 
 | Input | Meaning |
 |---|---|
-| `--mock-in` | The mock or recording directory you want to test as the candidate mock set |
-| `--replay-in` | The request set to replay through that mock |
+| `--in` | A recording to tune. Its outbound pairs are replayed against the mock; its inbound pairs are skipped automatically. |
 
-For this mock-lab walkthrough, use the committed mock set as the candidate and the recording you just made as the replay input:
+Point it at the recording you just made:
 
-```text
-Mock input: lab/proxymock/recording
-Replay input: replay-work/recording
+```shell
+./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh --in replay-work/recording
 ```
 
-In your own app, `Mock input` is usually the recording you expect to serve responses from. `Replay input` is the newer traffic that exposes misses.
+The skill that wraps this lives in the repo at `skills/proxymock-replay-tuning/SKILL.md`.
+
+Because the mock set and the replay set come from the same recording here, a clean recording matches itself and reports a high hit rate. Misses show up once the mock set falls behind the traffic: a new endpoint, a stale recording, or a signature that pins a value which changes every run. To watch the tuner surface those on purpose, run the [proof script](#prove-the-workflow), which breaks a mock set and measures the misses.
 
 ## 4. Start your AI agent
 
-Start your AI coding agent from the `mock-lab` repo root. Ask it to use the replay tuning skill and give it the two paths:
+Start your AI coding agent from the `mock-lab` repo root. Ask it to use the replay tuning skill and give it the recording:
 
 ```text
 Use the proxymock-replay-tuning skill to tune this replay.
-Mock input: lab/proxymock/recording
-Replay input: replay-work/recording
+Recording: replay-work/recording
 Run the tuning script, summarize HIT/MISS/PASSTHROUGH, and recommend what transforms or recordings need to change.
-```
-
-The skill lives in the repo at:
-
-```text
-skills/proxymock-replay-tuning/SKILL.md
-```
-
-The agent should run:
-
-```shell
-./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh \
-  --mock-in lab/proxymock/recording \
-  --replay-in replay-work/recording
 ```
 
 You can run the script yourself if you do not want to use an agent.
 
 ## 5. Read the results
 
-The script starts `proxymock mock`, sends the replay requests through it, then writes a work directory with:
+The script starts `proxymock mock`, sends the outbound requests through it, then writes a work directory with:
 
 | Artifact | What to check |
 |---|---|
@@ -118,7 +105,7 @@ A high `MISS` count usually means the mock set is stale, incomplete, or matching
 
 ## 6. Inspect misses
 
-Open the files in `mock-output/` for missed requests and compare them to the closest requests in `--mock-in`.
+Open the files in `mock-output/` for missed requests and compare them to the closest requests in the mock set.
 
 Look for:
 
@@ -137,9 +124,7 @@ For dynamic IDs and bearer tokens, start with [Fix Replay Failures with Recommen
 After each change, rerun the same tuning command:
 
 ```shell
-./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh \
-  --mock-in lab/proxymock/recording \
-  --replay-in replay-work/recording
+./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh --in replay-work/recording
 ```
 
 Compare the new `summary.json` to the previous run. The loop is:
@@ -148,7 +133,7 @@ Compare the new `summary.json` to the previous run. The loop is:
 1. Read `summary.json`
 1. Inspect misses in `mock-output/`
 1. Update recordings, signatures, filters, or transforms
-1. Rerun the same replay input
+1. Rerun the same recording
 
 When the match rate is high enough, run a normal proxymock replay against your app to confirm response correctness, not just signature coverage.
 
