@@ -101,7 +101,7 @@ This should start generating traffic that you can see in the Speedscale UI withi
 1. Generate local certs by running the following command (it should say "Certificate was added to keystore"):
 
 ```bash
-proxymock certs --jks
+proxymock admin certs --jks
 ```
 
 2. Start the capture system with this command:

@@ -23,7 +23,7 @@ Use a private Firefox window or a separate Firefox profile for recording. Browse
 Create the proxymock root certificate if it does not already exist:
 
 ```shell
-proxymock certs
+proxymock admin certs
 ```
 
 This creates the local certificate files under `~/.speedscale/certs`. On many desktop environments proxymock can add the certificate to the system trust store automatically, but Firefox uses its own certificate store. Import the proxymock CA into Firefox before recording HTTPS sites.

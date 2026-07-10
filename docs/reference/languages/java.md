@@ -122,7 +122,7 @@ container `env`, but that should be treated as a fallback.
 
 ## TLS Trust {#tls-trust}
 
-Java typically needs an explicit truststore when TLS interception is involved. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `proxymock certs --jks` command, JVM flags, and custom truststore workflow.
+Java typically needs an explicit truststore when TLS interception is involved. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `proxymock admin certs --jks` command, JVM flags, and custom truststore workflow.
 
 How that trust is configured depends on the capture mode:
 
