@@ -26,3 +26,4 @@ export { default as DatadogSyntheticsCard } from './DatadogSyntheticsCard';
 export { default as CredentialsSwapCard } from './CredentialsSwapCard';
 export { default as RecommendationsCard } from './RecommendationsCard';
 export { default as ReplayTuningCard } from './ReplayTuningCard';
+export { default as MockMatchRateCard } from './MockMatchRateCard';
