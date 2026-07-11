@@ -54,19 +54,11 @@ const config = {
           },
           {
             from: "/proxymock/getting-started/quickstart-cli/",
-            to: "/proxymock/getting-started/quickstart/local/",
-          },
-          {
-            from: "/proxymock/getting-started/quickstart/quickstart-cli/",
-            to: "/proxymock/getting-started/quickstart/local/",
-          },
-          {
-            from: "/proxymock/getting-started/quickstart/quickstart-mcp/",
-            to: "/proxymock/getting-started/quickstart/local/",
+            to: "/proxymock/getting-started/quickstart/quickstart-cli/",
           },
           {
             from: "/proxymock/getting-started/quickstart-mcp/",
-            to: "/proxymock/getting-started/quickstart/local/",
+            to: "/proxymock/getting-started/quickstart/quickstart-mcp/",
           },
           {
             from: "/proxymock/getting-started/api-key/",
