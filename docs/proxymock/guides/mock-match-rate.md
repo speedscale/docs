@@ -51,7 +51,7 @@ The recording lands in `proxymock/recorded-<timestamp>/` — real API calls plus
 
 ## 2. Mock and replay: watch the misses happen
 
-Run the app against the mock built from that recording, and replay the recorded tests at it. The beacon generates *new* UUIDs this run, so those requests cannot match:
+Run the app against the mock built from that recording, and replay the recorded tests at it. The beacon generates *new* UUIDs this run, so those requests cannot match. Both terminals run from `mock-lab/go`:
 
 ```shell
 # terminal 1 — app with the downstream mocked (fail closed so misses are visible)
