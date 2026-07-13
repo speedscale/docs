@@ -31,7 +31,11 @@ The agent iterates against the projection and you re-run the replay once at the 
 
 ## 1. Record traffic with a rotating value
 
-Clone mock-lab and record the Go app with its telemetry beacon enabled. The beacon fires `POST /v1/track/{event_id}` downstream on every API request, with a fresh UUID in the path and a timestamp in the body — values that rotate on every run, which is exactly what breaks mock matching in real systems:
+Clone mock-lab and record the Go app with its telemetry beacon enabled. On every API request the beacon fires a few outbound calls whose ids rotate on every run — exactly what breaks mock matching in real systems:
+
+- `POST /v1/track/{event_id}` — a fresh UUID in the path, a timestamp in the body;
+- `POST /v1/track/{ulid}?ts=&sid=&oid=&u7=&xid=&ksuid=` — a ULID path segment plus a bare epoch, Snowflake, Mongo ObjectId, UUIDv7, xid, and KSUID as query params (a spread of rotating id encodings);
+- `POST /graphql` — a rotating `variables.id` with a fixed `query`/`operationName`.
 
 ```shell
 git clone https://github.com/speedscale/mock-lab.git
@@ -74,27 +78,35 @@ In your AI agent, from the `mock-lab/go` directory:
 or in any MCP client: *"improve the mock match rate in this workspace"*. The agent runs `analyze_mock_matches`, which finds the two runs on its own (the recording is the mock source, the mock output is the request source) and reports:
 
 ```text
-Report match rate:    50% (5/10) — recorded verdicts
-Projected match rate: 50% (5/10) — with 0 active blueprint(s) applied
+Report match rate:    ~40% — recorded verdicts
+Projected match rate: ~40% — with 0 active blueprint(s) applied
 
 Recommendation groups (impact-sorted):
 
-1. POST /v1/track/{UUID} — service responder, 5 request(s)
-   - id: responder|url:/v1/track/*
-     fix: URL id segment -> constant
-   - id: responder|body:ts
-     fix: ts -> constant
+1. POST /v1/track/{UUID} — service responder, N request(s)
+   - responder|url:/v1/track/*    fix: URL id segment -> constant
+   - responder|body:ts            fix: ts -> constant
+   - responder|query:ts           fix: ts · query -> constant
+   - responder|query:sid          fix: sid · query -> constant
+   - responder|query:oid          fix: oid · query -> constant
+   - responder|query:u7           fix: u7 · query -> constant
+   - responder|query:xid          fix: xid · query -> constant
+   - responder|query:ksuid        fix: ksuid · query -> constant
+2. POST /graphql — service responder, N request(s)
+   - responder|body:variables.id  fix: variables.id -> constant
 ```
 
-The analyzer discovered the rotating-UUID family, grouped all five misses under one endpoint-scoped filter, and recommends two fixes: wildcard the rotating path segment, and mask the `ts` timestamp field. The agent accepts them with `accept_mock_recommendation`, and the response reports the movement immediately:
+The analyzer groups the misses by endpoint and recommends one fix per rotating value. On `/v1/track` it wildcards the rotating path segment and masks the body timestamp plus each time-anchored query id — the epoch, Snowflake, ObjectId, UUIDv7, xid, and KSUID are recognized because each embeds a timestamp that lands inside the recording's own capture window. On `/graphql` it masks only the rotating `variables.id` and leaves the `query`/`operationName` that identify the operation untouched. The agent accepts them with `accept_mock_recommendation`:
 
 ```text
-Accepted all open recommendations: 2 filter-scoped chain(s) written into blueprint(s) responder Mocks.
+Accepted all open recommendations: N filter-scoped chain(s) written into blueprint(s) responder Mocks.
 
-Projected match rate: 50% (5/10) -> 100% (10/10).
+Projected match rate: ~40% -> 100%.
 ```
 
-For ambiguous misses the agent digs deeper with `similar_candidates`, which ranks a miss against the nearest recorded signatures and classifies each drifting field's cause (datetime, uuid, jwt, trace-id, pii, opaque). The skill's playbook uses those causes to choose safely — e.g. a PII-classified lookup key gets `smart_replace_recorded` instead of a blind mask, and anything auth-shaped is surfaced to you rather than auto-accepted.
+Exact totals scale with how much traffic you drive; the shape — one group per endpoint, one fix per rotating value — is what matters.
+
+For ambiguous misses the agent digs deeper with `similar_candidates`, which ranks a miss against the nearest recorded signatures and classifies each drifting field's cause (datetime, epoch, uuid, uuidv7, ulid, ksuid, xid, snowflake, objectid, jwt, trace-id, pii, opaque). The skill's playbook uses those causes to choose safely — e.g. a PII-classified lookup key gets `smart_replace_recorded` instead of a blind mask, and anything auth-shaped is surfaced to you rather than auto-accepted.
 
 ## 4. Confirm with a real run
 
@@ -102,7 +114,7 @@ The accepted fixes live in `proxymock/blueprints/` and the mock server applies t
 
 ```shell
 grep -rho '"match":"[A-Z_]*"' proxymock/results/mocked-<newest>/ | sort | uniq -c
-#   10 "match":"HIT"
+#   N "match":"HIT"   (every request a HIT, zero MISS)
 ```
 
 ## Tuning a cloud replay report
@@ -131,4 +143,5 @@ See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full p
 - Fixes are **blueprint-only** — no RRPair files are rewritten, and every accept can be undone.
 - Each fix is **scoped by a filter** (the group's endpoint), so a wildcard on one rotating route can't collapse unrelated endpoints into false matches.
 - Fixes using `smart_replace_recorded` can't be credited by the offline projection (they need recorded data at replay time) — the agent notes them for the confirming run instead of churning.
+- A value that a **prior response** issued — a pagination cursor, a freshly-created id, an issued token — is surfaced as a **correlate** recommendation: *bind* it (carry the value from the response into the later request), don't mask it, because masking a cursor collapses every page onto page 1. mock-lab's `GET /v1/feed` cursor flow shows this when the app runs against the lab reference server (`DOWNSTREAM_URL=http://localhost:8090` pointed at `../lab/server`); `accept all` masks the volatile values and leaves correlations for you to review.
 - A projected 100% is a projection. The confirming replay in step 4 is the ground truth — in this demo they agree exactly.
