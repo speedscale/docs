@@ -22,7 +22,7 @@ proxymock [command]
 
 ## Top-level commands
 
-- `certs` - Create proxymock TLS certificates
+- `admin` - Administrative and maintenance commands (certs, clean)
 - `cloud` - Manage your Speedscale Cloud resources
 - `completion` - Generate the autocompletion script for the specified shell
 - `files` - Utilities for working with RRPair files
@@ -525,26 +525,73 @@ proxymock cloud push [command]
 
 ## System commands
 
-### `certs`
+### `admin`
+
+Administrative and maintenance commands. Groups the low-traffic `certs` and `clean` commands under one noun so they stay out of the main `proxymock --help` list.
+
+**Usage**
+
+```bash
+proxymock admin [command]
+```
+
+**Available subcommands**
+
+- `certs` - Create proxymock TLS certificates
+- `clean` - Remove regenerable proxymock directories (replay/mock output and scratch)
+
+> The legacy top-level paths `proxymock certs` and `proxymock clean` still work as hidden aliases for one or two releases, but `proxymock admin certs` / `proxymock admin clean` are the supported paths.
+
+### `admin certs`
 
 Create proxymock TLS certificates.
 
 **Usage**
 
 ```bash
-proxymock certs [flags]
+proxymock admin certs [flags]
 ```
 
 **Examples**
 
 ```bash
-proxymock certs
+proxymock admin certs
 ```
 
 **Flags**
 
 - `--force` - Regenerate certificates and overwrite the current ones if they exist
 - `--jks` - Create a Java truststore file that includes proxymock certificates
+
+### `admin clean`
+
+Remove regenerable proxymock directories (replay and mock output, and transient replay scratch). Recordings and transform configuration are never touched.
+
+**Usage**
+
+```bash
+proxymock admin clean [flags]
+```
+
+**Examples**
+
+```bash
+# preview what would be removed from ./proxymock
+proxymock admin clean --dry-run
+
+# clean a specific workspace without the confirmation prompt
+proxymock admin clean --in ./proxymock --yes
+
+# also clear the .proxymock/ web-UI state directory
+proxymock admin clean --cache
+```
+
+**Flags**
+
+- `--cache` - Also remove the `.proxymock/` web-UI state directory (backups, dismissed hints, replay configs)
+- `--dry-run` - Show what would be removed without deleting anything
+- `--in string` - Workspace directory to clean (default current directory)
+- `-y, --yes` - Skip the confirmation prompt
 
 ### `init`
 
