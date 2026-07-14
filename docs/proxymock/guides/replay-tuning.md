@@ -1,14 +1,16 @@
 ---
 title: Tune a Replay Locally
-description: "Use mock-lab, an AI coding agent, and the proxymock replay tuning script to measure replay misses and improve local mock coverage."
-sidebar_position: 8
+description: "Use mock-lab and the proxymock replay tuning script to measure replay misses and gate a match-rate threshold, offline and in CI."
+sidebar_position: 9
 ---
 
 # Tune a Replay Locally
 
 A replay miss usually means the app made an outbound request that the mock set cannot explain. The request may be new, the signature may include a value that changes on every run, or the mock recording may be missing traffic.
 
-This guide shows a local loop for finding those misses and deciding what to change. You will record traffic from [mock-lab](https://github.com/speedscale/mock-lab), ask an AI coding agent to run the replay tuning skill, then inspect the `summary.json` and `mock-output/` artifacts it produces.
+This guide shows a scripted local loop for finding those misses and deciding what to change. You record traffic from [mock-lab](https://github.com/speedscale/mock-lab), run the tuning script, then inspect the `summary.json` and `mock-output/` artifacts it produces. Because it is a single command with a `--fail-under` threshold, it also drops straight into CI.
+
+Looking to have an AI agent find and fix the misses for you — analyze each miss and accept mock recommendations until the match rate reaches 100%? See [Improve Mock Match Rate with AI](./mock-match-rate.md). This guide is the scripted counterpart.
 
 The workflow is file-based. It does not require Kubernetes or Speedscale Cloud access.
 

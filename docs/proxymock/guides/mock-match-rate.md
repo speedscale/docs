@@ -12,6 +12,8 @@ proxymock ships an AI-agent workflow that fixes this automatically: the **`impro
 
 This guide walks the loop end to end using [mock-lab](https://github.com/speedscale/mock-lab) as the demo app.
 
+Prefer a script, or gating the match rate in CI? [Tune a Replay Locally](./replay-tuning.md) covers the `proxymock-replay-tuning` CLI: it measures HIT/MISS/PASSTHROUGH and fails a build below a threshold, no AI agent required.
+
 ## How it works
 
 The mock server matches each outbound request's **signature** (method, host, URL, query params, body fields) against the recording, after applying the workspace's transform chains (the *tuning blueprint*). A fix is one transform scoped by a filter — e.g. "on `POST /v1/track/{id}`, wildcard the rotating path segment" — written into that blueprint.
