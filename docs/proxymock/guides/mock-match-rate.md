@@ -20,7 +20,7 @@ The mock server matches each outbound request's **signature** (method, host, URL
 
 Two rates matter, over the same set of outbound requests:
 
-- **Report match rate** — the HIT/MISS verdicts recorded when the traffic actually ran. Ground truth; it never changes offline.
+- **Report match rate** — the HIT/MISS verdicts recorded when the traffic actually ran. It never changes offline.
 - **Projected match rate** — what the *next* run would score with the current blueprint applied. It starts at the report rate and climbs as fixes are accepted, using the same matching engine the mock server runs — so the projection is trustworthy.
 
 The agent iterates against the projection and you re-run the replay once at the end to confirm.
@@ -152,4 +152,4 @@ See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full p
 - A rotating id in a URL path that was **created earlier in the session** — issued by a `POST`/`PUT`/`PATCH` response (a `Location` header or a body id) and then used in a later request's path — is called out under **Created ids** (a CREATE→USE list) and is *not* offered a wildcard. Wildcarding `/orders/*` would match ids the mock never issued; at mock time the client reuses the id the mock returned, so the request matches on its own. mock-lab's `POST /v1/orders` → `GET /v1/orders/{id}` flow shows this against the lab reference server.
 - Auth and session correlations — an OAuth token, a rotated session cookie, a CSRF double-submit, an `ETag`→`If-None-Match` — are collected under **Credentials & session**. These ride in headers, which are *outside* the mock signature, so they never cause a mock miss and get no fix here; but the credential-carrying ones authenticate the caller, so a *validating* replay must correlate them — the advisory flags those for review and points at credential setup. mock-lab's `POST /v1/auth/token` → `GET /v1/me` (bearer + session cookie) flow shows this against the lab reference server.
 - Response fields that vary across *identical* requests but are just noise — a timestamp, a server-issued id, a rate-limit counter — are separated out as **volatile response fields** (a NOISE list) rather than making the endpoint look stateful. They're found by observation, not a format rule, so app-specific noise is caught too; a mock ignores them, but they're worth knowing for response-diff / assertion tuning. mock-lab's `GET /v1/job/status` carries a rotating `checkedAt` alongside its real `status`, and `GET /v1/time` returns only a rotating `now` — the first stays stateful with `checkedAt` flagged noise, the second isn't flagged at all.
-- A projected 100% is a projection. The confirming replay in step 4 is the ground truth — in this demo they agree exactly.
+- A projected 100% is a projection. The confirming replay in step 4 is the real result; in this demo they agree exactly.

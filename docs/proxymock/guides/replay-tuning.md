@@ -10,7 +10,7 @@ A replay miss usually means the app made an outbound request that the mock set c
 
 This guide shows a scripted local loop for finding those misses and deciding what to change. You record traffic from [mock-lab](https://github.com/speedscale/mock-lab), run the tuning script, then inspect the `summary.json` and `mock-output/` artifacts it produces. Because it is a single command with a `--fail-under` threshold, it also drops straight into CI.
 
-Looking to have an AI agent find and fix the misses for you — analyze each miss and accept mock recommendations until the match rate reaches 100%? See [Improve Mock Match Rate with AI](./mock-match-rate.md). This guide is the scripted counterpart.
+Looking to have an AI agent analyze each miss and accept mock recommendations until the match rate reaches 100%? See [Improve Mock Match Rate with AI](./mock-match-rate.md). This guide is the scripted counterpart.
 
 The workflow is file-based. It does not require Kubernetes or Speedscale Cloud access.
 
@@ -21,7 +21,6 @@ Make sure you have:
 - `proxymock` [installed](../getting-started/quickstart/quickstart-cli.md)
 - `git`
 - Go installed, for the mock-lab example
-- An AI coding agent that can read local files and run shell commands
 
 The example uses the Go app in `mock-lab`, but the same pattern works with any app that proxymock can record.
 
@@ -61,20 +60,23 @@ The script takes one input:
 | Input | Meaning |
 |---|---|
 | `--in` | A recording to tune. Its outbound pairs are replayed against the mock; its inbound pairs are skipped automatically. |
+| `--fail-under` | Optional minimum hit-rate percentage. The command exits nonzero when the result falls below it, making the check suitable for CI. |
 
 Point it at the recording you just made:
 
 ```shell
-./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh --in replay-work/recording
+./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh \
+  --in replay-work/recording \
+  --fail-under 95
 ```
 
 The skill that wraps this lives in the repo at `skills/proxymock-replay-tuning/SKILL.md`.
 
 Because the mock set and the replay set come from the same recording here, a clean recording matches itself and reports a high hit rate. Misses show up once the mock set falls behind the traffic: a new endpoint, a stale recording, or a signature that pins a value which changes every run. To watch the tuner surface those on purpose, run the [proof script](#prove-the-workflow), which breaks a mock set and measures the misses.
 
-## 4. Start your AI agent
+## 4. Optional: ask an AI agent to interpret the run
 
-Start your AI coding agent from the `mock-lab` repo root. Ask it to use the replay tuning skill and give it the recording:
+If you want help interpreting the artifacts, start your AI coding agent from the `mock-lab` repo root. Ask it to use the replay tuning skill and give it the recording:
 
 ```text
 Use the proxymock-replay-tuning skill to tune this replay.
@@ -82,7 +84,7 @@ Recording: replay-work/recording
 Run the tuning script, summarize HIT/MISS/PASSTHROUGH, and recommend what transforms or recordings need to change.
 ```
 
-You can run the script yourself if you do not want to use an agent.
+Skip this step when running the script directly or in CI.
 
 ## 5. Read the results
 
@@ -126,7 +128,9 @@ For dynamic IDs and bearer tokens, start with [Fix Replay Failures with Recommen
 After each change, rerun the same tuning command:
 
 ```shell
-./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh --in replay-work/recording
+./skills/proxymock-replay-tuning/scripts/tune-proxymock-replay.sh \
+  --in replay-work/recording \
+  --fail-under 95
 ```
 
 Compare the new `summary.json` to the previous run. The loop is:
