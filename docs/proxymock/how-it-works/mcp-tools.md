@@ -215,13 +215,37 @@ Accepting a transform recommendation merges its transform chains into the worksp
 | `id` | string | **yes** | Recommendation id as returned by list_recommendations. |
 | `action` | string | no | 'accept' (default) merges the recommendation into the tuning blueprint; 'reject' hides it from future lists. |
 
+#### `mocks`
+
+Tune a replay's OUTBOUND mock match rate offline from RRPair files in one workspace. No replay or cluster is needed. Select the operation with 'action':
+
+- 'analyze' (read-only): report how well the replay's outbound requests match the recorded mocks, and list impact-sorted fix recommendations grouped by the filter that would collapse them. Reports two rates over the same denominator: the report rate recorded at replay time and the projected rate with the workspace's active tuning blueprints applied.
+- 'accept' (writes blueprint): accept one recommendation by 'id' (from analyze), or every open one with 'all'=true. Writes a filter-scoped transform into the workspace's per-service tuning blueprint; no RRPair files are rewritten. The response reports the projected-rate movement immediately.
+- 'undo' (writes blueprint): remove a previously accepted recommendation by 'id'. Idempotent, so accepts and undos can be tried and reverted freely.
+- 'similar' (read-only): deep-dive one projected miss ('id'), ranking it against the recorded mock corpus with per-field drift, likely cause, and any pending recommendation. Use it to reason about ambiguous misses before accepting fixes.
+
+The workspace usually comes from 'proxymock cloud pull report &lt;id&gt;', which materializes both analysis sides (snapshot-* and report-* run directories). This is the Mocks-view match-rate loop; it is a different id space from apply_recommendation, which handles general replay-tuning recommendations.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | Which mocks operation to run: 'analyze' and 'similar' are read-only; 'accept' and 'undo' write the tuning blueprint. |
+| `in-directory` | array | **yes** | Exactly one workspace directory holding both analysis sides as run directories (usually snapshot-* and report-*). The tuning blueprint is stored under it. |
+| `all` | boolean | no | action=accept only: accept every open recommendation with its default transform (the web UI's 'Accept all'). |
+| `id` | string | no | A recommendation id (shaped '&lt;service&gt;\|&lt;target&gt;') for action=accept/undo, or a projected-miss id for action=similar. Both are returned by action=analyze. Required for accept (unless all=true), undo, and similar. |
+| `max` | number | no | action=similar only: how many nearest candidates to return (default 3). |
+| `mock-source` | string | no | Optional run-directory name (or absolute RRPair directory) supplying the recorded mock signatures. Auto-discovered when omitted: the newest snapshot-*/recorded-*/mocked-* run. |
+| `request-source` | string | no | Optional run-directory name (or absolute RRPair directory) supplying the outbound requests to check. Auto-discovered when omitted: the newest report-*/replayed-* run. |
+| `transform` | string | no | action=accept only: transform type overriding the recommendation's default (e.g. 'constant' to mask). Ignored for URL id-segment fixes, which always wildcard. |
+
 #### `analyze_mock_matches`
 
 _Read-only._
 
+DEPRECATED: use the `mocks` tool with action=analyze instead. This alias forwards to the same implementation and will be removed in a future release.
+
 Analyze how well a replay's outbound requests match the recorded mocks, and list tuning recommendations. Works entirely from RRPair files on disk — no replay or cluster needed. Reports two rates over the same outbound denominator:
 
-- Report match rate: the ground-truth verdicts recorded at replay time (what the report showed).
+- Report match rate: the verdicts recorded at replay time (what the report showed).
 - Projected match rate: what the rate WOULD be on the next replay with the workspace's active tuning blueprints applied. Always &gt;= the report rate; it climbs as fixes are accepted.
 
 The remaining projected misses are grouped by the fix that would collapse them: each group is a FILTER (the scope — e.g. an endpoint whose URL rotates an id segment) carrying RECOMMENDATIONS (transforms to accept, each with a stable id). Accepting writes one filter-scoped rule into the tuning blueprint via accept_mock_recommendation; re-running this tool then shows the improved projected rate. Iterate until the projected rate stops climbing.
@@ -235,6 +259,8 @@ The workspace usually comes from 'proxymock cloud pull report &lt;id&gt;', which
 | `request-source` | string | no | Optional run-directory name (or absolute RRPair directory) supplying the outbound requests to check. Auto-discovered when omitted: the newest report-*/replayed-* run. |
 
 #### `accept_mock_recommendation`
+
+DEPRECATED: use the `mocks` tool with action=accept|undo instead. This alias forwards to the same implementation and will be removed in a future release.
 
 Accept or undo one mock-match tuning recommendation by id (from analyze_mock_matches), or accept every open recommendation at once with all=true.
 
@@ -255,6 +281,8 @@ The response includes the projected match rate before and after the change, so t
 #### `similar_candidates`
 
 _Read-only._
+
+DEPRECATED: use the `mocks` tool with action=similar instead. This alias forwards to the same implementation and will be removed in a future release.
 
 Deep-dive on a single projected miss from analyze_mock_matches: rank it against the recorded mock corpus and explain, field by field, why the nearest recorded requests don't match.
 
@@ -415,7 +443,7 @@ Pull traffic from a remote service, including backend dependencies. Can accept e
 
 Pull a Speedscale cloud replay report AND the snapshot it was generated from into a local workspace — the equivalent of 'proxymock cloud pull report &lt;id&gt;'.
 
-The report's RRPairs (carrying the HIT/MISS mock-match verdicts) land in &lt;out-directory&gt;/report-&lt;id&gt;/ and the source snapshot's recorded traffic in a sibling snapshot-&lt;id&gt;/ — exactly the two sides analyze_mock_matches needs, so this tool is step one of the mock match-rate tuning loop: pull_report -&gt; analyze_mock_matches -&gt; accept_mock_recommendation -&gt; repeat.
+The report's RRPairs (carrying the HIT/MISS mock-match verdicts) land in &lt;out-directory&gt;/report-&lt;id&gt;/ and the source snapshot's recorded traffic in a sibling snapshot-&lt;id&gt;/ — exactly the two sides the mocks tool needs, so this tool is step one of the mock match-rate tuning loop: pull_report -&gt; mocks action=analyze -&gt; mocks action=accept -&gt; repeat.
 
 Report ids come from the Speedscale dashboard's report URL, or from the user. Requires Speedscale cloud credentials (run 'proxymock init' once to register). Distinct from pull_remote_recording, which records fresh traffic by service and time range rather than fetching an existing replay report.
 

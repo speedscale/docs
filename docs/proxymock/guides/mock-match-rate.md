@@ -12,13 +12,15 @@ proxymock ships an AI-agent workflow that fixes this automatically: the **`impro
 
 This guide walks the loop end to end using [mock-lab](https://github.com/speedscale/mock-lab) as the demo app.
 
+Prefer a script, or gating the match rate in CI? [Tune a Replay Locally](./replay-tuning.md) covers the `proxymock-replay-tuning` CLI: it measures HIT/MISS/PASSTHROUGH and fails a build below a threshold, no AI agent required.
+
 ## How it works
 
 The mock server matches each outbound request's **signature** (method, host, URL, query params, body fields) against the recording, after applying the workspace's transform chains (the *tuning blueprint*). A fix is one transform scoped by a filter — e.g. "on `POST /v1/track/{id}`, wildcard the rotating path segment" — written into that blueprint.
 
 Two rates matter, over the same set of outbound requests:
 
-- **Report match rate** — the HIT/MISS verdicts recorded when the traffic actually ran. Ground truth; it never changes offline.
+- **Report match rate** — the HIT/MISS verdicts recorded when the traffic actually ran. It never changes offline.
 - **Projected match rate** — what the *next* run would score with the current blueprint applied. It starts at the report rate and climbs as fixes are accepted, using the same matching engine the mock server runs — so the projection is trustworthy.
 
 The agent iterates against the projection and you re-run the replay once at the end to confirm.
@@ -75,7 +77,7 @@ In your AI agent, from the `mock-lab/go` directory:
 /improve-mock-match-rate
 ```
 
-or in any MCP client: *"improve the mock match rate in this workspace"*. The agent runs `analyze_mock_matches`, which finds the two runs on its own (the recording is the mock source, the mock output is the request source) and reports:
+or in any MCP client: *"improve the mock match rate in this workspace"*. The agent runs the `mocks` tool with `action=analyze`, which finds the two runs on its own (the recording is the mock source, the mock output is the request source) and reports:
 
 ```text
 Report match rate:    ~40% — recorded verdicts
@@ -96,7 +98,7 @@ Recommendation groups (impact-sorted):
    - responder|body:variables.id  fix: variables.id -> constant
 ```
 
-The analyzer groups the misses by endpoint and recommends one fix per rotating value. On `/v1/track` it wildcards the rotating path segment and masks the body timestamp plus each time-anchored query id — the epoch, Snowflake, ObjectId, UUIDv7, xid, and KSUID are recognized because each embeds a timestamp that lands inside the recording's own capture window. On `/graphql` it masks only the rotating `variables.id` and leaves the `query`/`operationName` that identify the operation untouched. The agent accepts them with `accept_mock_recommendation`:
+The analyzer groups the misses by endpoint and recommends one fix per rotating value. On `/v1/track` it wildcards the rotating path segment and masks the body timestamp plus each time-anchored query id — the epoch, Snowflake, ObjectId, UUIDv7, xid, and KSUID are recognized because each embeds a timestamp that lands inside the recording's own capture window. On `/graphql` it masks only the rotating `variables.id` and leaves the `query`/`operationName` that identify the operation untouched. The agent accepts them with `mocks` `action=accept`:
 
 ```text
 Accepted all open recommendations: N filter-scoped chain(s) written into blueprint(s) responder Mocks.
@@ -106,7 +108,7 @@ Projected match rate: ~40% -> 100%.
 
 Exact totals scale with how much traffic you drive; the shape — one group per endpoint, one fix per rotating value — is what matters.
 
-For ambiguous misses the agent digs deeper with `similar_candidates`, which ranks a miss against the nearest recorded signatures and classifies each drifting field's cause (datetime, epoch, uuid, uuidv7, ulid, ksuid, xid, snowflake, objectid, jwt, trace-id, pii, opaque). The skill's playbook uses those causes to choose safely — e.g. a PII-classified lookup key gets `smart_replace_recorded` instead of a blind mask, and anything auth-shaped is surfaced to you rather than auto-accepted.
+For ambiguous misses the agent digs deeper with `mocks` `action=similar`, which ranks a miss against the nearest recorded signatures and classifies each drifting field's cause (datetime, epoch, uuid, uuidv7, ulid, ksuid, xid, snowflake, objectid, jwt, trace-id, pii, opaque). The skill's playbook uses those causes to choose safely — e.g. a PII-classified lookup key gets `smart_replace_recorded` instead of a blind mask, and anything auth-shaped is surfaced to you rather than auto-accepted.
 
 ## 4. Confirm with a real run
 
@@ -132,9 +134,11 @@ The agent pulls, analyzes, accepts fixes, and iterates exactly as above. When it
 | Tool | Role |
 | --- | --- |
 | `pull_report` | Pull a cloud replay report and its source snapshot into a local workspace |
-| `analyze_mock_matches` | Report + projected match rates, recommendation groups with accept ids, drift summary |
-| `accept_mock_recommendation` | Accept or undo a fix by id (or `all=true`); reports the rate movement inline |
-| `similar_candidates` | Per-miss deep dive: nearest recorded signatures and per-field drift causes |
+| `mocks` (`action=analyze`) | Report + projected match rates, recommendation groups with accept ids, drift summary |
+| `mocks` (`action=accept` / `action=undo`) | Accept or undo a fix by id (or `all=true`); reports the rate movement inline |
+| `mocks` (`action=similar`) | Per-miss deep dive: nearest recorded signatures and per-field drift causes |
+
+The prior standalone `analyze_mock_matches`, `accept_mock_recommendation`, and `similar_candidates` tools still work as deprecated aliases of `mocks` for one release.
 
 See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full parameter documentation, and the [Replay Tuning guide](replay-tuning.md) for the script-based variant of this workflow.
 
@@ -148,4 +152,4 @@ See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full p
 - A rotating id in a URL path that was **created earlier in the session** — issued by a `POST`/`PUT`/`PATCH` response (a `Location` header or a body id) and then used in a later request's path — is called out under **Created ids** (a CREATE→USE list) and is *not* offered a wildcard. Wildcarding `/orders/*` would match ids the mock never issued; at mock time the client reuses the id the mock returned, so the request matches on its own. mock-lab's `POST /v1/orders` → `GET /v1/orders/{id}` flow shows this against the lab reference server.
 - Auth and session correlations — an OAuth token, a rotated session cookie, a CSRF double-submit, an `ETag`→`If-None-Match` — are collected under **Credentials & session**. These ride in headers, which are *outside* the mock signature, so they never cause a mock miss and get no fix here; but the credential-carrying ones authenticate the caller, so a *validating* replay must correlate them — the advisory flags those for review and points at credential setup. mock-lab's `POST /v1/auth/token` → `GET /v1/me` (bearer + session cookie) flow shows this against the lab reference server.
 - Response fields that vary across *identical* requests but are just noise — a timestamp, a server-issued id, a rate-limit counter — are separated out as **volatile response fields** (a NOISE list) rather than making the endpoint look stateful. They're found by observation, not a format rule, so app-specific noise is caught too; a mock ignores them, but they're worth knowing for response-diff / assertion tuning. mock-lab's `GET /v1/job/status` carries a rotating `checkedAt` alongside its real `status`, and `GET /v1/time` returns only a rotating `now` — the first stays stateful with `checkedAt` flagged noise, the second isn't flagged at all.
-- A projected 100% is a projection. The confirming replay in step 4 is the ground truth — in this demo they agree exactly.
+- A projected 100% is a projection. The confirming replay in step 4 is the real result; in this demo they agree exactly.
