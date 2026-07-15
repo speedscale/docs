@@ -77,7 +77,7 @@ In your AI agent, from the `mock-lab/go` directory:
 /improve-mock-match-rate
 ```
 
-or in any MCP client: *"improve the mock match rate in this workspace"*. The agent runs `analyze_mock_matches`, which finds the two runs on its own (the recording is the mock source, the mock output is the request source) and reports:
+or in any MCP client: *"improve the mock match rate in this workspace"*. The agent runs the `mocks` tool with `action=analyze`, which finds the two runs on its own (the recording is the mock source, the mock output is the request source) and reports:
 
 ```text
 Report match rate:    ~40% — recorded verdicts
@@ -98,7 +98,7 @@ Recommendation groups (impact-sorted):
    - responder|body:variables.id  fix: variables.id -> constant
 ```
 
-The analyzer groups the misses by endpoint and recommends one fix per rotating value. On `/v1/track` it wildcards the rotating path segment and masks the body timestamp plus each time-anchored query id — the epoch, Snowflake, ObjectId, UUIDv7, xid, and KSUID are recognized because each embeds a timestamp that lands inside the recording's own capture window. On `/graphql` it masks only the rotating `variables.id` and leaves the `query`/`operationName` that identify the operation untouched. The agent accepts them with `accept_mock_recommendation`:
+The analyzer groups the misses by endpoint and recommends one fix per rotating value. On `/v1/track` it wildcards the rotating path segment and masks the body timestamp plus each time-anchored query id — the epoch, Snowflake, ObjectId, UUIDv7, xid, and KSUID are recognized because each embeds a timestamp that lands inside the recording's own capture window. On `/graphql` it masks only the rotating `variables.id` and leaves the `query`/`operationName` that identify the operation untouched. The agent accepts them with `mocks` `action=accept`:
 
 ```text
 Accepted all open recommendations: N filter-scoped chain(s) written into blueprint(s) responder Mocks.
@@ -108,7 +108,7 @@ Projected match rate: ~40% -> 100%.
 
 Exact totals scale with how much traffic you drive; the shape — one group per endpoint, one fix per rotating value — is what matters.
 
-For ambiguous misses the agent digs deeper with `similar_candidates`, which ranks a miss against the nearest recorded signatures and classifies each drifting field's cause (datetime, epoch, uuid, uuidv7, ulid, ksuid, xid, snowflake, objectid, jwt, trace-id, pii, opaque). The skill's playbook uses those causes to choose safely — e.g. a PII-classified lookup key gets `smart_replace_recorded` instead of a blind mask, and anything auth-shaped is surfaced to you rather than auto-accepted.
+For ambiguous misses the agent digs deeper with `mocks` `action=similar`, which ranks a miss against the nearest recorded signatures and classifies each drifting field's cause (datetime, epoch, uuid, uuidv7, ulid, ksuid, xid, snowflake, objectid, jwt, trace-id, pii, opaque). The skill's playbook uses those causes to choose safely — e.g. a PII-classified lookup key gets `smart_replace_recorded` instead of a blind mask, and anything auth-shaped is surfaced to you rather than auto-accepted.
 
 ## 4. Confirm with a real run
 
@@ -134,9 +134,11 @@ The agent pulls, analyzes, accepts fixes, and iterates exactly as above. When it
 | Tool | Role |
 | --- | --- |
 | `pull_report` | Pull a cloud replay report and its source snapshot into a local workspace |
-| `analyze_mock_matches` | Report + projected match rates, recommendation groups with accept ids, drift summary |
-| `accept_mock_recommendation` | Accept or undo a fix by id (or `all=true`); reports the rate movement inline |
-| `similar_candidates` | Per-miss deep dive: nearest recorded signatures and per-field drift causes |
+| `mocks` (`action=analyze`) | Report + projected match rates, recommendation groups with accept ids, drift summary |
+| `mocks` (`action=accept` / `action=undo`) | Accept or undo a fix by id (or `all=true`); reports the rate movement inline |
+| `mocks` (`action=similar`) | Per-miss deep dive: nearest recorded signatures and per-field drift causes |
+
+The prior standalone `analyze_mock_matches`, `accept_mock_recommendation`, and `similar_candidates` tools still work as deprecated aliases of `mocks` for one release.
 
 See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full parameter documentation, and the [Replay Tuning guide](replay-tuning.md) for the script-based variant of this workflow.
 
