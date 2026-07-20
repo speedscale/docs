@@ -127,7 +127,7 @@ The same loop works on Speedscale Cloud replay reports. Give the agent a report 
 /improve-mock-match-rate report c54ae6fc-947a-4991-a9c1-4d7c32e00b9a
 ```
 
-The agent pulls, analyzes, accepts fixes, and iterates exactly as above. When it's done, `push_snapshot` syncs the tuned blueprint back to the cloud so the next in-cluster replay uses it.
+The agent pulls, analyzes, accepts fixes, and iterates exactly as above. When it's done, `snapshot` (`action=push`) syncs the tuned blueprint back to the cloud so the next in-cluster replay uses it.
 
 ## The tools
 
@@ -137,8 +137,9 @@ The agent pulls, analyzes, accepts fixes, and iterates exactly as above. When it
 | `mocks` (`action=analyze`) | Report + projected match rates, recommendation groups with accept ids, drift summary |
 | `mocks` (`action=accept` / `action=undo`) | Accept or undo a fix by id (or `all=true`); reports the rate movement inline |
 | `mocks` (`action=similar`) | Per-miss deep dive: nearest recorded signatures and per-field drift causes |
+| `snapshot` (`action=push`) | Sync the tuned blueprint back to the cloud with the traffic |
 
-The prior standalone `analyze_mock_matches`, `accept_mock_recommendation`, and `similar_candidates` tools still work as deprecated aliases of `mocks` for one release.
+The standalone `analyze_mock_matches`, `accept_mock_recommendation`, and `similar_candidates` tools this loop shipped with have been removed — use `mocks` with the matching action.
 
 See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full parameter documentation, and the [Replay Tuning guide](replay-tuning.md) for the script-based variant of this workflow.
 
