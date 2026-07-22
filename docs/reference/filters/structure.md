@@ -71,6 +71,9 @@ Line 11 will be one of the following conditions:
     HeaderFilter Header = 32 [json_name="header"];
     HTTPReqXPathFilter HTTPReqXPath = 33 [json_name="httpReqXPath"];
     HTTPReqSOAPXPathFilter HTTPReqSOAPXPath = 34 [json_name="httpReqSoapXPath"];
+    SampleFilter Sample = 51 [json_name="sample"];
 ```
+
+The `sample` criterion deterministically keeps a fraction of traffic (`keep` out of `out_of`) and is used to fit an oversized selection under the snapshot limit. See [Sampling a large selection](../../guides/creating-filters.md#sampling-a-large-selection).
 
 Check out the protobufs for explanations of each type of filter if you enjoy learning the hard way. Or just build your filter in the Traffic Viewer and copy/paste it if you are in a rush.

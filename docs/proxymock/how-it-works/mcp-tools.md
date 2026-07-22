@@ -408,7 +408,7 @@ You should:
 
 Work traffic snapshots stored in Speedscale cloud. Requires Speedscale cloud credentials (run 'proxymock init' once to register). Select the operation with 'action':
 
-- 'push' (uploads): publish local RRPair (request/response pair) directories as one named snapshot. Every RRPair under the given directories is consolidated, uploaded, and analyzed by the cloud, making the traffic available to teammates, CI replays, and the dashboard. Curate the directories first — no filtering is applied. Active tuning blueprints in the workspace are uploaded with the snapshot, so recommendations accepted via recommendations travel with the traffic. Returns the new snapshot id and dashboard URL.
+- 'push' (uploads): publish local RRPair (request/response pair) directories as one named snapshot. Every RRPair under the given directories is consolidated, uploaded, and analyzed by the cloud, making the traffic available to teammates, CI replays, and the dashboard. Curate the directories first; optionally pass 'sample' to keep only a deterministic fraction (whole sessions) so a large recording fits under the snapshot limit. Active tuning blueprints in the workspace are uploaded with the snapshot, so recommendations accepted via recommendations travel with the traffic. Returns the new snapshot id and dashboard URL.
 - 'list' (read-only): list snapshots, newest first, optionally narrowed by 'search', 'service', and 'tag'. Use it to find a snapshot id for pull_remote_recording, or to confirm a push landed.
 
 | Parameter | Type | Required | Description |
@@ -416,7 +416,9 @@ Work traffic snapshots stored in Speedscale cloud. Requires Speedscale cloud cre
 | `action` | string | **yes** | Which snapshot operation to run: 'push' uploads local RRPairs; 'list' is read-only. |
 | `in-directory` | array | no | action=push only (required there): directories containing the RRPair files to publish. Read recursively; all RRPairs are consolidated into a single snapshot. |
 | `limit` | number | no | action=list only. Maximum snapshots to return (default 20, max 100). |
+| `max_rrpairs` | number | no | action=push only. Optional: if the traffic exceeds this many RRPairs, narrow the push to a representative contiguous time window that fits (keeping the operation mix), instead of sampling. Composes with 'sample' (window crops time, sample thins within). Omit for no limit. |
 | `name` | string | no | action=push only. Optional display name for the snapshot in the dashboard. |
+| `sample` | string | no | action=push only. Optional: keep only a deterministic fraction of the traffic so a large recording fits under the snapshot limit. Whole sessions are kept or dropped together (sessionless RRPairs fall back to per-pair). Accepts a percentage ("20%"), a fraction ("1/5"), or "1 in 5". Omit to push everything. |
 | `search` | string | no | action=list only. Optional search term matched against snapshot names. |
 | `service` | string | no | action=list only. Optional filter: only snapshots containing traffic for this service. |
 | `tag` | string | no | action=list only. Optional filter: only snapshots with this build tag. |
@@ -447,6 +449,28 @@ Narrow the pull with a time window (from/to) and filters (service, namespace, st
 | `status` | string | no | Exact response status to match when the filter has no status predicate, for example 500. |
 | `to` | string | no | End of the time window when the filter has no timerange, for example now or 2026-06-12T19:00:00Z. Defaults to now. |
 | `trace-id` | string | no | Trace ID to match when the filter has no trace predicate. |
+
+### Kubernetes cluster
+
+#### `cluster`
+
+Turn Speedscale eBPF traffic capture on and off for a Kubernetes workload, and read back whether it is on. Talks to the cluster your kubeconfig points at — no Speedscale account or registered inspector is needed. Select the operation with 'action':
+
+- 'inject' (mutates the cluster): turn capture on for one workload by patching its capture.speedscale.com/* annotations. eBPF capture attaches to running pods, so the workload is NOT restarted; setting 'java_agent' does restart it, because the agent is injected at pod admission and only loads into new pods. Idempotent.
+- 'uninject' (mutates the cluster): turn capture off for one workload by clearing those annotations. Idempotent, and already-recorded traffic is untouched.
+- 'capture-status' (read-only): report whether capture is on, whether the java agent is enabled, which ports are excluded, and whether the workload looks like it runs a JVM.
+
+These record intent: the in-cluster Speedscale operator and nettap daemon watch the annotations and perform the actual capture, so annotating a cluster without them installed has no effect. Use 'capture-status' first to see whether a workload is already captured, and to check 'javaDetected' before deciding on 'java_agent'.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | Which cluster operation to run: 'capture-status' is read-only; 'inject' and 'uninject' patch annotations on the workload. |
+| `namespace` | string | **yes** | Kubernetes namespace holding the workload. |
+| `workload` | string | **yes** | Name of the workload to target. |
+| `ignore_ports` | string | no | action=inject only: comma-separated ports to exclude from capture (e.g. '8080,9090'). |
+| `java_agent` | boolean | no | action=inject only: also inject the Java agent. Restarts the workload, and is only useful when 'capture-status' reports javaDetected. |
+| `kube_context` | string | no | Kubeconfig context to target. Omit to use the current-context. |
+| `workload_type` | string | no | Workload kind: deployment (default), statefulset, daemonset, replicaset, job or rollout. |
 
 ### Process control
 
