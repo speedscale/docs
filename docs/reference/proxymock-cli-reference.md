@@ -24,6 +24,7 @@ proxymock [command]
 
 - `admin` - Administrative and maintenance commands (certs, clean)
 - `cloud` - Manage your Speedscale Cloud resources
+- `cluster` - Inspect and drive a Kubernetes cluster from the command line
 - `completion` - Generate the autocompletion script for the specified shell
 - `files` - Utilities for working with RRPair files
 - `generate` - Generate RRPair files from OpenAPI specification
@@ -522,6 +523,206 @@ proxymock cloud push [command]
 - `test-config` - Push a test config to Speedscale Cloud
 - `transform` - Push a transform set to Speedscale Cloud
 - `user-data` - Push user-defined documents
+
+## Kubernetes cluster commands
+
+These commands work the cluster your kubeconfig points at. Reads and writes go
+straight to the cluster, so no Speedscale account or registered inspector is
+needed. The one exception is `cluster replay start`, which publishes the
+recordings to Speedscale Cloud so the in-cluster generator can pull them.
+
+Use `--kube-context` to pick a context other than your current one. Verbs served
+by an in-cluster Speedscale component reach it by port-forwarding; pass
+`--forwarder-addr` (topology, namespaces, nodes, workloads, pods, replay logs) or
+`--inspector-addr` (logs, events, services, dependencies) to point at an address
+you are already forwarding yourself.
+
+This is the same surface as the `cluster` MCP tool and the Observability view in
+`proxymock web`.
+
+### `cluster`
+
+Inspect and drive a Kubernetes cluster from the command line.
+
+**Usage**
+
+```bash
+proxymock cluster [command]
+```
+
+**Available subcommands**
+
+- `capture` - Turn eBPF traffic capture on or off for a workload
+- `dependencies` - Show what a workload depends on
+- `events` - Read Kubernetes events for a workload
+- `logs` - Read pod logs for a workload
+- `namespaces` - List the namespaces the cluster's forwarder can see
+- `nodes` - List the cluster's nodes
+- `pods` - List the pods in a namespace
+- `replay` - Run a recorded snapshot against a workload inside the cluster
+- `services` - List the Kubernetes Services in a namespace
+- `topology` - Show the service map for a namespace
+- `workloads` - List the workloads the cluster's forwarder can see
+
+**Common flags**
+
+- `--kube-context string` - kubeconfig context to target (default: your current-context)
+- `-n, --namespace string` - Kubernetes namespace holding the workload
+- `--workload string` - workload name to target
+- `--workload-type string` - workload kind: deployment, statefulset, daemonset, replicaset, job or rollout
+
+### `cluster capture`
+
+Turn eBPF traffic capture on or off for a Kubernetes workload, and read back
+whether it is currently on. These verbs patch `capture.speedscale.com/*`
+annotations onto the workload, which records intent: the in-cluster Speedscale
+operator and nettap daemon watch those annotations and do the actual capture.
+
+**Usage**
+
+```bash
+proxymock cluster capture [command]
+```
+
+**Available subcommands**
+
+- `inject` - Turn eBPF traffic capture on for a workload
+- `status` - Report whether eBPF capture is on for a workload
+- `uninject` - Turn eBPF traffic capture off for a workload
+
+**Flags**
+
+- `--java-agent` - inject only: also inject the Java agent (restarts the workload; only useful for JVM workloads)
+- `--ignore-ports int32Slice` - inject only: ports to exclude from capture, comma separated
+
+**Examples**
+
+```bash
+# capture a deployment, leaving the health-check port out
+proxymock cluster capture inject -n banking-app --workload banking-user --ignore-ports 8080
+
+# check whether capture is on, and whether the workload runs a JVM
+proxymock cluster capture status -n banking-app --workload banking-user
+
+# turn it back off
+proxymock cluster capture uninject -n banking-app --workload banking-user
+```
+
+### `cluster replay`
+
+Run recorded traffic against a workload running in your cluster. The Speedscale
+operator provisions the generator that sends the traffic and, when you mock
+dependencies, the responder that answers them.
+
+**Usage**
+
+```bash
+proxymock cluster replay [command]
+```
+
+**Available subcommands**
+
+- `cancel` - Tear down a running replay
+- `logs` - Tail a running replay's logs
+- `prepare` - Show what a recording can route and what it can mock
+- `start` - Push the recordings and start a replay in the cluster
+- `status` - Report where a replay is, or list the running ones
+
+**Flags**
+
+- `--in strings` - directories holding the RRPair files to replay (prepare, start)
+- `--target string` - start: replay against this address instead of a cluster workload (no mocking)
+- `--route strings` - start: send one inbound slice to its own workload as `SLICE=WORKLOAD`; repeatable
+- `--mock strings` - start: outbound dependency key to mock, from `replay prepare`; repeatable
+- `--snapshot-id string` - start: replay a snapshot already in Speedscale Cloud instead of pushing these recordings
+- `--wait` - start: block until the replay reaches a terminal state, reporting each stage
+- `--all` - status: include replays that are no longer running but still in the cluster
+- `--source strings` - logs: only stream this component: generator, responder or collector
+- `-f, --follow` - logs: keep streaming until interrupted, ignoring `--timeout`
+- `--max-lines int` - logs: stop after this many lines
+
+**Examples**
+
+```bash
+# find out what can be routed and what can be mocked, locally and without a login
+proxymock cluster replay prepare --in proxymock
+
+# replay against a workload, mocking its database, and block until it finishes
+proxymock cluster replay start -n banking-app --workload banking-user \
+  --mock 'postgres:banking-postgres:5432' --wait
+
+# split the recording: one slice to its own workload, the rest to --workload
+proxymock cluster replay start -n banking-app --workload banking-frontend \
+  --route 'checkout:checkout.example.com:8080=banking-gateway'
+
+# what is running right now, then follow one
+proxymock cluster replay status
+proxymock cluster replay status -n banking-app quiet-otter-1234
+
+# stop one
+proxymock cluster replay cancel -n banking-app quiet-otter-1234
+```
+
+Every slice goes to exactly one destination. The operator rejects a replay whose
+workloads claim overlapping traffic.
+
+`replay logs` is a live tap with no history: it delivers lines emitted while it
+is subscribed, so start it while the replay is running. The complete log is the
+report in Speedscale Cloud.
+
+### `cluster` read commands
+
+Read-only views of the cluster, each the scriptable equivalent of a panel in the
+`proxymock web` Observability view. All support `-o json`.
+
+**Usage**
+
+```bash
+proxymock cluster namespaces
+proxymock cluster nodes
+proxymock cluster workloads [--namespace NS]
+proxymock cluster topology --namespace NS
+proxymock cluster pods --namespace NS [--workload NAME]
+proxymock cluster services --namespace NS
+proxymock cluster dependencies --namespace NS --workload NAME
+proxymock cluster logs --namespace NS --workload NAME [--container NAME] [--previous] [--tail N] [--since SECONDS]
+proxymock cluster events --namespace NS --workload NAME [--limit N]
+```
+
+Two different in-cluster services back these, and the difference is visible:
+
+- `topology`, `namespaces`, `nodes`, `workloads` and `pods` come from the
+  forwarder's aggregator, which only knows about what nettap has **observed**. A
+  workload or pod with no observed traffic is absent, so a freshly scaled-up
+  workload can show fewer pods here than `kubectl get pods`.
+- `logs`, `events`, `services` and `dependencies` come from the inspector, which
+  reads the apiserver under its own ServiceAccount. Those work for any workload,
+  observed or not, and work for a user whose own kubeconfig is not allowed to
+  read pod logs directly.
+
+**Examples**
+
+```bash
+# what is in this cluster
+proxymock cluster namespaces
+proxymock cluster workloads --namespace banking-app
+
+# what talks to what, from traffic actually seen on the wire
+proxymock cluster topology --namespace banking-app
+
+# why is this workload unhealthy
+proxymock cluster events -n banking-app --workload banking-user
+proxymock cluster logs -n banking-app --workload banking-user --previous
+
+# a pod stuck in init: read the init container the failure names
+proxymock cluster logs -n banking-app --workload banking-user \
+  --container speedscale-initproxy-responder
+```
+
+`--previous` reads the last terminated container, which is the only way to see
+why a `CrashLoopBackOff` pod died. When a read comes back empty the output names
+the pod's containers, including init containers, so you can pick the right one
+with `--container`.
 
 ## System commands
 
