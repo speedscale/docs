@@ -479,17 +479,15 @@ Inspect — read-only, and the fastest way to answer "what is actually in this c
 - 'logs': pod logs for a workload. Served by the in-cluster inspector under its own ServiceAccount, so this works even when the kubeconfig cannot read pod logs directly. Set 'previous' to read the last terminated container — the only way to see why a CrashLoopBackOff pod died.
 - 'events': Kubernetes events for a workload and its pods. Failed image pulls, scheduling problems, probe failures and OOM kills surface here first.
 
-Capture and inspect need only a kubeconfig; the inspect and replay actions also need the in-cluster speedscale-forwarder and speedscale-inspector, which this reaches by port-forwarding unless 'forwarder_addr' is set. Capture records intent only: the in-cluster operator and nettap daemon watch the annotations and do the actual capture, so annotating a cluster without them installed has no effect.
+Everything here needs only a kubeconfig. The inspect and replay actions are served by Speedscale components running in the cluster, which proxymock locates and port-forwards to for you using 'kube_context' — there is nothing to configure and no address to supply. Capture records intent only: the in-cluster operator and nettap daemon watch the annotations and do the actual capture, so annotating a cluster without them installed has no effect.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `action` | string | **yes** | Which cluster operation to run. Read-only: 'capture-status', 'replay-prepare', 'replay-status', 'replay-logs', 'topology', 'namespaces', 'nodes', 'workloads', 'pods', 'services', 'dependencies', 'logs', 'events'. Mutating: 'inject', 'uninject', 'replay-start', 'replay-cancel'. |
 | `all` | boolean | no | action=replay-status listing: include replays that are no longer running but are still in the cluster. |
 | `container` | string | no | action=logs: container to read within each pod. Omit for the pod's first container. |
-| `forwarder_addr` | string | no | Address of an already-reachable speedscale-forwarder gRPC port ('host:port'), used by 'topology', 'namespaces', 'nodes', 'workloads', 'pods' and 'replay-logs'. Omit to port-forward to it automatically. |
 | `ignore_ports` | string | no | action=inject only: comma-separated ports to exclude from capture (e.g. '8080,9090'). |
 | `in_directories` | array | no | action=replay-prepare and replay-start: directories holding the RRPair files to replay. Defaults to the working directory. |
-| `inspector_addr` | string | no | Address of an already-reachable speedscale-inspector HTTP port ('host:port'), used by 'logs', 'events', 'services' and 'dependencies'. Omit to port-forward to it automatically. |
 | `java_agent` | boolean | no | action=inject only: also inject the Java agent. Restarts the workload, and is only useful when 'capture-status' reports javaDetected. |
 | `kube_context` | string | no | Kubeconfig context to target. Omit to use the current-context. |
 | `limit` | number | no | action=events: keep only the most recent N events (default 50). action=replay-logs: stop after N lines (default 200). |

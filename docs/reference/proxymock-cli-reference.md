@@ -531,11 +531,14 @@ straight to the cluster, so no Speedscale account or registered inspector is
 needed. The one exception is `cluster replay start`, which publishes the
 recordings to Speedscale Cloud so the in-cluster generator can pull them.
 
-Use `--kube-context` to pick a context other than your current one. Verbs served
-by an in-cluster Speedscale component reach it by port-forwarding; pass
-`--forwarder-addr` (topology, namespaces, nodes, workloads, pods, replay logs) or
-`--inspector-addr` (logs, events, services, dependencies) to point at an address
-you are already forwarding yourself.
+Use `--kube-context` to pick a context other than your current one. That is the
+only connection setting most people ever need: the read and replay verbs are
+served by Speedscale components running inside the cluster, and proxymock finds
+them and port-forwards to them for you.
+
+`--forwarder-addr` is available on the forwarder-served verbs for the narrow case
+where you are already running your own `kubectl port-forward`, or can reach the
+forwarder directly. It is never required.
 
 This is the same surface as the `cluster` MCP tool and the Observability view in
 `proxymock web`.
