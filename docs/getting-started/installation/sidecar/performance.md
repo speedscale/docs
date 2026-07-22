@@ -13,6 +13,8 @@ variability, Speedscale does not currently publish benchmarks.
 
 :::info Prefer eBPF in Kubernetes
 When running in Kubernetes, enable the [eBPF collector](/reference/ebpf-traffic-collection) when possible to avoid proxy-induced latency. Use the sidecar only when eBPF is not suitable for your workload or cluster.
+
+Unlike the sidecar, the eBPF collector does not sit in the request path, so there is no additional network hop. It does have a cost, but it is a small amount of in-kernel work per syscall rather than a proxy round trip. See [Workload Impact](/reference/ebpf-traffic-collection/workload-impact.md) for measured per-syscall figures and a procedure for verifying the effect on your own workload.
 :::
 
 ### Testing sidecar latency in pre-production
