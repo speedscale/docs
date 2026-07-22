@@ -384,7 +384,111 @@ esac
 
 </Tabs>
 
-## Customising Mock Behaviour in CI
+## Use your existing test driver
+
+A replay can start Speedscale service mocks without starting the Speedscale traffic generator. This lets an existing k6, Postman, or other test suite drive the system under test while its outbound dependencies are served from recorded traffic.
+
+The pipeline order is:
+
+1. Start a replay with a test config whose `cluster.replayMode` is `responder-only`.
+1. Wait for `mocks-ready`.
+1. Run the test driver against the service under test.
+1. Cancel the replay, including when the driver fails or the job is interrupted.
+
+Use Speedscale v2.5.789 or newer in the cluster and `speedctl` v2.5.789 or newer in CI. Older operators do not publish the `MocksReady` condition consumed by the CLI. Configure the responder with `passthrough_mode: false` when the test must fail instead of reaching a live dependency. The [external driver demo](https://github.com/speedscale/demo/tree/master/scenarios/replay-sandwich) includes a complete test config and a reusable wrapper script.
+
+```bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REPORT_ID=""
+TIMEOUT=${TIMEOUT:-10m}
+cleanup() {
+  status=$?
+  trap - EXIT
+  if [[ -n $REPORT_ID ]]; then
+    speedctl infra cancel-replay "$REPORT_ID" || true
+  fi
+  exit "$status"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+REPORT_ID=$(speedctl infra replay \
+  --snapshot-id "$SNAPSHOT_ID" \
+  --cluster "$CLUSTER" \
+  --namespace "$NAMESPACE" \
+  --service "$SERVICE" \
+  --test-config-id external-driver \
+  --id-only)
+
+speedctl wait replay "$REPORT_ID" \
+  --for mocks-ready \
+  --timeout "$TIMEOUT" \
+  --poll-interval 5s
+
+"$@"
+```
+
+The driver must be able to reach the service under test. It does not connect directly to the Speedscale responder. Run the driver inside the cluster when the service has no route from the CI runner. If you use `kubectl port-forward`, start it from the driver command after `mocks-ready`; the replay can replace the application pod and disconnect a port-forward started earlier. The demo includes a [port-forward helper](https://github.com/speedscale/demo/blob/master/scenarios/replay-sandwich/drivers/run-with-port-forward.sh) for local runs.
+
+<Tabs>
+
+<TabItem value="k6-driver" label="k6" default>
+
+Pass the service URL as a k6 environment variable:
+
+```bash
+./speedscale.sh \
+  k6 run --env BASE_URL="$SUT_URL" test.js
+```
+
+Define [thresholds](https://grafana.com/docs/k6/latest/using-k6/thresholds/) for checks and failed HTTP requests. Checks by themselves do not make k6 return a failure code.
+
+```javascript
+export const options = {
+  thresholds: {
+    checks: ['rate==1'],
+    http_req_failed: ['rate==0'],
+  },
+};
+```
+
+The [k6 demo script](https://github.com/speedscale/demo/blob/master/scenarios/replay-sandwich/drivers/k6/replay.js) runs the full lifecycle against a service with a mocked outbound dependency.
+
+</TabItem>
+
+<TabItem value="postman-driver" label="Postman">
+
+Use the latest Postman CLI with a [Postman Collection v3](https://learning.postman.com/docs/use/use-collections/collections-schemas) stored as YAML in the repository. Collection v3 is the current Native Git format and is not supported by Newman.
+
+```bash
+npm install -g postman-cli@latest
+
+postman collection lint \
+  postman/collections/replay-sandwich \
+  --fail-severity warning
+
+./speedscale.sh \
+  postman collection run postman/collections/replay-sandwich \
+    --env-var "baseUrl=$SUT_URL" \
+    --bail \
+    --timeout 120000
+```
+
+A local collection path does not require a Postman login. Collection v3 currently supports the CLI reporter, so retain the job log as the run artifact. See the [Postman v3 demo collection](https://github.com/speedscale/demo/tree/master/scenarios/replay-sandwich/postman/collections/replay-sandwich) for a runnable example.
+
+The Speedscale Postman export produces v2.1 JSON. Do not use that export to build a Collection v3 driver workflow.
+
+</TabItem>
+
+</Tabs>
+
+The driver exit code is the primary CI result. If the responder test config enables `with_report`, you can also wait for the Speedscale report after canceling the replay and inspect mock hits and misses.
+
+## Customising mock behaviour in CI
 
 The `speedctl infra replay` command supports several flags to control which outbound dependencies are mocked during a pipeline run. These can be passed directly in your **speedscale.sh** script or added as additional environment variables.
 
