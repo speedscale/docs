@@ -28,6 +28,10 @@ Utilize the filters to drill down even further into a subset of requests or to f
 Did you know that you can filter traffic so that it is never sent to Speedscale cloud? This can help you prevent noise, lower your bill and keep private data safe. Check out the [filters](/reference/filters/README.md) section for suggestions.
 :::
 
+:::tip Fitting a large selection into a snapshot
+A snapshot holds a bounded number of request/response pairs (currently 200,000). If the traffic you have selected is larger than that, add a **Sampled** filter to keep a deterministic, evenly distributed fraction of it — for example *Keep 20% — 1 in 5* turns a 900,000-pair selection into roughly 180,000. Whole sessions are kept or dropped together, so the sampled snapshot stays coherent and replayable. See [Sampling a large selection](/guides/creating-filters.md#sampling-a-large-selection) for details.
+:::
+
 ### Request Response Details <a href="#overview" id="overview"></a>
 
 Clicking on any individual row reveals a Request / Response Pair. This could be for an inbound transaction to the service,

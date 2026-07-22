@@ -90,9 +90,11 @@ The following keywords can be used in your filter query:
 | req_xml[\{key\}] | check request body against an xml key/value | req_xml[foo] IS bar
 | req_soapxpath[\{key\}] | check request body against a soap XPath | req_soapxpath[foo] IS bar
 | req_xpath[\{key\}] | check request body against an XPath | req_xpath[foo] IS bar
+| sample | keep a deterministic fraction of traffic, written as `keep/out_of` (see [Sampling](#sampling-a-large-selection)) | sample IS "1/5"
 | service | service name | service CONTAINS frontend
 | session | session (if set) | session IS "JWT:abc123"
 | snapshot | snapshot ID (if present) | snapshot IS 88e9b593-b617-44a2-9eaf-06f76605e941
+| source | traffic source (goproxy, snapshot, responder, generator, notebook) | source IS goproxy
 | status | status code | status IS 404
 | tag[\{key\}] | tag value | tag[testReportId] IS 88e9b593-b617-44a2-9eaf-06f76605e941
 | tech | detected tech (primary) | tech NOT CONTIANS "Google Spanner"
@@ -108,6 +110,23 @@ speedctl push filter my_excellent_filter --query-string '(header[User-Agent] CON
 You can also create a brand new filter using the `put` command. 
 ```bash
 speedctl put filter --id my_new_excellent_filter --query-string '(header[User-Agent] CONTAINS "ELB\-HealthChecker/" OR header[User-Agent] CONTAINS "Prometheus/" OR header[User-Agent] CONTAINS "apm-agent-") OR  (timerange IS "2023-10-26T02:28:54Z" "2023-10-26T02:28:54Z")'
+```
+
+## Sampling a large selection
+
+When a selection of traffic is larger than you need — for example, bigger than a single [snapshot](/guides/creating-a-snapshot.md) can hold — the `sample` keyword keeps a deterministic, evenly distributed fraction of it instead of the whole set. Write the value as `keep/out_of`:
+
+- `sample IS "1/5"` keeps one in every five request/response pairs (20%).
+- `sample IS "1/10"` keeps one in ten (10%).
+
+Sampling is **session-atomic** by default: every request/response pair that shares a session is kept or dropped together, so a sampled result still contains coherent, replayable sessions rather than a scatter of orphaned calls. Sessions are keyed on the session identifier when present, falling back to the pair's UUID.
+
+The selection is deterministic — the same fraction always picks the same pairs — so `sample` composes with your other filters and with paging in the Traffic Viewer without shifting rows between pages. In the dashboard Traffic Viewer the same control is exposed as the **Sampled** filter, where you can choose a percentage (for example, *Keep 20% — 1 in 5*) or enter your own.
+
+To sample per request/response pair instead of per session, key the value on `rrpair`:
+
+```
+sample[rrpair] IS "1/5"
 ```
 
 ## Apply the filter

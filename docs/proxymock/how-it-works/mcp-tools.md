@@ -187,33 +187,24 @@ Each source is a directory of RRPair files or a single jsonl file (raw.jsonl fro
 
 ### Tune
 
-#### `list_recommendations`
+#### `recommendations`
 
-_Read-only._
+Analyze the RRPair (request/response pair) files in a local directory and work the general replay-tuning recommendations the analyzer finds. Select the operation with 'action':
 
-Analyze the RRPair (request/response pair) files in a local directory and list tuning recommendations. Two kinds are returned:
+- 'list' (read-only): analyze the directory and list recommendations. Two kinds are returned. transform: mechanical fixes needed for the traffic to replay or mock cleanly — JWT re-signing, timestamp shifting, message-id rotation, data redaction; each carries transform chains. traffic: informational findings about the recorded traffic itself. Recommendations the user already rejected are filtered out.
+- 'accept' (writes blueprint): merge one recommendation's transform chains into the workspace's per-service tuning blueprint on disk by 'id'. No RRPair files are rewritten; replay and mock runs in this workspace apply the blueprint automatically.
+- 'reject' (writes state): record the id in the workspace so the recommendation stops appearing in 'list'.
 
-- transform: mechanical fixes needed for the traffic to replay or mock cleanly — JWT re-signing, timestamp shifting, message-id rotation, data redaction. Each carries transform chains that apply_recommendation can merge into the workspace's tuning blueprint.
-- traffic: informational findings about the recorded traffic itself.
+Accept and reject are idempotent and match what the proxymock web UI's Accept/Reject buttons do. Recommendation ids are stable content hashes: the same recommendation keeps its id across analysis runs, so an id from action=list can be passed to accept/reject later.
 
-Recommendation ids are stable content hashes: the same recommendation keeps its id across analysis runs, so an id from this call can be passed to apply_recommendation later. Recommendations the user already rejected are filtered out.
+This is a different id space from the mocks tool, which handles the Mocks-view match-rate fixes.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
+| `action` | string | **yes** | Which recommendations operation to run: 'list' is read-only; 'accept' and 'reject' write workspace state. |
 | `in-directory` | array | **yes** | Directory containing RRPair files to analyze. Exactly one directory; the tuning blueprint and rejection state are stored under it. Usually ends with 'proxymock' and is contained in the current repository. |
-| `type` | string | no | Optional filter: 'transform' or 'traffic'. Default is both. |
-
-#### `apply_recommendation`
-
-Accept or reject one tuning recommendation by id (from list_recommendations).
-
-Accepting a transform recommendation merges its transform chains into the workspace's per-service tuning blueprint on disk — no RRPair files are rewritten; replay and mock runs in this workspace apply the blueprint automatically. Rejecting records the id in the workspace so the recommendation stops appearing. Both actions are idempotent and match what the proxymock web UI's Accept/Reject buttons do.
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `in-directory` | array | **yes** | The same single directory that was analyzed by list_recommendations. The tuning blueprint and rejection state are stored under it. |
-| `id` | string | **yes** | Recommendation id as returned by list_recommendations. |
-| `action` | string | no | 'accept' (default) merges the recommendation into the tuning blueprint; 'reject' hides it from future lists. |
+| `id` | string | no | Recommendation id as returned by action=list. Required for accept and reject. |
+| `type` | string | no | action=list only. Optional filter: 'transform' or 'traffic'. Default is both. |
 
 #### `mocks`
 
@@ -224,7 +215,7 @@ Tune a replay's OUTBOUND mock match rate offline from RRPair files in one worksp
 - 'undo' (writes blueprint): remove a previously accepted recommendation by 'id'. Idempotent, so accepts and undos can be tried and reverted freely.
 - 'similar' (read-only): deep-dive one projected miss ('id'), ranking it against the recorded mock corpus with per-field drift, likely cause, and any pending recommendation. Use it to reason about ambiguous misses before accepting fixes.
 
-The workspace usually comes from 'proxymock cloud pull report &lt;id&gt;', which materializes both analysis sides (snapshot-* and report-* run directories). This is the Mocks-view match-rate loop; it is a different id space from apply_recommendation, which handles general replay-tuning recommendations.
+The workspace usually comes from 'proxymock cloud pull report &lt;id&gt;', which materializes both analysis sides (snapshot-* and report-* run directories). This is the Mocks-view match-rate loop; it is a different id space from the recommendations tool, which handles general replay-tuning recommendations.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -236,67 +227,6 @@ The workspace usually comes from 'proxymock cloud pull report &lt;id&gt;', which
 | `mock-source` | string | no | Optional run-directory name (or absolute RRPair directory) supplying the recorded mock signatures. Auto-discovered when omitted: the newest snapshot-*/recorded-*/mocked-* run. |
 | `request-source` | string | no | Optional run-directory name (or absolute RRPair directory) supplying the outbound requests to check. Auto-discovered when omitted: the newest report-*/replayed-* run. |
 | `transform` | string | no | action=accept only: transform type overriding the recommendation's default (e.g. 'constant' to mask). Ignored for URL id-segment fixes, which always wildcard. |
-
-#### `analyze_mock_matches`
-
-_Read-only._
-
-DEPRECATED: use the `mocks` tool with action=analyze instead. This alias forwards to the same implementation and will be removed in a future release.
-
-Analyze how well a replay's outbound requests match the recorded mocks, and list tuning recommendations. Works entirely from RRPair files on disk — no replay or cluster needed. Reports two rates over the same outbound denominator:
-
-- Report match rate: the verdicts recorded at replay time (what the report showed).
-- Projected match rate: what the rate WOULD be on the next replay with the workspace's active tuning blueprints applied. Always &gt;= the report rate; it climbs as fixes are accepted.
-
-The remaining projected misses are grouped by the fix that would collapse them: each group is a FILTER (the scope — e.g. an endpoint whose URL rotates an id segment) carrying RECOMMENDATIONS (transforms to accept, each with a stable id). Accepting writes one filter-scoped rule into the tuning blueprint via accept_mock_recommendation; re-running this tool then shows the improved projected rate. Iterate until the projected rate stops climbing.
-
-The workspace usually comes from 'proxymock cloud pull report &lt;id&gt;', which materializes both sides (report-* and snapshot-* run directories).
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `in-directory` | array | **yes** | Exactly one workspace directory holding both analysis sides as run directories (usually snapshot-* and report-*). The tuning blueprint is stored under it. |
-| `mock-source` | string | no | Optional run-directory name (or absolute RRPair directory) supplying the recorded mock signatures. Auto-discovered when omitted: the newest snapshot-*/recorded-*/mocked-* run. |
-| `request-source` | string | no | Optional run-directory name (or absolute RRPair directory) supplying the outbound requests to check. Auto-discovered when omitted: the newest report-*/replayed-* run. |
-
-#### `accept_mock_recommendation`
-
-DEPRECATED: use the `mocks` tool with action=accept|undo instead. This alias forwards to the same implementation and will be removed in a future release.
-
-Accept or undo one mock-match tuning recommendation by id (from analyze_mock_matches), or accept every open recommendation at once with all=true.
-
-Accepting writes the recommendation's transform as a FILTER-SCOPED rule into the workspace's per-service tuning blueprint — no RRPair files are rewritten; the scope filter (e.g. the endpoint whose URL rotates an id) decides which requests it applies to, and replay/mock runs in this workspace apply the blueprint automatically. Undo removes the rule. Both directions are idempotent, so combinations can be tried and reverted freely; re-accepting with a different transform replaces the prior rule.
-
-The response includes the projected match rate before and after the change, so the improvement (or regression) is visible immediately. This is a different id space from apply_recommendation, which handles the general replay-tuning recommendations; this tool handles the Mocks-view match-rate fixes.
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `in-directory` | array | **yes** | The same single workspace directory that was analyzed by analyze_mock_matches. |
-| `action` | string | no | 'accept' (default) writes the fix into the tuning blueprint; 'undo' removes a previously accepted fix. |
-| `all` | boolean | no | Accept every open recommendation with its default transform (the web UI's 'Accept all'). Only valid with action=accept. |
-| `id` | string | no | Recommendation id as returned by analyze_mock_matches (shaped '&lt;service&gt;\|&lt;target&gt;'). Required unless all=true. |
-| `mock-source` | string | no | Optional explicit mock source, as in analyze_mock_matches. |
-| `request-source` | string | no | Optional explicit request source, as in analyze_mock_matches. |
-| `transform` | string | no | Optional transform type overriding the recommendation's default (e.g. 'constant' to mask instead of the recommended transform). Ignored for URL id-segment fixes, which always wildcard. |
-
-#### `similar_candidates`
-
-_Read-only._
-
-DEPRECATED: use the `mocks` tool with action=similar instead. This alias forwards to the same implementation and will be removed in a future release.
-
-Deep-dive on a single projected miss from analyze_mock_matches: rank it against the recorded mock corpus and explain, field by field, why the nearest recorded requests don't match.
-
-Each candidate lists its drifting fields with a classification (drift / volatile / url-param / missing-key), the likely CAUSE of the drift (datetime, uuid, jwt, trace-id, ip, pii, random, opaque), both values, whether an active blueprint already covers the field, and any pending analyzer recommendation for it. 'opaque' causes are flagged low-confidence — the value may be a real discriminator, so review before masking.
-
-Use this to reason about ambiguous misses before accepting fixes with accept_mock_recommendation — e.g. a drifting auth header is a credential to surface to the user, not a field to blindly mask.
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `in-directory` | array | **yes** | The same single workspace directory that was analyzed by analyze_mock_matches. |
-| `id` | string | **yes** | A projected miss's id — a group member id or miss id from analyze_mock_matches (the workspace-relative RRPair path). |
-| `max` | number | no | How many nearest candidates to return (default 3). |
-| `mock-source` | string | no | Optional explicit mock source, as in analyze_mock_matches. |
-| `request-source` | string | no | Optional explicit request source, as in analyze_mock_matches. |
 
 ### Author configs
 
@@ -474,31 +404,24 @@ You should:
 | `end-time` | string | **yes** | End time for the time range filter in RFC3339 format (e.g., '2024-01-01T23:59:59Z') |
 | `filter-query` | string | no | Optional human-readable filter query string to further filter traffic. Examples: - Filter by method: '(method IS "GET")' - Filter by status: '(status IS "200")' - Filter by URL: '(url CONTAINS "/api/users")' - Filter by cluster: '(cluster IS "production")' - Filter by namespace: '(namespace IS "default")' - Filter by session: '(session IS "session-id-value")' - Text search in request/response bodies: '(text CONTAINS "error message")' - Text search with regex: '(text REGEX "user-[0-9]+")' - Request body JSON match: '(reqbodyjson IS "&#123;\"body\": &#123;\"field\": \"value\"&#125;, \"ignore_keys\": [\"timestamp\"]&#125;")' - Request JSON field: '(req_json[field.path] CONTAINS "value")' - Response JSON field: '(resp_json[field.path] CONTAINS "value")' - Combine filters: '(method IS "GET") AND (status IS "200")' |
 
-#### `push_snapshot`
+#### `snapshot`
 
-Publish local RRPair (request/response pair) directories to Speedscale cloud as a named snapshot. Every RRPair under the given directories is consolidated into one snapshot, uploaded, and analyzed by the cloud, making the traffic available to teammates, CI replays, and the dashboard.
+Work traffic snapshots stored in Speedscale cloud. Requires Speedscale cloud credentials (run 'proxymock init' once to register). Select the operation with 'action':
 
-Curate the directories first — no filtering is applied. Active tuning blueprints in the workspace are uploaded with the snapshot, so recommendations accepted via apply_recommendation travel with the traffic. Requires Speedscale cloud credentials (run 'proxymock init' once to register).
-
-Returns the new snapshot id and dashboard URL. Use list_cloud_snapshots to confirm the upload or pull_remote_recording to bring a snapshot back down.
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `in-directory` | array | **yes** | Directories containing the RRPair files to publish. Read recursively; all RRPairs are consolidated into a single snapshot. |
-| `name` | string | no | Optional display name for the snapshot in the dashboard. |
-
-#### `list_cloud_snapshots`
-
-_Read-only._
-
-List traffic snapshots stored in Speedscale cloud, newest first. Use this to find a snapshot id for pull_remote_recording, or to confirm a push_snapshot upload landed. Requires Speedscale cloud credentials (run 'proxymock init' once to register).
+- 'push' (uploads): publish local RRPair (request/response pair) directories as one named snapshot. Every RRPair under the given directories is consolidated, uploaded, and analyzed by the cloud, making the traffic available to teammates, CI replays, and the dashboard. Curate the directories first; optionally pass 'sample' to keep only a deterministic fraction (whole sessions) so a large recording fits under the snapshot limit. Active tuning blueprints in the workspace are uploaded with the snapshot, so recommendations accepted via recommendations travel with the traffic. Returns the new snapshot id and dashboard URL.
+- 'list' (read-only): list snapshots, newest first, optionally narrowed by 'search', 'service', and 'tag'. Use it to find a snapshot id for pull_remote_recording, or to confirm a push landed.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `limit` | number | no | Maximum snapshots to return (default 20, max 100). |
-| `search` | string | no | Optional search term matched against snapshot names. |
-| `service` | string | no | Optional filter: only snapshots containing traffic for this service. |
-| `tag` | string | no | Optional filter: only snapshots with this build tag. |
+| `action` | string | **yes** | Which snapshot operation to run: 'push' uploads local RRPairs; 'list' is read-only. |
+| `in-directory` | array | no | action=push only (required there): directories containing the RRPair files to publish. Read recursively; all RRPairs are consolidated into a single snapshot. |
+| `limit` | number | no | action=list only. Maximum snapshots to return (default 20, max 100). |
+| `max_rrpairs` | number | no | action=push only. Optional: if the traffic exceeds this many RRPairs, narrow the push to a representative contiguous time window that fits (keeping the operation mix), instead of sampling. Composes with 'sample' (window crops time, sample thins within). Omit for no limit. |
+| `name` | string | no | action=push only. Optional display name for the snapshot in the dashboard. |
+| `sample` | string | no | action=push only. Optional: keep only a deterministic fraction of the traffic so a large recording fits under the snapshot limit. Whole sessions are kept or dropped together (sessionless RRPairs fall back to per-pair). Accepts a percentage ("20%"), a fraction ("1/5"), or "1 in 5". Omit to push everything. |
+| `search` | string | no | action=list only. Optional search term matched against snapshot names. |
+| `service` | string | no | action=list only. Optional filter: only snapshots containing traffic for this service. |
+| `tag` | string | no | action=list only. Optional filter: only snapshots with this build tag. |
 
 ### BYOC bucket
 
@@ -526,6 +449,28 @@ Narrow the pull with a time window (from/to) and filters (service, namespace, st
 | `status` | string | no | Exact response status to match when the filter has no status predicate, for example 500. |
 | `to` | string | no | End of the time window when the filter has no timerange, for example now or 2026-06-12T19:00:00Z. Defaults to now. |
 | `trace-id` | string | no | Trace ID to match when the filter has no trace predicate. |
+
+### Kubernetes cluster
+
+#### `cluster`
+
+Turn Speedscale eBPF traffic capture on and off for a Kubernetes workload, and read back whether it is on. Talks to the cluster your kubeconfig points at — no Speedscale account or registered inspector is needed. Select the operation with 'action':
+
+- 'inject' (mutates the cluster): turn capture on for one workload by patching its capture.speedscale.com/* annotations. eBPF capture attaches to running pods, so the workload is NOT restarted; setting 'java_agent' does restart it, because the agent is injected at pod admission and only loads into new pods. Idempotent.
+- 'uninject' (mutates the cluster): turn capture off for one workload by clearing those annotations. Idempotent, and already-recorded traffic is untouched.
+- 'capture-status' (read-only): report whether capture is on, whether the java agent is enabled, which ports are excluded, and whether the workload looks like it runs a JVM.
+
+These record intent: the in-cluster Speedscale operator and nettap daemon watch the annotations and perform the actual capture, so annotating a cluster without them installed has no effect. Use 'capture-status' first to see whether a workload is already captured, and to check 'javaDetected' before deciding on 'java_agent'.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | Which cluster operation to run: 'capture-status' is read-only; 'inject' and 'uninject' patch annotations on the workload. |
+| `namespace` | string | **yes** | Kubernetes namespace holding the workload. |
+| `workload` | string | **yes** | Name of the workload to target. |
+| `ignore_ports` | string | no | action=inject only: comma-separated ports to exclude from capture (e.g. '8080,9090'). |
+| `java_agent` | boolean | no | action=inject only: also inject the Java agent. Restarts the workload, and is only useful when 'capture-status' reports javaDetected. |
+| `kube_context` | string | no | Kubeconfig context to target. Omit to use the current-context. |
+| `workload_type` | string | no | Workload kind: deployment (default), statefulset, daemonset, replicaset, job or rollout. |
 
 ### Process control
 
