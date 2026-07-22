@@ -236,45 +236,30 @@ The logs will indicate which probe type was selected for each process (kprobe, u
 
 ## Overhead
 
-eBPF-based collection is designed for minimal production impact. The short version is below; the two
-pages linked at the end of this section carry the measured numbers and the sizing guidance.
+eBPF-based collection is designed for minimal production impact. The short version is below; the two pages linked at the end of this section carry the measured numbers and the sizing guidance.
 
 ### Latency
 
-`nettap` observes traffic passively - it does not sit in the data path. There is no additional network
-hop, no connection termination, and no proxying. What the probes add is in-kernel work on the syscall
-path, averaging under two microseconds per TCP send or receive, which does not move request latency
-out of run-to-run noise.
+`nettap` observes traffic passively - it does not sit in the data path. There is no additional network hop, no connection termination, and no proxying. What the probes add is in-kernel work on the syscall path, averaging under two microseconds per TCP send or receive, which does not move request latency out of run-to-run noise.
 
 ### CPU
 
 Two distinct costs are worth separating.
 
-The collector's own containers consume CPU for event processing and forwarding, scaling roughly
-linearly with captured traffic volume. In a controlled benchmark this ranged from 2m at idle to 530m
-at 1000 QPS across both containers.
+The collector's own containers consume CPU for event processing and forwarding, scaling roughly linearly with captured traffic volume. In a controlled benchmark this ranged from 2m at idle to 530m at 1000 QPS across both containers.
 
-The eBPF programs themselves consume kernel CPU that the kernel charges to whichever process made the
-syscall, not to the collector. That cost is a function of the node's total TCP syscall rate rather
-than of how much traffic you have configured for capture, because probes attach node-wide and filter
-inside the kernel.
+The eBPF programs themselves consume kernel CPU that the kernel charges to whichever process made the syscall, not to the collector. That cost is a function of the node's total TCP syscall rate rather than of how much traffic you have configured for capture, because probes attach node-wide and filter inside the kernel.
 
 ### Memory
 
-The eBPF programs and their maps use a bounded amount of kernel memory and `nettap` avoids unbounded
-allocations, so memory usage is stable over time.
+The eBPF programs and their maps use a bounded amount of kernel memory and `nettap` avoids unbounded allocations, so memory usage is stable over time.
 
-The collector pod itself is not small. The capture container loads eBPF maps and kernel BTF data at
-startup and holds roughly 400Mi resident from the moment it is ready, whether or not traffic is
-flowing. Size the memory request against that baseline rather than against traffic volume.
+The collector pod itself is not small. The capture container loads eBPF maps and kernel BTF data at startup and holds roughly 400Mi resident from the moment it is ready, whether or not traffic is flowing. Size the memory request against that baseline rather than against traffic volume.
 
 ### Where to Go Next
 
-- [Collector Resource Utilization](resource-utilization.md) - measured usage by request rate, sizing
-  recommendations, and how to monitor the collector.
-- [Workload Impact](workload-impact.md) - what capture does to your applications, how it behaves
-  during canary deployments, what happens when the collector fails, and how to verify all of it
-  yourself.
+- [Collector Resource Utilization](resource-utilization.md) - measured usage by request rate, sizing recommendations, and how to monitor the collector.
+- [Workload Impact](workload-impact.md) - what capture does to your applications, how it behaves during canary deployments, what happens when the collector fails, and how to verify all of it yourself.
 
 ## Sidecar vs eBPF
 

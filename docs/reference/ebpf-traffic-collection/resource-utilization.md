@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Collector Resource Utilization
 
-The Speedscale eBPF collector (nettap) runs as a Kubernetes DaemonSet with two containers per pod: **capture** and **ingest**. The capture container runs eBPF programs in kernel space to observe network traffic while the ingest container buffers and forwards captured data to the Speedscale cloud.
+The Speedscale eBPF collector (nettap) runs as a Kubernetes DaemonSet named `speedscale-nettap` with two containers per pod: **capture** (`speedscale-nettap-capture`) and **ingest** (`speedscale-nettap-ingest`). The capture container runs eBPF programs in kernel space to observe network traffic while the ingest container buffers and forwards captured data to the Speedscale cloud. This page uses the short names; the full names are what you will see in `kubectl top pod --containers` and in your monitoring labels.
 
 Because the collector runs on every node in the cluster, understanding its resource footprint is important for capacity planning and node sizing.
 
@@ -46,7 +46,7 @@ CPU usage scales roughly linearly with request volume. The capture container is 
 
 Nearly all of the capture container's cost comes from a small number of eBPF programs attached to the kernel's TCP send and receive paths. In a production Kubernetes cluster, three programs covering `tcp_sendmsg` and `tcp_recvmsg` accounted for roughly 96% of all kernel time spent in Speedscale eBPF programs. Individually they are very cheap, averaging under a microsecond per execution, but they run on every matching syscall on the node.
 
-The reverse is true of the more expensive probes. TLS handshake and write probes cost roughly 20-30 microseconds per execution, but they run orders of magnitude less often and contribute a negligible share of the total.
+The reverse is true of the more expensive probes. TLS handshake, read, and write probes cost roughly 20-30 microseconds per execution, but they run orders of magnitude less often and contribute a negligible share of the total.
 
 That distribution has a practical consequence for capacity planning: **collector CPU tracks the total syscall volume on the node, not the volume of traffic you have configured for capture.** Probes attach node-wide, and the decision about whether a connection is interesting is made inside the kernel program. In the same cluster, the `tcp_recvmsg` entry probe executed roughly 30,000 times for every invocation that matched an enabled capture. The rest exited early at sub-microsecond cost.
 
@@ -69,7 +69,7 @@ Avoid debug logging under production load. If debug logging is needed for troubl
 
 ## Sizing the Collector
 
-Collector resource requests and limits are configured through the [Helm chart](/reference/helm.md) and are applied per container, to both capture and ingest:
+Collector resource requests and limits are configured through the [Helm chart](/reference/helm.md). A single block of requests and limits is applied to each of the two containers, so capture and ingest always get the same values and cannot be sized independently:
 
 | Setting           | Default |
 | ----------------- | ------- |
@@ -91,22 +91,22 @@ Use the observed usage table above to pick the rest. As a starting point, based 
 | Up to ~200 QPS       | 100m        | 500m      | 512Mi          | 1Gi          |
 | ~200 to ~500 QPS     | 250m        | 750m      | 512Mi          | 1Gi          |
 | ~500 to ~1000 QPS    | 500m        | 1000m     | 768Mi          | 1.5Gi        |
-| Above ~1000 QPS      | Measure first, then extrapolate from the table above       |||
 
-Size against the busiest node rather than the cluster average. The DaemonSet applies the same requests and limits everywhere, and the node carrying the most traffic sets the requirement.
+Above roughly 1000 QPS, measure on your own workload first and extrapolate from the observed usage table rather than guessing. Size against the busiest node rather than the cluster average. The DaemonSet applies the same requests and limits everywhere, and the node carrying the most traffic sets the requirement.
 
 To override the defaults, set the values in your Helm values file:
 
 ```yaml
 ebpf:
   enabled: true
-  resources:
-    requests:
-      cpu: "250m"
-      memory: "512Mi"
-    limits:
-      cpu: "750m"
-      memory: "1Gi"
+  nettap:
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+      limits:
+        cpu: "750m"
+        memory: "1Gi"
 ```
 
 ## Measuring Collector CPU Accurately
@@ -124,7 +124,7 @@ The kernel-side cost is measurable rather than something you have to infer. See 
 The collector exposes Prometheus metrics on port `42424` at `/metrics`, served by the capture container. The older `/stats` endpoint remains available and returns the same probe counters as JSON for existing consumers.
 
 :::caution Keep the metrics endpoint inside the cluster
-The endpoint binds on all interfaces and has no authentication, the same posture as the rest of the collector's API server. Scrape it from inside a trusted or mTLS-enabled mesh. Do not expose it through an ingress or on an unmeshed interface.
+The endpoint is served on the pod IP and has no authentication, the same posture as the rest of the collector's API server. Scrape it from inside a trusted or mTLS-enabled mesh. Do not expose it through an ingress or on an unmeshed interface.
 :::
 
 ### Available Metrics
@@ -170,6 +170,16 @@ Alongside these, watch for **CPU throttling** on the capture container, **memory
 ### Measuring eBPF Kernel Time
 
 Setting `diagnostics.bpfStats.enabled` turns on the kernel's BPF run-time statistics and adds the two `nettap_bpf_program_*` series, which is how the per-program figures on this page were produced.
+
+Enable it through the `ebpf.configuration` block in your Helm values, which renders into the `speedscale-nettap` ConfigMap. The collector watches that ConfigMap and applies the change at runtime, so no restart is required to turn it on or off:
+
+```yaml
+ebpf:
+  configuration:
+    diagnostics:
+      bpfStats:
+        enabled: true
+```
 
 ```promql
 # kernel CPU consumed by Speedscale eBPF programs, in cores
