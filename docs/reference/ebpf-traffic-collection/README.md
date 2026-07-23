@@ -11,6 +11,21 @@ eBPF (extended Berkeley Packet Filter) is a Linux kernel technology that allows 
 the kernel without changing kernel source code or loading kernel modules. Many Kubernetes networking tools
 such as [Cilium](https://cilium.io/) use eBPF for efficient, low-overhead traffic observation.
 
+## System Requirements
+
+Before enabling eBPF capture, confirm your nodes meet the kernel and architecture baseline below. Nodes that
+fall outside these ranges are not supported.
+
+- **`x86_64`:** Linux kernel **5.15 or newer**.
+- **`arm64` / `aarch64`:** Linux kernel **6.0 or newer**. Kernels older than 6.0 are supported on `x86_64`
+  only.
+- **RHEL:** RHEL **9.2 or newer** on both `x86_64` and `arm64`/`aarch64`. Anything prior to 9.2 is
+  incompatible.
+- **BTF (BPF Type Format):** must be enabled in the kernel. BTF provides portable type information that lets
+  the `nettap` probes work across kernel versions without recompilation.
+- **Host access:** when running in Kubernetes, the collector must be able to read host `procfs`, `cgroupv2`,
+  and kernel BTF paths.
+
 ## How Speedscale Uses eBPF
 
 Speedscale's eBPF collector `nettap` runs as a Kubernetes **DaemonSet** on each node. It attaches lightweight
@@ -44,59 +59,34 @@ captured traffic with pod name, namespace, labels, and other metadata.
 ## TLS Traffic Visibility
 
 Speedscale captures TLS-encrypted traffic in plaintext, without needing certificates, proxies, or application
-changes.
+changes. There are three primary capture mechanisms: uprobes for applications/runtimes using OpenSSL 3.x
+libraries, uprobes on Go's `crypto/tls`, and a JVMTI agent for the JVM.
 
-### OpenSSL 3.x
+OpenSSL support works for **both** dynamically and statically linked 3.x libraries. Processes that use this
+will have uprobes attached to OpenSSL read/write functions. This allows data to be captured before
+being encrypted (writes) and after decryption (reads).
 
-**uprobes** attach to read/write functions in OpenSSL 3.x for processes that use it. `nettap`
-auto-detects the OpenSSL library loaded by each process and attaches probes dynamically. This captures
-plaintext data after decryption (reads) and before encryption (writes).
+Go applications are instrumented with eBPF uprobes attached to the read/write methods of the standard `crypto/tls`
+package. The idea is the same as OpenSSL. Support for this requires Go versions **1.18 or newer** and requires
+binaries to preserve the ELF symbol table, i.e. they must be **unstripped** and built **without** using
+`-ldflags="-s"`.
 
-### Go Native TLS
+JVM-based applications require a JVMTI agent, rather than eBPF uprobes, that instruments Java's TLS layer from
+within the JVM. This captures plaintext traffic for any Java application using standard TLS libraries
+(e.g., `javax.net.ssl`).
 
-For Go applications using the standard `crypto/tls` package, `nettap` attaches **uprobes** directly
-to Go's TLS read and write functions. This requires:
+Language/runtime support is tied to the TLS capture mechanism mentioned above, but they all share the same
+kernel and architecture baseline (see [System Requirements](#system-requirements)). The following have been
+tested and verified:
 
-- Go version 1.18 or later
-- **Unstripped binaries** (symbol table must be present for probe attachment so binaries must be built without `-ldflags="-s"`)
-
-### Java (JVMTI Agent)
-
-JVM-based applications require a separate mechanism rather than eBPF probes: a **JVMTI agent** that
-instruments Java's TLS layer from within the JVM. This captures plaintext traffic for any Java application
-using standard TLS libraries (e.g., `javax.net.ssl`).
-
-### PHP (OpenSSL)
-
-For PHP applications, `nettap` attaches **uprobes** to the OpenSSL shared library used by PHP's TLS layer. This captures plaintext HTTP traffic from PHP services without any code changes. The OpenSSL library must be available as a shared object (not statically compiled).
-
-### .NET (OpenSSL on Linux)
-
-On Linux, .NET applications typically use OpenSSL for TLS. `nettap` attaches **uprobes** to the OpenSSL library to capture plaintext traffic. This works for ASP.NET Core and other .NET workloads running on Linux containers. Windows-based .NET using SChannel is not supported.
-
-### Python (OpenSSL)
-
-Python's `ssl` module uses OpenSSL under the hood. `nettap` attaches **uprobes** to the OpenSSL library loaded by the Python process. For statically compiled Python builds, you may need to set the `NETTAP_OPENSSL_STATIC` environment variable and provide the path to the OpenSSL binary.
-
-### Node.js (Static OpenSSL)
-
-Node.js bundles a statically linked copy of OpenSSL. To capture TLS traffic from Node.js applications, set the following environment variables on the `nettap` DaemonSet:
-
-- `NETTAP_OPENSSL_STATIC=true`
-- Set the binary path to the Node.js executable
-
-This allows `nettap` to locate and attach probes to the statically linked OpenSSL functions within the Node.js binary.
-
-### Language Support Matrix
-
-| Language | Capture Method                | TLS Support | Min Kernel | Notes                                            |
-| -------- | ----------------------------- | ----------- | ---------- | ------------------------------------------------ |
-| Go       | eBPF uprobe (`crypto/tls`)    | Native      | 5.17       | Best supported; requires unstripped binaries     |
-| Java     | JVMTI agent                   | JSSE hook   | 5.17       | Requires nettap Java agent on classpath          |
-| PHP      | eBPF uprobe (OpenSSL)         | OpenSSL     | 5.17       | Requires OpenSSL shared library                  |
-| .NET     | eBPF uprobe (OpenSSL)         | OpenSSL     | 5.17       | Linux only; SChannel not supported               |
-| Python   | eBPF uprobe (`ssl` / OpenSSL) | OpenSSL     | 5.17       | Static builds need `NETTAP_OPENSSL_STATIC`       |
-| Node.js  | Static OpenSSL uprobe         | OpenSSL     | 5.17       | Set `NETTAP_OPENSSL_STATIC=true` and binary path |
+| Language | Capture Method             | TLS Support | Considerations                                                    |
+| -------- | -------------------------- | ----------- | ----------------------------------------------------------------- |
+| Go       | eBPF uprobe (`crypto/tls`) | Native      | See above                                                         |
+| Java     | JVMTI agent                | JSSE hook   | Requires `nettap` Java agent (Handled by the Speedscale Operator) |
+| PHP      | eBPF uprobe (OpenSSL)      | OpenSSL 3.x |                                                                   |
+| .NET     | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Linux only; SChannel not supported                                |
+| Python   | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Python `ssl` module                                               |
+| Node.js  | eBPF uprobe (OpenSSL)      | OpenSSL 3.x |                                                                   |
 
 ### What This Means in Practice
 
@@ -105,13 +95,10 @@ This allows `nettap` to locate and attach probes to the statically linked OpenSS
 - No application code changes or recompilation
 - Full HTTP/HTTPS request and response visibility including headers and bodies
 
-## Requirements
+## Runtime Requirements
 
-- **Architecture:** `x86_64` or `arm64`
-- **Linux Kernel 5.17+** with BTF (BPF Type Format) support enabled. BTF provides portable type information
-  that allows the `nettap` probes to work across different kernel versions without recompilation
-- **Host access:** when running in Kubernetes, the collector must be able to read host `procfs`,
-  `cgroupv2`, and kernel BTF paths
+Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and a
+privileged deployment mode to load its probes and see host-level traffic.
 
 ### Capabilities
 
@@ -226,9 +213,11 @@ The logs will indicate which probe type was selected for each process (kprobe, u
 - **Go binaries must not be stripped** - Go native TLS capture requires preserving the ELF symbol table. Binaries
   built with `-ldflags="-s"` or otherwise stripped will not have TLS traffic captured. Plaintext
   TCP traffic is still captured.
-- **Mid-stream connections** - Connections established before `nettap` attaches probes will not
-  have their initial handshake or early data captured. Subsequent requests on those connections are
-  captured normally.
+- **Mid-stream connections** - Connections already established before `nettap` attaches its probes miss
+  the beginning of the connection. For simple request/response protocols like HTTP/1.1, later requests on
+  the connection are still captured normally. For multiplexed protocols like HTTP/2 and gRPC, `nettap` needs
+  the start of the stream to parse it, so connections joined mid-stream can't be reassembled and aren't
+  captured until the application opens a new connection.
 - **TCP only** - `nettap` captures TCP traffic only. UDP is only captured for DNS resolution (port 53).
 - **OpenSSL version** - TLS capture via uprobes is limited to OpenSSL 3.x. Applications using older
   OpenSSL versions, BoringSSL, or LibreSSL will not have TLS traffic captured, though plaintext TCP
