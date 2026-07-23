@@ -454,22 +454,53 @@ Narrow the pull with a time window (from/to) and filters (service, namespace, st
 
 #### `cluster`
 
-Turn Speedscale eBPF traffic capture on and off for a Kubernetes workload, and read back whether it is on. Talks to the cluster your kubeconfig points at — no Speedscale account or registered inspector is needed. Select the operation with 'action':
+Work the Kubernetes cluster your kubeconfig points at: inspect what is running, turn Speedscale eBPF traffic capture on and off, and run recorded traffic back against a workload inside the cluster. Select the operation with 'action'.
 
-- 'inject' (mutates the cluster): turn capture on for one workload by patching its capture.speedscale.com/* annotations. eBPF capture attaches to running pods, so the workload is NOT restarted; setting 'java_agent' does restart it, because the agent is injected at pod admission and only loads into new pods. Idempotent.
-- 'uninject' (mutates the cluster): turn capture off for one workload by clearing those annotations. Idempotent, and already-recorded traffic is untouched.
+Capture — record real traffic off a running workload:
+- 'inject' (mutates): turn capture on for one workload by patching its capture.speedscale.com/* annotations. eBPF capture attaches to running pods, so the workload is NOT restarted; setting 'java_agent' does restart it, because the agent is injected at pod admission and only loads into new pods. Idempotent.
+- 'uninject' (mutates): turn capture off by clearing those annotations. Idempotent; already-recorded traffic is untouched.
 - 'capture-status' (read-only): report whether capture is on, whether the java agent is enabled, which ports are excluded, and whether the workload looks like it runs a JVM.
 
-These record intent: the in-cluster Speedscale operator and nettap daemon watch the annotations and perform the actual capture, so annotating a cluster without them installed has no effect. Use 'capture-status' first to see whether a workload is already captured, and to check 'javaDetected' before deciding on 'java_agent'.
+Replay — run recorded traffic against a workload in the cluster:
+- 'replay-prepare' (read-only, local): analyze recordings on this machine and return the inbound slices a replay can be routed at and the outbound dependencies it can mock. Runs the same analyzer the cloud runs, with no push and no login, so the keys it returns are exactly the keys 'replay-start' accepts. Call this before 'replay-start' rather than guessing dependency keys.
+- 'replay-start' (mutates, needs a Speedscale cloud login): push the recordings as a snapshot, wait for the cloud to analyze it, and create the replay. Give it either 'workload' (replay against a cluster workload — the only shape that can mock dependencies) or 'target' (replay against a plain address, touching nothing in the cluster). 'mocks' takes the outbound keys from 'replay-prepare'; mocking a dependency makes the responder answer it from the recording instead of letting the workload reach the real thing, which is what makes the replay repeatable. Returns immediately with the replay name and report id — it does not block.
+- 'replay-status' (read-only): with 'replay_name', the full stage breakdown of one replay including the operator's own explanation of a failure; without it, the replays currently running in the cluster (pass 'all' to include finished ones still present). A replay is garbage-collected after it finishes, so a long-completed replay will not be found — read its report in Speedscale cloud.
+- 'replay-logs' (read-only): the generator, responder and system-under-test log lines for a running replay. This is a LIVE tap with no history and is lossy under load, so it returns lines emitted while it is subscribed and nothing from before; it returns nothing for a replay that is not currently running. The complete log is the cloud report.
+- 'replay-cancel' (mutates, destructive): stop a running replay by deleting it. This reverts the workload under test and tears down the generator and responder, and produces no report. Refused once the generator has finished, so it cannot discard results that are still being analyzed.
+
+Inspect — read-only, and the fastest way to answer "what is actually in this cluster":
+- 'namespaces': the namespaces the forwarder has observed. Start here when you do not know what is in the cluster — but note it lists only namespaces nettap has seen traffic in, so it is not the same as 'kubectl get ns'.
+- 'nodes': the cluster's nodes with kernel, OS image and container runtime. The kernel version is what to check when eBPF capture records nothing.
+- 'services': the Services in a namespace with type, cluster IP and ports. A Service address is usually what 'replay-start' wants as its 'target'.
+- 'dependencies': the ConfigMaps, Secrets, Services and volumes one workload references and how it reaches each. This is the DECLARED wiring from the workload's spec, the complement to 'topology' (which shows connections actually observed). Names and reference paths only — no ConfigMap or Secret values are returned.
+- 'topology': the service map for one namespace — its workloads, the workloads elsewhere they exchange traffic with, and the observed connections between them. Built from what nettap sees on the wire, so it shows real connections, not declared ones.
+- 'workloads': the workloads the forwarder has observed, cluster-wide or in one namespace. These are the names 'inject' and 'replay-start' take.
+- 'pods': the pods in a namespace, optionally narrowed to one workload, with node, IP and phase. This is the OBSERVED inventory, not the apiserver's, so a freshly scaled-up workload can show fewer pods than 'kubectl get pods' — and fewer than 'logs' returns, since that reads the apiserver through the inspector.
+- 'logs': pod logs for a workload. Served by the in-cluster inspector under its own ServiceAccount, so this works even when the kubeconfig cannot read pod logs directly. Set 'previous' to read the last terminated container — the only way to see why a CrashLoopBackOff pod died.
+- 'events': Kubernetes events for a workload and its pods. Failed image pulls, scheduling problems, probe failures and OOM kills surface here first.
+
+Everything here needs only a kubeconfig. The inspect and replay actions are served by Speedscale components running in the cluster, which proxymock locates and port-forwards to for you using 'kube_context' — there is nothing to configure and no address to supply. Capture records intent only: the in-cluster operator and nettap daemon watch the annotations and do the actual capture, so annotating a cluster without them installed has no effect.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `action` | string | **yes** | Which cluster operation to run: 'capture-status' is read-only; 'inject' and 'uninject' patch annotations on the workload. |
-| `namespace` | string | **yes** | Kubernetes namespace holding the workload. |
-| `workload` | string | **yes** | Name of the workload to target. |
+| `action` | string | **yes** | Which cluster operation to run. Read-only: 'capture-status', 'replay-prepare', 'replay-status', 'replay-logs', 'topology', 'namespaces', 'nodes', 'workloads', 'pods', 'services', 'dependencies', 'logs', 'events'. Mutating: 'inject', 'uninject', 'replay-start', 'replay-cancel'. |
+| `all` | boolean | no | action=replay-status listing: include replays that are no longer running but are still in the cluster. |
+| `container` | string | no | action=logs: container to read within each pod. Omit for the pod's first container. |
 | `ignore_ports` | string | no | action=inject only: comma-separated ports to exclude from capture (e.g. '8080,9090'). |
+| `in_directories` | array | no | action=replay-prepare and replay-start: directories holding the RRPair files to replay. Defaults to the working directory. |
 | `java_agent` | boolean | no | action=inject only: also inject the Java agent. Restarts the workload, and is only useful when 'capture-status' reports javaDetected. |
 | `kube_context` | string | no | Kubeconfig context to target. Omit to use the current-context. |
+| `limit` | number | no | action=events: keep only the most recent N events (default 50). action=replay-logs: stop after N lines (default 200). |
+| `mocks` | array | no | action=replay-start: outbound dependency keys to mock, taken verbatim from 'replay-prepare'. Only applies to a workload replay, because mocking needs a responder. |
+| `namespace` | string | no | Kubernetes namespace. Required for every action except 'replay-prepare', 'namespaces', 'nodes' and the cluster-wide listings ('workloads', 'replay-status'), where omitting it spans the cluster. |
+| `pod` | string | no | action=logs: read only this pod instead of every pod of the workload. |
+| `previous` | boolean | no | action=logs: read the last terminated container instead of the running one. This is how you find out why a CrashLoopBackOff pod died. |
+| `replay_name` | string | no | action=replay-status and replay-cancel: the replay's name as returned by 'replay-start' or listed by 'replay-status'. Omit on 'replay-status' to list instead. |
+| `report_id` | string | no | action=replay-logs: the report id 'replay-start' returned, which scopes the log tap to that replay. |
+| `snapshot_id` | string | no | action=replay-start: replay a snapshot already in Speedscale cloud instead of pushing the local recordings. |
+| `tail_lines` | number | no | action=logs: read only the last N lines of each pod log. |
+| `target` | string | no | action=replay-start: replay against this address instead of a cluster workload. Nothing in the cluster is modified and nothing can be mocked. Mutually exclusive with 'workload'. |
+| `workload` | string | no | Name of the workload to target. Required for the capture actions, 'logs', 'events' and 'dependencies'; on 'replay-start' it selects the system under test; on 'pods' it narrows the listing. List the options with action='workloads'. |
 | `workload_type` | string | no | Workload kind: deployment (default), statefulset, daemonset, replicaset, job or rollout. |
 
 ### Process control
