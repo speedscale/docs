@@ -21,6 +21,37 @@ This runs a replay against your workload in the specified cluster. Run `speedctl
 If `--namespace` is omitted and the snapshot was captured from a single namespace, that namespace is inferred automatically. If the snapshot spans multiple namespaces you must pass `--namespace`.
 :::
 
+### Wait for service mocks
+
+Use `speedctl wait replay` before an external test driver sends traffic. This workflow requires Speedscale v2.5.789 or newer in the cluster and `speedctl` v2.5.789 or newer on the client. Older operators do not publish the `MocksReady` condition consumed by the CLI.
+
+```bash
+REPORT_ID=$(speedctl infra replay \
+  --snapshot-id {snapshot_id} \
+  --cluster {cluster_name} \
+  --namespace {namespace} \
+  --service {workload_name} \
+  --test-config-id {responder_only_test_config} \
+  --id-only)
+
+speedctl wait replay "$REPORT_ID" \
+  --for mocks-ready \
+  --timeout 10m \
+  --poll-interval 5s
+```
+
+`mocks-ready` waits for operator provisioning, ready responder deployments, responder configuration, and the target workload. It does not wait for the Speedscale traffic generator. The command returns a nonzero exit code on failure or timeout.
+
+Use a test config with `cluster.replayMode` set to `responder-only` when another tool will generate inbound traffic. This is separate from `--mock-only`, which selects a subset of outbound dependencies to mock during a replay.
+
+Always cancel a responder-only replay when the driver finishes:
+
+```bash
+speedctl infra cancel-replay "$REPORT_ID"
+```
+
+See [Use Your Existing Test Driver](/guides/integrations/cicd/#use-your-existing-test-driver) for a complete CI lifecycle with k6 and Postman.
+
 ### Targeting Specific Services (`--test-against`)
 
 You can map replay traffic to different endpoints. This is useful when you want to test a sub-system or a newer version of a service.
