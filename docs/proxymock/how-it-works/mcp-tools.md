@@ -44,8 +44,12 @@ Start the mock server with RRPairs from the mock files in the directory.
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `in-directory` | array | **yes** | Directories containing the mock RRPair files. Directories are read recursively. Usually these directories end with 'proxymock' and are contained in the current repository. |
+| `fault` | array | no | Repeatable '&lt;regexp&gt;:action=value[,action=value...]' specs. Rate alone injects intermittent 503s; body=corrupt\|truncate\|truncate:&lt;bytes&gt; returns a well-formed shorter body; connection=refuse\|reset\|stall\|drop faults the socket (drop cuts the stream mid-response). |
 | `log-to` | string | no | File path to redirect all proxymock output to |
+| `mock-reload-interval` | string | no | Hot-reload check interval such as '1s'. Omit to disable. |
+| `mock-timing` | string | no | Response timing: 'none', 'recorded', or a multiplier such as '5x'. |
 | `out-directory` | array | no | Directories to write new mock request/response files to. MATCH, NO_MATCH, AND PASSTHROUGH seen by mock server. If not provided, defaults to a timestamped directory. Unless otherwise instructed use 'proxymock/mocked-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
+| `response-selection` | string | no | Duplicate-signature response selection: 'round-robin' (default) or weighted-by-copy-count 'random'. |
 
 #### `mock_server_stop`
 
@@ -59,7 +63,7 @@ _No parameters._
 
 Replay recorded RRPairs from test files against an HTTP server URL.
 
-By default each request is replayed once, which acts as a regression test. To run a performance / load test instead, set 'vus' (concurrency) together with 'for' (run for a duration) or 'times' (run a number of iterations), and optionally 'performance' mode for high-throughput runs. Use 'fail-if' to encode a pass/fail condition such as a latency budget.
+By default each request is replayed once, which acts as a regression test. To run a performance / load test instead, set 'vus' (concurrency) together with 'for' (run for a duration) or 'times' (run a number of iterations), and optionally 'load-test' mode for high-throughput runs. Use 'fail-if' to encode a pass/fail condition such as a latency budget.
 
 The replay runs in the background: use the list_running tool to see when it finishes and the read_process_logs tool to inspect results, including whether any 'fail-if' condition triggered. After completion, run the generate_report tool on the output directory for latency percentiles and quality scores.
 
@@ -69,8 +73,8 @@ The replay runs in the background: use the list_running tool to see when it fini
 | `out-directory` | array | **yes** | Directories to write observed replay request/response files to. Unless otherwise instructed use 'proxymock/replayed-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
 | `fail-if` | string | no | Condition expression that marks the replay as failed (exit code 1) when true, e.g. 'latency.p99 &gt; 100' or 'requests.result-match-pct &lt; 95.5'. Check the process logs to see whether the condition triggered. |
 | `for` | string | no | How long to run the replay, as a Go duration string (e.g. '30s', '5m'). Traffic is replayed continuously, on a loop, until the duration expires. Mutually exclusive with 'times'. Omit both to replay each request exactly once. |
+| `load-test` | boolean | no | Load test mode only writes a sample of failed or non-matching requests to disk, trading granular data collection for replay speed. Recommended for high-throughput load tests (many vus or long durations). Responses are not scored, so 'requests.result-match-pct' is not reported and cannot be used in 'fail-if'. When the app runs behind 'proxymock mock', start the mock without an output directory. |
 | `log-to` | string | no | File path to redirect all proxymock output to |
-| `performance` | boolean | no | Performance mode only writes a sample of failed or non-matching requests to disk, trading granular data collection for replay speed. Recommended for high-throughput load tests (many vus or long durations). |
 | `rewrite-host` | boolean | no | Rewrite the HTTP Host header to match the target hostname:port. Set this when the target server routes requests by Host header (e.g. virtual hosts, ingress controllers). |
 | `test-against` | string | no | A partial or full URL which will override some or all of the captured URL during replay. If not provided, the target depends on the traffic. The test-against address may be a full or partial URL which will override the base URL of requests during replay. - If a scheme is provided the scheme of the request will be replaced - If a hostname is provided the hostname of the request will be replaced - If a port is provided the port of the request will be replaced Example test-against addresses: \| Captured URL \| Test Against \| Replay URL \|-----------------------------\|---------------------\|----------- \|https://original.com:443/foo \| http://new.com:8080 \| http://new.com:8080/foo \|https://original.com:443/foo \| http:// \| http://original.com:443/foo \|https://original.com:443/foo \| http://new.com \| http://new.com:443/foo \|https://original.com:443/foo \| new.com \| https://new.com:443/foo \|https://original.com:443/foo \| new.com:8080 \| https://new.com:8080/foo \|https://original.com:443/foo \| :8080 \| https://original.com:8080/foo \|https://original.com:443/foo \| http://:8080 \| http://original.com:8080/foo |
 | `times` | number | no | Number of times to replay the full traffic set (default 1). Mutually exclusive with 'for'. |
@@ -268,15 +272,18 @@ The 'config' is the same JSON document 'proxymock cloud pull/push dlp' read and 
 
 #### `edit_rrpair`
 
-Replace the request or response body of an RRPair markdown file in the local workspace. Content-Length on the edited side is recomputed automatically and the file is rewritten atomically.
+Edit an HTTP RRPair markdown file: request or response body and headers, response status code, and duration metadata. Content-Length is recomputed after body edits and the file is rewritten atomically.
 
-Use this to fix stale recorded data before mocking or replaying, e.g. after search_local_traffic or compare_rrpair_files points you at the file. Only .md RRPair files are editable.
+Use this to fix stale recorded data before mocking or replaying, e.g. after search_local_traffic or compare_rrpair_files points you at the file. Relative and absolute paths are accepted; both must resolve inside the working directory. Only existing .md RRPair files are editable.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `file` | string | **yes** | Path to the .md RRPair file, relative to the working directory, e.g. 'proxymock/recorded-2026-01-01/my-host/rr.md'. |
-| `side` | string | **yes** | Which body to replace: 'request' or 'response'. |
-| `body` | string | **yes** | The new body content as a UTF-8 string. For binary content prefix with 'base64:' followed by standard base64. An empty string clears the body. |
+| `file` | string | **yes** | Relative or absolute path to the .md RRPair file. |
+| `body` | string | no | The new body content as a UTF-8 string. For binary content prefix with 'base64:' followed by standard base64. An empty string clears the body. |
+| `duration-ms` | number | no |  |
+| `headers` | object | no | Header names mapped to a string or array of strings. A null value deletes the header. Names are matched case-insensitively and stored lowercased, so the same header cannot be listed twice under different casing. |
+| `side` | string | no | Side whose body or headers to edit. Required when body or headers is supplied. |
+| `status-code` | number | no | Response status code. The reason phrase is derived from it — a custom phrase cannot be stored. |
 
 #### `delete_rrpairs`
 
