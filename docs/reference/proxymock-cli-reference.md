@@ -23,21 +23,32 @@ proxymock [command]
 ## Top-level commands
 
 - `admin` - Administrative and maintenance commands (certs, clean)
+- `automation` - Run a proxymock web automation headlessly
 - `cloud` - Manage your Speedscale Cloud resources
 - `cluster` - Inspect and drive a Kubernetes cluster from the command line
 - `completion` - Generate the autocompletion script for the specified shell
+- `dlp` - Author and validate DLP redaction rules against local RRPair files
+- `drift` - Find values that vary across two or more RRPair directories
+- `export` - Export recorded traffic to a 3rd party format
 - `files` - Utilities for working with RRPair files
+- `filter` - Author and validate filter rules against local RRPair files
 - `generate` - Generate RRPair files from OpenAPI specification
 - `help` - Help about any command
-- `import` - Import traffic from a snapshot file
+- `import` - Import traffic from a snapshot file or a BYOC S3 bucket
 - `init` - Initializes proxymock installation and configuration
 - `inspect` - Inspect Speedscale traffic (test / mock files)
+- `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
+- `recommendations` - Work the replay-tuning recommendations the analyzer finds
 - `record` - Record traffic from your app, turning it into RRPair files
 - `replay` - Replay tests to make requests to your app
+- `report` - Generate a performance/reliability/security report from captured RRPairs
 - `send-one` - Send a single test (RRPair) to an arbitrary URL
+- `transform` - Author and validate traffic transforms against local RRPair files
+- `validate` - Validate recorded HTTP responses against an OpenAPI spec
 - `version` - Prints current version of client and cloud
+- `web` - Start the embedded web interface
 
 ## Main workflow commands
 
@@ -307,13 +318,23 @@ proxymock generate --include-optional api-spec.yaml
 
 ### `import`
 
-Import traffic from a snapshot file.
+Import traffic from a Speedscale snapshot file, or from a third-party capture format with the subcommands below. Each subcommand writes RRPair files into your local workspace.
 
 **Usage**
 
 ```bash
 proxymock import [flags]
+proxymock import [command]
 ```
+
+**Subcommands**
+
+- `import s3` - Import historical traffic from a BYOC S3 bucket (see below)
+- `import har` - Import a HAR document into local RRPair files
+- `import postman` - Import a Postman collection into local RRPair files
+- `import wiremock` - Import a WireMock project into local RRPair files
+- `import goreplay` - Import a GoReplay capture file into local RRPair files
+- `import http-wire` - Import raw HTTP wire format files into local RRPair files
 
 **Examples**
 
@@ -329,6 +350,58 @@ proxymock import --file /path/to/snapshot.json --out some/local/path
 
 - `--file string` - File to import into the proxymock repository
 - `--out string` - Directory where imported RRPair files will be written (default `proxymock/imported-<filename>`)
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+### `import s3`
+
+Import historical BYOC traffic from a customer's own S3 bucket into a local proxymock directory. The BYOC OpenTelemetry `awss3` exporter writes objects under the `byoc/` prefix in hive-style `year=/month=/day=/hour=/minute=` partitions; proxymock reads `_speedscale/byoc-layout.json` when present to enumerate workload-specific prefixes directly, and the legacy Fluent Bit layout is also supported. Use `--local-dir` to read from a local directory tree with the same layout, in which case `--bucket` and AWS credentials are not used. See the [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) guide for the full workflow.
+
+**Usage**
+
+```bash
+proxymock import s3 [flags]
+```
+
+**Examples**
+
+```bash
+# import matching traffic from the last hour
+proxymock import s3 --bucket my-bucket --prefix byoc/ \
+  --filter '(service IS "checkout") AND (status IS "500")'
+
+# import from a local directory with the same layout as the S3 bucket
+proxymock import s3 --local-dir ./fixtures/byoc-traffic --prefix byoc/ --service checkout --limit 10
+
+# redact matched traffic on the way in with a local DLP config
+proxymock import s3 --bucket my-bucket --prefix byoc/ --from now-15m --dlp-config my-dlp.json
+```
+
+**Flags**
+
+- `--bucket string` - S3 bucket containing BYOC traffic
+- `--local-dir string` - Local directory with BYOC S3 layout; mutually exclusive with `--bucket`
+- `--prefix string` - S3 key prefix to search; use `byoc/` for the current OTel `awss3` layout
+- `--filter string` - Speedscale traffic filter string; overlapping criteria override the convenience flags below
+- `--from string` - Start time when `--filter` has no timerange, e.g. `now-15m` or `2026-06-12T18:00:00Z` (default `now-1h`)
+- `--to string` - End time when `--filter` has no timerange (default `now`)
+- `--service strings` - Service filter (repeat or comma-separate) added when `--filter` has no service predicate
+- `--endpoint string` - Endpoint/location substring filter added when `--filter` has no endpoint predicate
+- `--status string` - Exact status filter added when `--filter` has no status predicate
+- `--direction string` - Direction filter (`in` or `out`) added when `--filter` has no direction predicate
+- `--namespace string` - Namespace filter added when `--filter` has no namespace predicate
+- `--app-label string` - Kubernetes app label used to narrow BYOC layout prefixes
+- `--trace-id string` - Trace ID filter added when `--filter` has no trace-related predicate
+- `--dlp-config string` - Local DLP config JSON file to apply to matched RRPairs before writing
+- `--limit int` - Maximum number of matched RRPairs to write; `0` means unlimited
+- `-f, --follow` - Keep importing as new objects arrive; runs until interrupted
+- `--poll-interval duration` - How often to re-list the source for new objects when `--follow` is set (default `30s`)
+- `--concurrency int` - Maximum number of S3 objects to download and parse concurrently (default `16`)
+- `--region string` - AWS region; defaults to the AWS SDK configuration
+- `--s3-endpoint-url string` - Custom S3 endpoint URL for S3-compatible stores
+- `--s3-force-path-style` - Use path-style S3 addressing
+- `--out string` - Directory where imported RRPair files will be written (default `proxymock/imported-s3-<timestamp>`)
+- `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
+- `--timeout duration` - Command timeout, e.g. `10s`, `5m`, `1h` (default `12h`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
 
 ### `send-one`
@@ -351,6 +424,175 @@ proxymock send-one path/to/test.json http://orders:8080/foo/bar
 **Flags**
 
 - `-h, --help` - help for send-one
+
+## Replay tuning commands
+
+These commands tune a replay offline, from RRPair files on disk. No replay run, cluster, or Speedscale account is needed. They accept the same `-o/--output` formats as the rest of the CLI. `match-rate` and `recommendations` are separate id spaces: `match-rate` works the Mocks-view outbound match-rate fixes, `recommendations` works the general replay-tuning findings. Both write filter-scoped transforms into the workspace's per-service tuning blueprint rather than rewriting RRPair files, and later replay and mock runs apply the blueprint automatically.
+
+### `match-rate`
+
+Report and improve the rate at which a replay's outbound requests match the recorded mocks. This is the same loop as the web UI's Mocks view and the MCP `mocks` tool, over the same workspace and blueprints. The workspace usually comes from `proxymock cloud pull report <id>`, which materializes both analysis sides as run directories. See [Improve Mock Match Rate with AI](/proxymock/guides/mock-match-rate.md) for the guided workflow.
+
+**Subcommands**
+
+- `match-rate analyze` - Report the match rate and list fix recommendations
+- `match-rate accept` - Accept a recommendation into the tuning blueprint
+- `match-rate undo` - Remove a previously accepted recommendation
+- `match-rate similar` - Deep-dive one projected miss against the recorded mocks
+
+**Examples**
+
+```bash
+# report the match rate and list fixes in the current workspace
+proxymock match-rate analyze
+
+# analyze a pulled report, naming both sides explicitly
+proxymock match-rate analyze --in ./my-app \
+  --mock-source snapshot-2026-07-01 --request-source report-2026-07-02
+
+# accept one fix, or everything the analyzer found
+proxymock match-rate accept --id 'my-service|body:payment.transaction_id'
+proxymock match-rate accept --all
+
+# undo a previously accepted fix
+proxymock match-rate undo --id 'my-service|body:payment.transaction_id'
+
+# rank one projected miss against the nearest recorded signatures
+proxymock match-rate similar --id proxymock/report-2026-07-02/my-service/abc123.md --max 10
+```
+
+**Common flags**
+
+- `--in string` - Workspace directory holding the traffic to analyze (default `.`)
+- `--mock-source string` - Run directory supplying the recorded mock signatures (default: newest `snapshot-*`/`recorded-*`/`mocked-*` run)
+- `--request-source string` - Run directory supplying the outbound requests to check (default: newest `report-*`/`replayed-*` run)
+- `--id string` - Recommendation id (from `match-rate analyze`), shaped `<service>|<target>`; for `similar`, a projected-miss id
+- `--all` - (`accept`) Accept every open recommendation with its default transform
+- `--transform string` - (`accept`) Override the recommended transform for this id, e.g. `constant`
+- `--max int` - (`similar`) How many nearest recorded candidates to return (default `3`)
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+### `recommendations`
+
+Analyze the RRPair files in a workspace and work the general replay-tuning recommendations the analyzer finds. `transform` recommendations are mechanical fixes the traffic needs to replay or mock cleanly (JWT re-signing, timestamp shifting, message-id rotation, data redaction); `traffic` recommendations are informational findings. Accepting merges a recommendation's transform chains into the workspace's per-service tuning blueprint. See [Fix Replay Failures with Recommendations](/proxymock/guides/recommendations.md) for the guided workflow.
+
+**Subcommands**
+
+- `recommendations list` - Analyze and list what the analyzer found, with the id needed to accept or reject each one
+- `recommendations accept` - Merge a recommendation's transforms into the blueprint
+- `recommendations reject` - Hide a recommendation from future lists
+
+**Examples**
+
+```bash
+# list everything the analyzer finds in the current directory
+proxymock recommendations list
+
+# only the mechanical transform fixes, from another workspace
+proxymock recommendations list --in ./my-app --type transform
+
+# accept or reject one recommendation by id
+proxymock recommendations accept --id 3f9a1c2e8b7d4056
+proxymock recommendations reject --id 3f9a1c2e8b7d4056
+```
+
+**Common flags**
+
+- `--in string` - Workspace directory holding the traffic to analyze (default `.`)
+- `--type string` - (`list`) Restrict to one kind: `transform` or `traffic`
+- `--id string` - Recommendation id to accept or reject (from `recommendations list`)
+- `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+## Local rule authoring commands
+
+Author and validate DLP redaction rules, traffic filters, and transforms against local RRPair files. These commands run entirely on your local system: no Speedscale configuration, API key, or network access is required. Each config is the same JSON document Speedscale Cloud uses, so a rule developed locally can be uploaded with `proxymock cloud push <kind>` and a cloud rule can be tested locally after `proxymock cloud pull <kind>`. The `--dlp-config`, `--filter-config`, and `--transform-config` flags each accept a JSON file path or the id of a rule downloaded with the matching `cloud pull`. See [Author DLP and filter rules locally](/proxymock/guides/local-rules.md) for the guided workflow.
+
+### `dlp`
+
+Author and validate DLP (data loss prevention) redaction rules. The redaction pipeline is identical to what `proxymock record --dlp-config` applies at capture time, so `dlp test` reports exactly what a live recording would redact.
+
+**Subcommands**
+
+- `dlp test` - Report what a DLP config would redact from RRPair files, without modifying any file
+- `dlp apply` - Write redacted copies of RRPair files
+
+**Examples**
+
+```bash
+# report per-field match counts and locations
+proxymock dlp test --dlp-config my-dlp.json --in ./recorded
+
+# test a rule previously downloaded with 'proxymock cloud pull dlp standard'
+proxymock dlp test --dlp-config standard --in ./recorded
+
+# show the full before/after redaction of one file
+proxymock dlp test --dlp-config my-dlp.json --show-redacted ./recorded/api/foo.md
+
+# write redacted copies to a separate directory
+proxymock dlp apply --dlp-config my-dlp.json --in ./recorded --out ./redacted
+```
+
+**Flags**
+
+- `--dlp-config string` - DLP config JSON file, or the id of a rule downloaded with `proxymock cloud pull dlp`
+- `--in strings` - Directories or RRPair files to read from (default `.`)
+- `--show-redacted string` - (`test`) Print the full before/after redaction of this RRPair file instead of the summary
+- `--out string` - (`apply`) Directory to write redacted copies to (must be outside `--in`)
+
+### `filter`
+
+Author and validate filter rules. The filter engine is identical to the one the forwarder uses: an RRPair that matches the filter is dropped, one that does not is kept.
+
+**Subcommands**
+
+- `filter test` - Report which RRPairs a filter would keep or drop
+- `filter apply` - Write only the RRPairs a filter keeps
+
+**Examples**
+
+```bash
+# report which RRPairs would be kept or dropped
+proxymock filter test --filter-config my-filter.json --in ./recorded
+
+# list every dropped RRPair, not just a sample
+proxymock filter test --filter-config my-filter.json --in ./recorded --show-dropped
+
+# write only the passing RRPairs to a separate directory
+proxymock filter apply --filter-config my-filter.json --in ./recorded --out ./filtered
+```
+
+**Flags**
+
+- `--filter-config string` - Filter config JSON file, or the id of a rule downloaded with `proxymock cloud pull filter`
+- `--in strings` - Directories or RRPair files to read from (default `.`)
+- `--show-dropped` - (`test`) List every dropped RRPair instead of a sample
+- `--out string` - (`apply`) Directory to write the passing RRPairs to (must be outside `--in`)
+
+### `transform`
+
+Author and validate traffic transforms. The transform engine is identical to the one the cloud snapshot Transforms tab and proxymock web use, so `transform test` previews exactly what the generator and responder would apply at replay.
+
+**Subcommands**
+
+- `transform test` - Preview what a transform config would change in RRPair files
+- `transform apply` - Write transformed copies of RRPair files
+
+**Examples**
+
+```bash
+# preview what a transform set would change
+proxymock transform test --transform-config my-transforms.json --in ./recorded
+
+# show the full before/after of one file
+proxymock transform test --transform-config my-transforms.json --show ./recorded/api/foo.md
+```
+
+**Flags**
+
+- `--transform-config string` - Transform config JSON file, or the id of a set downloaded with `proxymock cloud pull transform`
+- `--in strings` - Directories or RRPair files to read from (default `.`)
+- `--show string` - (`test`) Print the full before/after transform of this RRPair file instead of the summary
+- `--out string` - (`apply`) Directory to write transformed copies to (must be outside `--in`)
 
 ## File management commands
 

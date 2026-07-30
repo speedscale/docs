@@ -101,6 +101,26 @@ Everything the recommendation did is visible and editable in the **Blueprints** 
 
 You are not limited to accepting recommendations — you can author the same kind of rule by hand. In a request's detail, click the transform icon on a header or query field (or right-click a body field) to add a transform straight onto that field; proxymock saves it as a blueprint just like a recommendation does. See [Modifying Tests/Mocks](./modify-rrpairs.md#applying-transforms-in-proxymock-web) for that field-level workflow, and switch the Requests grid to the **Preview blueprints** lens to walk a before/after of every change the active blueprints make before you replay.
 
+## Work recommendations from the command line
+
+The web panel is one of three ways to work the same findings. `proxymock recommendations` runs the identical analyzer over the RRPair files in a workspace and writes the same blueprints, so you can skip `proxymock web` and script the loop instead. After a replay, from the parent of `proxymock/`:
+
+```shell
+# analyze and list what the analyzer found, with an id for each
+proxymock recommendations list
+
+# only the mechanical transform fixes (the ones that fix replay failures)
+proxymock recommendations list --type transform
+
+# accept one recommendation into the workspace's tuning blueprint
+proxymock recommendations accept --id 3f9a1c2e8b7d4056
+
+# hide a recommendation you do not want offered again
+proxymock recommendations reject --id 3f9a1c2e8b7d4056
+```
+
+`accept` merges the recommendation's transform chains into the blueprint on disk, exactly as clicking **Accept** in the panel does; no RRPair files are rewritten, and later replay and mock runs apply the blueprint automatically. The same loop is available to an AI agent through the `recommendations` MCP tool. This is a different id space from `proxymock match-rate`, which works the outbound mock match-rate fixes covered in [Improve Mock Match Rate](./mock-match-rate.md). The full flag list is in the [CLI reference](/reference/proxymock-cli-reference.md#recommendations).
+
 ## How this relates to the credentials swap
 
 | Your recording carries… | Use… |

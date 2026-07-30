@@ -143,6 +143,25 @@ The standalone `analyze_mock_matches`, `accept_mock_recommendation`, and `simila
 
 See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full parameter documentation, and the [Replay Tuning guide](replay-tuning.md) for the script-based variant of this workflow.
 
+## From the command line
+
+Every step the agent runs through the `mocks` tool is also a `proxymock match-rate` verb, over the same workspace and the same blueprints. The analysis and the ids are identical, so you can drive the loop by hand or wire it into a script when you would rather not involve an agent:
+
+```shell
+# report the match rate and list fixes (add -o json to script it)
+proxymock match-rate analyze
+
+# accept one fix by id, or accept everything the analyzer found
+proxymock match-rate accept --id 'responder|url:/v1/track/*'
+proxymock match-rate accept --all
+
+# undo a fix, or deep-dive one projected miss
+proxymock match-rate undo --id 'responder|url:/v1/track/*'
+proxymock match-rate similar --id proxymock/report-.../responder/abc123.md
+```
+
+`accept` writes the same filter-scoped transforms into the workspace's tuning blueprint that the agent would, and `--transform` lets you override the recommended fix for one id (for example `--transform constant`). When the workspace came from a cloud report, `proxymock cloud pull report <id>` materializes both analysis sides first, exactly as `pull_report` does for the agent. The full flag list is in the [CLI reference](/reference/proxymock-cli-reference.md#match-rate).
+
 ## Good to know
 
 - Fixes are **blueprint-only** — no RRPair files are rewritten, and every accept can be undone.
