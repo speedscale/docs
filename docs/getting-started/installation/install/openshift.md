@@ -40,6 +40,10 @@ globalSecurityContext:
 
 ## Capturing Traffic
 
+:::warning Sidecar capture is deprecated
+For new OpenShift installations, use the [eBPF collector](/reference/ebpf-traffic-collection) when your nodes meet its system requirements. Use the sidecar instructions below only for an existing deployment or an incompatible cluster.
+:::
+
 Speedscale is able to capture traffic from your workload by either running as a sidecar injected onto your workload or as an eBPF agent. The sidecar mode requires additional configuration and setup in order to function
 correctly.
 

@@ -8,6 +8,10 @@ sidebar_position: 7
 1. [The Operator is installed](../getting-started/quick-start.md).
 2. [A sidecar has been installed and traffic is being captured](/getting-started/installation/sidecar/install)
 
+:::warning Sidecar capture is deprecated
+This guide documents TLS configuration for existing sidecar deployments. For new Kubernetes installations, use the [eBPF collector](/reference/ebpf-traffic-collection), which captures supported TLS traffic without certificate or proxy configuration.
+:::
+
 ## Our app
 For this guide, we are using an app called `bq-app` that has an endpoint `/name/{state}` and makes calls out to Google's BigQuery on every inbound request.
 

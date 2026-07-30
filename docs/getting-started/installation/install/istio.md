@@ -79,7 +79,9 @@ outlined in the [Istio documentation](https://istio.io/latest/docs/setup/additio
 
 :::
 
-For capture in Kubernetes with Istio, prefer enabling the [eBPF collector](/reference/ebpf-traffic-collection). If eBPF is not suitable for your workload, follow the [sidecar installation guide](../sidecar/install.md) to install the Speedscale sidecar on your Istio workloads.
+:::warning Sidecar capture is deprecated
+For new Kubernetes installations with Istio, use the [eBPF collector](/reference/ebpf-traffic-collection). Follow the [sidecar installation guide](../sidecar/install.md) only for an existing deployment or when your workload does not meet the eBPF requirements.
+:::
 
 ## Allow Egress Speedscale Traffic (Optional)
 
