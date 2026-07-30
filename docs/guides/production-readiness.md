@@ -5,7 +5,11 @@ sidebar_position: 20
 
 # Production Readiness
 
-This guide is a comprehensive walkthrough of considerations for recording from a production environment using the Speedscale sidecar. Keep in mind that recording with the sidecar has various pros and cons but alternative collection mechanisms are fully supported. For many customers the sidecar is the easiest option. If you are using an environment other than Kubernetes, this guide may be helpful but much of it will not be relevant. Contact [support](https://slack.speedscale.com) for help tailoring these instructions to your environment.
+:::warning Sidecar capture is deprecated
+This guide is retained for existing sidecar deployments. For new Kubernetes installations, start with the [eBPF collector](/reference/ebpf-traffic-collection) and review its [workload impact](/reference/ebpf-traffic-collection/workload-impact) before production rollout.
+:::
+
+This guide is a comprehensive walkthrough of considerations for existing production environments that record with the Speedscale sidecar. If you are using an environment other than Kubernetes, this guide may be helpful but much of it will not be relevant. Contact [support](https://slack.speedscale.com) for help tailoring these instructions to your environment.
 
 Prior to reading this guide it may be beneficial to learn about how Speedscale's [architecture](../reference/architecture.md) to have a clear idea of all the moving parts.
 

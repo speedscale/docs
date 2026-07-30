@@ -22,7 +22,9 @@ For local development and testing without a cloud cluster, use **proxymock** to 
 
 This guide walks through installing Speedscale into a new environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./tutorial.md) to record, replay and view results for a demo application.
 
-For Kubernetes traffic collection, start with the eBPF collector. If your environment cannot run eBPF, use goproxy sidecars instead.
+:::warning Sidecar capture is deprecated
+For Kubernetes traffic collection, use the [eBPF collector](/reference/ebpf-traffic-collection). Use goproxy sidecars only for an existing deployment or when your environment does not meet the eBPF requirements.
+:::
 
 Speedscale is tested with apps hosted on the local desktop all the way up to high scale enterprise Kubernetes clusters. If this is your first time working with Speedscale, it's easiest to just run on your local desktop and record traffic from a local process. Keep in mind that it is very common to record traffic in one environment (like a production Kubernetes cluster) and replay it somewhere else (like a local mock server).
 

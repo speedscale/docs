@@ -17,9 +17,9 @@ This workflow is currently in preview status. Please provide feedback in our [Sl
 Autopilot's restrictions affect how Speedscale captures traffic. There are two supported approaches — pick one:
 
 - **eBPF capture** (the main path on this page). A privileged `nettap` DaemonSet captures traffic for whole namespaces. It needs a **customer-owned [WorkloadAllowlist](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-privileged-allowlists)** to admit the privileged pods, which requires a one-time Google Cloud eligibility request (about one week of lead time). Best for broad, low-touch capture across many workloads. This path is needed until the Speedscale Autopilot partner allowlist is published globally.
-- **[Sidecar capture (dual proxy mode)](#sidecar-capture-dual-proxy-mode)**. A per-workload sidecar proxy — no privileged DaemonSet and no WorkloadAllowlist, so no eligibility request. Autopilot forbids the sidecar's transparent proxy, so you run it in `dual` proxy mode and point your app's outbound traffic at it. Best when you only need a few workloads and want to skip the eligibility step.
+- **[Sidecar capture (dual proxy mode)](#sidecar-capture-dual-proxy-mode)** (deprecated). A per-workload sidecar proxy retained for existing deployments and clusters that cannot obtain a WorkloadAllowlist. Autopilot forbids the sidecar's transparent proxy, so it must run in `dual` proxy mode and the app's outbound traffic must be pointed at it.
 
-The rest of this page walks through the eBPF path. Jump to [Sidecar Capture](#sidecar-capture-dual-proxy-mode) for the sidecar alternative.
+The rest of this page walks through the recommended eBPF path. Jump to [Sidecar Capture](#sidecar-capture-dual-proxy-mode) only if you need the deprecated fallback.
 
 ## Prerequisites
 
@@ -285,6 +285,10 @@ On Autopilot, the operator's Java Agent init container can be rejected if the in
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
 
 ## Sidecar Capture (Dual Proxy Mode)
+
+:::warning Sidecar capture is deprecated
+Use the eBPF installation above for new GKE Autopilot deployments. Follow this section only for an existing sidecar deployment or when you cannot obtain the WorkloadAllowlist required by eBPF.
+:::
 
 If you do not want to run the privileged eBPF DaemonSet (or want to avoid the WorkloadAllowlist eligibility request), you can capture per workload with the Speedscale sidecar instead. Autopilot does not allow the sidecar to make the networking changes a transparent proxy needs, so the sidecar must run in `dual` proxy mode, and your application must send its own outbound traffic to the sidecar's forward proxy.
 

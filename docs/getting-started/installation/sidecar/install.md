@@ -20,8 +20,8 @@ used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
 
-:::info Recommended for Kubernetes
-Prefer the [eBPF collector](/reference/ebpf-traffic-collection) for Kubernetes traffic capture. It runs as a DaemonSet, requires no app changes, and captures plaintext and TLS without cert management. Use the sidecar only when eBPF is not suitable for your workload or cluster.
+:::warning Sidecar capture is deprecated
+For new Kubernetes installations, use the [eBPF collector](/reference/ebpf-traffic-collection). It runs as a DaemonSet, requires no application changes, and captures plaintext and supported TLS traffic without certificate management. Use the sidecar only for an existing deployment or when your workload or cluster does not meet the eBPF requirements.
 :::
 
 

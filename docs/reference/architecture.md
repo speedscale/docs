@@ -137,6 +137,10 @@ kubectl -n speedscale get daemonset nettap
 
 ### Sidecar Capture
 
+:::warning Deprecated capture method
+For new Kubernetes installations, use [eBPF capture](#ebpf-capture). Sidecar capture remains available for existing deployments and workloads that do not meet the [eBPF system requirements](/reference/ebpf-traffic-collection#system-requirements).
+:::
+
 ```mermaid
 graph LR
     subgraph pod["Application Pod"]

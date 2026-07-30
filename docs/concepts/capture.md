@@ -7,7 +7,12 @@ sidebar_position: 1
 <iframe src="https://www.youtube.com/embed/0bdI6vhNavQ?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 Speedscale captures [traffic](/reference/glossary.md#traffic) flowing through your application.
-This includes inbound as well as outbound, and is usually handled by a [proxy sidecar](/reference/glossary.md#proxy) added to your workloads.
+This includes inbound as well as outbound traffic. In Kubernetes, use the
+[eBPF collector](/reference/ebpf-traffic-collection) to capture it without adding a proxy to each workload.
+
+:::warning Sidecar capture is deprecated
+For new Kubernetes installations, use the eBPF collector. The [proxy sidecar](/reference/glossary.md#proxy) remains available for existing deployments and workloads that do not meet the eBPF requirements.
+:::
 
 ## Why capture traffic?
 
@@ -37,8 +42,7 @@ and your application rejects timestamps older than an hour. You can configure
 Snapshots, as referenced above, are made up mostly of request / response pairs,
 with a bit of metadata on top.  The request / response pair, often referenced
 as just [RRPair](/reference/glossary.md#rrpair), is the Speedscale internal representation in which all traffic
-is stored. The Goproxy sidecar stores captured traffic as RRPairs, a snapshot
+is stored. Speedscale stores captured traffic as RRPairs, a snapshot
 is made of a collection of RRPairs, and new RRPairs are created and modified
 during a replay. As suggested by the name RRPairs contain a request and
 associated response with all of the details parsed into individual fields.
-

@@ -11,8 +11,8 @@ import Mermaid from '@theme/Mermaid';
 
 TLS interception and unwrapping is not enabled by default, but can be done so with annotations to your workload.
 
-:::info Prefer eBPF in Kubernetes
-When possible, use the [eBPF collector](/reference/ebpf-traffic-collection) to capture TLS in Kubernetes without certificates or proxy configuration. The TLS guidance below applies when using the sidecar as a fallback.
+:::warning Sidecar capture is deprecated
+For new Kubernetes installations, use the [eBPF collector](/reference/ebpf-traffic-collection) to capture supported TLS traffic without certificates or proxy configuration. The TLS guidance below is retained for existing sidecar deployments and workloads that do not meet the eBPF requirements.
 :::
 
 :::tip Remember
