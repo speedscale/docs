@@ -255,6 +255,65 @@ python3 scripts/loki-gather.py --service my-app --output ./snapshot
 proxymock mock --dir ./snapshot
 ```
 
+## Store snapshots in your own bucket
+
+Captured traffic stays in your infrastructure, and snapshots built from it can too. Every `proxymock cloud` snapshot verb takes a bucket destination instead of Speedscale cloud:
+
+```bash
+# Push a snapshot to your own bucket
+proxymock cloud push snapshot --bucket my-speedscale-bucket
+
+# Or reuse the bucket the cluster's collector already writes to,
+# with the credentials it already has
+proxymock cloud push snapshot --bucket-from-cluster
+
+proxymock cloud list snapshots --bucket my-speedscale-bucket
+proxymock cloud pull snapshot <id> --bucket my-speedscale-bucket
+proxymock cloud delete snapshot <id> --bucket my-speedscale-bucket
+```
+
+`--bucket-from-cluster` reads the `byoc-s3` ConfigMap and Secret through your kubeconfig, so there is no second set of credentials to manage. Pass `--kube-context` to pick the cluster.
+
+For an S3-compatible store such as MinIO, GCS interop, or Spaces, add `--s3-endpoint-url` and usually `--s3-force-path-style`.
+
+### Layout
+
+Snapshots land under a single base prefix, `speedscale/` by default and configurable with `--bucket-prefix`:
+
+```
+speedscale/_layout.json                          format and version marker
+speedscale/_manifest.json                        snapshot index
+speedscale/snapshots/<id>/snapshot.json
+speedscale/snapshots/<id>/raw.jsonl
+speedscale/snapshots/<id>/blueprints/<id>.json
+speedscale/user_data/<key>                       dataframes referenced by blueprints
+```
+
+The prefix is deliberately separate from the collector's `byoc/` traffic prefix, so one bucket can hold both without either one's rules reaching into the other's keys.
+
+### Retention
+
+How long snapshots stick around is yours to plan. Speedscale does not expire them for you, and a snapshot you keep for a year costs you a year of storage.
+
+We recommend configuring a lifecycle policy on the bucket, scoped to the snapshot prefix so it does not also age out your captured traffic:
+
+```json
+{
+  "Rules": [
+    {
+      "ID": "expire-speedscale-snapshots",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "speedscale/snapshots/" },
+      "Expiration": { "Days": 90 }
+    }
+  ]
+}
+```
+
+Listing derives the live set from the bucket rather than trusting the index, so an expired snapshot simply stops appearing in `proxymock cloud list snapshots`. Nothing needs to be reconciled by hand after a policy fires. If a rule expires only part of a snapshot, pulling it fails and discards the partial download rather than handing you an incomplete snapshot.
+
+Pick a window that outlives the thing you replay against. If you diff a nightly replay against a snapshot recorded last quarter, a 30-day policy will delete the baseline out from under you.
+
 ## Further reading
 
 - [speedscale-byoc on GitHub](https://github.com/speedscale/speedscale-byoc) — chart source, detailed READMEs per scenario
