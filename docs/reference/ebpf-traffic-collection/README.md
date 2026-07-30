@@ -125,6 +125,12 @@ the ingest/proxy side only needs raw socket access.
 
 ## Installation
 
+:::info Helm-restricted environments
+The eBPF collector is installed as Kubernetes resources, so Helm does not need to run in the cluster. You can render the Speedscale chart to plain YAML with `helm template` and manage the result directly or as a Kustomize base; see the [GitOps installation example](/getting-started/quick-start#install-speedscale-operator-optional).
+
+If your organization cannot use Helm tooling at all, [contact Speedscale Support](mailto:support@speedscale.com), ask in the [Speedscale Community](https://slack.speedscale.com), or reach out to your account team. We can help create Kustomize-compatible or other custom manifests with the required eBPF DaemonSet, RBAC, configuration, and cluster-specific settings.
+:::
+
 ### Enabling via Helm
 
 To enable eBPF capture, set `ebpf.enabled: true` in your Helm values and define at least one capture target:

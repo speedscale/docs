@@ -51,6 +51,12 @@ If you are running Speedscale on your local desktop, you should continue directl
 
 If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then you can install using these instructions. If you are not running in Kubernetes, or are running with a more specialized enterprise distribution please select environment-specific [instructions](./installation/install/README.md) in this section.
 
+:::info Cannot deploy a Helm chart?
+Helm does not need to run in your cluster. You can render the chart to plain Kubernetes YAML with `helm template`, commit the output to your GitOps repository, or use it as a Kustomize base. See the **GitOps** tab below for an example.
+
+If your organization cannot use Helm tooling at all, [contact Speedscale Support](mailto:support@speedscale.com), ask in the [Speedscale Community](https://slack.speedscale.com), or reach out to your account team. We can help produce Kustomize-compatible or other custom manifests for your cluster policies.
+:::
+
 <Tabs>
 
 <TabItem value="helm" label="Helm" default>
@@ -158,6 +164,15 @@ helm template speedscale-operator speedscale/speedscale-operator \
 ```
 
 Then store `speedscale-operator.yaml` in git so it is deployed to your cluster.
+
+The rendered file can also be referenced as a Kustomize resource:
+
+```yaml title="kustomization.yaml"
+resources:
+  - speedscale-operator.yaml
+```
+
+Re-render the manifest when upgrading Speedscale so chart changes and image versions stay current. If your policies prohibit Helm tooling even for offline rendering, [contact Speedscale Support](mailto:support@speedscale.com) for a Kustomize-compatible or custom manifest.
 
 </TabItem>
 
