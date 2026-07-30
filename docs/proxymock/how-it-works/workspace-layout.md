@@ -63,6 +63,33 @@ and so on) created through the web UI or CLI. Blueprints are applied as an
 overlay at replay time; deleting this directory loses your saved transforms but
 not your recordings.
 
+`replay` and `mock` look for blueprints in the directory you pass to `--in` and
+in its immediate parent, under either `blueprints/` or `proxymock/blueprints/`,
+plus the machine-wide `~/.speedscale/data/transforms/`. The walk stops at the
+parent, so a `blueprints/` directory two or more levels above `--in` is not
+found. Every blueprint that applies is named on startup along with the file it
+came from:
+
+```
+Loaded blueprint "mock-lab smart replace (token + order_id)" from proxymock/blueprints/mocklab-smart-replace.json
+```
+
+Loaded is not the same as applied. A blueprint's chains only run against traffic
+its filters match, and replay rewrites each request's address to whatever
+`--test-against` names — so a filter on `network_address` is matched against the
+target you pass, not the address in the recording. A chain filtered on
+`localhost` does nothing when you replay against `127.0.0.1`. At the end of a
+replay each loaded blueprint reports how many of its chains ran:
+
+```
+Blueprint "mock-lab smart replace (token + order_id)": 2 transform chain(s) ran.
+```
+
+A blueprint that ran none is called out as a warning. Pass
+`--require-blueprint <name>` to turn that into a non-zero exit, which is what
+you want in CI. Blueprint reporting is unavailable under `--load-test`, which
+drops the transform events the count is derived from.
+
 ### `dataframes/`
 Payloads referenced by transforms — for example the CSV a `csv_dataframe`
 transform draws values from, stored at `dataframes/<id>/payload.csv`. Removing a
