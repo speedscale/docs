@@ -3,13 +3,13 @@ description: "Prepare a Speedscale eBPF traffic capture deployment for a safe pr
 sidebar_position: 20
 ---
 
-# Production readiness
+# Production Readiness
 
 Use the Speedscale eBPF collector for new Kubernetes production deployments. It observes traffic from each node without injecting a proxy into application pods or adding a network hop. Review the [eBPF system requirements](/reference/ebpf-traffic-collection#system-requirements) and [workload impact](/reference/ebpf-traffic-collection/workload-impact) before rollout.
 
 Use [sidecar capture](/getting-started/installation/sidecar/install) only for an existing deployment or a workload that does not meet the eBPF requirements.
 
-## Preparation checklist
+## Preparation Checklist
 
 - [ ] Confirm the target clusters, namespaces, and workloads.
 - [ ] Confirm that cluster nodes meet the eBPF requirements.
@@ -57,7 +57,7 @@ The Operator can read Kubernetes secrets for transforms such as JWT resigning. U
 
 Use [traffic filters](/guides/creating-filters) to exclude health checks, monitoring traffic, large payloads, and out-of-scope services before data is sent to Speedscale Cloud. Start from the `standard` filter and add environment-specific rules. Filtering is also the primary control for limiting ingest volume and network egress.
 
-## Deployment checklist
+## Deployment Checklist
 
 - [ ] Install the Operator and enable eBPF.
 - [ ] Apply a narrow capture target.

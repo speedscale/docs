@@ -39,7 +39,7 @@ To configure eBPF traffic capture or import a collection, follow the [tutorial](
 
 The Cluster Inspector presents cluster information in a tabular interface similar to K9s or kubectl. Use it to inspect the Speedscale deployment and the workloads it can access.
 
-### Key capabilities
+### Key Capabilities
 
 - **Workload Management**: View cluster workloads and their Speedscale capture status
 - **Traffic Monitoring**: Observe active traffic replays and analyze real-time traffic patterns
@@ -48,7 +48,7 @@ The Cluster Inspector presents cluster information in a tabular interface simila
 - **Service Discovery**: Explore services, secrets, and node information
 - **Remote Debugging**: Enhanced cluster debuggability for distributed teams
 
-## Primary features
+## Primary Features
 
 ### 1. Capture targeting and management
 
@@ -79,9 +79,9 @@ The Inspector also exposes workload logs and Kubernetes events for remote debugg
 - Enables non-Kubernetes experts to troubleshoot effectively
 - Provides context-rich debugging without cluster access credentials
 
-## Security and privacy
+## Security and Privacy
 
-### Data protection guarantees
+### Data Protection Guarantees
 
 **No secret extraction**: The Cluster Inspector never extracts or exposes Kubernetes secrets from your cluster. All sensitive data remains secure within your environment.
 
@@ -89,11 +89,11 @@ The Inspector also exposes workload logs and Kubernetes events for remote debugg
 
 **Audit trail**: All actions performed through the inspector are logged for security and compliance purposes.
 
-### Optional installation
+### Optional Installation
 
 The Cluster Inspector capability can be **completely disabled** by not installing the inspector service component. This provides organizations with full control over cluster access and debugging capabilities.
 
-## Remote replay and data collection
+## Remote Replay and Data Collection
 
 Speedscale provides the ability to remotely inspect and control Kubernetes clusters similar to [k9s](https://k9scli.io/) or [lens](https://k8slens.dev/). Unlike these inspection tools, Speedscale also allows clusters to be used for *remote replay*. Clusters assigned to Speedscale in this way can run replays on demand and can be treated as a shared resource for engineers or testers.
 
@@ -176,7 +176,7 @@ Use this tab to view currently running replays. Speedscale utilizes a Custom Res
 - Performance metrics and results analysis
 - Error rates and failure detection
 
-## Getting started with Cluster Inspector
+## Getting Started with Cluster Inspector
 
 ### Prerequisites
 
@@ -188,7 +188,7 @@ Use this tab to view currently running replays. Speedscale utilizes a Custom Res
 
 The Cluster Inspector is accessible through the Speedscale web interface under the **Observe** section. Navigate to your cluster view and select the cluster name to begin exploring your Kubernetes environment through the tabular interface.
 
-### Initial setup
+### Initial Setup
 
 1. **Verify permissions**: Ensure your user account has appropriate cluster access
 2. **Review workloads**: Start by exploring existing workloads and their current state
@@ -197,7 +197,7 @@ The Cluster Inspector is accessible through the Speedscale web interface under t
 
 ## Troubleshooting
 
-### Common issues
+### Common Issues
 
 **Inspector not accessible**: Verify the inspector service is installed and running in the cluster.
 
@@ -207,13 +207,13 @@ The Cluster Inspector is accessible through the Speedscale web interface under t
 
 **Log viewing problems**: Ensure proper logging drivers and log retention policies.
 
-### Debugging workflows
+### Debugging Workflows
 - Use the unified log view to correlate application, Operator, and collector behavior
 - Filter events by workload or namespace to focus troubleshooting
 - Leverage historical data for pattern analysis
 - Export logs for offline analysis when needed
 
-### Getting help
+### Getting Help
 
 For technical support with the Cluster Inspector:
 - Check the Speedscale operator logs for error messages

@@ -12,7 +12,7 @@ This workflow is currently in preview status. Please provide feedback in our [Sl
 
 [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview) is Google's fully managed mode for GKE. Autopilot blocks privileged workloads by default through its Warden admission controller. The Speedscale eBPF capture agent (`nettap`) needs Linux capabilities, host namespace access, and a few `hostPath` mounts that Warden rejects unless the workload is explicitly allowed.
 
-## Capture options on Autopilot
+## Capture Options on Autopilot
 
 Autopilot's restrictions affect how Speedscale captures traffic. There are two supported approaches. Pick one:
 
@@ -56,7 +56,7 @@ gcloud services enable \
   --project "${PROJECT_ID}"
 ```
 
-## 1. Request WorkloadAllowlist eligibility
+## 1. Request WorkloadAllowlist Eligibility
 
 Create a Google Cloud support case.
 
@@ -85,7 +85,7 @@ Region: REGION
 
 Stop here until Google confirms the project is eligible for customer-owned WorkloadAllowlists. This usually takes 3 to 7 business days.
 
-## 2. Upload the Speedscale allowlist
+## 2. Upload the Speedscale Allowlist
 
 After Google approves the project, create a bucket and upload the allowlist:
 
@@ -115,7 +115,7 @@ gcloud storage buckets add-iam-policy-binding "gs://${BUCKET_NAME}" \
 
 The service account must use `container-engine-robot.iam.gserviceaccount.com`.
 
-## 3. Allow the bucket path
+## 3. Allow the Bucket Path
 
 Set the `container.managed.autopilotPrivilegedAdmission` org policy at the project level. Keep `allowAnyGKEPath: true` to preserve the default GKE-approved allowlists while adding the Speedscale bucket path.
 
@@ -137,7 +137,7 @@ gcloud org-policies set-policy /tmp/speedscale-autopilot-policy.yaml \
 
 Wait about 15 minutes before creating or updating the cluster.
 
-## 4. Create or update the Autopilot cluster
+## 4. Create or Update the Autopilot Cluster
 
 For a new cluster:
 
@@ -191,7 +191,7 @@ kubectl get workloadallowlist speedscale-nettap -o yaml
 
 If the synchronizer is not Ready, inspect `status.conditions[*].message` and `status.managedAllowlistStatus[*].lastError`.
 
-## 6. Install Speedscale with eBPF
+## 6. Install Speedscale With eBPF
 
 Add the Speedscale Helm repo and [install the operator](./kubernetes-operator.md) with eBPF enabled.
 
@@ -224,7 +224,7 @@ kubectl get pods -n speedscale -l app=speedscale-nettap
 
 The nettap pod should show `2/2 Running` on each node.
 
-## 7. Configure a capture target
+## 7. Configure a Capture Target
 
 Set the namespace and app label for the workload you want to capture, then add it as an eBPF capture target:
 
@@ -241,7 +241,7 @@ helm upgrade speedscale-operator speedscale/speedscale-operator \
 
 Generate traffic against the workload, then confirm it appears in Speedscale.
 
-## Updating Speedscale versions
+## Updating Speedscale Versions
 
 The Speedscale WorkloadAllowlist matches the approved workload shape and image repositories rather than a specific operator version. Upgrade the operator normally with Helm; the existing `workload-allowlist.yaml` and `AllowlistSynchronizer` continue to apply.
 
@@ -254,7 +254,7 @@ helm upgrade speedscale-operator speedscale/speedscale-operator \
 
 If Speedscale changes the privileged workload shape, Speedscale support will provide an updated allowlist. Upload it to the existing bucket path and the `AllowlistSynchronizer` will install it automatically.
 
-## Java Agent notes
+## Java Agent Notes
 
 For workloads that make outbound HTTPS calls, the Speedscale [Java Agent](../../../reference/languages/java.md) instruments `SSLSocketImpl` and `SSLEngineImpl` to decrypt TLS traffic.
 
@@ -271,7 +271,7 @@ On Autopilot, the operator's Java Agent init container can be rejected if the in
 | Replay init containers rejected by Warden | Missing `ephemeral-storage` values | Reinstall with the `sidecar.resources.*.ephemeral-storage=100Mi` values |
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
 
-## Sidecar capture (dual proxy mode)
+## Sidecar Capture (Dual Proxy Mode)
 
 :::warning Sidecar capture is deprecated
 Use the eBPF installation above for new GKE Autopilot deployments. Follow this section only for an existing sidecar deployment or when you cannot obtain the WorkloadAllowlist required by eBPF.
@@ -329,6 +329,6 @@ Dual mode does not reconfigure your runtime. The app must route outbound traffic
 
 See [TLS Support](/getting-started/installation/sidecar/tls.md) for outbound TLS decryption details.
 
-## Getting help
+## Getting Help
 
 If you are experiencing issues with this guide and have further questions, please reach out to us on the [community Slack](https://slack.speedscale.com).

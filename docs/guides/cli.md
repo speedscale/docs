@@ -136,7 +136,7 @@ window and your app should receive all requests from the snapshot.
 With `--daemon` flag, You can run generator and responder as a background process.  
 :::
 
-## Create local mocks
+## Create Local Mocks
 
 Local mocks are just another replay with no generator.
 

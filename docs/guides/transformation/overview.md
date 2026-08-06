@@ -98,7 +98,7 @@ How can the request and response both use the same transforms? Because each tran
 
 A complete set of traffic transformation configuration is stored as a Traffic Transform Template (TTT). You can view and edit these in the main [UI](https://app.speedscale.com/trafficTransforms). Although TTT's can be edited graphically, they are stored as JSONs for easy portability.
 
-## Traffic transform templates
+## Traffic Transform Templates
 
 Traffic Transform Templates allow you to save transform configurations from one snapshot and reuse them in subsequent snapshots. This enables you to:
 

@@ -5,11 +5,11 @@ sidebar_position: 0
 
 # Load Testing Agent-to-Agent (A2A) API Calls
 
-## What is the A2A protocol?
+## What is the A2A Protocol?
 
 The [Agent-to-Agent (A2A) protocol](https://github.com/a2aproject/A2A) is an open protocol that enables communication and interoperability between opaque agentic applications. As AI systems become more specialized and distributed, A2A provides a standardized way for diverse AI agents built on different frameworks and hosted on separate servers to discover, negotiate with, and collaborate on tasks.
 
-### Key features of A2A
+### Key Features of A2A
 
 The A2A protocol solves the challenge of agent silos by enabling:
 
@@ -18,7 +18,7 @@ The A2A protocol solves the challenge of agent silos by enabling:
 - **Collaboration**: Multiple agents can work together securely on extended tasks
 - **Opacity**: Agents collaborate without revealing internal state, memory, or proprietary tools
 
-### Technical foundation
+### Technical Foundation
 
 The A2A protocol is built on standard web technologies:
 
@@ -31,11 +31,11 @@ The A2A protocol is built on standard web technologies:
 
 The A2A Protocol is a Linux Foundation open-source project with contributions from Google, licensed under Apache 2.0.
 
-## Load testing A2A with Speedscale
+## Load Testing A2A with Speedscale
 
 Since A2A uses JSON-RPC 2.0 over HTTP(S), it can be load tested like any other HTTP-based API using Speedscale's traffic replay capabilities. The standard HTTP foundation means existing load testing infrastructure and techniques apply directly to A2A implementations.
 
-### How traffic replay works for A2A
+### How Traffic Replay Works for A2A
 
 Speedscale captures real A2A traffic between agents and replays it at scale:
 
@@ -44,7 +44,7 @@ Speedscale captures real A2A traffic between agents and replays it at scale:
 3. **Replay**: Configure a [test config](/reference/glossary.md#test-config) with your desired load pattern (see [Load Testing guide](/guides/replay/load-test.md))
 4. **Analyze**: Review response accuracy, latency, and throughput to identify bottlenecks
 
-### Configuring load patterns for A2A
+### Configuring Load Patterns for A2A
 
 A2A workloads often involve complex multi-agent interactions. Consider these approaches:
 
@@ -54,9 +54,9 @@ A2A workloads often involve complex multi-agent interactions. Consider these app
 
 See the [Load Testing guide](/guides/replay/load-test.md) for detailed configuration instructions.
 
-## Common performance and testing issues with A2A
+## Common Performance and Testing Issues with A2A
 
-### 1. Long-running agent conversations
+### 1. Long-Running Agent Conversations
 
 A2A enables extended multi-turn conversations between agents. These long-lived sessions can:
 
@@ -66,7 +66,7 @@ A2A enables extended multi-turn conversations between agents. These long-lived s
 
 **Testing Strategy**: Use soak tests with realistic conversation lengths to identify memory leaks and connection exhaustion. Monitor agent response times throughout the test duration.
 
-### 2. Server-Sent Events (SSE) streaming
+### 2. Server-Sent Events (SSE) Streaming
 
 A2A's streaming support via SSE introduces specific challenges:
 
@@ -76,7 +76,7 @@ A2A's streaming support via SSE introduces specific challenges:
 
 **Testing Strategy**: Capture and replay SSE streams to validate connection stability. Test with various load balancer timeout configurations to ensure streaming reliability at scale.
 
-### 3. Agent discovery and negotiation overhead
+### 3. Agent Discovery and Negotiation Overhead
 
 The A2A discovery phase involves:
 
@@ -86,7 +86,7 @@ The A2A discovery phase involves:
 
 **Testing Strategy**: Measure the time agents spend in discovery vs. actual work. Consider caching Agent Cards when appropriate to reduce discovery overhead.
 
-### 4. JSON-RPC error handling
+### 4. JSON-RPC Error Handling
 
 JSON-RPC 2.0 defines specific error codes and structures. Common issues include:
 
@@ -96,7 +96,7 @@ JSON-RPC 2.0 defines specific error codes and structures. Common issues include:
 
 **Testing Strategy**: Use [assertions](/reference/configuration/assertions/) to validate JSON-RPC error responses. Test failure scenarios where downstream agents return errors or time out.
 
-### 5. Dynamic agent networks
+### 5. Dynamic Agent Networks
 
 In production A2A deployments, agent availability changes dynamically:
 
@@ -106,7 +106,7 @@ In production A2A deployments, agent availability changes dynamically:
 
 **Testing Strategy**: Capture traffic from various network states. Test with different agent configurations to ensure your system handles topology changes gracefully.
 
-### 6. Authentication and security
+### 6. Authentication and Security
 
 A2A communications often involve:
 
@@ -116,14 +116,14 @@ A2A communications often involve:
 
 **Testing Strategy**: Use Speedscale's [transform capabilities](/guides/transformation/extractors/) to handle authentication tokens during replay. Test rate limiting behavior under high load to ensure legitimate agent traffic isn't blocked.
 
-## Best practices
+## Best Practices
 
 1. **Capture Representative Traffic**: Ensure your captured snapshots include the full range of A2A interactions: discovery, negotiation, synchronous calls, and streaming
 2. **Test Agent Independence**: Load test individual agents as well as the full agent network to identify single points of failure
 3. **Monitor End-to-End Latency**: Track total conversation time across multiple agent hops, not just individual request latency
 4. **Validate Agent Card Changes**: Test backward compatibility when updating agent capabilities to ensure existing agent relationships continue working
 
-## Learn more
+## Learn More
 
 - [Load Testing Guide](/guides/replay/load-test.md) - Configure and run load tests
 - [Traffic Replay Concepts](/concepts/replay.md) - Understand how replay works

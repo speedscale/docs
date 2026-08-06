@@ -59,7 +59,7 @@ speedctl export snapshot --type gatling --limit 50 --output MySimulation.java {S
    gatling.sh -sf src/test/java -s MySimulation
    ```
 
-## Generated script format
+## Generated Script Format
 
 The exported simulation uses Gatling's Java DSL and looks like this:
 
@@ -102,7 +102,7 @@ You can customize the generated script to add:
 - Assertions and checks
 - Feeders for parameterized data
 
-## Capturing transformed traffic
+## Capturing Transformed Traffic
 
 If you want to export traffic that has been processed by Speedscale transforms (e.g., JWT regeneration, data masking), you can capture the transformed output:
 
