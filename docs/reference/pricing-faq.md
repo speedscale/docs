@@ -9,8 +9,6 @@ import PricingDashboard from './pricing-faq/pricing-dashboard.png'
 
 Speedscale's pricing is based on the amount of data ingested, measured in gigabytes (GB). Below are answers to common questions about how billing works, how to avoid surprises, and how to optimize your usage.
 
----
-
 ## 💡 How does Speedscale’s usage-based pricing work?
 
 Speedscale charges based on the total amount of data ingested to Speedscale Cloud, measured in GB per month. You can view your usage within Usage section of the [Speedscale UI](https://app.speedscale.com/tenant#tenant-tab-usage).
@@ -38,7 +36,7 @@ Speedscale provides various usage metrics for visibility, but only data ingest i
 
 ## ⚠️ What are some common causes of unexpected overages?
 
-1. **High-traffic services**: If you deploy the sidecar to high-throughput services without filtering, usage can spike quickly.  
+1. **High-traffic services**: If you capture high-throughput services without filtering, usage can spike quickly.
 1. **Background or noisy traffic**: Health checks, polling endpoints, or verbose internal service calls can add significant overhead.  
 1. **Unfiltered ingress**: Without filters, *all* incoming/outgoing traffic is captured by default, including irrelevant or duplicate traffic.  
 1. **Replays and load tests**: Running tests with high concurrency can multiply the amount of data ingested. Use Low Data Mode when you run performance tests.
@@ -49,29 +47,32 @@ Speedscale provides various usage metrics for visibility, but only data ingest i
 Here are several strategies to avoid surprises:
 
 ### ✅ 1. Use traffic filters
-Apply [traffic filters](/guides/creating-filters) to only capture data from specific endpoints, headers, or service patterns. This reduces noise and focuses ingest on meaningful interactions. The most common "noisy" traffic patterns include heartbeats, monitoring systems and database keepalives. Common systems like Datadog and New Relic are filtered out in the default `standard` filter set (for example). To do that, check out the [ignore-src-ips](/getting-started/installation/sidecar/annotations#sidecarspeedscalecomignore-src-ips) and [ignore-src-hosts](/getting-started/installation/sidecar/annotations#sidecarspeedscalecomignore-src-hosts) annotations.
+Apply [traffic filters](/guides/creating-filters) to capture only the endpoints, headers, or service patterns that matter. This reduces noise and focuses ingest on useful interactions. Common noisy traffic includes health checks, monitoring systems, and database keepalives. The default `standard` filter set excludes common monitoring traffic such as Datadog and New Relic.
 
-### 🛑 2. Turn off the sidecar during idle periods
-You can disable the Speedscale sidecar dynamically via your deployment configuration or control plane. Use automation to stop ingesting traffic outside of business hours or test windows.
+### 🛑 2. Turn off capture during idle periods
 
-:::tip
-By default, Speedscale enables Remote Control which lets you turn the sidecar on and off manually, or using the scheduler. To turn on/off a sidecar, visit the main navigation -> Infrastructure -> Workloads -> (select namespace) -> inject (toggle on/off using the slider)
+Use the eBPF capture annotation to stop collecting from a workload outside business hours or test windows:
 
-![workload inject](./pricing-faq/workload-inject.png)
-:::
+```bash
+kubectl annotate deployment my-app -n my-namespace \
+  capture.speedscale.com/enabled="false" --overwrite
+```
 
-### ⚙️ 3. Enable sidecar only during recording windows
-Use Kubernetes lifecycle hooks or cronjobs to activate Speedscale only during performance testing, CI/CD workflows, or specific test events. Speedscale also provides an automated [scheduler](https://app.speedscale.com/schedules) if you have remote control enabled.
+Set the value back to `"true"` when the recording window begins. Annotation-based targeting requires `ebpf.enabled: true` in the Operator Helm values.
+
+### ⚙️ 3. Capture only during recording windows
+
+Use your deployment automation or a CronJob to enable eBPF capture only during performance tests, CI/CD workflows, or planned recording windows. See [eBPF annotation-based capture](/reference/ebpf-traffic-collection#enabling-via-annotation).
 
 ### 🎯 5. Scope deployments
-Limit sidecar injection to namespaces, clusters, or services with active testing or observability needs. Avoid deploying universally unless necessary.
+Use eBPF capture targets to select only the namespaces and workloads with active testing or observability needs. Avoid cluster-wide capture unless it is required.
 
 ## 🧪 Can I test while limiting ingest costs?
 
 Yes. Speedscale offers the ability to:
 
 - **Record once, replay many times**: Replays of previously recorded traffic do not count as new ingest, although the test artifacts will cause some minor ingest.
-- **Use local proxymock recordings**: Capture and replay traffic locally during development without involving the sidecar or ingesting data into the Speedscale cloud. Limits apply but this is a good option for quick local regressions.
+- **Use local proxymock recordings**: Capture and replay traffic locally during development without ingesting data into Speedscale Cloud. Limits apply, but this is a good option for quick local regressions.
 
 
 You can see current and historical usage by navigating to **Settings > Usage** in the Speedscale UI. Detailed breakdowns by service and namespace are available for the last seven days to help identify cost centers. Click on the main navigation -> Services for a list of services that have reported traffic in the last seven days.
@@ -117,9 +118,9 @@ Absolutely. Here are a few customer-tested techniques:
 
 | Practice                     | Description                                                                  |
 |-----------------------------|------------------------------------------------------------------------------|
-| Inject sidecars selectively | Use namespace or label-based injection controls                              |
+| Target workloads selectively | Use namespace and pod selectors in the eBPF capture configuration          |
 | Add smart filters           | Only capture what’s needed for test coverage or debugging                    |
-| Use test scheduling         | Automate sidecar activation only during CI/CD jobs or staging rollouts       |
+| Use test scheduling         | Enable capture only during CI/CD jobs or planned recording windows           |
 | Monitor billing data weekly | Watch for anomalous spikes before they turn into bill surprises              |
 | Reuse traffic recordings    | Reduce ingest by replaying stored traffic scenarios instead of re-recording  |
 

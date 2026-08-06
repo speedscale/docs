@@ -43,6 +43,10 @@ use an existing snapshot, or one created from a previous action.
 
 ### Sidecar
 
+:::warning Legacy capture action
+The Sidecar action applies only to existing sidecar deployments. New Kubernetes installations should use [eBPF capture](/reference/ebpf-traffic-collection) and control recording windows through capture targets or the `capture.speedscale.com/enabled` annotation.
+:::
+
 Ensures the Speedscale sidecar exists, or does not exist, on a workload running
 in your cluster.  A workload must have the sidecar attached to capture traffic.
 This action is useful for ensuring a workload is capturing traffic, or turning
@@ -66,7 +70,7 @@ work is performed in between actions.
 ### Notify
 
 Sends a notification when the action is reached during execution. Place this
-action anywhere in the sequence — for example, at the end to report the overall
+action anywhere in the sequence, for example at the end to report the overall
 outcome, or immediately after a replay to alert on test failures.
 
 #### Trigger conditions
@@ -104,7 +108,7 @@ To pass additional headers (for example, an authorization token) use the
 
 #### Message template
 
-Some services — including Slack — require a specific JSON shape and will reject
+Some services, including Slack, require a specific JSON shape and will reject
 the default payload. Set the **Message template** field to a
 [Go template](https://pkg.go.dev/text/template) string; when present the
 request body becomes `{"text": "<rendered>"}` instead.
@@ -143,7 +147,7 @@ Available template variables:
    For failure details you can iterate over `FailedTasks`:
 
    ```
-   *{{.JobID}}* failed — {{range .FailedTasks}}task {{.Index}}: {{.Message}} {{end}}
+   *{{.JobID}}* failed: {{range .FailedTasks}}task {{.Index}}: {{.Message}} {{end}}
    ```
 
 Slack validates that the posted JSON contains a `text` field and returns
@@ -157,5 +161,3 @@ Combine the Notify action with **On failure** and `continue_on_failure` enabled
 to get an alert any time a scheduled replay misses its goals without stopping
 the rest of the job.
 :::
-
-

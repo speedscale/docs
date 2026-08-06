@@ -15,7 +15,24 @@ This workflow is currently in preview status. Please provide feedback in our [sl
 
 ## Working with ECS
 
-![Architecture](./ecs/arch.png)
+```mermaid
+flowchart LR
+    client["Client / Internet"] --> loadBalancer["Load balancer"]
+
+    subgraph ecs["ECS task"]
+        certInit["Certificate init"]
+        proxy["goproxy<br/>inbound 4143 / outbound 4140"]
+        service["Application service"]
+        forwarder["Forwarder"]
+        certInit --> proxy
+        certInit --> service
+        proxy <--> service
+        proxy --> forwarder
+    end
+
+    loadBalancer --> proxy
+    forwarder --> cloud["Speedscale Cloud"]
+```
 
 To capture traffic for a service running in ECS, we need to setup some components shown above. The examples snippets in this guide will be in the form of Terraform but all the parameters used have equivalents in CloudFormation, the AWS CLI, the AWS console, etc.
 

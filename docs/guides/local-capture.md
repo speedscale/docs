@@ -22,7 +22,14 @@ This guide will walk you through recording an environment from your local deskto
 
    We use the bundled traffic driver to send requests to our sample app. Requests sent to the sample app will trigger an outbound call to the CNCF projects API at `demo-api.trafficreplay.com`.
 
-![architecture](./local-capture/demo_arch.png)
+```mermaid
+flowchart LR
+    driver["Traffic driver<br/>run_tests.sh or curl"] --> recorder["speedctl capture"]
+    recorder --> app["Sample app"]
+    app --> dependency["CNCF projects API"]
+    recorder -. "records inbound traffic" .-> app
+    app -. "outbound traffic through proxy" .-> recorder
+```
 
 ### Step 2: Start Speedscale Recording
 
@@ -77,7 +84,7 @@ MacOS users should add this certificate to the System keychain [settings](https:
    ./lab/tests/run_tests.sh --recording
    ```
 
-   The `--recording` flag sends requests to the speedctl capture port (`4143`) instead of the app's port (`8080`) so the traffic is intercepted. Any load tool works here (JMeter, k6, curl, etc.) — `run_tests.sh` is just the concrete example bundled with the demo.
+   The `--recording` flag sends requests to the speedctl capture port (`4143`) instead of the app's port (`8080`) so the traffic is intercepted. Any load tool works here (JMeter, k6, curl, etc.). `run_tests.sh` is the concrete example bundled with the demo.
 
 2. **Generate a variety of transactions**:
    - Run the script multiple times to record a richer set of transactions.
@@ -101,8 +108,6 @@ MacOS users should add this certificate to the System keychain [settings](https:
 Recorded environments, or Snapshots, contain the data necessary to clone an environment for a span of time. If you are doing general development and just need to mimic production services, consider a `mocks-only` replay setting. This will leave the mock server running so you can run different builds of your app against realistic services. If you want to run incoming client traffic over and over to reproduce an issue or for other development it's best to use a regular replay. This is more of a regression or load testing use case. Either can be done from the same recording.
 :::
 
-## Conclusion
+## Next step
 
-This guide demonstrates how to set up a Speedscale recording from your local desktop, enabling you to replicate an environment effortlessly and gain valuable insights into your application's behavior. Whether for testing or debugging, Speedscale provides a robust solution for managing and analyzing network traffic.
-
-Thank you for using Speedscale, and we hope this guide was helpful.
+Use the saved snapshot for a local mock-only replay or run it against a shared Kubernetes test environment.

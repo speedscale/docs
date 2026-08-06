@@ -8,9 +8,9 @@ sidebar_position: 6
 
 LLM simulation replaces live AI provider calls with recorded responses during development, CI, and load testing. Instead of paying for real model inference every time a developer refreshes a screen or a CI pipeline runs, you capture one real interaction and replay it everywhere else.
 
-This works with both [Speedscale Cloud](#using-speedscale-cloud) (for Kubernetes and staging environments) and [proxymock](#using-proxymock) (for local development and CI).
+This works with both [Speedscale Cloud](#kubernetes-capture-with-speedscale-cloud) (for Kubernetes and staging environments) and [proxymock](#using-proxymock) (for local development and CI).
 
-## Why Simulate LLM APIs?
+## Why simulate LLM APIs?
 
 Most teams expect their AI bill to come from production traffic. In practice, a large portion comes from non-production activity: developers iterating on prompt wrappers, CI pipelines running the same scenarios on every pull request, and load tests hammering model endpoints in staging.
 
@@ -30,11 +30,11 @@ Real LLM calls add 500ms to 3s of latency per request. Mocked responses return i
 
 LLM responses vary between calls even with the same input. That non-determinism makes assertions difficult and causes flaky tests. Simulated responses are identical every time, giving you repeatable test results.
 
-### Rate Limits
+### Rate limits
 
 LLM providers enforce rate limits and token quotas. Load tests and batch CI runs can easily hit those limits, causing failures that have nothing to do with your application. Simulation avoids provider throttling entirely.
 
-## When to Use Real LLMs vs. Simulation
+## When to use real LLMs vs. simulation
 
 | Scenario | Use real LLM | Use simulation |
 |---|---|---|
@@ -48,7 +48,7 @@ LLM providers enforce rate limits and token quotas. Load tests and batch CI runs
 
 Use real providers when the goal is to evaluate the model itself: prompt quality, provider latency, output quality, or true cost. Use simulation when the goal is to test your application logic: response parsing, fallback handling, UI behavior, throughput, and retry logic.
 
-## Supported Providers
+## Supported providers
 
 Speedscale automatically detects and supports popular LLM provider APIs. No special configuration is required.
 
@@ -62,7 +62,7 @@ Speedscale automatically detects and supports popular LLM provider APIs. No spec
 
 Any HTTP-based LLM API will work even if it is not on this list. The auto-detection simply adds provider-specific labeling. See the full [technology support](../../reference/technology-support.md#supported-llm-providers) page for details.
 
-## How It Works
+## How it works
 
 LLM simulation follows the same capture-and-replay pattern as any other [service mock](./mocks.md), with one important difference: the captured data includes realistic AI responses, token counts, and latency rather than hand-written stubs.
 
@@ -72,16 +72,16 @@ LLM simulation follows the same capture-and-replay pattern as any other [service
 
 Sensitive values like provider API keys are automatically redacted so the captured data is safe to store, share, and commit to version control.
 
-## Using Speedscale Cloud
+## Kubernetes capture with Speedscale Cloud
 
-Speedscale Cloud captures and replays LLM traffic in Kubernetes environments using the operator and sidecar.
+Speedscale Cloud captures and replays LLM traffic in Kubernetes environments using the Operator and eBPF collector.
 
-### Capture LLM Traffic
+### Capture LLM traffic
 
-Deploy the Speedscale sidecar to your service. When your application makes outbound calls to LLM providers, the sidecar records them transparently -- no code changes required.
+Enable eBPF capture for your service. When your application makes outbound calls to LLM providers, the collector records supported HTTP and TLS traffic without adding a proxy to the workload.
 
 1. [Install the operator](../../getting-started/installation/install/kubernetes-operator.md) if you have not already.
-2. Add the Speedscale sidecar annotation to your deployment.
+2. [Enable the eBPF collector](../../reference/ebpf-traffic-collection/README.md#installation) and target your deployment.
 3. Run your workflow once with real provider API keys configured.
 4. Open the snapshot in the Speedscale UI. You will see each LLM API call with its full request and response.
 
@@ -91,7 +91,7 @@ The captured traffic includes the internal service calls (like a tools service o
 You only need one good recording. Run the workflow with all the providers and scenarios you care about, then reuse that snapshot indefinitely.
 :::
 
-### Replay with Mocked LLMs
+### Replay with mocked LLMs
 
 Once you have a snapshot, replay uses the Speedscale responder to serve recorded LLM responses:
 
@@ -99,7 +99,7 @@ Once you have a snapshot, replay uses the Speedscale responder to serve recorded
 - **Load testing** -- Configure a [load test](../replay/load-test.md) to multiply the traffic. The responder serves LLM mocks at any scale with no provider cost and no rate limiting.
 - **CI integration** -- Add replay to your [CI/CD pipeline](../integrations/cicd/cicd.md) so every pull request validates the LLM integration without live calls.
 
-### Customizing Signatures
+### Customizing signatures
 
 Speedscale generates good default signatures for LLM requests. If you need to adjust matching behavior -- for example, ignoring a timestamp field in the prompt or wildcarding a model version in the URL -- see the [modifying signatures](./modifying.md) guide.
 
@@ -127,7 +127,7 @@ proxymock mock --in ./proxymock
 
 Your application makes the same outbound calls, but proxymock intercepts them and returns the recorded responses. Zero cost, instant responses, fully deterministic.
 
-### CI Integration
+### CI integration
 
 Commit the `proxymock/` snapshot directory to your repository. In CI, run proxymock in mock mode before starting your tests. No API keys are needed in the CI environment.
 
@@ -138,13 +138,13 @@ proxymock mock --in ./proxymock &
 
 See the full [proxymock LLM simulation guide](/proxymock/guides/llm-simulation.md) for a step-by-step walkthrough, and the [proxymock CI/CD guide](/proxymock/guides/cicd.md) for pipeline setup.
 
-## Demo Application
+## Demo application
 
 The [LLM simulation demo](https://github.com/speedscale/demo/tree/master/llm-simulation-demo) is a support-ticket triage application that demonstrates this pattern end to end.
 
 The demo runs a 3-step AI pipeline (triage, analysis, response drafting) against OpenAI, Anthropic, Gemini, and xAI/Grok. It includes 20 sample tickets and tracks timing, token usage, and projected cost per run. With 4 providers enabled, a single "Analyze All" run makes 240 LLM API calls -- exactly the kind of repetitive non-production traffic that simulation eliminates.
 
-## Further Reading
+## Further reading
 
 - [Service Mocking concepts](../../concepts/service_mocking.md) -- how Speedscale service mocking works
 - [Signature Matching](./signature.md) -- how requests are matched to recorded responses

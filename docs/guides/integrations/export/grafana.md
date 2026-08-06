@@ -26,5 +26,5 @@ speedctl export snapshot --help
 Also feel free to ask questions on the [Community](https://slack.speedscale.com).
 
 :::tip
-If you want to capture transformed traffic you can do so by attaching a sidecar to your app while the Speedscale generator is running. This will capture the transformed traffic as a new snapshot which can be exported to k6. This does not export that actual logic into a script but it will let you export the end result.
+If you want to capture transformed traffic, enable [eBPF capture](/reference/ebpf-traffic-collection#enabling-via-annotation) on your app while the Speedscale generator is running. This records the transformed traffic as a new snapshot that can be exported to k6. The export contains the resulting requests, not the transform logic.
 :::
