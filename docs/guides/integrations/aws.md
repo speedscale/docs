@@ -12,9 +12,9 @@ Speedscale is a certified member of the AWS Partner Network (APN). This includes
 
 The Speedscale operator is compatible with AWS EKS (Elastic Kubernetes Service), versions v1.16 and newer.
 
-### Sidecar Capture Support
+### Traffic capture support
 
-The Speedscale sidecar is able to capture traffic sent to numerous AWS services including the following (note: not an exhaustive list):
+The Speedscale [eBPF collector](/reference/ebpf-traffic-collection) captures supported traffic sent to AWS services without adding a proxy to each workload. Supported services include the following (this list is not exhaustive):
 
 * API Gateway
 * DynamoDB

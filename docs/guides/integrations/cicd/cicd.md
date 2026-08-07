@@ -15,7 +15,16 @@ deployment with confidence.
 Run Speedscale after your build and unit tests, but before deploying to
 production.
 
-![CI Pipeline](./cicd-flow.png)
+```mermaid
+flowchart LR
+    code["Code"] --> commit["Commit"]
+    commit --> build["Build"]
+    build --> unit["Unit tests"]
+    unit --> replay["Speedscale integration replay"]
+    replay --> review["Review"]
+    review --> staging["Staging"]
+    staging --> production["Production"]
+```
 
 Adding anything to your CI/CD pipeline generally involves the same 3 steps:
 

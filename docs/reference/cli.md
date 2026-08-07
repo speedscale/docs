@@ -26,7 +26,13 @@ Speedscale [proxy](../reference/glossary.md#proxy).
 
 The traffic flow will look should look something like this:
 
-![traffic-flow](./cli/capture-flow.png)
+```mermaid
+flowchart LR
+    curl["curl"] --> inbound["Speedscale proxy<br/>inbound"]
+    inbound --> app["Your app"]
+    app --> outbound["Speedscale proxy<br/>outbound"]
+    outbound --> postgres["Postgres"]
+```
 
 The Speedscale components are in orange and your components are in green.
 
@@ -75,7 +81,13 @@ https://app.speedscale.com.
 Once you have captured traffic you can
 [create a snapshot](../guides/creating-a-snapshot.md) and replay it against your app.
 
-![replay-flow](./cli/replay-flow.png)
+```mermaid
+flowchart LR
+    snapshot["Snapshot traffic"] -.-> generator["Generator"]
+    snapshot -.-> responder["Responder"]
+    generator --> app["Your app"]
+    app --> responder
+```
 
 The captured traffic is loaded into Speedscale components before the replay
 starts. The [generator](../reference/glossary.md#generator) makes requests to

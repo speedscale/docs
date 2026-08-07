@@ -8,7 +8,7 @@ sidebar_position: 6
 
 LLM simulation replaces live AI provider calls with recorded responses during development, CI, and load testing. Instead of paying for real model inference every time a developer refreshes a screen or a CI pipeline runs, you capture one real interaction and replay it everywhere else.
 
-This works with both [Speedscale Cloud](#using-speedscale-cloud) (for Kubernetes and staging environments) and [proxymock](#using-proxymock) (for local development and CI).
+This works with both [Speedscale Cloud](#kubernetes-capture-with-speedscale-cloud) (for Kubernetes and staging environments) and [proxymock](#using-proxymock) (for local development and CI).
 
 ## Why Simulate LLM APIs?
 
@@ -72,16 +72,16 @@ LLM simulation follows the same capture-and-replay pattern as any other [service
 
 Sensitive values like provider API keys are automatically redacted so the captured data is safe to store, share, and commit to version control.
 
-## Using Speedscale Cloud
+## Kubernetes capture with Speedscale Cloud
 
-Speedscale Cloud captures and replays LLM traffic in Kubernetes environments using the operator and sidecar.
+Speedscale Cloud captures and replays LLM traffic in Kubernetes environments using the Operator and eBPF collector.
 
 ### Capture LLM Traffic
 
-Deploy the Speedscale sidecar to your service. When your application makes outbound calls to LLM providers, the sidecar records them transparently -- no code changes required.
+Enable eBPF capture for your service. When your application makes outbound calls to LLM providers, the collector records supported HTTP and TLS traffic without adding a proxy to the workload.
 
 1. [Install the operator](../../getting-started/installation/install/kubernetes-operator.md) if you have not already.
-2. Add the Speedscale sidecar annotation to your deployment.
+2. [Enable the eBPF collector](../../reference/ebpf-traffic-collection/README.md#installation) and target your deployment.
 3. Run your workflow once with real provider API keys configured.
 4. Open the snapshot in the Speedscale UI. You will see each LLM API call with its full request and response.
 

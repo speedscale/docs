@@ -5,7 +5,34 @@ sidebar_position: 6
 
 # Replay Data Model
 
-![Replay Data Model](./replay_data_model/replay_data_model.png)
+```mermaid
+flowchart TB
+    subgraph inputs["Inputs"]
+        direction TB
+        raw["Raw request/response pairs"]
+        transformTemplate["Traffic transform template"]
+    end
+
+    subgraph snapshot["Snapshot"]
+        direction TB
+        transforms["Traffic transforms"]
+        tokens["Discovered tokens"]
+        rrpairs["Raw request/response pairs"]
+        requests["Client requests"]
+        mocks["Mock responses"]
+    end
+
+    subgraph report["Report"]
+        direction TB
+        testConfig["Test config"]
+        results["Requests, responses, assertions, and metrics"]
+    end
+
+    raw --> snapshot
+    transformTemplate --> snapshot
+    snapshot --> report
+    testTemplate["Test config template"] --> report
+```
 
 ### What happens when a snapshot is created?
 
