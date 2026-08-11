@@ -827,6 +827,30 @@ const config = {
             from: "/mocks/triggers/",
             to: "/guides/mocking/mocks/",
           },
+          // Still 404ing in Google Search Console.
+          // The /dlp/* tree moved under /guides/dlp/; only the section-level
+          // paths were redirected, not the individual pages Google indexed.
+          { from: "/dlp/introduction/", to: "/guides/dlp/introduction/" },
+          { from: "/dlp/applying-rules/", to: "/guides/dlp/applying-rules/" },
+          { from: "/dlp/best-practices/", to: "/guides/dlp/best-practices/" },
+          { from: "/dlp/cli-reference/", to: "/guides/dlp/cli-reference/" },
+          { from: "/dlp/creating-rules/", to: "/guides/dlp/creating-rules/" },
+          { from: "/dlp/discovering-pii/", to: "/guides/dlp/discovering-pii/" },
+          { from: "/dlp/recommendations/", to: "/guides/dlp/recommendations/" },
+          {
+            from: "/dlp/test-data-generation/",
+            to: "/guides/dlp/test-data-generation/",
+          },
+          { from: "/dlp/troubleshooting/", to: "/guides/dlp/troubleshooting/" },
+          // Triggers folded into the mocks guide, matching /mocks/triggers/ above.
+          { from: "/concepts/triggers/", to: "/guides/mocking/mocks/" },
+          { from: "/transform/triggers/", to: "/guides/mocking/mocks/" },
+          { from: "/guides/mocking/triggers/", to: "/guides/mocking/mocks/" },
+          {
+            from: "/transform/extractors/http_res_trailer/",
+            to: "/guides/transformation/extractors/http_res_trailer/",
+          },
+          { from: "/guides/getting-started/", to: "/" },
           {
             from: "/observe/bodies/",
             to: "/guides/capture/bodies/",
