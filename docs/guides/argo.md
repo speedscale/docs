@@ -67,3 +67,20 @@ See [eBPF Traffic Collection](/reference/ebpf-traffic-collection) for TLS suppor
 :::warning Legacy sidecar deployments
 Existing deployments that intentionally use sidecar capture can continue to use `speedctl infra sidecar` and `sidecar.speedscale.com/inject`. Sidecar injection changes the rollout pod template and must be promoted through Argo Rollouts. New deployments should use eBPF capture.
 :::
+
+## Remove a sidecar from a rollout
+
+To remove a sidecar from an existing rollout, set the inject annotation to `false`:
+
+```yaml
+annotations:
+  sidecar.speedscale.com/inject: "false"
+```
+
+Depending on how the rollout is configured it may not cycle right away. Patch the pod template to force it:
+
+```bash
+now=$(date) && kubectl patch rollout rollouts-demo -p '{"spec": {"template": {"metadata": {"annotations": {"speedscale.com/restartedAt": "'$now'"}}}}}' --type merge
+```
+
+The rollout cycles and the sidecar is removed. This does not affect eBPF capture, which is controlled separately by the capture targets.
