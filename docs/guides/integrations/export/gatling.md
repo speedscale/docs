@@ -107,7 +107,7 @@ You can customize the generated script to add:
 If you want to export traffic that has been processed by Speedscale transforms (e.g., JWT regeneration, data masking), you can capture the transformed output:
 
 1. Run a Speedscale replay with your transforms applied
-2. Attach a sidecar to capture the outgoing traffic as a new snapshot
+2. Enable [eBPF capture](/reference/ebpf-traffic-collection#enabling-via-annotation) on the application while the Speedscale generator is running
 3. Export the new snapshot to Gatling format
 
 This doesn't export the transform logic into the script, but it gives you the transformed request data.

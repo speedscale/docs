@@ -39,7 +39,7 @@ Since A2A uses JSON-RPC 2.0 over HTTP(S), it can be load tested like any other H
 
 Speedscale captures real A2A traffic between agents and replays it at scale:
 
-1. **Capture**: Deploy the Speedscale sidecar to capture live A2A traffic between your agents, including JSON-RPC calls, SSE streams, and async notifications
+1. **Capture**: Enable the [eBPF collector](/reference/ebpf-traffic-collection) for the agent workloads to record live A2A traffic, including JSON-RPC calls, SSE streams, and async notifications
 2. **Transform**: Use [extractors and transformers](/guides/transformation/extractors/) to handle dynamic values in Agent Cards, session tokens, or agent-specific identifiers
 3. **Replay**: Configure a [test config](/reference/glossary.md#test-config) with your desired load pattern (see [Load Testing guide](/guides/replay/load-test.md))
 4. **Analyze**: Review response accuracy, latency, and throughput to identify bottlenecks

@@ -55,7 +55,18 @@ Transforms also have a data cache where **variables** can be stored. Variables f
 
 Last, the transformed data is re-inserted into the RRPair in exactly the same location. Each transform runs in reverse order to re-encode the new **token** and place it back in its correct place.
 
-![Concrete example of two transforms](./overview/diagram_with_data.png)
+```mermaid
+flowchart LR
+    subgraph rrpair["RRPair"]
+        header["Record-Timestamp:<br/>Sat, 20 Nov 2019 07:16:26 GMT"]
+        body["order-id: 52-3059"]
+    end
+
+    header --> extractHeader["Extract header"] --> dateOffset["Date offset"]
+    dateOffset --> extractHeader --> header
+    body --> extractJson["Extract JSON"] --> insertText["Insert text"]
+    insertText --> extractJson --> body
+```
 
 ## Where to Transform Traffic
 
@@ -107,4 +118,3 @@ Templates are particularly useful for:
 - APIs with consistent authentication patterns
 - Services that require similar data sanitization
 - Test scenarios that need identical transform chains across multiple snapshots
-

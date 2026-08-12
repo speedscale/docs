@@ -16,13 +16,29 @@ such as EKS and GKE.
 
 ## Working with Google Cloud Run
 
-![Architecture](./cloudrun/arch.png)
+```mermaid
+flowchart LR
+    client["Client / Internet"] --> inbound["goproxy inbound"]
+    inbound --> app["Cloud Run service"]
+    app --> outbound["goproxy outbound"]
+    outbound --> dependencies["Service dependencies"]
+
+    subgraph gke["GKE cluster"]
+        inbound
+        outbound
+        forwarder["Forwarder"]
+        inbound --> forwarder
+        outbound --> forwarder
+    end
+
+    forwarder --> cloud["Speedscale Cloud"]
+```
 
 In order to capture traffic from Cloud Run, we need to set up a few components shown in the diagram above.
 
 ### Create a cluster
 
-We need to create a GKE cluster in order to run our proxy and forwarding components. Follow the prompts in the Google Cloud console to create a standard GKE cluster. Do not create an Autopilot cluster for this setup — if you specifically need Autopilot, follow the [GKE Autopilot guide](/getting-started/installation/install/gke-autopilot) instead. All other standard settings should be fine. Cluster creation can take a few minutes and we need to wait till it's finished in order to deploy Speedscale components to it. Once it's done, setup `kubectl` access by running
+We need to create a GKE cluster in order to run our proxy and forwarding components. Follow the prompts in the Google Cloud console to create a standard GKE cluster. Do not create an Autopilot cluster for this setup. If you specifically need Autopilot, follow the [GKE Autopilot guide](/getting-started/installation/install/gke-autopilot) instead. All other standard settings should be fine. Cluster creation can take a few minutes and we need to wait till it's finished in order to deploy Speedscale components to it. Once it's done, setup `kubectl` access by running
 
 ```
 gcloud container clusters get-credential <cluster-name> --region <region>
