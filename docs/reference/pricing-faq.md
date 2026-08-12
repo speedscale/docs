@@ -64,7 +64,7 @@ Set the value back to `"true"` when the recording window begins. Annotation-base
 
 Use your deployment automation or a CronJob to enable eBPF capture only during performance tests, CI/CD workflows, or planned recording windows. See [eBPF annotation-based capture](/reference/ebpf-traffic-collection#enabling-via-annotation).
 
-If remote control is enabled, the built-in [scheduler](https://app.speedscale.com/schedules) can start and stop recording windows for you instead. See [schedules](/concepts/schedules) for the available actions.
+For legacy sidecar capture, the built-in [scheduler](https://app.speedscale.com/schedules) can start and stop recording windows when remote control is enabled. The scheduler does not change eBPF capture targets or annotations. See [schedules](/concepts/schedules) for the available actions.
 
 ### 🎯 5. Scope deployments
 Use eBPF capture targets to select only the namespaces and workloads with active testing or observability needs. Avoid cluster-wide capture unless it is required.

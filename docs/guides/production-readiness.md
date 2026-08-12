@@ -37,7 +37,7 @@ Confirm the supported Kubernetes version, Linux kernel, container runtime, proto
 
 The collector is a privileged DaemonSet. Review its security context, host mounts, and required capabilities with the platform and security teams. Managed Kubernetes platforms can require additional admission configuration. For example, see the [GKE Autopilot guide](/getting-started/installation/install/gke-autopilot).
 
-Istio and its derivatives are supported natively. If you run Istio, follow the [Istio installation notes](../getting-started/installation/install/istio.md) while configuring the Operator. For any other service mesh, contact [support](https://slack.speedscale.com) before you start.
+Istio and its derivatives are supported natively. If you run Istio, follow the [external networking requirements](/getting-started/installation/install/istio#external-networking-requirements) while configuring the Operator. The sidecar configuration on that page applies only to legacy sidecar capture. For any other service mesh, contact [support](https://slack.speedscale.com) before you start.
 
 Ask your security team whether cluster-level security tooling is in place. Admission controllers and runtime security agents can block the collector's privileged DaemonSet, and the failures present as obscure timeouts rather than clear denials. Namespaces such as `twistlock` or `calico-` are a hint that such tools are installed. Speedscale has recipes for coexisting with many of them; ask support.
 

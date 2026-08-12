@@ -14,12 +14,12 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Technology | Type     | Support | Notes                          |
 | ---------- | -------- | ------- | ------------------------------ |
 | .NET       | Language | Full    | See [.NET](/reference/languages/dotnet#proxymock) and [TLS](/reference/languages/dotnet#tls-trust) |
-| C++        | Language | Full    | See [TLS capture](/guides/tls/) |
+| C++        | Language | Full    | See [sidecar TLS](/getting-started/installation/sidecar/tls/) |
 | Go         | Language | Full    | See [Go](/reference/languages/golang#proxymock) and [TLS](/reference/languages/golang#tls-trust) |
 | Java       | Language | Full    | See [Java](/reference/languages/java#proxymock) and [TLS](/reference/languages/java#tls-trust) |
 | Node.js    | Language | Full    | See [Node.js](/reference/languages/nodejs#proxymock) and [TLS](/reference/languages/nodejs#tls-trust) |
 | Python     | Language | Full    | See [Python](/reference/languages/python#proxymock) and [TLS](/reference/languages/python#tls-trust) |
-| Ruby       | Language | Full    | See [TLS capture](/guides/tls/) |
+| Ruby       | Language | Full    | See [sidecar TLS](/getting-started/installation/sidecar/tls/) |
 
 ### Supported Protocols
 
@@ -36,7 +36,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | IMAP              | Protocol | Capture Only |                                                                                    |
 | JSON              | Protocol | Full         |                                                                                    |
 | Kafka             | Protocol | Full         | See [details](../guides/message-brokers/kafka.md)                     |
-| Mutual TLS (mTLS) | Protocol | Partial      | See [TLS capture](/guides/tls/)                                                                           |
+| Mutual TLS (mTLS) | Protocol | Partial      | See [sidecar mutual authentication](/getting-started/installation/sidecar/tls/#mutual-authentication-for-outbound-calls)                         |
 | Protobuf          | Protocol | Full         |                                                                                    |
 | RabbitMQ          | Protocol | Full         | See [details](../guides/message-brokers/rabbitmq.md)                              |
 | SOAP              | Protocol | Full         |                                                                                    |
@@ -109,7 +109,7 @@ Speedscale automatically detects and supports popular LLM (Large Language Model)
 | Perplexity       | LLM  | Full    | Auto-detected via `api.perplexity.ai`                   |
 
 :::tip
-LLM provider traffic is standard HTTP/HTTPS — no special configuration is required. Speedscale will automatically detect and label LLM API calls when traffic flows through the proxy. See the [LLM Simulation guide](../guides/mocking/llm-simulation.md) for how to use recorded LLM traffic as mocks in development, CI, and load testing.
+LLM provider traffic is standard HTTP/HTTPS. No special configuration is required. Speedscale automatically detects and labels LLM API calls when the traffic is captured. See the [LLM Simulation guide](../guides/mocking/llm-simulation.md) for how to use recorded LLM traffic as mocks in development, CI, and load testing.
 :::
 
 ### Environments <a href="#environments" id ="environments"></a>

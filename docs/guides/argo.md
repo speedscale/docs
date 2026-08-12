@@ -1,6 +1,6 @@
 ---
 title: Speedscale with Argo Rollouts
-description: "Capture traffic from Argo Rollouts with the Speedscale eBPF collector without modifying rollout pods."
+description: "Capture traffic from Argo Rollouts with the Speedscale eBPF collector and account for Java agent rollout changes."
 sidebar_position: 30
 ---
 
@@ -25,7 +25,9 @@ This restart is necessary because the inspector only creates watchers for Argo R
 
 ## Capture rollout traffic with eBPF
 
-The eBPF collector observes traffic from the node and does not inject a container into rollout pods. Enabling capture therefore does not create a new ReplicaSet, pause a rollout, or require promotion.
+The eBPF collector observes traffic from the node and does not inject a container into rollout pods. Enabling capture for a non-Java workload therefore does not create a new ReplicaSet, pause a rollout, or require promotion.
+
+Java TLS capture is an exception. The required `capture.speedscale.com/java-agent: "true"` annotation changes the pod template so the Operator can load the JVMTI agent. Treat that annotation change like any other Argo Rollouts pod template change and promote the resulting ReplicaSet.
 
 Enable eBPF in the Operator Helm values and target the stable label shared by the rollout pods:
 

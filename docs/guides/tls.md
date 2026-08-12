@@ -30,6 +30,15 @@ kubectl annotate deployment bq-app -n YOUR_NAMESPACE \
   capture.speedscale.com/enabled="true" --overwrite
 ```
 
+Java workloads also require the Operator-managed JVMTI agent. Enable it before restarting the workload:
+
+```bash
+kubectl annotate deployment bq-app -n YOUR_NAMESPACE \
+  capture.speedscale.com/java-agent="true" --overwrite
+```
+
+The Java agent changes the pod template so it can load inside the JVM. See [Java eBPF capture](/reference/languages/java#ebpf-java-agent) for details.
+
 Restart long-lived workloads after enabling capture so the collector sees new TLS connections from the beginning:
 
 ```bash

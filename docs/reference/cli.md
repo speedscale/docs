@@ -34,8 +34,6 @@ flowchart LR
     outbound --> postgres["Postgres"]
 ```
 
-The Speedscale components are in orange and your components are in green.
-
 The curl HTTP client is used to make a request directly to the Speedscale proxy
 which forwards that request to your app, capturing the inbound request. Your
 app handles the inbound request and makes a database query to Postgres.
