@@ -404,7 +404,7 @@ The pipeline order is:
 1. Run the test driver against the service under test.
 1. Cancel the replay, including when the driver fails or the job is interrupted.
 
-Use Speedscale v2.5.789 or newer in the cluster and `speedctl` v2.5.789 or newer in CI. Older operators do not publish the `MocksReady` condition consumed by the CLI. Configure the responder with `passthrough_mode: false` when the test must fail instead of reaching a live dependency. The [external driver demo](https://github.com/speedscale/demo/tree/master/scenarios/replay-sandwich) includes a complete test config and a reusable wrapper script.
+Use Speedscale v2.5.789 or newer in the cluster and `speedctl` v2.5.833 or newer in CI. Older operators do not publish the `MocksReady` condition consumed by the CLI. Older clients cannot scope the wait to the target cluster and namespace. Configure the responder with `passthrough_mode: false` when the test must fail instead of reaching a live dependency. The [external driver demo](https://github.com/speedscale/demo/tree/master/scenarios/replay-sandwich) includes a complete test config and a reusable wrapper script.
 
 ```bash
 #!/usr/bin/env bash
@@ -435,6 +435,8 @@ REPORT_ID=$(speedctl infra replay \
 
 speedctl wait replay "$REPORT_ID" \
   --for mocks-ready \
+  --cluster "$CLUSTER" \
+  --namespace "$NAMESPACE" \
   --timeout "$TIMEOUT" \
   --poll-interval 5s
 
