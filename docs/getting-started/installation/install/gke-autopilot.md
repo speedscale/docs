@@ -211,6 +211,7 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   --set clusterName="${CLUSTER_NAME}" \
   --set image.registry=gcr.io/speedscale \
   --set ebpf.enabled=true \
+  --set ensureMinimumEphemeralStorage=true \
   --set 'sidecar.resources.limits.cpu=500m' \
   --set 'sidecar.resources.limits.memory=512Mi' \
   --set 'sidecar.resources.limits.ephemeral-storage=100Mi' \
@@ -219,7 +220,9 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   --set 'sidecar.resources.requests.ephemeral-storage=100Mi'
 ```
 
-Autopilot requires that resource requests and limits match, and that every container declares `ephemeral-storage`. The `ephemeral-storage` values are required for Speedscale replay init containers to pass Warden admission.
+Autopilot requires that resource requests and limits match, and that every container declares `ephemeral-storage`. The sidecar values cover replay init containers. `ensureMinimumEphemeralStorage=true` adds a `100Mi` request and limit to the Java Agent init container.
+
+The `ensureMinimumEphemeralStorage` setting requires operator chart `2.5.828` or later. If your WorkloadAllowlist is pinned to an older chart, request an updated allowlist before enabling the Java Agent.
 
 Verify the install:
 
@@ -248,7 +251,7 @@ helm upgrade speedscale-operator speedscale/speedscale-operator \
 
 `--reuse-values` preserves your install values but not the chart version, so pin `--version` again here. Generate traffic against the workload, then confirm it appears in Speedscale.
 
-## Updating Speedscale Versions
+## Updating Speedscale versions
 
 The WorkloadAllowlist pins container image digests, so it must be updated in lockstep with the chart. When Speedscale provides an updated `workload-allowlist.yaml` (and its matching chart version), upload it to the same bucket path:
 
@@ -266,11 +269,11 @@ kubectl annotate allowlistsynchronizer speedscale-nettap-sync \
 
 Then upgrade the chart to the matching `--version`.
 
-## Java Agent Notes
+## Java Agent notes
 
 For workloads that make outbound HTTPS calls, the Speedscale [Java Agent](../../../reference/languages/java.md) instruments `SSLSocketImpl` and `SSLEngineImpl` to decrypt TLS traffic.
 
-On Autopilot, the operator's Java Agent init container can be rejected if the injected container does not declare explicit `ephemeral-storage` resources. Speedscale support can provide a workload-specific patch when outbound HTTPS capture is required. If you manually patch a deployment for the Java Agent, re-apply the patch after each replay, since replay cleanup restores the target deployment to its pre-replay state.
+On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior.
 
 ## Troubleshooting
 
@@ -281,6 +284,7 @@ On Autopilot, the operator's Java Agent init container can be rejected if the in
 | AllowlistSynchronizer not Ready | Bucket IAM, path mismatch, invalid YAML, or incompatible GKE version | Confirm `container-engine-robot` has `objectViewer` and `bucketViewer`, then inspect synchronizer status |
 | Nettap pods rejected by Warden | Resource requests and limits do not match | Reinstall with matching requests and limits |
 | Replay init containers rejected by Warden | Missing `ephemeral-storage` values | Reinstall with the `sidecar.resources.*.ephemeral-storage=100Mi` values |
+| `speedscale-initproxy-java-agent` rejected with an `ephemeral-storage` minimum such as `10Mi` | The Java Agent storage setting is disabled or the chart is older than `2.5.828` | Install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`, then retry the capture update |
 | Nettap image digest mismatch after a chart upgrade | Installed chart version does not match the allowlist | Install the chart `--version` that matches your `workload-allowlist.yaml`, or upload the updated allowlist from Speedscale |
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
 

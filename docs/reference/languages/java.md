@@ -15,7 +15,7 @@ Java is fully supported by Speedscale. Use this page for Java-specific proxy set
 - Shared sidecar docs: [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and [TLS Support](/getting-started/installation/sidecar/tls.md)
 - GKE Autopilot guidance: [GKE Autopilot](/getting-started/installation/install/gke-autopilot)
 
-## Choose Your Java Capture Mode
+## Choose your Java capture mode
 
 Quick links:
 
@@ -36,6 +36,8 @@ Workload annotations:
 capture.speedscale.com/enabled: "true"
 capture.speedscale.com/java-agent: "true"
 ```
+
+GKE Autopilot also requires operator chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`. See the [GKE Autopilot install guide](/getting-started/installation/install/gke-autopilot#6-install-speedscale-with-ebpf).
 
 :::warning
 `capture.speedscale.com/java-agent: "true"` is mutually exclusive with
