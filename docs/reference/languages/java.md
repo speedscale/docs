@@ -37,7 +37,7 @@ capture.speedscale.com/enabled: "true"
 capture.speedscale.com/java-agent: "true"
 ```
 
-GKE Autopilot also requires operator chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`. See the [GKE Autopilot install guide](/getting-started/installation/install/gke-autopilot#6-install-speedscale-with-ebpf).
+GKE Autopilot also requires operator chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`. Restart the operator after changing this value on chart `2.5.828`. See the [GKE Autopilot install guide](/getting-started/installation/install/gke-autopilot#6-install-speedscale-with-ebpf).
 
 :::warning
 `capture.speedscale.com/java-agent: "true"` is mutually exclusive with

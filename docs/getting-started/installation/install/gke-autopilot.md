@@ -224,6 +224,13 @@ Autopilot requires that resource requests and limits match, and that every conta
 
 The `ensureMinimumEphemeralStorage` setting requires operator chart `2.5.828` or later. If your WorkloadAllowlist is pinned to an older chart, request an updated allowlist before enabling the Java Agent.
 
+Chart `2.5.828` does not restart a running operator when this value changes during a Helm upgrade. Restart the operator once so it reads the updated ConfigMap:
+
+```bash
+kubectl rollout restart deployment/speedscale-operator -n speedscale
+kubectl rollout status deployment/speedscale-operator -n speedscale
+```
+
 Verify the install:
 
 ```bash
@@ -273,7 +280,7 @@ Then upgrade the chart to the matching `--version`.
 
 For workloads that make outbound HTTPS calls, the Speedscale [Java Agent](../../../reference/languages/java.md) instruments `SSLSocketImpl` and `SSLEngineImpl` to decrypt TLS traffic.
 
-On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior.
+On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior. If you enable the setting by upgrading chart `2.5.828`, restart the operator as shown in Step 6.
 
 ## Troubleshooting
 
@@ -284,7 +291,7 @@ On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStora
 | AllowlistSynchronizer not Ready | Bucket IAM, path mismatch, invalid YAML, or incompatible GKE version | Confirm `container-engine-robot` has `objectViewer` and `bucketViewer`, then inspect synchronizer status |
 | Nettap pods rejected by Warden | Resource requests and limits do not match | Reinstall with matching requests and limits |
 | Replay init containers rejected by Warden | Missing `ephemeral-storage` values | Reinstall with the `sidecar.resources.*.ephemeral-storage=100Mi` values |
-| `speedscale-initproxy-java-agent` rejected with an `ephemeral-storage` minimum such as `10Mi` | The Java Agent storage setting is disabled or the chart is older than `2.5.828` | Install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`, then retry the capture update |
+| `speedscale-initproxy-java-agent` rejected with an `ephemeral-storage` minimum such as `10Mi` | The Java Agent storage setting is disabled, the operator has not restarted after a chart `2.5.828` upgrade, or the chart is older than `2.5.828` | Install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`; on chart `2.5.828`, restart the operator, then retry the capture update |
 | Nettap image digest mismatch after a chart upgrade | Installed chart version does not match the allowlist | Install the chart `--version` that matches your `workload-allowlist.yaml`, or upload the updated allowlist from Speedscale |
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
 

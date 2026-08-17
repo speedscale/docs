@@ -172,7 +172,7 @@ For eBPF requirements (kernel version, capabilities, supported languages), see t
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `ensureMinimumEphemeralStorage` | bool | `false` | Adds a `100Mi` ephemeral-storage request and limit to the Java Agent init container. Set to `true` on GKE Autopilot. Available in chart `2.5.828` and later. |
+| `ensureMinimumEphemeralStorage` | bool | `false` | Adds a `100Mi` ephemeral-storage request and limit to the Java Agent init container. Set to `true` on GKE Autopilot. Available in chart `2.5.828` and later. Restart the operator after changing this value on chart `2.5.828`. |
 | `sidecar.resources.limits.cpu` | string | `"500m"` | CPU limit for sidecar containers. |
 | `sidecar.resources.limits.memory` | string | `"512Mi"` | Memory limit for sidecar containers. |
 | `sidecar.resources.limits.ephemeral-storage` | string | `"100Mi"` | Ephemeral storage limit for sidecar containers. |
