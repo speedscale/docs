@@ -231,6 +231,26 @@ kubectl rollout restart deployment/speedscale-operator -n speedscale
 kubectl rollout status deployment/speedscale-operator -n speedscale
 ```
 
+### Workaround for an existing chart `2.5.828` installation
+
+If a Helm upgrade is difficult, add the setting to the operator override ConfigMap:
+
+```bash
+kubectl create configmap speedscale-operator-override \
+  --namespace speedscale \
+  --from-literal=ENSURE_MINIMUM_EPHEMERAL_STORAGE=true \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+Restart the operator so it reads the override:
+
+```bash
+kubectl rollout restart deployment/speedscale-operator -n speedscale
+kubectl rollout status deployment/speedscale-operator -n speedscale
+```
+
+The override ConfigMap takes precedence over the Helm ConfigMap. The override remains active after a Helm upgrade.
+
 Verify the install:
 
 ```bash
@@ -291,7 +311,7 @@ On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStora
 | AllowlistSynchronizer not Ready | Bucket IAM, path mismatch, invalid YAML, or incompatible GKE version | Confirm `container-engine-robot` has `objectViewer` and `bucketViewer`, then inspect synchronizer status |
 | Nettap pods rejected by Warden | Resource requests and limits do not match | Reinstall with matching requests and limits |
 | Replay init containers rejected by Warden | Missing `ephemeral-storage` values | Reinstall with the `sidecar.resources.*.ephemeral-storage=100Mi` values |
-| `speedscale-initproxy-java-agent` rejected with an `ephemeral-storage` minimum such as `10Mi` | The Java Agent storage setting is disabled, the operator has not restarted after a chart `2.5.828` upgrade, or the chart is older than `2.5.828` | Install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`; on chart `2.5.828`, restart the operator, then retry the capture update |
+| `speedscale-initproxy-java-agent` rejected with an `ephemeral-storage` minimum such as `10Mi` | The Java Agent storage setting is disabled, the operator has not restarted, or the chart is older than `2.5.828` | Install chart `2.5.828` or later. Set `ensureMinimumEphemeralStorage=true`, or use the override ConfigMap workaround. Restart the operator, then retry the capture update. |
 | Nettap image digest mismatch after a chart upgrade | Installed chart version does not match the allowlist | Install the chart `--version` that matches your `workload-allowlist.yaml`, or upload the updated allowlist from Speedscale |
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
 
