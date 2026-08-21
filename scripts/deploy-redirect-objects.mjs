@@ -48,6 +48,21 @@ if (stubs.length === 0) {
   process.exit(1);
 }
 
+// Every target here becomes an x-amz-website-redirect-location, which S3 will
+// serve as a 301 to wherever it points — including off-site. All of our
+// configured redirects are site-relative, so anything else means the build
+// produced something we did not intend; fail rather than publish an open
+// redirect on docs.speedscale.com. Note "//host" is protocol-relative and
+// leaves the origin, so a leading-slash check alone is not enough.
+const offsite = stubs.filter(
+  ([, target]) => !target.startsWith("/") || target.startsWith("//"),
+);
+if (offsite.length > 0) {
+  console.error("refusing to publish non-relative redirect targets:");
+  for (const [key, target] of offsite) console.error(`  ${key} -> ${target}`);
+  process.exit(1);
+}
+
 console.log(`${stubs.length} redirect stubs -> 301 objects in s3://${bucket}`);
 
 let failed = 0;

@@ -20,43 +20,52 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.0.0
       with:
         fetch-depth: 0
 
     - name: Setup Node.js
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
       with:
         node-version: '22'
+        cache: yarn
 
     - name: install
-      uses: bahmutov/npm-install@v1
-      with:
-        install-command: yarn --frozen-lockfile --silent
+      run: yarn --frozen-lockfile --silent
 
     - name: check redirects
-      run: node scripts/check-redirects.mjs ${{ github.event.pull_request.base.sha }}
-
-    - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v5
-      with:
-        role-to-assume: ${{ env.AWS_ROLE }}
-        aws-region: ${{ env.AWS_REGION }}
+      env:
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      run: node scripts/check-redirects.mjs "$BASE_SHA"
 
     - name: update url for preview
-      run: ./tools/update_preview_base.sh pr-${{ github.event.pull_request.number }}
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: ./tools/update_preview_base.sh "pr-$PR_NUMBER"
 
     - name: build
       run: yarn build
 
+    # Configured after install and build so the credentials are not in scope
+    # while third-party code runs. See the same note in main.yaml.
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.0.0
+      with:
+        role-to-assume: ${{ env.AWS_ROLE }}
+        aws-region: ${{ env.AWS_REGION }}
+
     - name: upload preview
-      run: aws s3 sync build s3://${{ env.DOWNLOADS_PREVIEW_BUCKET }}/pr-${{ github.event.pull_request.number }}
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER"
 
     - name: show url
-      run: echo 'http://${{ env.DOWNLOADS_PREVIEW_BUCKET }}.s3-website-us-east-1.amazonaws.com/pr-${{ github.event.pull_request.number }}/'
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: echo "http://$DOWNLOADS_PREVIEW_BUCKET.s3-website-us-east-1.amazonaws.com/pr-$PR_NUMBER/"
 
     - name: Find Comment
-      uses: peter-evans/find-comment@v2
+      uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
       id: fc
       with:
         issue-number: ${{ github.event.pull_request.number }}
@@ -64,7 +73,7 @@ jobs:
         body-includes: Preview available at 'http://${{ env.DOWNLOADS_PREVIEW_BUCKET }}.s3-website-us-east-1.amazonaws.com/pr-${{ github.event.pull_request.number }}/'
 
     - name: Create or Update comment
-      uses: peter-evans/create-or-update-comment@v2
+      uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
       with:
         comment-id: ${{ steps.fc.outputs.comment-id }} # This will be empty and a new comment will be made if no comment already exists
         issue-number: ${{ github.event.pull_request.number }}

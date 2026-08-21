@@ -12,7 +12,7 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { cwd } from "node:process";
 
@@ -43,11 +43,14 @@ function parseRedirects(configContent) {
 
 /** Get changed files by diff-filter status */
 function getChangedFiles(filter, baseRef) {
+  // execFileSync, not execSync: baseRef comes from argv, so a value containing
+  // shell metacharacters would otherwise be interpreted by a shell. Passing an
+  // argv array keeps it a single opaque argument to git.
   const args = baseRef
-    ? `git diff --diff-filter=${filter} --name-only HEAD...${baseRef}`
-    : `git diff --diff-filter=${filter} --name-only --cached`;
+    ? ["diff", `--diff-filter=${filter}`, "--name-only", `HEAD...${baseRef}`]
+    : ["diff", `--diff-filter=${filter}`, "--name-only", "--cached"];
   try {
-    const files = execSync(args, { cwd: WORK_DIR, encoding: "utf-8" })
+    const files = execFileSync("git", args, { cwd: WORK_DIR, encoding: "utf-8" })
       .trim()
       .split("\n")
       .filter(Boolean);
