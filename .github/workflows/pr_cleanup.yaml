@@ -19,10 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.0.0
       with:
         role-to-assume: ${{ env.AWS_ROLE }}
         aws-region: ${{ env.AWS_REGION }}
 
     - name: Delete PR preview
-      run: aws s3 rm --recursive s3://${{ env.DOWNLOADS_PREVIEW_BUCKET }}/pr-${{ github.event.pull_request.number }}
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: aws s3 rm --recursive "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER"
