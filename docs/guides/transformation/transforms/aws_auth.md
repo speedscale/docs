@@ -104,7 +104,7 @@ The transform reports both `idPath` and `secretPath` to the operator as required
 Given a recorded request with:
 
 ```
-Authorization: AWS4-HMAC-SHA256 Credential=AKIARMCVI5QDT57Y4NSL/20250505/us-east-1/firehose/aws4_request, SignedHeaders=amz-sdk-invocation-id;amz-sdk-request;content-length;content-type;host;x-amz-date;x-amz-target, Signature=foozibar
+Authorization: AWS4-HMAC-SHA256 Credential=AKIAIOSFODNN7EXAMPLE/20250505/us-east-1/firehose/aws4_request, SignedHeaders=amz-sdk-invocation-id;amz-sdk-request;content-length;content-type;host;x-amz-date;x-amz-target, Signature=foozibar
 x-amz-date: 20250505T232121Z
 ```
 
