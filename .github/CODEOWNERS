@@ -1,0 +1,27 @@
+# Code owners for security-sensitive paths in this repo.
+#
+# Deliberately not a catch-all: ordinary docs changes under docs/ do not need
+# an owner. These entries cover the files that either run inside the deploy
+# pipeline or change what every visitor's browser executes.
+#
+# Owners are listed individually rather than as @speedscale/devs because a
+# CODEOWNERS entry naming a principal without write access to the repo is
+# silently ignored by GitHub -- no error, no protection.
+
+# Workflows, the Dependabot config, and this file itself. main.yaml holds the
+# credentials that can sync and delete the production docs bucket.
+.github/**              @kenahrens @mleray24 @shaunduncan
+
+# Dependency manifests. The build executes code from every package here.
+package.json            @kenahrens @mleray24 @shaunduncan
+yarn.lock               @kenahrens @mleray24 @shaunduncan
+
+# Scripts invoked by CI: check-redirects, deploy-redirect-objects (which writes
+# S3 redirect objects), apply-patch (which runs on every install), and
+# update_preview_base.sh.
+scripts/**              @kenahrens @mleray24 @shaunduncan
+tools/**                @kenahrens @mleray24 @shaunduncan
+
+# headTags in this file injects raw <script> into every page on the site, and
+# the redirect table drives what deploy-redirect-objects.mjs publishes.
+docusaurus.config.js    @kenahrens @mleray24 @shaunduncan

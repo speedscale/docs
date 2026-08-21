@@ -1,0 +1,61 @@
+version: 2
+
+updates:
+  # Actions in this repo are pinned to commit SHAs. Pinning without an updater
+  # just trades a supply-chain risk for a staleness one -- the pins freeze on
+  # deprecated runtimes and nobody notices. Dependabot rewrites both the SHA
+  # and the trailing "# vX.Y.Z" comment, which is what keeps the pins honest.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+    labels:
+      - "dependencies"
+    # Groups are matched in order, so the specific ones must precede the
+    # catch-all below.
+    groups:
+      # The @docusaurus/* packages are version-locked to each other. Splitting
+      # them across separate PRs produces combinations that will not install.
+      docusaurus:
+        patterns:
+          - "@docusaurus/*"
+          - "@mdx-js/*"
+          - "prism-react-renderer"
+      algolia:
+        patterns:
+          - "@docsearch/*"
+          - "algoliasearch"
+      babel:
+        patterns:
+          - "@babel/*"
+      # Everything else: routine minor/patch churn arrives as one PR a week.
+      # Majors are deliberately excluded so they still show up individually
+      # and get reviewed on their own merits.
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
