@@ -11,6 +11,128 @@ Speedscale introduces chaos at the API level by manipulating individual request 
 
 The Speedscale chaos approach is complementary to infrastructure experiments provided by tools like [Gremlin](https://www.gremlin.com/) or [Chaos Monkey](https://netflix.github.io/chaosmonkey/).
 
+## Scoped chaos rules
+
+A chaos rule is three things: **what traffic it applies to**, **how often it fires**, and **what it
+does**.
+
+```
+--chaos '(url CONTAINS "/v1/inventory"): status=503,percent=100'
+```
+
+Rules are evaluated in order and **the first match wins** — one rule applies per response. The
+effects *within* that rule all apply.
+
+Chaos is injected by the responder into the responses it serves for your application's outbound
+dependencies. It does not touch inbound traffic, and it is HTTP-only today: a rule whose scope
+selects gRPC or SQL traffic logs that it matched nothing rather than silently doing nothing.
+
+### Scope
+
+The scope is a filter query — the same syntax as `--query-string` and the Filters dialog. **Every
+group must be parenthesized**, which is the most common thing to get wrong:
+
+```
+(url CONTAINS "/v1/inventory")
+(host IS "api.stripe.com") AND (command IS "POST")
+(location REGEX "^/api/checkout")
+```
+
+`*` matches everything.
+
+Useful fields: `url`, `location`, `host`, `command`, `status`, `header[Name]`, `query_param[name]`,
+`tag[key]`. Operators: `IS`, `CONTAINS`, `NOT`, `NOT CONTAINS`, `REGEX`.
+
+A scope that matches nothing is the most common chaos misconfiguration, so per-rule hit counts are
+reported during and after a run — see [Seeing what happened](#seeing-what-happened). If a rule shows
+zero hits, the scope is the first thing to check.
+
+### Effects
+
+| Effect | Values | Notes |
+| --- | --- | --- |
+| `latency` | `2s`, `3x`, `100ms-2s` | Fixed, a multiple of the recorded latency, or a jitter range |
+| `status` | `500`, `503`, … | Replaces the status the client receives |
+| `connection` | `refuse`, `reset`, `stall`, `drop` | Breaks the connection; `drop` cuts mid-response |
+| `body` | `corrupt`, `truncate`, `truncate:<bytes>` | Invalid JSON, or a well-formed shorter body |
+| `header` | `Name:Value` | Adds or sets a response header |
+| `no-response` | — | Ends the exchange with no reply at all |
+
+Effects compose. `latency=2s,status=503` does both.
+
+### Knobs
+
+| Knob | Meaning |
+| --- | --- |
+| `percent=` | Chance the rule fires at all, 0–100 |
+| `seed=` | Makes the run reproducible; see below |
+| `sticky` | Every occurrence of a signature shares one verdict |
+| `max-latency=` | Lowers the delay ceiling for this rule |
+| `@<percent>` | Suffix on an effect, giving it its own probability |
+
+`@<percent>` is Toxiproxy's *toxicity*, not a selection weight. `latency=2s@50,status=503` fires the
+status every time the rule matches and the latency half of those times — the two are independent, so
+both can happen or only one.
+
+## Seeing what happened
+
+Every perturbed response carries a marker, both as the `x-speedscale-chaos` response header and as a
+tag on the recorded pair:
+
+```
+effect=status code;status=503;rule=inventory-down
+```
+
+**Absence is the signal.** There is no `none` value — an untouched response carries no marker at all,
+so a marker is always evidence that something was perturbed.
+
+That marker drives:
+
+- the **Chaos column** and the "chaos applied" filter in the proxymock-web Requests grid, and the
+  chaos row in the RRPair detail view
+- the **Chaos summary** at the top of the Report view: how much of the run was perturbed, by which
+  rules, and with which effects
+- the same pill and detail row in the Speedscale dashboard
+
+One thing that looks wrong and is not: the **recorded pair keeps its pre-chaos status**. That pair is
+mock input for a later run, so rewriting it would change what a re-replay does. The grid shows the
+status the client actually received, with the recorded one alongside; `status=` in the marker is the
+authority on what was sent.
+
+## Reproducibility, and its limit
+
+`seed=` makes a run repeatable, with a caveat worth stating plainly.
+
+The roll is a pure function of the rule, the request signature, and the occurrence count — the Nth
+lookup of a given request always gets the same verdict. It is **not** a promise that two runs are
+identical: a run that issues a different number of requests for a signature diverges after that
+point.
+
+That is stronger than ordering-based reproducibility, which is worthless when the responder serves
+requests concurrently, and weaker than full determinism. In practice it means a failure you find this
+way is one you can hand to a teammate along with the command that produced it.
+
+`sticky` trades the occurrence counter away: every occurrence of a signature shares one verdict, so
+"this exact request always fails" — at the cost of being unable to express "35% of these calls are
+flaky".
+
+### Across multiple responder replicas
+
+Each responder pod owns its own rule state and counters. `percent` therefore holds **in aggregate
+across the run**, not exactly per pod, and "the 3rd occurrence" means the 3rd that pod saw. A 3-pod
+replay at `percent: 35` converges on 35% overall. Do not expect exact global counts.
+
+## What chaos does not do
+
+**It does not hide failures.** If your application cannot absorb an injected failure, that failure is
+reported normally — in pass/fail, in error rates, and in the report outcome. Learning that the
+application is *not* resilient is the entire point.
+
+Separately, chaos-affected traffic is excluded from **drift, similarity and match-rate** analysis,
+because an injected 503 is not mock drift. Those two rules are easy to confuse and point in opposite
+directions: chaosed pairs leave the *analysis* of how well your mocks match, and never leave the
+*outcome* of whether your application coped.
+
 ## Behavior changes in Chaos v2
 
 Chaos v2 replaces the original chaos implementation with a scoped rule engine. The corrections below are
