@@ -68,11 +68,76 @@ Effects compose. `latency=2s,status=503` does both.
 | `seed=` | Makes the run reproducible; see below |
 | `sticky` | Every occurrence of a signature shares one verdict |
 | `max-latency=` | Lowers the delay ceiling for this rule |
+| `start-after=` | How far into the run the rule becomes active |
+| `duration=` | How long it stays active once it opens |
 | `@<percent>` | Suffix on an effect, giving it its own probability |
 
 `@<percent>` is Toxiproxy's *toxicity*, not a selection weight. `latency=2s@50,status=503` fires the
 status every time the rule matches and the latency half of those times — the two are independent, so
 both can happen or only one.
+
+### Bounded windows
+
+A rule with no window is active for the whole run. `start-after` and `duration` bound it:
+
+```
+--chaos '(url CONTAINS "/v1/inventory"): status=503,start-after=10s,duration=30s'
+```
+
+That is the difference between *this endpoint is flaky* and *this dependency went down for 30
+seconds and came back* — the second being the shape a chaos hypothesis usually takes:
+
+> given inventory returns 200, **when** it returns 503 for 30 seconds, **then** the service retries
+> and succeeds again once the window closes.
+
+The window is measured from the **start of the run**, not from when a responder process started. The
+responder runs as multiple replicas in a cluster, and a per-process clock would open each pod's
+window at a different moment, smearing the disruption you are trying to observe cleanly.
+
+A consequence worth knowing: if a run has no start time to anchor to, bounded rules **do not fire**
+rather than running for the whole run, and the responder says so. Giving you the entire run when you
+asked for thirty seconds would be the more damaging failure.
+
+Windows are also the one place wall-clock enters an otherwise clock-free engine. A windowed run is
+reproducible in its **verdicts** — the Nth occurrence of a request gets the same answer — but not in
+its exact request *membership*, since which requests land inside the window varies with timing.
+
+## Building rules in proxymock-web
+
+**Chaos Rules**, under Config, edits the rule set without hand-writing JSON. Scope opens the same
+Filters dialog the Requests grid uses, so a chaos scope and a grid filter are the same thing.
+
+Rules are saved to `proxymock/chaos.json` in the workspace and are picked up by the next
+`proxymock mock` run. Keeping them beside the traffic is deliberate: a rule scoped to
+`/v1/inventory` means nothing in a workspace that has no inventory calls.
+
+### The preview is the point
+
+Each rule is scored against the loaded traffic before you run anything:
+
+| verdict | meaning |
+| --- | --- |
+| `6 of 6 responses` | the rule works |
+| `shadowed by <rule>` | the scope is fine, but an earlier rule takes the traffic first |
+| `matches nothing` | the scope selects no traffic |
+
+Those last two look identical from a completed run — both produce zero markers — which is why the
+distinction lives here rather than in the report. Rules are evaluated top to bottom and the first
+match wins, so moving a rule up changes what every rule below it sees.
+
+## When a rule cannot fire
+
+Two cases are reported rather than left silent, because the symptom of both is a rule that simply
+does nothing:
+
+- **at startup**, a rule scoped to a technology chaos cannot inject into. v1 perturbs HTTP responses
+  only, so a rule scoped to `postgres` is never even evaluated.
+- **at the end of a run**, any rule that matched no traffic. That is not necessarily a mistake — a
+  rule scoped to an endpoint the run never called is legitimately quiet — but it is the first thing
+  worth checking when chaos appears not to have worked.
+
+Neither fails the run. A rule that cannot fire is a mistake; the rest of the rule set is probably
+doing what you wanted.
 
 ## Seeing what happened
 
