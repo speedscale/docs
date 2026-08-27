@@ -104,22 +104,39 @@ its exact request *membership*, since which requests land inside the window vari
 
 ## Building rules in proxymock-web
 
-**Chaos Rules**, under Config, edits the rule set without hand-writing JSON. Scope opens the same
-Filters dialog the Requests grid uses, so a chaos scope and a grid filter are the same thing.
+**Chaos Rules**, under Config in the left sidebar, edits the rule set without hand-writing JSON.
+
+![The Chaos Rules editor with three rules and the preview table beneath them](./chaos/rule-editor.png)
+
+Each rule is a name, a scope, a `fires on` percentage, and one or more effects. The arrows reorder
+rules, which matters because evaluation is top to bottom and the first match wins.
 
 Rules are saved to `proxymock/chaos.json` in the workspace and are picked up by the next
 `proxymock mock` run. Keeping them beside the traffic is deliberate: a rule scoped to
 `/v1/inventory` means nothing in a workspace that has no inventory calls.
 
+### Scope is a filter
+
+**Edit scope** opens the same Filters dialog the Requests grid uses, so a chaos scope and a grid
+filter are the same object. You can narrow the grid until it shows the traffic you want to break,
+then use that filter as the scope.
+
+![The scope editor, which is the same Filters dialog used by the Requests grid](./chaos/scope-dialog.png)
+
 ### The preview is the point
 
-Each rule is scored against the loaded traffic before you run anything:
+Each rule is scored against the loaded traffic before you run anything. In the screenshot above,
+all three verdicts are visible at once:
 
 | verdict | meaning |
 | --- | --- |
 | `6 of 6 responses` | the rule works |
 | `shadowed by <rule>` | the scope is fine, but an earlier rule takes the traffic first |
 | `matches nothing` | the scope selects no traffic |
+
+`inventory-slow` is shadowed because `inventory-down` sits above it with the same scope and takes
+the traffic first. `payments-timeout` matches nothing because this workspace has no `/v1/payments`
+calls in it.
 
 Those last two look identical from a completed run — both produce zero markers — which is why the
 distinction lives here rather than in the report. Rules are evaluated top to bottom and the first
