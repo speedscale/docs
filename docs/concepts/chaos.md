@@ -108,6 +108,51 @@ Chaos is injected by the **responder**, at the moment it answers one of your app
 outbound calls. The order of operations matters, because most surprises come from assuming it
 happens somewhere else in the pipeline.
 
+### Attaching rules to a run
+
+There are three ways to hand rules to a run, and they all end up in the same place. The responder
+builds its engine from `chaos.rules` on the **test config** it was given, so that is the single
+mechanism; everything below is a way of getting rules onto it.
+
+**On the command line**, for a local run. Repeat the flag for more than one rule:
+
+```shell
+proxymock mock --in ./proxymock/recording \
+  --chaos '(url CONTAINS "/v1/inventory"): status=503,percent=100'
+```
+
+**Saved in the workspace**, for a local run you want to repeat. Rules authored in the Chaos Rules
+pane are written to `proxymock/chaos.json` and picked up by the next `proxymock mock` with no flag
+at all.
+
+**On the test config**, for a replay in a cluster. Put the rules in the test config that the
+`TrafficReplay` names, and every replay using that config runs with them:
+
+```yaml
+apiVersion: speedscale.com/v1
+kind: TrafficReplay
+metadata:
+  name: test-1
+spec:
+  snapshotID: abf5c088-48f2-43a6-bf59-8b12f04144b4
+  testConfigID: chaos-inventory-down   # a test config carrying chaos.rules
+  workloadRef:
+    kind: Deployment
+    name: my-app
+```
+
+Keeping chaos on the test config rather than on the replay is what makes a chaos run repeatable
+and shareable: the same `testConfigID` is the same experiment, and the CI pipeline that already
+passes a test config ID needs no new plumbing to run one.
+
+If more than one source applies to the same local run, the order is `--chaos` first, then the saved
+`chaos.json`, then whatever the test config already carried. Because the engine is first-match-wins,
+that ordering *is* the precedence: the most explicit and most ephemeral rules get first refusal on
+the traffic.
+
+Rules with no `seed=` of their own inherit the test config ID as their seed, so two replays of the
+same test config make the same decisions without anyone configuring reproducibility.
+
 ```mermaid
 flowchart TD
   A["request from your app"] --> B["match against recorded traffic"]
