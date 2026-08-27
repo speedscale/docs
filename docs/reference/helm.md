@@ -102,8 +102,13 @@ helm install speedscale-operator speedscale/speedscale-operator \
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `privilegedSidecars` | bool | `false` | Controls whether sidecar init containers should run with privileged mode enabled. |
-| `createJKS` | bool | `true` | Controls a pre-install job that creates a JKS with standard certificates and the Speedscale certificate. This job requires a root container user. Disable if security policies forbid `runAsNonRoot: true`. |
+| `createTLSCerts` | bool | `true` | Creates the `speedscale-certs` and `speedscale-webhook-certs` Secrets. Set to `false` when your PKI or secret manager provisions them. |
+| `createJKS` | bool | `true` | Controls a pre-install Job that creates the `speedscale-jks` truststore from the standard OpenJDK CAs and the Speedscale CA. The Job runs as UID 0; disable it if Java truststore support is unnecessary or policy requires every container to run as non-root. |
+| `secretAccessList` | list | `[]` | Restricts the operator to the named Kubernetes Secrets plus required Speedscale internal Secrets. An empty list permits access to all Secrets in a managed namespace. |
 | `disableSidecarSmartReverseDNS` | bool | `false` | Controls whether the sidecar should disable the smart DNS lookup feature (requires `NET_ADMIN` capability). |
+
+See [Kubernetes Security Requirements](/security/kubernetes-permissions) for the complete operator RBAC,
+admission webhook, replay certificate, and eBPF runtime permission summary.
 
 ### Advanced Configuration
 

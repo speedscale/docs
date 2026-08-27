@@ -97,8 +97,8 @@ tested and verified:
 
 ## Runtime Requirements
 
-Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and a
-privileged deployment mode to load its probes and see host-level traffic.
+Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and
+host-level access to load its probes and observe traffic.
 
 ### Capabilities
 
@@ -122,6 +122,14 @@ the ingest/proxy side only needs raw socket access.
 
 - `hostNetwork: true` - visibility into host-level network traffic to capture traffic for any pod scheduled on the node
 - `hostPID: true` - ability to discover and attach probes to application processes for any pod scheduled on the node
+
+The current Helm chart runs the `nettap` capture and ingest containers as UID/GID 0 and sets
+`runAsNonRoot: false`. It does not set `privileged: true`: each container drops all Linux capabilities and
+adds only the capabilities listed above. This distinction is important when evaluating the collector against
+Pod Security Standards or an admission policy.
+
+For the operator RBAC, admission webhook, and certificate requirements around capture and replay, see
+[Kubernetes Security Requirements](/security/kubernetes-permissions).
 
 ## Installation
 
