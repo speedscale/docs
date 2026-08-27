@@ -25,6 +25,10 @@ Enterprise Linux are already accustomed.
 
 ## Installing the Speedscale Operator
 
+:::info Installation is always through the Helm chart
+Speedscale is installed on OpenShift the same way as on any Kubernetes cluster: with the Speedscale Helm chart, following the standard [operator installation](./kubernetes-operator.md). Speedscale is not available through OperatorHub or the OpenShift web console's operator catalog. Use `helm` (or `helm template` plus `oc apply` in [Helm-restricted environments](/reference/ebpf-traffic-collection#installation)) for installation, and `oc` for the OpenShift-specific steps below. The web console is useful for watching the resulting workloads, but no part of the installation happens there.
+:::
+
 The following settings are required to be set in the `values.yaml` when [installing the Speedscale operator](./kubernetes-operator.md) for OpenShift. OpenShift injects it's own user and group IDs, so we need to set these fields as null to allow it to override them at deploy time. You can read more about how [here](https://www.redhat.com/en/blog/a-guide-to-openshift-and-uids).
 
 ```yaml
@@ -126,6 +130,10 @@ globalSecurityContext:
 ebpf:
   enabled: true
 ```
+
+No manual SCC setup is needed for eBPF capture. When the chart detects OpenShift (the `security.openshift.io/v1` API group), it creates a dedicated `speedscale-nettap` SecurityContextConstraints and grants it to the daemonset's service account automatically. The daemonset runs as a non-root user (UID 2102) rather than as root or privileged, with only the [documented capture capabilities](/reference/ebpf-traffic-collection#capabilities).
+
+The Java agent init container that Speedscale injects for JVM TLS capture sets no user ID of its own, so it is compatible with the default `restricted-v2` SCC: OpenShift assigns it a user ID from the namespace's range like any other workload container.
 
 ## Replaying Traffic
 
