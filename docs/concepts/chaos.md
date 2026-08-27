@@ -102,6 +102,57 @@ Windows are also the one place wall-clock enters an otherwise clock-free engine.
 reproducible in its **verdicts** — the Nth occurrence of a request gets the same answer — but not in
 its exact request *membership*, since which requests land inside the window varies with timing.
 
+## How a rule is selected and applied during a replay
+
+Chaos is injected by the **responder**, at the moment it answers one of your application's
+outbound calls. The order of operations matters, because most surprises come from assuming it
+happens somewhere else in the pipeline.
+
+```mermaid
+flowchart TD
+  A["request from your app"] --> B["match against recorded traffic"]
+  B -->|no match| C["mock miss<br/>chaos never runs"]
+  B -->|match| D["first rule whose window is open<br/>and whose scope matches"]
+  D -->|no rule matches| E["recorded response, untouched"]
+  D --> F["keyed roll on percent"]
+  F -->|declines| E
+  F -->|fires| G["apply effects, attach marker"]
+```
+
+**Rules are read once, when the run starts,** and are fixed for its lifetime. Editing them in
+proxymock-web does not change a run already in progress.
+
+**Chaos runs on the mock-hit path, after matching.** The request is matched against recorded
+traffic first, and the engine is only consulted once a recorded pair has been found. A perturbed
+response is therefore always a mock hit and never a miss: chaos never invents a response for
+traffic the mock did not recognize. This is why the Chaos column and the Match column agree in
+the Requests grid, and why injected failures cannot inflate your no-match rate.
+
+**The scope is matched against the live request plus the response about to be sent.** Request-side
+predicates (`url`, `header`, `query_param`) see the actual incoming request, and response-side
+predicates (`status`) see the recorded response. Both mean what you would expect.
+
+**First match wins, including when the roll declines.** The first rule whose window is open and
+whose scope matches *claims* the request. If that rule's `percent` roll then says no, the response
+goes out untouched and evaluation stops there rather than falling through to later rules. So a
+`percent=50` rule at the top does not leave the other half of the traffic for the rule below it,
+it leaves that half unperturbed. This is what the preview calls **shadowed**.
+
+**The roll is keyed, not random.** It is an fnv64a hash over the seed, the rule id, the request
+signature, the occurrence count, and the effect index, with no clock in it. That is what makes the
+Nth call to a given endpoint always get the same verdict. The occurrence counter lives in the
+responder process, per rule and signature, so it keeps incrementing across every request the run
+sends. `sticky` skips the counter so all occurrences of a signature share one verdict, and a
+`@<percent>` toxicity suffix rolls independently per effect by mixing the effect index into the key.
+
+**Effects apply before the body is encoded.** Payload effects have to perturb the body while it is
+still structured, so the engine runs ahead of encoding and the marker is attached last. The
+engine is consulted exactly once per response: asking twice would advance the occurrence counter
+and give the two questions different answers.
+
+One thing that is deliberately not chaos: the responder's own baseline response delay. That is
+applied whether or not a rule fires, and a `latency` effect adjusts it rather than replacing it.
+
 ## Building rules in proxymock-web
 
 **Chaos Rules**, under Config in the left sidebar, edits the rule set without hand-writing JSON.
