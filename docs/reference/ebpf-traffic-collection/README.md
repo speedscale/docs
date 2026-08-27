@@ -97,8 +97,10 @@ tested and verified:
 
 ## Runtime Requirements
 
-Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and a
-privileged deployment mode to load its probes and see host-level traffic.
+Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and
+host-level visibility to load its probes and see traffic. It does not run as root or as a privileged
+container: the capture container runs as a non-root user (UID 2102) and carries only the capabilities
+listed below, granted through file capabilities on the executable.
 
 ### Capabilities
 
@@ -122,6 +124,11 @@ the ingest/proxy side only needs raw socket access.
 
 - `hostNetwork: true` - visibility into host-level network traffic to capture traffic for any pod scheduled on the node
 - `hostPID: true` - ability to discover and attach probes to application processes for any pod scheduled on the node
+- a non-root security context: `runAsUser: 2102`, `privileged: false`, all capabilities dropped except the set above
+
+On OpenShift, the chart detects the `security.openshift.io/v1` API group and automatically creates a
+`speedscale-nettap` SecurityContextConstraints granting exactly this contract; see the
+[OpenShift installation guide](/getting-started/installation/install/openshift#ebpf) for details.
 
 ## Installation
 

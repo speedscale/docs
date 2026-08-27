@@ -131,7 +131,7 @@ ebpf:
   enabled: true
 ```
 
-No manual SCC setup is needed for eBPF capture. When the chart detects OpenShift (the `security.openshift.io/v1` API group), it creates a dedicated `speedscale-nettap` SecurityContextConstraints and grants it to the daemonset's service account automatically.
+No manual SCC setup is needed for eBPF capture. When the chart detects OpenShift (the `security.openshift.io/v1` API group), it creates a dedicated `speedscale-nettap` SecurityContextConstraints and grants it to the daemonset's service account automatically. The daemonset runs as a non-root user (UID 2102) rather than as root or privileged, with only the [documented capture capabilities](/reference/ebpf-traffic-collection#capabilities).
 
 The Java agent init container that Speedscale injects for JVM TLS capture sets no user ID of its own, so it is compatible with the default `restricted-v2` SCC: OpenShift assigns it a user ID from the namespace's range like any other workload container.
 
