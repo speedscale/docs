@@ -200,7 +200,11 @@ applied whether or not a rule fires, and a `latency` effect adjusts it rather th
 
 ## Building rules in proxymock-web
 
-**Chaos Rules**, under Config in the left sidebar, edits the rule set without hand-writing JSON.
+**Chaos Rules**, under **Overrides** in the left sidebar, edits the rule set without
+hand-writing JSON. It sits beside Blueprints because the two are the same kind of thing: a
+declaration saved into the workspace that changes what the next run does, without altering the
+recorded traffic. The rule editors under Config are machine-global by contrast, and travel with
+your install rather than your workspace.
 
 ![The Chaos Rules editor with three rules and the preview table beneath them](./chaos/rule-editor.png)
 
