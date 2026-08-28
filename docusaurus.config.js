@@ -1220,6 +1220,14 @@ const config = {
             to: "/guides/transformation/transforms/gzip/",
           },
           {
+            from: "/transform/transforms/graphql/",
+            to: "/guides/transformation/transforms/graphql/",
+          },
+          {
+            from: "/transform/transforms/graphql_delete/",
+            to: "/guides/transformation/transforms/graphql_delete/",
+          },
+          {
             from: "/transform/transforms/json_path/",
             to: "/guides/transformation/transforms/json_path/",
           },
