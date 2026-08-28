@@ -53,7 +53,7 @@ This section contains practical, step-by-step guides for using Speedscale's API 
 - **[Advanced Filters](./advanced-filters)** - Create sophisticated traffic filters for precise capture
 - **[CLI Usage](./cli)** - Command-line interface for power users
 - **[Ingress Traffic](./ingress)** - Capture cluster ingress traffic
-- **[GraphQL Support](./graphql)** - Working with GraphQL APIs
+- **[GraphQL Support](./graphql/index.md)** - Working with GraphQL APIs: operations, semantic paths, transforms and recipes
 - **[JSON Payloads](./json-payloads)** - Handling complex JSON data structures
 - **[Load Patterns](./load-patterns)** - Configure realistic load testing scenarios
 - **[Argo Integration](./argo)** - Using Speedscale with Argo Rollouts
