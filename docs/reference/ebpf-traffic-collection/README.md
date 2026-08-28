@@ -124,7 +124,8 @@ the ingest/proxy side only needs raw socket access.
 
 - `hostNetwork: true` - visibility into host-level network traffic to capture traffic for any pod scheduled on the node
 - `hostPID: true` - ability to discover and attach probes to application processes for any pod scheduled on the node
-- a non-root security context: `runAsUser: 2102`, `privileged: false`, all capabilities dropped except the set above
+- a non-root security context: `runAsUser: 2102`, `runAsGroup: 2102`, `fsGroup: 2102`, `privileged: false`, all capabilities dropped except the set above
+- read-only hostPath mounts of `/proc`, `/sys`, `/sys/fs/cgroup`, and `/var/run/netns` for process discovery, probe attachment, BTF access, and namespace resolution
 
 On OpenShift, the chart detects the `security.openshift.io/v1` API group and automatically creates a
 `speedscale-nettap` SecurityContextConstraints granting exactly this contract; see the
