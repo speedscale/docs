@@ -29,7 +29,7 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`ruby` directory)
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/ruby` directory)
 - Stack: Ruby HTTP service using the standard-library `Net::HTTP` client that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Local run: `ruby app.rb`
 - Quick validation: `./lab/tests/run_tests.sh --recording`
@@ -50,7 +50,7 @@ proxymock init`,
     {
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/mock-lab
-cd mock-lab/ruby
+cd mock-lab/languages/ruby
 proxymock record -- ruby app.rb`,
       note: 'proxymock records the app while it starts the Ruby service as a child process. `Net::HTTP` reads the proxy environment variables proxymock sets, so no extra configuration is needed.',
     },
@@ -61,13 +61,13 @@ proxymock record -- ruby app.rb`,
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/ruby
+      command: `cd mock-lab/languages/ruby
 proxymock mock -- ruby app.rb`,
       note: 'The mocked run should no longer need live outbound dependencies.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/ruby
+      command: `cd mock-lab/languages/ruby
 proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Ruby changes.',
     },
