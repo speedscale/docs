@@ -41,7 +41,7 @@ Clone mock-lab and record the Go app with its telemetry beacon enabled. On every
 
 ```shell
 git clone https://github.com/speedscale/mock-lab.git
-cd mock-lab/go
+cd mock-lab/languages/go
 EMIT_TELEMETRY=1 proxymock record -- go run .
 ```
 
@@ -57,7 +57,7 @@ The recording lands in `proxymock/recorded-<timestamp>/` — real API calls plus
 
 ## 2. Mock and replay: watch the misses happen
 
-Run the app against the mock built from that recording, and replay the recorded tests at it. The beacon generates *new* UUIDs this run, so those requests cannot match. Both terminals run from `mock-lab/go`:
+Run the app against the mock built from that recording, and replay the recorded tests at it. The beacon generates *new* UUIDs this run, so those requests cannot match. Both terminals run from `mock-lab/languages/go`:
 
 ```shell
 # terminal 1 — app with the downstream mocked (fail closed so misses are visible)
@@ -71,7 +71,7 @@ Stop the mock with `Ctrl-C`. The mock server wrote everything it observed — wi
 
 ## 3. Let the agent tune it
 
-In your AI agent, from the `mock-lab/go` directory:
+In your AI agent, from the `mock-lab/languages/go` directory:
 
 ```text
 /improve-mock-match-rate
@@ -167,7 +167,7 @@ proxymock match-rate similar --id proxymock/report-.../responder/abc123.md
 - Fixes are **blueprint-only** — no RRPair files are rewritten, and every accept can be undone.
 - Each fix is **scoped by a filter** (the group's endpoint), so a wildcard on one rotating route can't collapse unrelated endpoints into false matches.
 - Fixes using `smart_replace_recorded` can't be credited by the offline projection (they need recorded data at replay time) — the agent notes them for the confirming run instead of churning.
-- A value that a **prior response** issued — a pagination cursor, a freshly-created id, an issued token — is surfaced as a **correlate** recommendation: *bind* it (carry the value from the response into the later request), don't mask it, because masking a cursor collapses every page onto page 1. mock-lab's `GET /v1/feed` cursor flow shows this when the app runs against the lab reference server (`DOWNSTREAM_URL=http://localhost:8090` pointed at `../lab/server`); `accept all` masks the volatile values and leaves correlations for you to review.
+- A value that a **prior response** issued — a pagination cursor, a freshly-created id, an issued token — is surfaced as a **correlate** recommendation: *bind* it (carry the value from the response into the later request), don't mask it, because masking a cursor collapses every page onto page 1. mock-lab's `GET /v1/feed` cursor flow shows this when the app runs against the lab reference server (`DOWNSTREAM_URL=http://localhost:8090` pointed at `../../lab/server`); `accept all` masks the volatile values and leaves correlations for you to review.
 - An endpoint the recording answered with **more than one response** for the *same* request — a poll that goes pending→done, or a growing collection — is called out under **Stateful endpoints**. A mock matches on the request signature, so it can only replay the first recorded response and the client would freeze on the stale one. This is a warning, not a fix: no masking helps, because the request itself doesn't change; the endpoint needs a *sequenced* mock. mock-lab's `GET /v1/job/status` (against the lab reference server) shows this — its `status` cycles while the request stays identical.
 - A rotating id in a URL path that was **created earlier in the session** — issued by a `POST`/`PUT`/`PATCH` response (a `Location` header or a body id) and then used in a later request's path — is called out under **Created ids** (a CREATE→USE list) and is *not* offered a wildcard. Wildcarding `/orders/*` would match ids the mock never issued; at mock time the client reuses the id the mock returned, so the request matches on its own. mock-lab's `POST /v1/orders` → `GET /v1/orders/{id}` flow shows this against the lab reference server.
 - Auth and session correlations — an OAuth token, a rotated session cookie, a CSRF double-submit, an `ETag`→`If-None-Match` — are collected under **Credentials & session**. These ride in headers, which are *outside* the mock signature, so they never cause a mock miss and get no fix here; but the credential-carrying ones authenticate the caller, so a *validating* replay must correlate them — the advisory flags those for review and points at credential setup. mock-lab's `POST /v1/auth/token` → `GET /v1/me` (bearer + session cookie) flow shows this against the lab reference server.

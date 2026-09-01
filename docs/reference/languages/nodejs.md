@@ -34,7 +34,7 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`node` directory)
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/node` directory)
 - Stack: zero-dependency Node HTTP service (built-in `http` plus the global `fetch`) that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Local run: `node index.js` (no `npm install` and no `npm start`)
 - Quick validation: `./lab/tests/run_tests.sh --recording`
@@ -71,7 +71,7 @@ proxymock init`,
     {
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/mock-lab
-cd mock-lab/node
+cd mock-lab/languages/node
 export NODE_USE_ENV_PROXY=1
 export NODE_EXTRA_CA_CERTS="$HOME/.speedscale/certs/tls.crt"
 proxymock record -- node index.js`,
@@ -84,7 +84,7 @@ proxymock record -- node index.js`,
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/node
+      command: `cd mock-lab/languages/node
 export NODE_USE_ENV_PROXY=1
 export NODE_EXTRA_CA_CERTS="$HOME/.speedscale/certs/tls.crt"
 proxymock mock -- node index.js`,
@@ -92,7 +92,7 @@ proxymock mock -- node index.js`,
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/node
+      command: `cd mock-lab/languages/node
 proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Node.js changes. The proxy environment variables are not needed for replay.',
     },

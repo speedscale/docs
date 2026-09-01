@@ -33,7 +33,7 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`dotnet` directory)
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/dotnet` directory)
 - Stack: .NET minimal API that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Local run: `dotnet run`
 - Quick validation: `./lab/tests/run_tests.sh --recording`
@@ -54,7 +54,7 @@ proxymock init`,
     {
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/mock-lab
-cd mock-lab/dotnet
+cd mock-lab/languages/dotnet
 proxymock record -- dotnet run`,
       note: 'proxymock records the app while it starts the .NET service as a child process and injects the proxy and TLS settings automatically — HttpClient picks them up with no manual HTTP_PROXY/HTTPS_PROXY exports.',
     },
@@ -65,13 +65,13 @@ proxymock record -- dotnet run`,
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/dotnet
+      command: `cd mock-lab/languages/dotnet
 proxymock mock -- dotnet run`,
       note: 'The mocked run should no longer need live downstream access.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/dotnet
+      command: `cd mock-lab/languages/dotnet
 proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping .NET changes.',
     },

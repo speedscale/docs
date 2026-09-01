@@ -18,7 +18,7 @@ This guide will walk you through recording an environment from your local deskto
 
 ### Step 1: Set Up Your Application
 
-   - For this guide, we'll use a basic [application](https://github.com/speedscale/mock-lab/tree/main/go) written in Golang. Clone it with `git clone https://github.com/speedscale/mock-lab`, then run it with `cd mock-lab/go` and `go run .` (it listens on port `8080`). However, the instructions apply to any application. Just make sure you use the appropriate environment variables or flags for your language.
+   - For this guide, we'll use a basic [application](https://github.com/speedscale/mock-lab/tree/main/languages/go) written in Golang. Clone it with `git clone https://github.com/speedscale/mock-lab`, then run it with `cd mock-lab/languages/go` and `go run .` (it listens on port `8080`). However, the instructions apply to any application. Just make sure you use the appropriate environment variables or flags for your language.
 
    We use the bundled traffic driver to send requests to our sample app. Requests sent to the sample app will trigger an outbound call to the CNCF projects API at `demo-api.trafficreplay.com`.
 

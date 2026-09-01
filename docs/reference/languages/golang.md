@@ -29,7 +29,7 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`go` directory)
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/go` directory)
 - Stack: Go HTTP service that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Local run: `go run .`
 - Quick validation: `./lab/tests/run_tests.sh --recording`
@@ -50,7 +50,7 @@ proxymock init`,
     {
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/mock-lab
-cd mock-lab/go
+cd mock-lab/languages/go
 proxymock record -- go run .`,
       note: 'proxymock records the app while it starts the Go service as a child process.',
     },
@@ -61,13 +61,13 @@ proxymock record -- go run .`,
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/go
+      command: `cd mock-lab/languages/go
 proxymock mock -- go run .`,
       note: 'The mocked run should no longer need live outbound dependencies.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/go
+      command: `cd mock-lab/languages/go
 proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Go changes.',
     },

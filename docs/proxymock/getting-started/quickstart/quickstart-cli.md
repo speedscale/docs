@@ -141,18 +141,19 @@ If you want the language-specific landing pages after this Go-first quickstart, 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
     ```shell
-    git clone https://github.com/speedscale/mock-lab && cd mock-lab/go && proxymock record -- go run .
+    git clone https://github.com/speedscale/mock-lab && cd mock-lab/languages/go && proxymock record -- go run .
     ```
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
     ```shell
-    git clone https://github.com/speedscale/mock-lab && cd mock-lab/go && proxymock record -- go run .
+    git clone https://github.com/speedscale/mock-lab && cd mock-lab/languages/go && proxymock record -- go run .
     ```
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
-    If you're using the mock-lab Codespace, the repository is already cloned. Navigate to it and start recording:
+    If you're using the mock-lab Codespace, the repository is already cloned. Navigate to `languages/go` and start recording:
 
     ```shell
+    cd languages/go
     export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
     proxymock record -- go run .
     ```
@@ -160,7 +161,7 @@ If you want the language-specific landing pages after this Go-first quickstart, 
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     ```shell
-    git clone https://github.com/speedscale/mock-lab && cd mock-lab/go && proxymock record -- go run .
+    git clone https://github.com/speedscale/mock-lab && cd mock-lab/languages/go && proxymock record -- go run .
     ```
   </TabItem>
 </Tabs>
@@ -240,7 +241,7 @@ You will also see some additional output in the original proxymock terminal wind
 
 ## Step 5: View recording results {#view-recording}
 
-There should be a new directory in the `proxymock` subdirectory inside `mock-lab/go`. (An offline recording is also committed at `lab/proxymock/recording` if you'd rather skip recording and jump straight to mocking.)
+There should be a new directory in the `proxymock` subdirectory inside `mock-lab/languages/go`. (An offline recording is also committed at `lab/proxymock/recording` if you'd rather skip recording and jump straight to mocking.)
 
 ```shell
 ls proxymock

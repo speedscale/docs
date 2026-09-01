@@ -23,7 +23,7 @@ The data necessary for this example can be found in the Speedscale github reposi
 git clone https://github.com/speedscale/mock-lab
 ```
 
-After you have downloaded the demo, follow the instructions in the `go` directory (`cd mock-lab/go` and `go run .`) to run the app and start capturing traffic. The mock-lab app authenticates through the `POST /oauth/token` endpoint, which returns an `access_token` used as a bearer token on subsequent calls. Send a credentialed token request whose body carries the login values you want to transform, for example:
+After you have downloaded the demo, follow the instructions in the `languages/go` directory (`cd mock-lab/languages/go` and `go run .`) to run the app and start capturing traffic. The mock-lab app authenticates through the `POST /oauth/token` endpoint, which returns an `access_token` used as a bearer token on subsequent calls. Send a credentialed token request whose body carries the login values you want to transform, for example:
 
 ```
 {
