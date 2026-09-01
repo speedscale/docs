@@ -100,7 +100,9 @@ tested and verified:
 Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and
 host-level visibility to load its probes and see traffic. It does not run as root or as a privileged
 container: the capture container runs as a non-root user (UID 2102) and carries only the capabilities
-listed below, granted through file capabilities on the executable.
+listed below, granted through file capabilities on the executable. The container sets
+`allowPrivilegeEscalation: true` because Linux `no_new_privs` would otherwise prevent the executable from
+acquiring those capabilities. The container remains non-root with `privileged: false`.
 
 ### Capabilities
 
@@ -124,7 +126,7 @@ the ingest/proxy side only needs raw socket access.
 
 - `hostNetwork: true` - visibility into host-level network traffic to capture traffic for any pod scheduled on the node
 - `hostPID: true` - ability to discover and attach probes to application processes for any pod scheduled on the node
-- a non-root security context: `runAsUser: 2102`, `runAsGroup: 2102`, `fsGroup: 2102`, `privileged: false`, all capabilities dropped except the set above
+- a non-root security context: `runAsUser: 2102`, `runAsGroup: 2102`, `fsGroup: 2102`, `privileged: false`, `allowPrivilegeEscalation: true`, all capabilities dropped except the set above
 - read-only hostPath mounts of `/proc`, `/sys`, `/sys/fs/cgroup`, and `/var/run/netns` for process discovery, probe attachment, BTF access, and namespace resolution
 
 On OpenShift, the chart detects the `security.openshift.io/v1` API group and automatically creates a

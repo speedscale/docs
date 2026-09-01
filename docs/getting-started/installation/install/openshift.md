@@ -133,6 +133,8 @@ ebpf:
 
 No manual SCC setup is needed for eBPF capture. When the chart detects OpenShift (the `security.openshift.io/v1` API group), it creates a dedicated `speedscale-nettap` SecurityContextConstraints and grants it to the daemonset's service account automatically. The daemonset runs as a non-root user (UID 2102) rather than as root or privileged, with only the [documented capture capabilities](/reference/ebpf-traffic-collection#capabilities).
 
+When rendering manifests client-side, add `--api-versions security.openshift.io/v1` to the `helm template` command. Client-side rendering cannot discover the cluster APIs, so omitting this flag also omits the `speedscale-nettap` SCC.
+
 The Java agent init container that Speedscale injects for JVM TLS capture sets no user ID of its own, so it is compatible with the default `restricted-v2` SCC: OpenShift assigns it a user ID from the namespace's range like any other workload container.
 
 #### Validating the deployment
@@ -164,7 +166,7 @@ Finally, verify capture end to end: send traffic to a capture target and confirm
 | Symptom | Cause | Fix |
 | ------- | ----- | --- |
 | Capture container logs `bpf objects failed to load: ... opening mem: open /proc/self/mem: permission denied` | nettap image older than `v0.1.62` running non-root on a RHEL 9 kernel | Upgrade to a chart that pins nettap `v0.1.62` or newer |
-| Daemonset pods rejected with `unable to validate against any security context constraint` | The `speedscale-nettap` SCC is missing, usually because manifests were rendered outside the cluster without OpenShift API detection | Confirm with `oc get scc speedscale-nettap`; re-render against the cluster or apply the SCC from the chart manually |
+| Daemonset pods rejected with `unable to validate against any security context constraint` | The `speedscale-nettap` SCC is missing, usually because manifests were rendered outside the cluster without OpenShift API detection | Confirm with `oc get scc speedscale-nettap`; re-render with `--api-versions security.openshift.io/v1` or apply the SCC from the chart manually |
 | Capture container logs `failed to build kubernetes informer factories: RBAC` | The daemonset's ClusterRole or binding was not applied | Re-apply the chart's RBAC objects, or set `namespaceSelector` to restrict nettap to namespaces where it holds a Role |
 | Plaintext capture works but TLS is missing for one service | The target binary or SSL library is not world-readable, so the non-root capture process cannot open it | Make the binary readable, or run capture as root for that cluster (see below) |
 
