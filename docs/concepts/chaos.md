@@ -57,8 +57,46 @@ zero hits, the scope is the first thing to check.
 | `body` | `corrupt`, `truncate`, `truncate:<bytes>` | Invalid JSON, or a well-formed shorter body |
 | `header` | `Name:Value` | Adds or sets a response header |
 | `no-response` | — | Ends the exchange with no reply at all |
+| `payload` | — | Perturbs one field *inside* the body; see below |
 
 Effects compose. `latency=2s,status=503` does both.
+
+#### Payload chaos
+
+Every effect above damages the response as a whole. `payload` is the one that reaches inside it:
+the difference between *this endpoint returns 500* and *this endpoint returns a `null` where the
+client assumes a number*. The second is the failure that survives review, because the status is
+`200` and the contract still looks satisfied.
+
+It has no `--chaos` string form and is not in the rule editor yet, so it is written directly into
+`chaos.json` or the test config:
+
+```json
+{
+  "id": "inventory-null-count",
+  "name": "inventory returns null availability",
+  "percent": 100,
+  "scope": {"operator": "AND", "conditions": [{"operator": "AND", "filters": [
+    {"include": true, "operator": "CONTAINS", "optUrl": "/v1/inventory"}]}]},
+  "effects": [{
+    "payload": {
+      "extractor": {"type": "json_path", "config": {"path": "http.res.bodyBase64.available"}},
+      "perturbation": "PERTURBATION_NULL"
+    }
+  }]
+}
+```
+
+The extractor is the ordinary extractor vocabulary, so any `json_path` that addresses
+`http.res.bodyBase64.` works. Perturbations are `PERTURBATION_NULL`, `PERTURBATION_FUZZ_NUMBER`,
+`PERTURBATION_FUZZ_STRING`, `PERTURBATION_TYPE_FLIP` (a number becomes the string of it),
+`PERTURBATION_DELETE_KEY`, and `PERTURBATION_TRANSFORMS` to apply a transform chain instead.
+
+Two deliberate limits. Requests are never perturbed: the responder is mocking a dependency, and the
+request is your application's own output, not something chaos is entitled to damage. And a path that
+descends into JSON embedded in a JSON string is **refused rather than skipped**, because a payload
+effect that quietly perturbs nothing is worse than one that errors: the marker would still claim
+`effect=payload` and the run would look like it had tested something.
 
 ### Knobs
 
