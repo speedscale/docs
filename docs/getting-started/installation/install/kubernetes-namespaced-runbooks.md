@@ -118,6 +118,24 @@ hand afterward (removing sidecars with `capture uninject --sidecar` against
 each workload it names, even though the coordinator that would normally
 verify the revert is gone).
 
+### If the release is already wedged in `uninstalling`
+
+The sequence above assumes you set the value *before* running
+`helm uninstall`. If an uninstall has already been refused, Helm leaves the
+release in `uninstalling` status — and in that state `helm upgrade` fails with
+`has no deployed releases`, so the escape hatch looks unreachable. Roll back
+first to return the release to `deployed`, then set the value and uninstall:
+
+```bash
+helm -n banking-app rollback speedscale
+helm upgrade speedscale ./speedscale-namespaced -n banking-app \
+  --reuse-values --set uninstall.forceCleanupOnUninstall=true
+helm -n banking-app uninstall speedscale
+```
+
+The rollback re-renders the release's own objects and nothing else — it does
+not touch instrumented workloads or in-flight replays.
+
 ## Uninstall bypasses and their consequences
 
 Two paths skip the `pre-delete` hook entirely, and neither one is blocked by
