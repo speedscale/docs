@@ -25,6 +25,10 @@ Enterprise Linux are already accustomed.
 
 ## Installing the Speedscale Operator
 
+:::info Installation is always through the Helm chart
+Speedscale is installed on OpenShift the same way as on any Kubernetes cluster: with the Speedscale Helm chart, following the standard [operator installation](./kubernetes-operator.md). Speedscale is not available through OperatorHub or the OpenShift web console's operator catalog. Use `helm` (or `helm template` plus `oc apply` in [Helm-restricted environments](/reference/ebpf-traffic-collection#installation)) for installation, and `oc` for the OpenShift-specific steps below. The web console is useful for watching the resulting workloads, but no part of the installation happens there.
+:::
+
 The following settings are required to be set in the `values.yaml` when [installing the Speedscale operator](./kubernetes-operator.md) for OpenShift. OpenShift injects it's own user and group IDs, so we need to set these fields as null to allow it to override them at deploy time. You can read more about how [here](https://www.redhat.com/en/blog/a-guide-to-openshift-and-uids).
 
 ```yaml
@@ -126,6 +130,66 @@ globalSecurityContext:
 ebpf:
   enabled: true
 ```
+
+No manual SCC setup is needed for eBPF capture. When the chart detects OpenShift (the `security.openshift.io/v1` API group), it creates a dedicated `speedscale-nettap` SecurityContextConstraints and grants it to the daemonset's service account automatically. The daemonset runs as a non-root user (UID 2102) rather than as root or privileged, with only the [documented capture capabilities](/reference/ebpf-traffic-collection#capabilities).
+
+When rendering manifests client-side, add `--api-versions security.openshift.io/v1` to the `helm template` command. Client-side rendering cannot discover the cluster APIs, so omitting this flag also omits the `speedscale-nettap` SCC.
+
+The Java agent init container that Speedscale injects for JVM TLS capture sets no user ID of its own, so it is compatible with the default `restricted-v2` SCC: OpenShift assigns it a user ID from the namespace's range like any other workload container.
+
+#### Validating the deployment
+
+Confirm the daemonset is running under the expected SCC and identity:
+
+```bash
+oc get pods -n speedscale -l app=speedscale-nettap
+POD=$(oc get pods -n speedscale -l app=speedscale-nettap -o name | head -1)
+oc get -n speedscale $POD -o jsonpath='{.metadata.annotations.openshift\.io/scc}'
+```
+
+The SCC annotation should read `speedscale-nettap`. Then check the capture process itself:
+
+```bash
+oc exec -n speedscale $POD -c speedscale-nettap-capture -- sh -c 'id; grep -E "CapPrm|CapEff" /proc/$(pidof nettap)/status'
+```
+
+Expected output: `uid=2102(nettap) gid=2102(nettap)` and `CapPrm`/`CapEff` both `000000c001281000`, which decodes to exactly `NET_ADMIN`, `SYS_PTRACE`, `SYS_ADMIN`, `SYS_RESOURCE`, `PERFMON`, and `BPF`. Confirm the probes loaded:
+
+```bash
+oc logs -n speedscale daemonset/speedscale-nettap -c speedscale-nettap-capture | grep -E "loading bpf objects|program attached"
+```
+
+Finally, verify capture end to end: send traffic to a capture target and confirm it appears in the [traffic viewer](https://app.speedscale.com). Exercise a plaintext endpoint, a Go TLS service, and an OpenSSL-based service (see the [TLS support table](/reference/ebpf-traffic-collection#tls-traffic-visibility)) to cover all three capture mechanisms.
+
+#### Troubleshooting
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| Capture container logs `bpf objects failed to load: ... opening mem: open /proc/self/mem: permission denied` | nettap image older than `v0.1.62` running non-root on a RHEL 9 kernel | Upgrade to a chart that pins nettap `v0.1.62` or newer |
+| Daemonset pods rejected with `unable to validate against any security context constraint` | The `speedscale-nettap` SCC is missing, usually because manifests were rendered outside the cluster without OpenShift API detection | Confirm with `oc get scc speedscale-nettap`; re-render with `--api-versions security.openshift.io/v1` or apply the SCC from the chart manually |
+| Capture container logs `failed to build kubernetes informer factories: RBAC` | The daemonset's ClusterRole or binding was not applied | Re-apply the chart's RBAC objects, or set `namespaceSelector` to restrict nettap to namespaces where it holds a Role |
+| Plaintext capture works but TLS is missing for one service | The target binary or SSL library is not world-readable, so the non-root capture process cannot open it | Make the binary readable, or run capture as root for that cluster (see below) |
+
+#### Upgrading an existing installation
+
+Run the normal `helm upgrade` with your existing values. If you previously overrode `ebpf.nettap.capture.podSecurityContext` or `ebpf.nettap.ingest.podSecurityContext` to force root, remove those overrides so the non-root defaults apply; Helm merges user values over chart defaults, so a stale `runAsUser: 0` override keeps the daemonset on root indefinitely.
+
+#### Running capture as root where required
+
+Non-root capture is the default and works on standard OpenShift nodes. Run as root only when a specific platform blocks file capabilities (for example, container storage mounted `nosuid` by policy) or when target binaries are unreadable to a non-root user:
+
+```yaml
+ebpf:
+  nettap:
+    capture:
+      podSecurityContext:
+        runAsUser: 0
+        runAsGroup: 0
+    securityContext:
+      runAsNonRoot: false
+```
+
+Treat this as a bounded exception for the affected cluster, not a recommended configuration.
 
 ## Replaying Traffic
 
