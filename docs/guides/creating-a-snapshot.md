@@ -55,6 +55,10 @@ In addition to these details, a Service Map visually represents the inbound and 
 
 ![Service Map](../select-service-map.png)
 
+### Lock a snapshot
+
+If other teams or CI pipelines depend on a snapshot, you can lock it from the **⋮** menu so it cannot be renamed, edited, reanalyzed, or deleted until the locking user or an Admin unlocks it. See [Locking a Snapshot](/guides/locking-a-snapshot.md).
+
 ## Endpoint Grouping
 As shown in the following picture, there's an auto URL grouping mechanism to group URLs that fall in the same category. For example, all `/user/{uuid}/registration` URLs have been grouped in the Latency Summary table to give a better view of the results.
 ![Auto Endpoint Grouping](../Auto-Endpoint-Grouping.png)
