@@ -220,6 +220,8 @@ Snapshots are listed on the [snapshots page](https://app.speedscale.com/snapshot
 
 See [creating a snapshot](/guides/creating-a-snapshot.md) for more information.
 
+A snapshot can be [locked](/guides/locking-a-snapshot.md) to make it read-only until the locking user or an Admin unlocks it.
+
 ### speedctl
 
 The Speedscale CLI which can be used to interact with Speedscale resources in
