@@ -48,8 +48,10 @@ Speedscale publishes four ready-to-install Helm charts at [github.com/speedscale
 |-------|-------|----------|
 | `grafana` | OTel Collector → Loki → Grafana | Live dashboards, ad-hoc log queries, proxymock replay |
 | `elasticsearch` | OTel Collector → Elasticsearch → Kibana | Full-text search, Kibana Discover, existing ES clusters |
-| `fluentbit-gcs` | OTel Collector → Fluent Bit → Google Cloud Storage | GCS data lake, BigQuery external tables, compliance retention |
-| `fluentbit-s3` | OTel Collector → Fluent Bit → Amazon S3 | S3 data lake, Athena/Glue queries, IRSA-native EKS |
+| `fluentbit-gcs` | OTel Collector with `awss3` exporter → Google Cloud Storage | GCS data lake, BigQuery external tables, compliance retention |
+| `fluentbit-s3` | OTel Collector with `awss3` exporter → Amazon S3 | S3 data lake, Athena/Glue queries, IRSA-native EKS |
+
+The `fluentbit-gcs` and `fluentbit-s3` chart names are historical and remain unchanged for existing Helm installations. Both charts now write OTLP-JSON directly with the OpenTelemetry `awss3` exporter; they no longer use Fluent Bit.
 
 Each chart ships its own OTel Collector ConfigMap pre-wired for its backend — you only supply credentials and bucket/cluster names.
 
@@ -97,7 +99,7 @@ helm upgrade --install byoc-elasticsearch speedscale-byoc/elasticsearch \
   -n byoc-elasticsearch --create-namespace
 ```
 
-**Fluent Bit → Google Cloud Storage**
+**OpenTelemetry → Google Cloud Storage**
 
 ```bash
 # Create a Kubernetes secret with your GCS HMAC credentials first:
@@ -113,7 +115,7 @@ helm upgrade --install byoc-fluentbit-gcs speedscale-byoc/fluentbit-gcs \
   --set gcs.credentialsSecret="gcs-hmac"
 ```
 
-**Fluent Bit → Amazon S3 (static credentials)**
+**OpenTelemetry → Amazon S3 (static credentials)**
 
 ```bash
 kubectl create namespace byoc-fluentbit-s3
@@ -128,7 +130,7 @@ helm upgrade --install byoc-fluentbit-s3 speedscale-byoc/fluentbit-s3 \
   --set s3.credentialsSecret="s3-creds"
 ```
 
-**Fluent Bit → Amazon S3 (EKS IRSA — no credentials in cluster)**
+**OpenTelemetry → Amazon S3 (EKS IRSA)**
 
 ```bash
 helm upgrade --install byoc-fluentbit-s3 speedscale-byoc/fluentbit-s3 \
@@ -235,25 +237,22 @@ kubectl -n <BACKEND_NAMESPACE> logs deploy/otel-collector | grep -i "log records
 
 - **Grafana**: open Grafana → Explore → Loki data source → label filter `{exporter="OTLP"}`
 - **Elasticsearch**: `kubectl -n byoc-elasticsearch exec -it deploy/elasticsearch -- curl -s localhost:9200/rrpairs/_count`
-- **S3**: `aws s3 ls s3://<BUCKET>/year=`
-- **GCS**: `gcloud storage ls gs://<BUCKET>/year=`
+- **S3**: `aws s3 ls s3://<BUCKET>/byoc/`
+- **GCS**: `gcloud storage ls gs://<BUCKET>/byoc/`
 
 ## Replay captured traffic with proxymock
 
-Each chart ships a companion Python gather script in the [speedscale-byoc repo](https://github.com/speedscale/speedscale-byoc/tree/main/scripts):
-
-| Backend | Script |
-|---------|--------|
-| Loki | `loki-gather.py` |
-| Elasticsearch | `es-gather.py` |
-| Google Cloud Storage | `gcs-gather.py` |
-| Amazon S3 | `s3-gather.py` |
+Use `proxymock import s3` to pull captured traffic from Amazon S3 or Google Cloud Storage into local RRPair files, then mock or replay the imported traffic.
 
 ```bash
-# Example: pull traffic from Loki and replay it
-python3 scripts/loki-gather.py --service my-app --output ./snapshot
-proxymock mock --dir ./snapshot
+proxymock import s3 --bucket my-bucket --prefix byoc/ \
+  --service my-app --from now-1h --out ./snapshot
+proxymock mock --in ./snapshot
 ```
+
+For GCS, use the collector chart's HMAC credentials and add `--s3-endpoint-url https://storage.googleapis.com --s3-force-path-style --region auto`. See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for the complete GCS command, filtering, and MCP workflow.
+
+This object-store import does not query Loki or Elasticsearch. See those charts' READMEs for backend-specific retrieval.
 
 ## Further reading
 

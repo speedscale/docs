@@ -1,6 +1,6 @@
 ---
 title: Pull Traffic from a BYOC Bucket
-description: "Bring-your-own-cloud keeps captured traffic in your own S3 bucket. Use proxymock import s3 or the pull_byoc_bucket MCP tool to pull historical traffic from that bucket into a local workspace you can search, mock, and replay, without the traffic leaving your account through Speedscale."
+description: "Bring-your-own-cloud keeps captured traffic in your own Amazon S3 or Google Cloud Storage bucket. Use proxymock import s3 or the pull_byoc_bucket MCP tool to pull historical traffic from that bucket into a local workspace you can search, mock, and replay, without the traffic leaving your account through Speedscale."
 sidebar_position: 14
 ---
 
@@ -69,6 +69,26 @@ See [Author DLP and filter rules locally](./local-rules.md) for how to build and
 ```shell
 proxymock import s3 --bucket my-bucket --prefix byoc/ --service checkout --follow
 ```
+
+### Google Cloud Storage
+
+Google Cloud Storage works through its S3-compatible XML interoperability API. Use the GCS HMAC access ID and secret already created for the collector chart, with permission to list and read objects in the bucket. The environment variable names say AWS because proxymock uses the AWS SDK; their values are your GCS HMAC credentials, not an AWS key pair or a Google service account JSON key.
+
+```shell
+export AWS_ACCESS_KEY_ID="<GCS_HMAC_ACCESS_ID>"
+export AWS_SECRET_ACCESS_KEY="<GCS_HMAC_SECRET>"
+unset AWS_SESSION_TOKEN
+
+proxymock import s3 --bucket my-gcs-bucket --prefix byoc/ \
+  --region auto \
+  --s3-endpoint-url https://storage.googleapis.com \
+  --s3-force-path-style \
+  --service checkout --from now-1h
+```
+
+Both `--s3-endpoint-url` and `--s3-force-path-style` are required for this GCS command. Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors.
+
+`--prefix` is an object-key prefix inside the bucket, such as `byoc/`. Do not pass a `gs://` URL or include the bucket name. For the legacy Fluent Bit layout with objects at the bucket root, omit `--prefix`.
 
 ### S3-compatible stores
 

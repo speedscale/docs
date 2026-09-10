@@ -404,6 +404,26 @@ proxymock import s3 --bucket my-bucket --prefix byoc/ --from now-15m --dlp-confi
 - `--timeout duration` - Command timeout, e.g. `10s`, `5m`, `1h` (default `12h`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
 
+#### Google Cloud Storage
+
+Google Cloud Storage works through its S3-compatible XML interoperability API. Use the GCS HMAC access ID and secret already created for the collector chart, with permission to list and read objects in the bucket. The environment variable names say AWS because proxymock uses the AWS SDK; their values are your GCS HMAC credentials, not an AWS key pair or a Google service account JSON key.
+
+```shell
+export AWS_ACCESS_KEY_ID="<GCS_HMAC_ACCESS_ID>"
+export AWS_SECRET_ACCESS_KEY="<GCS_HMAC_SECRET>"
+unset AWS_SESSION_TOKEN
+
+proxymock import s3 --bucket my-gcs-bucket --prefix byoc/ \
+  --region auto \
+  --s3-endpoint-url https://storage.googleapis.com \
+  --s3-force-path-style \
+  --service checkout --from now-1h
+```
+
+Both `--s3-endpoint-url` and `--s3-force-path-style` are required for this GCS command. Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors.
+
+`--prefix` is an object-key prefix inside the bucket, such as `byoc/`. Do not pass a `gs://` URL or include the bucket name. For the legacy Fluent Bit layout with objects at the bucket root, omit `--prefix`.
+
 ### `send-one`
 
 Send a single test (RRPair) to an arbitrary URL.
