@@ -39,8 +39,8 @@ mkdir -p replay-work
 Start the Go demo app under proxymock record. The `--out` flag gives the recording a stable path that you can pass to the tuning script later.
 
 ```shell
-cd go
-proxymock record --out ../replay-work/recording -- go run .
+cd languages/go
+proxymock record --out ../../replay-work/recording -- go run .
 ```
 
 Leave that process running. In another terminal from the repo root, drive the app's demo traffic through proxymock:

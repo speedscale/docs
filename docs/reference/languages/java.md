@@ -143,7 +143,7 @@ traffic through a forward proxy and trusts the proxymock CA, but it does not use
 
 ### Demo App
 
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`java` directory)
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/java` directory)
 - Stack: single-file Java HTTP service that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Local run: `java App.java` (JDK 11+ source-file mode, no Maven or other build tool)
 - Quick validation: `./lab/tests/run_tests.sh --recording`
@@ -164,7 +164,7 @@ proxymock init`,
     {
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/mock-lab
-cd mock-lab/java
+cd mock-lab/languages/java
 proxymock record -- java App.java`,
       note: 'proxymock records the app while it starts the Java service as a child process. It auto-injects `JAVA_TOOL_OPTIONS` for the proxy and truststore, so no manual export is needed.',
     },
@@ -175,13 +175,13 @@ proxymock record -- java App.java`,
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/java
+      command: `cd mock-lab/languages/java
 proxymock mock -- java App.java`,
       note: 'The mocked run should no longer need live outbound dependencies.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/java
+      command: `cd mock-lab/languages/java
 proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Java changes.',
     },
