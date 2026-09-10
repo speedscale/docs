@@ -1092,14 +1092,15 @@ proxymock mcp install [flags]
 # install the stdio MCP server
 proxymock mcp install
 
-# install the SSE MCP server
-proxymock mcp install --sse
+# install the Streamable HTTP MCP server
+proxymock mcp install --http
 ```
 
 **Flags**
 
-- `--port int` - Port to use when installing the SSE transport (default `8080`)
-- `--sse` - Install the SSE transport instead of stdio
+- `--http` - Install the Streamable HTTP transport (`http://localhost:<port>/mcp`) instead of stdio
+- `--port int` - Port to use when installing the HTTP transport (default `8080`)
+- `--sse` - Deprecated. Install the legacy SSE transport; use `--http` instead
 
 ### `mcp json`
 
@@ -1113,8 +1114,9 @@ proxymock mcp json [flags]
 
 **Flags**
 
-- `--port int` - Port to use when generating SSE configuration (default `8080`)
-- `--sse` - Generate JSON for the SSE transport instead of stdio
+- `--http` - Generate JSON for the Streamable HTTP transport instead of stdio
+- `--port int` - Port to use when generating HTTP configuration (default `8080`)
+- `--sse` - Deprecated. Generate JSON for the legacy SSE transport; use `--http` instead
 
 ### `mcp run`
 
@@ -1132,14 +1134,15 @@ proxymock mcp run [flags]
 # run the MCP server over stdio
 proxymock mcp run
 
-# run the MCP server over SSE
-proxymock mcp run --sse --port 8080
+# run the MCP server over Streamable HTTP (also serves the legacy /sse endpoint)
+proxymock mcp run --http --port 8080
 ```
 
 **Flags**
 
-- `--port int` - Port to use when serving the SSE transport (default `8080`)
-- `--sse` - Serve MCP over SSE instead of stdio
+- `--http` - Serve MCP over Streamable HTTP at `http://localhost:<port>/mcp` instead of stdio. The legacy `/sse` endpoint is served on the same port for older clients
+- `--port int` - Port to use when serving the HTTP transport (default `8080`)
+- `--sse` - Deprecated. Serve the legacy SSE transport; use `--http` instead
 - `--work-dir string` - Working directory to run the MCP server in
 
 ### `completion`

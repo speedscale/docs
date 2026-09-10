@@ -106,4 +106,19 @@ If the `proxymock init` command fails or you are using an unknown IDE, you can m
 ```
 
 Additionally, you can re-detect and install by running `proxymock mcp install`.
+
+If proxymock runs somewhere your IDE cannot launch it directly (a remote dev box, a container), start it as a network server with `proxymock mcp run --http` and point the client at the Streamable HTTP endpoint instead. `proxymock mcp install --http` or `proxymock mcp json --http` produce the matching entry:
+
+```json
+{
+    "mcpServers": {
+        "proxymock": {
+            "type": "http",
+            "url": "http://localhost:8080/mcp"
+        }
+    }
+}
+```
+
+The older `--sse` flag still works but is deprecated: the HTTP server serves the legacy `/sse` endpoint on the same port, so existing SSE configurations keep connecting.
 :::
