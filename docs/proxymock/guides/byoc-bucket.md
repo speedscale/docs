@@ -86,7 +86,7 @@ proxymock import s3 --bucket my-gcs-bucket --prefix byoc/ \
   --service checkout --from now-1h
 ```
 
-Both `--s3-endpoint-url` and `--s3-force-path-style` are required for this GCS command. Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors.
+Set the GCS endpoint and use path-style addressing as shown above. Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors.
 
 `--prefix` is an object-key prefix inside the bucket, such as `byoc/`. Do not pass a `gs://` URL or include the bucket name. For the legacy Fluent Bit layout with objects at the bucket root, omit `--prefix`.
 
