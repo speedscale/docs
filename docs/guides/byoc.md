@@ -55,6 +55,14 @@ The `fluentbit-gcs` and `fluentbit-s3` chart names are historical and remain unc
 
 Each chart ships its own OTel Collector ConfigMap pre-wired for its backend — you only supply credentials and bucket/cluster names.
 
+### Azure Blob Storage
+
+The [`azureblob` chart](https://github.com/speedscale/speedscale-byoc/tree/main/charts/azureblob) writes captured RRPairs to Azure Blob Storage through the OpenTelemetry `azureblob` exporter. It supports storage archival, but proxymock cannot pull directly from Azure Blob Storage.
+
+Azure Blob Storage does not expose an S3-compatible API. `proxymock import s3`, the `pull_byoc_bucket` MCP tool, and the `proxymock web` BYOC source picker do not support it. Changing `--s3-endpoint-url` to an Azure Blob URL does not add support.
+
+For manual retrieval, the chart repo includes [`scripts/azure-gather.py`](https://github.com/speedscale/speedscale-byoc/blob/main/scripts/azure-gather.py). The script documents its usage and requires Python 3, the Azure CLI, and a storage connection string. Choose Amazon S3 or Google Cloud Storage if your workflow requires a direct proxymock bucket pull.
+
 ## Prerequisites
 
 - Kubernetes cluster (any flavor — minikube, EKS, GKE, AKS, k3s)
