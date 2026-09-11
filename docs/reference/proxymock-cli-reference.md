@@ -330,6 +330,7 @@ proxymock import [command]
 **Subcommands**
 
 - `import s3` - Import historical traffic from a BYOC S3 bucket (see below)
+- `import gcs` - Import historical traffic from a BYOC Google Cloud Storage bucket using Google credentials
 - `import har` - Import a HAR document into local RRPair files
 - `import postman` - Import a Postman collection into local RRPair files
 - `import wiremock` - Import a WireMock project into local RRPair files
@@ -404,25 +405,26 @@ proxymock import s3 --bucket my-bucket --prefix byoc/ --from now-15m --dlp-confi
 - `--timeout duration` - Command timeout, e.g. `10s`, `5m`, `1h` (default `12h`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
 
-#### Google Cloud Storage
+### `import gcs`
 
-Google Cloud Storage works through its S3-compatible XML interoperability API. Use the GCS HMAC access ID and secret already created for the collector chart, with permission to list and read objects in the bucket. The environment variable names say AWS because proxymock uses the AWS SDK; their values are your GCS HMAC credentials, not an AWS key pair or a Google service account JSON key.
+Import historical BYOC traffic directly from Google Cloud Storage using the native API and Google Application Default Credentials (ADC). The import shares the S3 command's OTLP-JSON parsing, bucket layout handling, filters, DLP, and follow mode.
+
+**Usage**
 
 ```shell
-export AWS_ACCESS_KEY_ID="<GCS_HMAC_ACCESS_ID>"
-export AWS_SECRET_ACCESS_KEY="<GCS_HMAC_SECRET>"
-unset AWS_SESSION_TOKEN
+gcloud auth application-default login
 
-proxymock import s3 --bucket my-gcs-bucket --prefix byoc/ \
-  --region auto \
-  --s3-endpoint-url https://storage.googleapis.com \
-  --s3-force-path-style \
+proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ \
   --service checkout --from now-1h
 ```
 
-Set the GCS endpoint and use path-style addressing as shown above. Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors.
+For other environments, set `GOOGLE_APPLICATION_CREDENTIALS` to a credentials file or use workload identity. The identity needs `storage.objects.list` and `storage.objects.get` on the bucket. AWS HMAC keys are not used.
 
-`--prefix` is an object-key prefix inside the bucket, such as `byoc/`. Do not pass a `gs://` URL or include the bucket name. For the legacy Fluent Bit layout with objects at the bucket root, omit `--prefix`.
+Use the same filter, follow, and output flags as `import s3`. The default output directory is `proxymock/imported-gcs-<timestamp>/`. The S3-specific flags `--region`, `--s3-endpoint-url`, and `--s3-force-path-style` do not apply.
+
+`--bucket` takes only the bucket name. Set `--prefix` to an object-key prefix such as `byoc/`, not a `gs://` URL or a path containing the bucket name. Omit `--prefix` for the legacy Fluent Bit layout with objects at the bucket root.
+
+See [Google Cloud Storage in the BYOC bucket guide](/proxymock/guides/byoc-bucket.md#google-cloud-storage) for credentials and the optional S3 interoperability compatibility path.
 
 ### `send-one`
 

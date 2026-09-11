@@ -1,6 +1,6 @@
 ---
 title: Pull Traffic from a BYOC Bucket
-description: "Bring-your-own-cloud keeps captured traffic in your own Amazon S3 or Google Cloud Storage bucket. Use proxymock import s3 or the pull_byoc_bucket MCP tool to pull historical traffic from that bucket into a local workspace you can search, mock, and replay, without the traffic leaving your account through Speedscale."
+description: "Bring-your-own-cloud keeps captured traffic in your own Amazon S3 or Google Cloud Storage bucket. Use proxymock import s3, proxymock import gcs, or the pull_byoc_bucket MCP tool to pull historical traffic from that bucket into a local workspace you can search, mock, and replay, without the traffic leaving your account through Speedscale."
 sidebar_position: 14
 ---
 
@@ -8,11 +8,11 @@ sidebar_position: 14
 
 In a bring-your-own-cloud (BYOC) deployment, captured traffic never leaves your account: the in-cluster Speedscale collector writes it to an object-store bucket you own, in your own cloud. proxymock pulls historical traffic from that bucket into a local workspace, so you can search, mock, and replay real production traffic without routing it through Speedscale.
 
-The pull runs entirely locally against your bucket. Credentials come from the standard AWS environment chain, and the traffic lands as ordinary RRPair files, so every proxymock workflow works on it unchanged.
+The pull runs entirely locally against your bucket. Credentials come from the AWS credential chain for S3 or Google Application Default Credentials for GCS, and the traffic lands as ordinary RRPair files, so every proxymock workflow works on it unchanged.
 
 There are three ways to run the pull, over the same bucket layout:
 
-- **CLI** with `proxymock import s3`.
+- **CLI** with `proxymock import s3` or `proxymock import gcs`.
 - **MCP** with the `pull_byoc_bucket` tool, so an AI agent can fetch its own production context.
 - **Web** through the source picker in `proxymock web`.
 
@@ -25,7 +25,7 @@ Point `--prefix` at `byoc/` for the current layout. proxymock prunes the object 
 ## Before you begin
 
 - `proxymock` [installed](../getting-started/quickstart/quickstart-cli.md).
-- Read access to the BYOC bucket, via the standard AWS credential chain: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, or an instance role. No Speedscale account or API key is required for the pull.
+- Read access to the BYOC bucket. For S3, use the standard AWS credential chain: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, or an instance role. For GCS, use Google Application Default Credentials as described below. No Speedscale account or API key is required for the pull.
 
 ## Pull with the CLI {#cli}
 
@@ -72,7 +72,22 @@ proxymock import s3 --bucket my-bucket --prefix byoc/ --service checkout --follo
 
 ### Google Cloud Storage
 
-Google Cloud Storage works through its S3-compatible XML interoperability API. Use the GCS HMAC access ID and secret already created for the collector chart, with permission to list and read objects in the bucket. The environment variable names say AWS because proxymock uses the AWS SDK; their values are your GCS HMAC credentials, not an AWS key pair or a Google service account JSON key.
+Use `proxymock import gcs` to read directly through the native Google Cloud Storage API. Authenticate with Google Application Default Credentials (ADC): run `gcloud auth application-default login` for local development, set `GOOGLE_APPLICATION_CREDENTIALS` to a credentials file, or use workload identity in your runtime. The identity needs `storage.objects.list` and `storage.objects.get` on the bucket.
+
+```shell
+gcloud auth application-default login
+
+proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ \
+  --service checkout --from now-1h
+```
+
+The native command uses Google credentials and does not need AWS HMAC keys, `--region`, `--s3-endpoint-url`, or `--s3-force-path-style`. It shares the S3 import's layout handling, filters, DLP, and follow mode. Imported RRPairs land in `proxymock/imported-gcs-<timestamp>/` by default.
+
+`--bucket` is the bucket name only. `--prefix` is an object-key prefix inside that bucket, such as `byoc/`; do not pass a `gs://` URL or include the bucket name. For the legacy Fluent Bit layout with objects at the bucket root, omit `--prefix`.
+
+#### S3 interoperability compatibility
+
+For an existing GCS workflow that uses the S3-compatible XML interoperability API, `proxymock import s3` remains available. Export the collector chart's GCS HMAC access ID and secret as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. These values are GCS HMAC credentials, not an AWS key pair or a Google service account JSON key.
 
 ```shell
 export AWS_ACCESS_KEY_ID="<GCS_HMAC_ACCESS_ID>"
@@ -86,9 +101,7 @@ proxymock import s3 --bucket my-gcs-bucket --prefix byoc/ \
   --service checkout --from now-1h
 ```
 
-Set the GCS endpoint and use path-style addressing as shown above. Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors.
-
-`--prefix` is an object-key prefix inside the bucket, such as `byoc/`. Do not pass a `gs://` URL or include the bucket name. For the legacy Fluent Bit layout with objects at the bucket root, omit `--prefix`.
+Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors. Use the native `import gcs` command when S3 interoperability authentication or requests fail.
 
 ### S3-compatible stores
 
@@ -96,15 +109,15 @@ For MinIO, DigitalOcean Spaces, or another S3-compatible store, set `--s3-endpoi
 
 ## Pull with the MCP tool {#mcp}
 
-The `pull_byoc_bucket` MCP tool gives an AI coding assistant the same pull. It runs locally with no Speedscale account; credentials come from the AWS environment chain. Describe what you need and the assistant fills in the parameters:
+The `pull_byoc_bucket` MCP tool gives an AI coding assistant the same pull. It runs locally with no Speedscale account; credentials come from the AWS credential chain or Google ADC for the selected provider. Describe what you need and the assistant fills in the parameters:
 
 > Pull the last 15 minutes of checkout 500s from the `my-bucket` BYOC bucket and replay them against my local build.
 
-The tool takes `bucket` plus the same narrowing parameters as the CLI (`prefix`, `from`, `to`, `service`, `namespace`, `status`, `trace-id`, or a full `filter`), returns the import summary, and writes RRPair files to `./proxymock/imported-s3-<timestamp>/`. This is distinct from `pull_remote_recording`, which pulls from Speedscale-managed cloud; use `pull_byoc_bucket` when the traffic lives in your own bucket. See the [MCP Tools reference](../how-it-works/mcp-tools.md) for the full parameter list.
+Set `storage-provider` to `gcs` for Google Cloud Storage; the default is `s3`. The tool takes `bucket` plus the same narrowing parameters as the CLI (`prefix`, `from`, `to`, `service`, `namespace`, `status`, `trace-id`, or a full `filter`), returns the import summary, and writes RRPair files to `./proxymock/imported-s3-<timestamp>/` or `./proxymock/imported-gcs-<timestamp>/` for GCS. This is distinct from `pull_remote_recording`, which pulls from Speedscale-managed cloud; use `pull_byoc_bucket` when the traffic lives in your own bucket. See the [MCP Tools reference](../how-it-works/mcp-tools.md) for the full parameter list.
 
 ## Pull from proxymock web {#web}
 
-In `proxymock web`, the import source picker offers a BYOC bucket as a source alongside local files. Give it the bucket, prefix, and a time window, and the imported run appears in the Run selector like any other recording, ready to explore in the Requests grid or replay.
+In `proxymock web`, the import source picker offers a BYOC bucket as a source alongside local files. Select **Google Cloud Storage** for a native GCS pull using the proxymock process's Google ADC credentials. Then give it the bucket, prefix, and a time window, and the imported run appears in the Run selector like any other recording, ready to explore in the Requests grid or replay.
 
 ## Next steps
 

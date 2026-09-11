@@ -434,7 +434,7 @@ Work traffic snapshots stored in Speedscale cloud. Requires Speedscale cloud cre
 
 #### `pull_byoc_bucket`
 
-Pull historical traffic from the customer's OWN BYOC object-store bucket (S3 or S3-compatible) into local RRPair files that proxymock can search, mock, and replay. Runs entirely locally with no Speedscale account: credentials come from the standard AWS environment credential chain (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_PROFILE, etc.).
+Pull historical traffic from the customer's OWN BYOC object-store bucket (S3, S3-compatible, or native Google Cloud Storage) into local RRPair files that proxymock can search, mock, and replay. Runs locally with no Speedscale account. storage-provider=s3 uses the AWS credential chain (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_PROFILE). storage-provider=gcs uses the native GCS API with Google Application Default Credentials (GOOGLE_APPLICATION_CREDENTIALS, gcloud auth application-default login, or an attached identity); HMAC keys are not needed.
 
 This is distinct from pull_remote_recording, which pulls from Speedscale-managed cloud. Use this tool when the traffic lives in the customer's own bucket — for example a BYOC deployment where the in-cluster OTel collector's awss3 exporter writes OTLP-JSON objects under the "byoc/" prefix.
 
@@ -442,18 +442,19 @@ Narrow the pull with a time window (from/to) and filters (service, namespace, st
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `bucket` | string | **yes** | Name of the S3 (or S3-compatible) bucket that holds the BYOC traffic. |
+| `bucket` | string | **yes** | Name of the object-storage bucket that holds the BYOC traffic. |
 | `filter` | string | no | Speedscale traffic filter string, for example '(service IS "checkout") AND (status IS "500")'. Overlapping criteria override the convenience filters below. |
 | `from` | string | no | Start of the time window when the filter has no timerange, for example now-15m or 2026-06-12T18:00:00Z. Defaults to now-1h. |
 | `limit` | number | no | Maximum number of matched RRPairs to write. 0 (default) means unlimited. |
 | `namespace` | string | no | Kubernetes namespace to match when the filter has no namespace predicate. |
-| `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-s3-&lt;timestamp&gt;. |
+| `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-&lt;provider&gt;-&lt;timestamp&gt;. |
 | `prefix` | string | no | Object key prefix to search. Use 'byoc/' for the current OTel awss3 layout. Defaults to the whole bucket. |
-| `region` | string | no | AWS region of the bucket. Defaults to the AWS SDK configuration (AWS_REGION). |
-| `s3-endpoint-url` | string | no | Custom endpoint URL for an S3-compatible store (MinIO, DigitalOcean Spaces, GCS S3-interop). Leave empty for AWS S3. |
-| `s3-force-path-style` | boolean | no | Use path-style S3 addressing (bucket in the path, not the host). Often required for MinIO and other S3-compatible stores. |
+| `region` | string | no | S3 provider only: AWS region of the bucket. Defaults to the AWS SDK configuration (AWS_REGION). |
+| `s3-endpoint-url` | string | no | S3 provider only: custom endpoint URL for an S3-compatible store (MinIO, DigitalOcean Spaces, GCS S3-interop). Leave empty for AWS S3. |
+| `s3-force-path-style` | boolean | no | S3 provider only: use path-style S3 addressing (bucket in the path, not the host). Often required for MinIO and other S3-compatible stores. |
 | `service` | string | no | Service name to match when the filter has no service predicate. |
 | `status` | string | no | Exact response status to match when the filter has no status predicate, for example 500. |
+| `storage-provider` | string | no | s3 (default) for S3-compatible storage; gcs for native Google Cloud Storage using ADC. |
 | `to` | string | no | End of the time window when the filter has no timerange, for example now or 2026-06-12T19:00:00Z. Defaults to now. |
 | `trace-id` | string | no | Trace ID to match when the filter has no trace predicate. |
 

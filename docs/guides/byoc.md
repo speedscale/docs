@@ -242,7 +242,7 @@ kubectl -n <BACKEND_NAMESPACE> logs deploy/otel-collector | grep -i "log records
 
 ## Replay captured traffic with proxymock
 
-Use `proxymock import s3` to pull captured traffic from Amazon S3 or Google Cloud Storage into local RRPair files, then mock or replay the imported traffic.
+Use `proxymock import s3` for Amazon S3 or `proxymock import gcs` for Google Cloud Storage to pull captured traffic into local RRPair files, then mock or replay the imported traffic.
 
 ```bash
 proxymock import s3 --bucket my-bucket --prefix byoc/ \
@@ -250,7 +250,7 @@ proxymock import s3 --bucket my-bucket --prefix byoc/ \
 proxymock mock --in ./snapshot
 ```
 
-For GCS, use the collector chart's HMAC credentials and add `--s3-endpoint-url https://storage.googleapis.com --s3-force-path-style --region auto`. See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for the complete GCS command, filtering, and MCP workflow.
+For GCS, run `proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ --from now-1h` with Google Application Default Credentials. The native pull uses Google credentials independently of the collector chart's HMAC credentials. See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for the complete GCS command, filtering, and MCP workflow.
 
 This object-store import does not query Loki or Elasticsearch. See those charts' READMEs for backend-specific retrieval.
 
