@@ -5,7 +5,7 @@ description: "Route Speedscale RRPair data to your own storage — Loki, Elastic
 
 # Bring Your Own Cloud
 
-Speedscale's **Bring Your Own Cloud (BYOC)** mode lets you keep all captured traffic inside your own infrastructure. The Speedscale Forwarder ships RRPairs as OTLP log records to a collector you run, which fans out to the storage backend of your choice. No traffic ever leaves your VPC.
+Speedscale's **Bring Your Own Cloud (BYOC)** mode lets you keep all captured traffic inside your own infrastructure. The Speedscale Forwarder ships RRPairs as OTLP log records to a collector you run, which fans out to the storage backend of your choice. Configure the cloud exporter separately if captured RRPairs must stay in your infrastructure. BYOC export does not disable cloud registration, configuration downloads, or operational telemetry.
 
 :::info
 
@@ -30,7 +30,7 @@ Bring Your Own Cloud is a deployment model where Speedscale software runs inside
 
 **Advantages**
 
-- Data sovereignty and compliance — sensitive payloads and metadata never leave your VPC.
+- Data control: choose where captured RRPairs are stored and apply filters and DLP before export.
 - Lower latency — collectors and exporters run near your apps, reducing egress and round trips.
 - Cost control — leverage your cloud pricing (reserved, spot, private links).
 
@@ -54,6 +54,8 @@ Speedscale publishes four ready-to-install Helm charts at [github.com/speedscale
 The `fluentbit-gcs` and `fluentbit-s3` chart names are historical and remain unchanged for existing Helm installations. Both charts now write OTLP-JSON directly with the OpenTelemetry `awss3` exporter; they no longer use Fluent Bit.
 
 Each chart ships its own OTel Collector ConfigMap pre-wired for its backend — you only supply credentials and bucket/cluster names.
+
+For a deployment without Kubernetes, see [BYOC on ECS/Fargate](byoc-ecs.md). It uses a forwarder and collector in one ECS task with an S3 task role. The Helm instructions below apply to Kubernetes.
 
 ### Azure Blob Storage
 
