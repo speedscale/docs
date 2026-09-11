@@ -211,7 +211,11 @@ For importing stored traffic, see [BYOC bucket imports](../proxymock/guides/byoc
 
 ## Analyze and replay the BYOC capture
 
-Pull a bounded capture window directly from S3 with your AWS read credentials, then analyze it with proxymock:
+### 1. Install proxymock and pull the capture
+
+Follow the [proxymock CLI setup](../proxymock/getting-started/quickstart/quickstart-cli.md) first. Run the following commands from your application repository so the imported capture and replay results stay with that application. You need AWS read access to the BYOC bucket and `jq` for the replay verdict check. Importing from S3 uses your AWS credentials and does not require uploading traffic to Speedscale Cloud.
+
+Pull a bounded capture window directly from S3:
 
 ```bash
 AWS_PROFILE=YOUR_PROFILE proxymock import s3 \
@@ -219,12 +223,33 @@ AWS_PROFILE=YOUR_PROFILE proxymock import s3 \
   --service ecs-byoc-nginx \
   --from 2026-09-11T16:41:00Z --to 2026-09-11T16:41:30Z \
   --out ./proxymock/byoc-capture
-proxymock report --in ./proxymock/byoc-capture --out ./analysis.json
 ```
 
 Replace the dates with your capture window. In the validation run, this imported six TLS RRPairs, three inbound and three outbound, with zero malformed records. The analysis identified successful responses, request latency, and the nginx version exposed in response headers. The sample is a functional check, not a load benchmark.
 
-Replay the inbound requests against a reachable test deployment of the application:
+### 2. Inspect and analyze with proxymock
+
+Open the imported records in the local browser interface:
+
+```bash
+proxymock web --in ./proxymock/byoc-capture --chat=false --forwarder-addr=""
+```
+
+Use the printed local URL to inspect request URLs, headers, response bodies, and inbound versus outbound traffic. This command disables LLM chat and live forwarder discovery so you can work with the downloaded recording. Stop the server with Ctrl+C when finished.
+
+Generate a structured report for automation, a browser-readable HTML report, or a short text report:
+
+```bash
+proxymock report --in ./proxymock/byoc-capture --out ./analysis.json
+proxymock report --in ./proxymock/byoc-capture --format html --out ./analysis.html
+proxymock report --in ./proxymock/byoc-capture --format prompt
+```
+
+Open `analysis.html` in your browser. Review response counts and status codes, latency percentiles, and security findings against the underlying RRPairs. For this fixture, expect six HTTP 200 responses and the body `ecs-byoc-tls-response`. The report flags nginx version disclosure and missing security headers; these are properties of the synthetic app, not import failures.
+
+### 3. Replay and check the result
+
+Start the test deployment before replay. Replace `YOUR_TEST_HOST` with its reachable hostname; the original localhost addresses describe the capture task and do not identify your replay target. Replay the inbound requests against that deployment:
 
 ```bash
 proxymock replay --in ./proxymock/byoc-capture \
@@ -234,6 +259,8 @@ proxymock replay --in ./proxymock/byoc-capture \
 jq -e '.verdict == "pass" and .summary.pairs > 0 and .summary.mismatches == 0' \
   ./proxymock/byoc-replay/replay-verdict.json
 ```
+
+The observed responses are written under `./proxymock/byoc-replay`. Inspect the per-request result in `replay-verdict.json`, or open the replay directory with `proxymock web --in ./proxymock/byoc-replay --chat=false --forwarder-addr=""`. A successful run must have at least one replayed pair and no mismatches. An empty run is not a pass.
 
 Use private connectivity to the ECS target or temporary ingress restricted to the replay client's address. Remove temporary ingress after testing. Replay selects inbound requests; outbound records can be used for analysis or mocking dependencies. The nginx validation replayed three inbound requests over HTTPS and matched all three response bodies. This does not validate a dependency-mocking workflow.
 
