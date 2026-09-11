@@ -205,6 +205,38 @@ jq '.resourceLogs[].scopeLogs[].logRecords[].body.kvlistValue.values[] |
   select(.key == "service" or .key == "status" or .key == "http")' capture.json
 ```
 
-The synthetic validation produced the service label, the `ecs_byoc_validation=synthetic` request URI, HTTP status 200, and the nginx response body. Running tasks alone do not verify capture. This check validates HTTP capture and S3 delivery; it does not validate TLS capture, replay, or an installation without cloud connectivity.
+The synthetic validation produced the service label, the `ecs_byoc_validation=synthetic` request URI, HTTP status 200, and the nginx response body. Running tasks alone do not verify capture. This check validates HTTP capture and S3 delivery. The lifecycle below was also validated with inbound and outbound TLS captures from an ECS task using nginx on HTTPS port 8443.
 
 For importing stored traffic, see [BYOC bucket imports](../proxymock/guides/byoc-bucket.md). Scale both services to zero through your IaC when capture is no longer needed. Keep the bucket and its retention policy under the same infrastructure lifecycle.
+
+## Analyze and replay the BYOC capture
+
+Pull a bounded capture window directly from S3 with your AWS read credentials, then analyze it with proxymock:
+
+```bash
+AWS_PROFILE=YOUR_PROFILE proxymock import s3 \
+  --bucket YOUR_BUCKET --region us-east-1 --prefix byoc/ \
+  --service ecs-byoc-nginx \
+  --from 2026-09-11T16:41:00Z --to 2026-09-11T16:41:30Z \
+  --out ./proxymock/byoc-capture
+proxymock report --in ./proxymock/byoc-capture --out ./analysis.json
+```
+
+Replace the dates with your capture window. In the validation run, this imported six TLS RRPairs, three inbound and three outbound, with zero malformed records. The analysis identified successful responses, request latency, and the nginx version exposed in response headers. The sample is a functional check, not a load benchmark.
+
+Replay the inbound requests against a reachable test deployment of the application:
+
+```bash
+proxymock replay --in ./proxymock/byoc-capture \
+  --test-against https://YOUR_TEST_HOST:8443 \
+  --out ./proxymock/byoc-replay --timeout 2m \
+  --fail-if 'requests.failed!=0'
+jq -e '.verdict == "pass" and .summary.pairs > 0 and .summary.mismatches == 0' \
+  ./proxymock/byoc-replay/replay-verdict.json
+```
+
+Use private connectivity to the ECS target or temporary ingress restricted to the replay client's address. Remove temporary ingress after testing. Replay selects inbound requests; outbound records can be used for analysis or mocking dependencies. The nginx validation replayed three inbound requests over HTTPS and matched all three response bodies. This does not validate a dependency-mocking workflow.
+
+Check the per-pair verdict even when aggregate metrics show success. In the tested proxymock client (reported version v2.5.878), a deliberately incorrect expected body produced `verdict=mismatch` while `requests.result-match-pct` remained 100 and the process exited zero. The explicit verdict check above rejects that result. The prompt-format analysis also displayed a 100% status share as 10000%; use the actual response counts when reviewing that version's report.
+
+The TLS capture test used a task-local certificate shared by nginx and goproxy, `TLS_IN_UNWRAP=true`, `TLS_OUT_UNWRAP=true`, and explicit `TLS_IN_PUBLIC_KEY` / `TLS_IN_PRIVATE_KEY` paths. The inbound client trusted that certificate; the outbound client used `localhost` for DNS/SNI matching. The pinned proxy's outbound CA loader required a PKCS#1 RSA key. Both capture clients verified their certificates without curl's insecure flag. The replay check verifies status and body matching over HTTPS; it does not establish replay-client certificate verification or an installation without cloud connectivity.
