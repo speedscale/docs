@@ -1,54 +1,35 @@
 ---
 title: Java
-description: "Java guidance for Speedscale and proxymock, including proxy setup, TLS trust, demo app details, and a first-success workflow."
+description: "Choose Java capture, TLS trust, and proxy settings for Kubernetes, desktop development, and CI."
 sidebar_position: 1
----
 
-import ProxymockLanguageWorkflow from '@site/src/components/ProxymockLanguageWorkflow';
+---
 
 # Java
 
-Java is fully supported by Speedscale. Use this page for Java-specific proxy settings, TLS trust configuration, demo guidance, and the proxymock local workflow.
+Use the setup that matches where your Java application runs. Proxy routing and TLS trust are separate settings: routing sends requests through Speedscale, and trust lets Java accept certificates used by a proxy or mock responder.
 
-- Support matrix: [Technology Support](/reference/technology-support)
-- Shared proxymock proxy reference: [Language Configuration](/proxymock/getting-started/language-reference)
-- Shared sidecar docs: [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and [TLS Support](/getting-started/installation/sidecar/tls.md)
-- GKE Autopilot guidance: [GKE Autopilot](/getting-started/installation/install/gke-autopilot)
-
-## Choose your Java capture mode
-
-Quick links:
-
-- [eBPF / Java agent](#ebpf-java-agent)
-- [Transparent sidecar](#transparent-sidecar)
-- [Dual sidecar](#dual-sidecar)
-- [TLS Trust](#tls-trust)
-- [proxymock](#proxymock)
+| Your setup | Start here |
+| --- | --- |
+| Local development, IDE, or CI | [Java with proxymock](/proxymock/guides/java) |
+| Kubernetes with eBPF capture | [Java agent setup and compatibility](/reference/java/agent) |
+| Kubernetes with a proxy sidecar | [Transparent sidecar](#transparent-sidecar) or [dual sidecar](#dual-sidecar) |
+| Certificate errors or custom corporate CAs | [Java TLS trust](/reference/java/tls) |
 
 ## eBPF / Java Agent {#ebpf-java-agent}
 
-Use this when your cluster supports [eBPF traffic collection](/reference/ebpf-traffic-collection). For Java,
-Speedscale uses a Java agent for JVM traffic capture.
-
-Workload annotations:
+The Java agent captures supported traffic inside the JVM and sends it to the eBPF collector. It does not replace the application's TLS certificates. Enabling it requires new pods and a JVM restart.
 
 ```yaml
 capture.speedscale.com/enabled: "true"
 capture.speedscale.com/java-agent: "true"
 ```
 
-GKE Autopilot also requires operator chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true`. Restart the operator after changing this value on chart `2.5.828`. See the [GKE Autopilot install guide](/getting-started/installation/install/gke-autopilot#6-install-speedscale-with-ebpf).
-
-:::warning
-`capture.speedscale.com/java-agent: "true"` is mutually exclusive with
-`sidecar.speedscale.com/inject: "true"`. Do not combine Java-agent capture and sidecar injection on the same
-workload.
-:::
+Follow [Java agent setup and framework support](/reference/java/agent) for installation, tested JDKs and clients, and known capture gaps. Do not combine Java-agent capture with `sidecar.speedscale.com/inject: "true"` on the same workload.
 
 ## Transparent Sidecar {#transparent-sidecar}
 
-Transparent proxy is the default sidecar mode and should be the primary sidecar path for Java when your
-environment allows it.
+Transparent proxy is the default sidecar mode and should be the primary sidecar path for Java when your environment allows it.
 
 For plain HTTP capture or non-decrypted TLS passthrough, sidecar injection is enough:
 
@@ -64,8 +45,7 @@ sidecar.speedscale.com/tls-out: "true"
 sidecar.speedscale.com/tls-java-tool-options: "true"
 ```
 
-Use `sidecar.speedscale.com/tls-java-tool-options-value` only if you need to override the default truststore
-flags with a custom `JAVA_TOOL_OPTIONS` string, for example to preserve existing JVM settings:
+Use `sidecar.speedscale.com/tls-java-tool-options-value` only if you need to override the default truststore flags with a custom `JAVA_TOOL_OPTIONS` string, for example to preserve existing JVM settings:
 
 ```yaml
 sidecar.speedscale.com/inject: "true"
@@ -77,8 +57,7 @@ sidecar.speedscale.com/tls-java-tool-options-value: >-
   -Dspring.profiles.active=prod
 ```
 
-If both `sidecar.speedscale.com/tls-java-tool-options` and
-`sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
+If both `sidecar.speedscale.com/tls-java-tool-options` and `sidecar.speedscale.com/tls-java-tool-options-value` are set, the custom value takes precedence.
 
 ## Dual Sidecar {#dual-sidecar}
 
@@ -108,10 +87,12 @@ sidecar.speedscale.com/tls-java-tool-options-value: >-
   -Dhttp.proxyPort=4140
   -Dhttps.proxyHost=127.0.0.1
   -Dhttps.proxyPort=4140
-  -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.cluster.local
+  -Dhttp.nonProxyHosts=localhost|127.0.0.1
   -Djavax.net.ssl.trustStore=/etc/ssl/speedscale/jks/cacerts.jks
   -Djavax.net.ssl.trustStorePassword=changeit
 ```
+
+The example bypasses loopback destinations. Adding `*.svc` or `*.cluster.local` would also bypass in-cluster dependencies and leave their requests out of the proxy recording.
 
 Why `tls-java-tool-options-value` is useful here:
 
@@ -119,71 +100,14 @@ Why `tls-java-tool-options-value` is useful here:
 - the annotation lets the operator write one merged `JAVA_TOOL_OPTIONS` value
 - you avoid manually patching the container `env` block in the workload spec
 
-If you cannot use the annotation-driven path, you can still set `JAVA_TOOL_OPTIONS` directly in the
-container `env`, but that should be treated as a fallback.
+If you cannot use the annotation-driven path, you can still set `JAVA_TOOL_OPTIONS` directly in the container `env`, but that should be treated as a fallback.
 
 ## TLS Trust {#tls-trust}
 
-Java typically needs an explicit truststore when TLS interception is involved. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `proxymock admin certs --jks` command, JVM flags, and custom truststore workflow.
+Java uses a truststore to decide which certificates to accept. The required store differs between desktop proxymock and Kubernetes. Passive Java-agent capture keeps the original TLS connection, while proxy interception and mocked TLS dependencies require trusting the Speedscale CA.
 
-How that trust is configured depends on the capture mode:
-
-- Transparent sidecar: use `sidecar.speedscale.com/tls-java-tool-options: "true"` for the default truststore
-  flags, or `sidecar.speedscale.com/tls-java-tool-options-value` if you need a custom `JAVA_TOOL_OPTIONS`
-  value.
-- Dual sidecar: truststore configuration alone is not enough. You also need the Java proxy flags shown in
-  [Dual Sidecar](#dual-sidecar).
-- proxymock: use the local truststore flags shown in the shared
-  [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page.
+See [Java TLS trust](/reference/java/tls) for truststore selection, desktop and CI commands, Kubernetes setup, replay, and corporate CAs.
 
 ## proxymock {#proxymock}
 
-Use this for local development and CI. Conceptually this is similar to dual proxy mode because Java sends
-traffic through a forward proxy and trusts the proxymock CA, but it does not use Kubernetes annotations.
-
-### Demo App
-
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/java` directory)
-- Stack: single-file Java HTTP service that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
-- Local run: `java App.java` (JDK 11+ source-file mode, no Maven or other build tool)
-- Quick validation: `./lab/tests/run_tests.sh --recording`
-
-This is the canonical public Java demo for the proxymock quickstart and local replay workflow.
-
-When proxymock wraps the JVM with `proxymock record -- java App.java`, it auto-injects `JAVA_TOOL_OPTIONS` for you, so no manual proxy host/port or truststore export is needed.
-
-<ProxymockLanguageWorkflow
-  intro="Use this path for the fastest Java first success on a developer workstation."
-  steps={[
-    {
-      title: 'Install and initialize proxymock',
-      command: `brew install speedscale/tap/proxymock
-proxymock init`,
-      note: 'Use browser sign-in by default. Use `proxymock init --api-key <your key>` only for CI or other headless environments.',
-    },
-    {
-      title: 'Start recording',
-      command: `git clone https://github.com/speedscale/mock-lab
-cd mock-lab/languages/java
-proxymock record -- java App.java`,
-      note: 'proxymock records the app while it starts the Java service as a child process. It auto-injects `JAVA_TOOL_OPTIONS` for the proxy and truststore, so no manual export is needed.',
-    },
-    {
-      title: 'Generate one real workflow',
-      command: `./lab/tests/run_tests.sh --recording`,
-      note: 'Run the test driver from the repo root. It drives the requests that become the exported production-style trace.',
-    },
-    {
-      title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/languages/java
-proxymock mock -- java App.java`,
-      note: 'The mocked run should no longer need live outbound dependencies.',
-    },
-    {
-      title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/languages/java
-proxymock replay --test-against http://localhost:8080`,
-      note: 'Use replay as the regression check before shipping Java changes.',
-    },
-  ]}
-/>
+Start with [Java with proxymock](/proxymock/guides/java). It covers automatic JVM configuration, IDE settings, HTTP versus SOCKS, database port mappings, and a CI mock workflow.

@@ -60,7 +60,7 @@ captured traffic with pod name, namespace, labels, and other metadata.
 
 Speedscale captures TLS-encrypted traffic in plaintext, without needing certificates, proxies, or application
 changes. There are three primary capture mechanisms: uprobes for applications/runtimes using OpenSSL 3.x
-libraries, uprobes on Go's `crypto/tls`, and a JVMTI agent for the JVM.
+libraries, uprobes on Go's `crypto/tls`, and a Java instrumentation agent for the JVM.
 
 OpenSSL support works for **both** dynamically and statically linked 3.x libraries. Processes that use this
 will have uprobes attached to OpenSSL read/write functions. This allows data to be captured before
@@ -71,9 +71,7 @@ package. The idea is the same as OpenSSL. Support for this requires Go versions 
 binaries to preserve the ELF symbol table, i.e. they must be **unstripped** and built **without** using
 `-ldflags="-s"`.
 
-JVM-based applications require a JVMTI agent, rather than eBPF uprobes, that instruments Java's TLS layer from
-within the JVM. This captures plaintext traffic for any Java application using standard TLS libraries
-(e.g., `javax.net.ssl`).
+For JVM applications, the Java agent captures supported socket and TLS paths inside the JVM. Coverage depends on the transport, TLS provider, and agent version. See [Java agent setup and framework support](/reference/java/agent) for the tested matrix and known gaps. Loading the agent requires a JVM restart.
 
 Language/runtime support is tied to the TLS capture mechanism mentioned above, but they all share the same
 kernel and architecture baseline (see [System Requirements](#system-requirements)). The following have been
@@ -82,7 +80,7 @@ tested and verified:
 | Language | Capture Method             | TLS Support | Considerations                                                    |
 | -------- | -------------------------- | ----------- | ----------------------------------------------------------------- |
 | Go       | eBPF uprobe (`crypto/tls`) | Native      | See above                                                         |
-| Java     | JVMTI agent                | JSSE hook   | Requires `nettap` Java agent (Handled by the Speedscale Operator) |
+| Java     | Java instrumentation agent                | JSSE hook   | Requires `nettap` Java agent (Handled by the Speedscale Operator) |
 | PHP      | eBPF uprobe (OpenSSL)      | OpenSSL 3.x |                                                                   |
 | .NET     | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Linux only; SChannel not supported                                |
 | Python   | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Python `ssl` module                                               |
