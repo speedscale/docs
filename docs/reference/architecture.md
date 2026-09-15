@@ -12,6 +12,7 @@ Security-relevant defaults and options in this architecture:
 - **Capture ordering:** prefer eBPF (`nettap`) first; use goproxy sidecars only when eBPF is not suitable.
 - **Data minimization before egress:** apply DLP filtering and redaction in the forwarder before traffic leaves the cluster.
 - **Deployment boundary options:** use hosted Speedscale or [BYOC](/guides/byoc/) based on your cloud boundary and compliance requirements.
+- **Kubernetes access:** review the operator RBAC, admission webhooks, runtime certificates, and eBPF permissions in [Kubernetes Security Requirements](/security/kubernetes-permissions).
 
 The Speedscale deployment breaks into three modes:
 

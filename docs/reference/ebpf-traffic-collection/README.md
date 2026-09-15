@@ -131,6 +131,8 @@ On OpenShift, the chart detects the `security.openshift.io/v1` API group and aut
 `speedscale-nettap` SecurityContextConstraints granting exactly this contract; see the
 [OpenShift installation guide](/getting-started/installation/install/openshift#ebpf) for details.
 
+For operator RBAC, admission webhook, and certificate requirements, see [Kubernetes Security Requirements](/security/kubernetes-permissions).
+
 ## Installation
 
 :::info Helm-restricted environments
