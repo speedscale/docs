@@ -42,11 +42,15 @@ jobs:
     - name: build
       run: yarn build
 
+    # Preserve legacy redirect filenames unsupported by artifact storage.
+    - name: package site
+      run: tar -czf "$RUNNER_TEMP/docs-site.tar.gz" -C build .
+
     - name: save site artifact
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: docs-site
-        path: build/
+        path: ${{ runner.temp }}/docs-site.tar.gz
         if-no-files-found: error
         retention-days: 1
 
@@ -66,7 +70,15 @@ jobs:
       uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: docs-site
-        path: build/
+        path: site-artifact/
+
+    - name: unpack site
+      run: |
+        python3 - <<'PYTHON'
+        import tarfile
+        with tarfile.open("site-artifact/docs-site.tar.gz", "r:gz") as archive:
+            archive.extractall("build", filter="data")
+        PYTHON
 
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.0.0
