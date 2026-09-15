@@ -173,7 +173,7 @@ Quote 64-bit integers such as seeds and budgets so browser edits preserve them.
 | Schedule | Controlled quantity | Use it for |
 | --- | --- | --- |
 | Traffic copies | Concurrent copies of selected recorded traffic | Replay a larger version of an existing workload. |
-| Adaptive TPS (pending grouped runtime support) | Feedback-controlled request rate | The existing global TPS strategy adjusts traffic copies; grouped execution is not yet available in this candidate. |
+| Adaptive TPS | Feedback-controlled HTTP request rate | Adjust workers and pacing within each request group's budget to approach its target. |
 | Concurrent sessions | Active complete journeys | Keep a fixed number of users working. |
 | Arrivals | Independent request or session starts per time unit | Keep offered load independent of response time. |
 | Recorded multiple | Multiple of measured source starts in an explicit UTC window | Scale the recorded arrival rate with a reproducible baseline. |
@@ -193,6 +193,29 @@ session starts use separate pools.
 Existing ramp and chaos rules remain separate controls. Load groups decide which
 traffic starts and when; chaos affects request behavior. Goal windows let you
 measure impact and recovery without changing session ownership.
+
+### Adaptive TPS by endpoint
+
+Choose **Adaptive TPS** for a request group and set each stage's target. TPS
+counts individual HTTP requests, even when the group's filter selects several
+endpoints. The scheduler rotates through the selected recorded requests and
+adjusts that group's workers and pacing from observed throughput. Use arrivals
+when you need independent offered starts, or session schedules for complete
+authenticated journeys.
+
+Set `maxWorkers` to cap the group's concurrency. If omitted, TPS groups divide
+the remaining `maxVusers` capacity equally after other groups reserve their
+workers. A slow group cannot borrow another group's reservation. Preview rejects
+a plan that cannot allocate at least one worker to each active TPS group.
+
+Each stage must deliver within 5% of its target request count, with a minimum
+allowance of one request for discrete rounding. Ramps contribute the area under
+the target curve; a pause contributes zero. Both undershoot and overshoot fail
+the test, even when every HTTP response succeeds. Requests retain their start
+stage when responses drain, so a later stage cannot hide an earlier miss.
+The report shows target and actual requests for each stage and a separate TPS
+result. Short stages can fail while the controller is still adjusting; allow
+enough time and worker capacity for the throughput you want to measure.
 
 ## Understand failures and evidence
 
