@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: Creating a Snapshot
-description: "Create a snapshot in Speedscale to capture and replay specific traffic, utilizing filters and detailed logs for effective API testing and analysis"
+description: "Create, tune, and restore snapshot traffic in Speedscale for repeatable API replay tests."
 ---
 
 <iframe src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
@@ -29,7 +29,7 @@ Did you know that you can filter traffic so that it is never sent to Speedscale 
 :::
 
 :::tip Fitting a large selection into a snapshot
-A snapshot holds a bounded number of request/response pairs (currently 200,000). If the traffic you have selected is larger than that, add a **Sampled** filter to keep a deterministic, evenly distributed fraction of it — for example *Keep 20% — 1 in 5* turns a 900,000-pair selection into roughly 180,000. Whole sessions are kept or dropped together, so the sampled snapshot stays coherent and replayable. See [Sampling a large selection](/guides/creating-filters.md#sampling-a-large-selection) for details.
+A snapshot supports up to 1,000,000 request/response pairs. Use a **Sampled** filter to reduce a large selection while keeping whole sessions together. For example, keeping one in five sessions reduces the amount of traffic to analyze and replay. See [Sampling a large selection](/guides/creating-filters.md#sampling-a-large-selection).
 :::
 
 ### Request Response Details <a href="#overview" id="overview"></a>
@@ -54,6 +54,22 @@ A traffic snapshot is created from the selected traffic when running a replay so
 In addition to these details, a Service Map visually represents the inbound and outbound traffic, and how the replay will be orchestrated.
 
 ![Service Map](../select-service-map.png)
+
+### Lock a snapshot
+
+If other teams or CI pipelines depend on a snapshot, you can lock it from the **⋮** menu so it cannot be renamed, edited, reanalyzed, or deleted until the locking user or an Admin unlocks it. See [Locking a Snapshot](/guides/locking-a-snapshot.md).
+
+## Tune and inspect a snapshot
+
+The current snapshot page groups work into **Summary**, **Tuning**, **Traffic**, **Agents**, **Recommendations**, and **Replays**. Older screenshots may show separate Tests, Mocks, or Transforms tabs. Use the direction control in **Traffic** to switch between inbound and outbound requests.
+
+In **Tuning**, inspect a recommendation, its proposed transform chains, and the traffic affected by each chain. Open the affected traffic in **Traffic** to check the scope. A warning that a chain matches no traffic means its filters need review before the chain can affect a replay. See [Traffic Transformation](./transformation/overview.md).
+
+### Restore deleted traffic
+
+If the snapshot has deleted RRPairs, its traffic toolbar offers **Restore deleted (N)**. Open it to see deleted IDs and available audit details. Select individual entries and choose **Restore selected**, or choose **Restore all**.
+
+Restoring removes the deletion entries and triggers reanalysis. The list and traffic grid refresh afterward. The dialog lists IDs rather than the deleted request bodies. Snapshot write restrictions still apply, including locks and operations already in progress. If the control is unavailable on an older deployment, check that the backend supports snapshot restoration.
 
 ## Endpoint Grouping
 As shown in the following picture, there's an auto URL grouping mechanism to group URLs that fall in the same category. For example, all `/user/{uuid}/registration` URLs have been grouped in the Latency Summary table to give a better view of the results.

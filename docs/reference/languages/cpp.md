@@ -31,7 +31,7 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`cpp` directory)
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/cpp` directory)
 - Stack: C++ HTTP service using POSIX sockets and libcurl that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Build and run: `c++ -std=c++17 main.cpp -o app -lcurl && ./app`
   - **macOS**: libcurl ships with the Xcode Command Line Tools (`xcode-select --install`) — no extra package needed.
@@ -54,7 +54,7 @@ proxymock init`,
     {
       title: 'Start recording',
       command: `git clone https://github.com/speedscale/mock-lab
-cd mock-lab/cpp
+cd mock-lab/languages/cpp
 c++ -std=c++17 main.cpp -o app -lcurl
 proxymock record -- ./app`,
       note: 'Build first so the binary can link libcurl. macOS already has libcurl via the Xcode Command Line Tools; on Linux install the dev headers first (`sudo apt-get install libcurl4-openssl-dev` on Debian/Ubuntu, `sudo dnf install libcurl-devel` on Fedora/RHEL). Then let proxymock supervise the compiled `./app` binary as it records the downstream calls.',
@@ -66,13 +66,13 @@ proxymock record -- ./app`,
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/cpp
+      command: `cd mock-lab/languages/cpp
 proxymock mock -- ./app`,
       note: 'Reuse the `./app` binary you already built. The mocked run should no longer need live outbound dependencies.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/cpp
+      command: `cd mock-lab/languages/cpp
 proxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping C++ changes.',
     },
@@ -88,7 +88,7 @@ downstream HTTPS call, the demo passes the certificate to libcurl directly:
 curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
 ```
 
-This is already done in `mock-lab/cpp/main.cpp` and works on both macOS and Linux. Without it, the
+This is already done in `mock-lab/languages/cpp/main.cpp` and works on both macOS and Linux. Without it, the
 downstream HTTPS call fails certificate verification on Linux (OpenSSL-backed libcurl); on macOS the
 system libcurl may fall back to the keychain, so passing the proxymock CA explicitly keeps the behavior
 consistent across platforms. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact `SSL_CERT_FILE` path.

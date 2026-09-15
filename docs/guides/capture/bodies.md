@@ -64,6 +64,8 @@ GraphQL queries are converted into a JSON representation of GraphQL AST. See bel
 
 These ASTs are very long and hard to interpret but most changes are made in the `variables` section of the AST. In well structured GraphQL, variables should extract many of the values that would need to be modified or inspected.
 
+You rarely need to read the AST directly: a GraphQL request is addressed by [semantic path](../graphql/semantic-paths.md) instead — `variables.email`, `createUser.args.input.plan` — and edited with the [`graphql`](../transformation/transforms/graphql.md) transform. See the [GraphQL guide](../graphql/index.md).
+
 ## Postgres
 
 ```json

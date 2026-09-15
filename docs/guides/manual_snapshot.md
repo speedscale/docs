@@ -18,7 +18,7 @@ It is also possible to edit the snapshot metadata file stored at `<user director
 
 ## Prerequisites
 
-- The [mock-lab](https://github.com/speedscale/mock-lab) demo app is installed (clone with `git clone https://github.com/speedscale/mock-lab`, then `cd mock-lab/go` and `go run .` to run it on `localhost:8080`)
+- The [mock-lab](https://github.com/speedscale/mock-lab) demo app is installed (clone with `git clone https://github.com/speedscale/mock-lab`, then `cd mock-lab/languages/go` and `go run .` to run it on `localhost:8080`)
 - [speedctl](../getting-started/installation/install/cli.md) is installed
 
 ## Create a Sample Raw File

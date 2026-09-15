@@ -404,3 +404,9 @@ so **proxymock** can be initialized when the pipeline runs.
 
 Let us know on the [community Slack](https://slack.speedscale.com) if
 instructions for your deploy system are not included here.
+
+## Gate on application results
+
+Use [replay verdicts](./replay-verdicts.md) to distinguish request completion from correct application behavior. Save a baseline replay, then use `--baseline <directory> --fail-on-new-mismatch` to fail on new per-request regressions. For incident recordings, `--verify-fix` checks that recorded failures are fixed without collateral regressions.
+
+Preserve the replay output directory as a CI artifact, including `replay-verdict.json`. These modes need response output and cannot be combined with `--no-out` or `--load-test`. Require essential [blueprints](./blueprints.md) with `--require-blueprint <name>`.

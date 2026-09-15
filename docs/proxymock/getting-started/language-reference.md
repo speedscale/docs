@@ -20,7 +20,7 @@ If you want the full language-specific first-success path, start here:
 As the name implies, **proxymock** is a proxy which works by routing traffic from your application through **proxymock** before it goes to the final destination.
 
 :::warning
-99% of the time proxy configuration does not require a code change, but some HTTP client libraries have their own proxy configuration that may override or ignore environment variables.  Check the documentation for your specific library.
+Proxy support depends on the client library. Some clients ignore environment variables or require explicit proxy settings. Check your client configuration and confirm that a request appears in the recording.
 :::
 
 Record inbound traffic by setting the `--app-port` flag and making requests to port `4143` instead of your application's port.
@@ -75,40 +75,17 @@ export ALL_PROXY=socks5://localhost:4140
 </TabItem>
 <TabItem value="java" label="Java">
 
-Java supports `-D` flags to set system properties, which can be set in an environment variable.
+For a JVM started by proxymock, HTTP/HTTPS proxy and truststore properties are supplied automatically:
 
 ```shell
-export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=localhost -Dhttp.proxyPort=4140 -Dhttps.proxyHost=localhost -Dhttps.proxyPort=4140"
+proxymock record -- java -jar app.jar
 ```
 
-Use the SOCKS proxy to capture JDBC database traffic (MySQL, PostgreSQL):
-```shell
-export JAVA_TOOL_OPTIONS="-DsocksProxyHost=localhost -DsocksProxyPort=4140"
-```
+Set `JAVA_HOME` to your JDK so proxymock can create the truststore if needed. For a separate JVM or IDE, configure `http.proxyHost`, `http.proxyPort`, `https.proxyHost`, and `https.proxyPort`, plus the Java truststore. Standard Java networking does not use `HTTP_PROXY` or `SOCKS_PROXY` as a substitute for these properties.
 
-:::caution
-The **MongoDB Java driver** uses its own NIO/Netty transport that bypasses `java.net.Socket` entirely. JVM SOCKS flags (`-DsocksProxyHost`, `-DsocksProxyPort`) have no effect. Use `--map` instead for MongoDB traffic — see the [MongoDB guide](../guides/mongodb.md).
-:::
+For a SOCKS-capable TCP client, use `-DsocksProxyHost=localhost -DsocksProxyPort=4140`. Driver and transport support varies; use `--map` when the client ignores proxy settings.
 
-With authentication and TLS certificates:
-```shell
-export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=localhost -Dhttp.proxyPort=4140 -Dhttps.proxyHost=localhost -Dhttps.proxyPort=4140 -Djavax.net.ssl.trustStore=$HOME/.speedscale/certs/cacerts.jks -Djavax.net.ssl.trustStorePassword=changeit"
-```
-
-Bypass proxy for specific hosts:
-```shell
--Dhttp.nonProxyHosts="localhost|127.0.0.1|*.internal.domain"
-```
-
-:::warning
-Support across runtimes or libraries may vary.  For example,
-[Maven](https://maven.apache.org/) requires that `-D` flags are set through
-`-Dspring-boot.run.jvmArguments`.
-:::
-
-:::note
-These options include the `-D` flags for TLS. See the Decrypting-TLS section below.
-:::
+See [Java with proxymock](/proxymock/guides/java) for complete HTTP, SOCKS, database, IDE, and CI examples. See [Java TLS trust](/reference/java/tls) for certificate setup.
 
 </TabItem>
 <TabItem value="python" label="Python">

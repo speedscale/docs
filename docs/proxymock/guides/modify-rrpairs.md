@@ -45,7 +45,7 @@ For more information about how mock signatures are built from the raw traffic re
 
 ## Applying transforms in proxymock web
 
-The TUI and raw-file edits above change the recorded data in place. When you instead want to *overlay* a change at run time — swap an expired token, mask a field, substitute a constant — apply a **transform** from the request detail in `proxymock web`. Transforms are saved as [blueprints](./recommendations.md#inspecting-and-editing-the-blueprint) and applied every time you run proxymock as a mock or test server; the recording itself is untouched.
+The TUI and raw-file edits above change the recorded data in place. When you instead want to *overlay* a change at run time, such as swapping an expired token or masking a field, apply a **transform** from the request detail in `proxymock web`. Transforms are saved as [blueprints](./blueprints.md) and applied every time you run proxymock as a mock or test server; the recording itself is untouched.
 
 Start the web UI from the parent of `proxymock/`:
 

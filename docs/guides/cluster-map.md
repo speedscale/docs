@@ -70,3 +70,11 @@ Both are available from the same Infrastructure section and complement each othe
 - Start with a namespace filter when exploring large clusters — showing everything at once can be overwhelming
 - Use the cluster map to identify services with unexpected dependencies before setting up captures
 - The traffic edges update as new traffic is observed, so leave the map open during a test to watch traffic flow in real time
+
+## Service map and workload context
+
+The Infrastructure **Service Map** combines observed service dependencies and technology icons. It complements the Kubernetes resource map: a detected technology describes observed traffic and does not itself prove that every operation is supported for replay.
+
+Open a workload to inspect its cluster and node placement, available logs and Kubernetes events, and capture health. Use node placement to investigate whether affected workloads share a node. The workload view is also a useful starting point for opening its traffic and checking downstream dependencies.
+
+The account **Usage** tab includes cluster capacity when the connected components report it. Capacity describes the cluster resources reported to Speedscale; it is separate from CPU and memory consumed during an individual replay. For replay measurements, use the report's [Performance Details](./reports/performance-details.md).

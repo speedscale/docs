@@ -5,7 +5,7 @@ description: "Route Speedscale RRPair data to your own storage — Loki, Elastic
 
 # Bring Your Own Cloud
 
-Speedscale's **Bring Your Own Cloud (BYOC)** mode lets you keep all captured traffic inside your own infrastructure. The Speedscale Forwarder ships RRPairs as OTLP log records to a collector you run, which fans out to the storage backend of your choice. No traffic ever leaves your VPC.
+Speedscale's **Bring Your Own Cloud (BYOC)** mode lets you keep all captured traffic inside your own infrastructure. The Speedscale Forwarder ships RRPairs as OTLP log records to a collector you run, which fans out to the storage backend of your choice. Configure the cloud exporter separately if captured RRPairs must stay in your infrastructure. BYOC export does not disable cloud registration, configuration downloads, or operational telemetry.
 
 :::info
 
@@ -30,7 +30,7 @@ Bring Your Own Cloud is a deployment model where Speedscale software runs inside
 
 **Advantages**
 
-- Data sovereignty and compliance — sensitive payloads and metadata never leave your VPC.
+- Data control: choose where captured RRPairs are stored and apply filters and DLP before export.
 - Lower latency — collectors and exporters run near your apps, reducing egress and round trips.
 - Cost control — leverage your cloud pricing (reserved, spot, private links).
 
@@ -48,10 +48,22 @@ Speedscale publishes four ready-to-install Helm charts at [github.com/speedscale
 |-------|-------|----------|
 | `grafana` | OTel Collector → Loki → Grafana | Live dashboards, ad-hoc log queries, proxymock replay |
 | `elasticsearch` | OTel Collector → Elasticsearch → Kibana | Full-text search, Kibana Discover, existing ES clusters |
-| `fluentbit-gcs` | OTel Collector → Fluent Bit → Google Cloud Storage | GCS data lake, BigQuery external tables, compliance retention |
-| `fluentbit-s3` | OTel Collector → Fluent Bit → Amazon S3 | S3 data lake, Athena/Glue queries, IRSA-native EKS |
+| `fluentbit-gcs` | OTel Collector with `awss3` exporter → Google Cloud Storage | GCS data lake, BigQuery external tables, compliance retention |
+| `fluentbit-s3` | OTel Collector with `awss3` exporter → Amazon S3 | S3 data lake, Athena/Glue queries, IRSA-native EKS |
+
+The `fluentbit-gcs` and `fluentbit-s3` chart names are historical and remain unchanged for existing Helm installations. Both charts now write OTLP-JSON directly with the OpenTelemetry `awss3` exporter; they no longer use Fluent Bit.
 
 Each chart ships its own OTel Collector ConfigMap pre-wired for its backend — you only supply credentials and bucket/cluster names.
+
+For a deployment without Kubernetes, see [BYOC on ECS/Fargate](byoc-ecs.md). It uses a forwarder and collector in one ECS task with an S3 task role. The Helm instructions below apply to Kubernetes.
+
+### Azure Blob Storage
+
+The [`azureblob` chart](https://github.com/speedscale/speedscale-byoc/tree/main/charts/azureblob) writes captured RRPairs to Azure Blob Storage through the OpenTelemetry `azureblob` exporter. It supports storage archival, but proxymock cannot pull directly from Azure Blob Storage.
+
+Azure Blob Storage does not expose an S3-compatible API. `proxymock import s3`, the `pull_byoc_bucket` MCP tool, and the `proxymock web` BYOC source picker do not support it. Changing `--s3-endpoint-url` to an Azure Blob URL does not add support.
+
+For manual retrieval, the chart repo includes [`scripts/azure-gather.py`](https://github.com/speedscale/speedscale-byoc/blob/main/scripts/azure-gather.py). The script documents its usage and requires Python 3, the Azure CLI, and a storage connection string. Choose Amazon S3 or Google Cloud Storage if your workflow requires a direct proxymock bucket pull.
 
 ## Prerequisites
 
@@ -97,7 +109,7 @@ helm upgrade --install byoc-elasticsearch speedscale-byoc/elasticsearch \
   -n byoc-elasticsearch --create-namespace
 ```
 
-**Fluent Bit → Google Cloud Storage**
+**OpenTelemetry → Google Cloud Storage**
 
 ```bash
 # Create a Kubernetes secret with your GCS HMAC credentials first:
@@ -113,7 +125,7 @@ helm upgrade --install byoc-fluentbit-gcs speedscale-byoc/fluentbit-gcs \
   --set gcs.credentialsSecret="gcs-hmac"
 ```
 
-**Fluent Bit → Amazon S3 (static credentials)**
+**OpenTelemetry → Amazon S3 (static credentials)**
 
 ```bash
 kubectl create namespace byoc-fluentbit-s3
@@ -128,7 +140,7 @@ helm upgrade --install byoc-fluentbit-s3 speedscale-byoc/fluentbit-s3 \
   --set s3.credentialsSecret="s3-creds"
 ```
 
-**Fluent Bit → Amazon S3 (EKS IRSA — no credentials in cluster)**
+**OpenTelemetry → Amazon S3 (EKS IRSA)**
 
 ```bash
 helm upgrade --install byoc-fluentbit-s3 speedscale-byoc/fluentbit-s3 \
@@ -235,25 +247,22 @@ kubectl -n <BACKEND_NAMESPACE> logs deploy/otel-collector | grep -i "log records
 
 - **Grafana**: open Grafana → Explore → Loki data source → label filter `{exporter="OTLP"}`
 - **Elasticsearch**: `kubectl -n byoc-elasticsearch exec -it deploy/elasticsearch -- curl -s localhost:9200/rrpairs/_count`
-- **S3**: `aws s3 ls s3://<BUCKET>/year=`
-- **GCS**: `gcloud storage ls gs://<BUCKET>/year=`
+- **S3**: `aws s3 ls s3://<BUCKET>/byoc/`
+- **GCS**: `gcloud storage ls gs://<BUCKET>/byoc/`
 
 ## Replay captured traffic with proxymock
 
-Each chart ships a companion Python gather script in the [speedscale-byoc repo](https://github.com/speedscale/speedscale-byoc/tree/main/scripts):
-
-| Backend | Script |
-|---------|--------|
-| Loki | `loki-gather.py` |
-| Elasticsearch | `es-gather.py` |
-| Google Cloud Storage | `gcs-gather.py` |
-| Amazon S3 | `s3-gather.py` |
+Use `proxymock import s3` for Amazon S3 or `proxymock import gcs` for Google Cloud Storage to pull captured traffic into local RRPair files, then mock or replay the imported traffic.
 
 ```bash
-# Example: pull traffic from Loki and replay it
-python3 scripts/loki-gather.py --service my-app --output ./snapshot
-proxymock mock --dir ./snapshot
+proxymock import s3 --bucket my-bucket --prefix byoc/ \
+  --service my-app --from now-1h --out ./snapshot
+proxymock mock --in ./snapshot
 ```
+
+For GCS, run `proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ --from now-1h` with Google Application Default Credentials. The native pull uses Google credentials independently of the collector chart's HMAC credentials. See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for the complete GCS command, filtering, and MCP workflow.
+
+This object-store import does not query Loki or Elasticsearch. See those charts' READMEs for backend-specific retrieval.
 
 ## Further reading
 
