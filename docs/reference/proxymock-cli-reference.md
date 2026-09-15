@@ -192,6 +192,25 @@ proxymock replay --test-against localhost:9092
 
 - `--app-log-to string` - File path to redirect wrapped application output to
 - `--fail-if strings` - Fail with exit code `1` when a validation condition is true
+- `--baseline string` - Prior replay output directory for comparison against known failures
+- `--fail-on-new-mismatch` - Exit `3` for a new mismatch; requires `--baseline`
+- `--verify-fix` - Interpret recorded errors becoming successful responses as fixes, and check collateral regressions
+- `--expect string` - Regular expression selecting recorded-error endpoints; requires `--verify-fix`
+- `--ignore-body-changes` - Restrict verdict scoring to response status codes
+- `--require-blueprint stringArray` - Require a named blueprint to load and complete at least one transform chain; repeatable
+- `--sessions uint` - Use recorded sessions as the unit of load; overrides `--vus`
+- `--stage stringArray` - Ordered load stages such as `sessions=5,for=30s` and `sessions=50,for=2m,ramp=1m`; cannot be combined with `--vus`, `--sessions`, `--for`, or `--times`
+- `--load-test` - Reduce response collection for high-throughput testing; omits response matching and blueprint activity checks
+- `--semantic` - Score response-body similarity using match/divergent/fail bands
+- `--semantic-pass float` - Match threshold, default `0.92`
+- `--semantic-fail float` - Failure threshold, default `0.70`
+- `--semantic-embedder string` - Text scoring backend: `builtin`, `local`, or `openai`
+- `--semantic-endpoint string` - Embedding endpoint URL
+- `--semantic-model string` - Embedding model
+- `--semantic-judge string` - Optional divergent-pair judge: `managed`, `openai`, or `anthropic`
+- `--semantic-judge-model string` - Judge model
+- `--semantic-judge-endpoint string` - OpenAI-compatible judge endpoint
+- `--semantic-judge-cap int` - Maximum judge calls per run, default `25`
 - `-f, --for duration` - How long to replay in Go duration format; by default each test runs once
 - `--in strings` - Directories to read test files from recursively (default current directory)
 - `--log-to string` - File path to redirect all proxymock output to
@@ -199,7 +218,7 @@ proxymock replay --test-against localhost:9092
 - `--out string` - Directory to write observed replay request/response files to (default `proxymock/results/replayed-<timestamp>`)
 - `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
-- `--performance` - Sample failed or non-matching requests instead of writing all replay traffic to disk
+- `--performance` - Deprecated alias for `--load-test`
 - `--rewrite-host` - Rewrite the HTTP `Host` header to match the target host and port
 - `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
@@ -232,6 +251,8 @@ proxymock replay --test-against localhost:9092
 - `requests.result-match-pct`
 - `requests.succeeded`
 - `requests.total`
+
+Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
 
 ### `inspect`
 
@@ -592,7 +613,9 @@ proxymock filter apply --filter-config my-filter.json --in ./recorded --out ./fi
 
 ### `transform`
 
-Author and validate traffic transforms. The transform engine is identical to the one the cloud snapshot Transforms tab and proxymock web use, so `transform test` previews exactly what the generator and responder would apply at replay.
+Pass a bare transform configuration to `--transform-config`, not the complete blueprint JSON wrapper. A blueprint stores that configuration under `tokenizeConfig`; see [Blueprints](/proxymock/guides/blueprints.md).
+
+Author and validate traffic transforms using the same engine as Cloud snapshot tuning and proxymock web. `transform test` previews changes against the supplied RRPairs. Verify changes that depend on runtime responses or secrets with a replay.
 
 **Subcommands**
 
@@ -1195,3 +1218,24 @@ proxymock version [flags]
 
 - `--client` - Show only the local client version
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+### `validate`
+
+Validate recorded or replayed HTTP responses against an OpenAPI specification.
+
+```shell
+proxymock validate --spec ./openapi.yaml --in ./proxymock/recorded-example
+```
+
+- `--spec string` - Required OpenAPI 3.0+ JSON or YAML specification; supports OpenAPI 3.1
+- `--in string` - Required directory containing RRPair files
+
+The validator matches methods and route templates and resolves local and component references. It checks response schemas, including types, required fields, enums, and undocumented fields. It runs locally without a Speedscale account.
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | No contract violations or unmatched routes reported |
+| `2` | At least one contract violation |
+| `3` | At least one unmatched route, with no contract violations |
+
+Check the number of responses validated as well as the exit code. A run with no applicable HTTP responses does not establish contract coverage. See [OpenAPI validation](/proxymock/guides/openapi.md#validate-recorded-and-replayed-responses).

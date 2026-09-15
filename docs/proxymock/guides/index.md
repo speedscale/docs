@@ -21,3 +21,9 @@ This section contains how-to guides for practical uses of **proxymock**.
   <OpenApiCard />
   <ModifyRrpairsCard />
 </div>
+
+## Configure and verify replays
+
+- [Create and Verify Blueprints](./blueprints.md): save, preview, and check runtime transforms.
+- [Gate CI on Replay Results](./replay-verdicts.md): baseline comparisons, fix verification, and exit codes.
+- [Compare Response Meaning](./semantic-comparison.md): similarity thresholds and optional judging.
