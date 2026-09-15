@@ -22,7 +22,7 @@ This guide provides a step-by-step approach to creating a [mock server](/referen
 
 Make sure you have:
 
-- An AI coding assistant with MCP support (Cursor, Claude Code, GitHub Copilot, Cline, etc)
+- An AI coding assistant with MCP support (Cursor, Claude Code, GitHub Copilot, Kiro, Cline, etc)
 - A terminal or command prompt open
 - [go version 1.23.1](https://go.dev/doc/install) or newer installed
 

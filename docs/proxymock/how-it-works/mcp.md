@@ -23,7 +23,7 @@ MCP support requires proxymock be installed. **It's free.** Instructions are [he
 You can learn more at [proxymock.io](https://proxymock.io)
 
 An MCP server is built into **proxymock** to let Agent-based LLM tools like [Cursor](https://cursor.com), 
-[Claude Desktop](https://claude.ai/download), [VS Code](https://code.visualstudio.com) or [GitHub Copilot](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp) interact.
+[Claude Desktop](https://claude.ai/download), [VS Code](https://code.visualstudio.com), [GitHub Copilot](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp) or [Amazon Kiro](https://kiro.dev) interact.
 Once installed, you will be able to interact with proxymock using your normal chat interface. 
 This is made possible by the [Model Context Protocol](https://modelcontextprotocol.io).
 
