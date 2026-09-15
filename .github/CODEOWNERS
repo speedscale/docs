@@ -1,0 +1,15 @@
+# Require owner review for deployment code, dependencies, and site execution.
+/.github/**             @kenahrens @mleray24 @shaunduncan
+/package.json           @kenahrens @mleray24 @shaunduncan
+/yarn.lock              @kenahrens @mleray24 @shaunduncan
+/.npmrc                 @kenahrens @mleray24 @shaunduncan
+/.yarnrc                @kenahrens @mleray24 @shaunduncan
+/.yarnrc.yml            @kenahrens @mleray24 @shaunduncan
+/.yarn/**               @kenahrens @mleray24 @shaunduncan
+/scripts/**             @kenahrens @mleray24 @shaunduncan
+/tools/**               @kenahrens @mleray24 @shaunduncan
+/docusaurus.config.js   @kenahrens @mleray24 @shaunduncan
+/sidebars.js            @kenahrens @mleray24 @shaunduncan
+/babel.config.js        @kenahrens @mleray24 @shaunduncan
+/src/**                 @kenahrens @mleray24 @shaunduncan
+/static/**/*.js         @kenahrens @mleray24 @shaunduncan

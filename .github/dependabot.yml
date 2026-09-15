@@ -1,0 +1,59 @@
+version: 2
+
+updates:
+  # Keep SHA-pinned action revisions current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+    labels:
+      - "dependencies"
+    # Groups are matched in order, so the specific ones must precede the
+    # catch-all below.
+    groups:
+      # The @docusaurus/* packages are version-locked to each other. Splitting
+      # them across separate PRs produces combinations that will not install.
+      docusaurus:
+        patterns:
+          - "@docusaurus/*"
+          - "@mdx-js/*"
+          - "prism-react-renderer"
+      algolia:
+        update-types: ["minor", "patch"]
+        patterns:
+          - "@docsearch/*"
+          - "algoliasearch"
+      babel:
+        update-types: ["minor", "patch"]
+        patterns:
+          - "@babel/*"
+      # Everything else: routine minor/patch churn arrives as one PR a week.
+      # Docusaurus majors stay together; other majors receive separate PRs.
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
