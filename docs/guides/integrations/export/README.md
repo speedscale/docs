@@ -11,3 +11,5 @@ Speedscale exporters break into two categories:
 * Automatic test and mock generation
 
 This section contains info on exports Speedscale results to monitoring tools as well as exporters for creating test scripts.
+
+[Export to Locust](./locust.md) generates HTTP load tests from recorded traffic, with a Kubernetes example that uses BYOC captures and dependency mocks.
