@@ -12,9 +12,9 @@ whether posting latency increases. Both workloads run against the same app.
 :::info Release candidate
 This guide accompanies the endpoint and session load-plan release candidate.
 Use compatible proxymock, generator, operator and cloud components. The proxymock
-visual editor runs these plans locally; its **Run in cluster** integration and
-dashboard editor are still being completed. The Kubernetes example below uses
-a saved test config and a TrafficReplay.
+visual editor supports local replay and cloud-backed **Run in cluster**. Dashboard
+authoring and inline plan staging for namespaced installations remain in progress.
+Final acceptance of the cluster launch integration is still pending.
 :::
 
 ## Choose requests or complete sessions
@@ -144,6 +144,14 @@ Actual authentication failures remain failed requests. An optional
 `identityVerification` policy can check the live JWT claim and expected identity;
 configure it for the application's authentication scheme.
 
+Expand **Recorded credentials** in the compiled preview to see configured
+replacement coverage. Counts use the selected requests and source actors,
+including complete journeys. They recognize matching constant, variable-load,
+HTTP-auth and JWT re-signing chains for every recorded Authorization or Cookie
+header value. Cloned slots do not multiply these counts. The preview does not
+execute the chains, resolve variables or verify target accounts. Custom credential
+locations and other transforms remain unassessed; coverage remains advisory.
+
 ## Build and preview a plan visually
 
 1. Open `proxymock web --in ./proxymock` and select **Replay > Load plan**.
@@ -213,6 +221,19 @@ Long runs use at most 300 regular chart windows plus drain; configured stage
 boundaries remain exact in the stage table.
 
 ## Run the same plan in Kubernetes
+
+With cloud login and a connected cluster, choose a destination and select **Run
+in cluster** in proxymock. It saves a new test configuration, checks that the cloud
+preserved the plan, pushes the selected recordings and active blueprints, then
+launches the TrafficReplay with the saved configuration. Routes and selected
+dependency mocks follow the existing cluster workflow. A cloud service that
+changes or drops the plan causes launch to fail before creating a TrafficReplay.
+
+Namespaced installations using replay requests still require a staged snapshot
+and test configuration ID. Inline plan upload is not yet available on that path.
+
+To launch directly with a saved configuration and Kubernetes manifest, follow
+the steps below.
 
 Save the generator plan inside a version 3 test config. For example:
 
