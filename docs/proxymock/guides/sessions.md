@@ -38,7 +38,7 @@ app as a child process, listens on port `4143` for inbound traffic, and records
 the app's outbound calls on `4140`.
 
 ```shell title="Terminal 1 — record"
-git clone https://github.com/speedscale/mock-lab && cd mock-lab/go
+git clone https://github.com/speedscale/mock-lab && cd mock-lab/languages/go
 proxymock record -- go run .
 ```
 
@@ -55,7 +55,7 @@ so you have **several distinct actors** to explore, not just one:
 ```
 
 Press `Ctrl-C` in Terminal 1 to stop recording. You now have a `recorded-*`
-directory under `mock-lab/go/proxymock/`.
+directory under `mock-lab/languages/go/proxymock/`.
 
 :::tip Skip the recording
 mock-lab ships a committed recording at `lab/proxymock/recording` if you would
@@ -162,7 +162,7 @@ any other recording — select it and the whole Sessions tab now scopes to that
 one actor.
 
 ```shell title="On disk, next to your recordings"
-mock-lab/go/proxymock/
+mock-lab/languages/go/proxymock/
 ├── recorded-2026-07-15_…Z/     # the full recording
 └── session-<id>/               # just this actor, ready to replay
     └── localhost/
@@ -182,7 +182,7 @@ app on its normal port, then point `proxymock replay` at the snapshot directory
 with `--in`:
 
 ```shell title="Terminal 1 — run the app"
-cd mock-lab/go && go run .
+cd mock-lab/languages/go && go run .
 ```
 
 ```shell title="Terminal 2 — replay just this session"

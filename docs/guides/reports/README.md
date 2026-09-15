@@ -39,3 +39,17 @@ Throughput graphs show request volume over time during the replay, broken into t
 
 When replaying in a Kubernetes environment, the report can overlay cluster events (pod restarts, OOMKills, scheduling failures) on the performance timeline. This correlation makes it easy to see whether infrastructure issues coincided with performance regressions or errors during replay.
 
+## Read the outcome checks
+
+The report **Overview** opens with four checks:
+
+| Check | What to inspect |
+| --- | --- |
+| Completed | Whether the replay completed its execution |
+| Accuracy | Whether inbound replay responses matched expectations |
+| Mocks | Whether outbound requests matched the configured mocks |
+| Goals | Whether configured performance and validation goals passed |
+
+Each check links to the report view that explains it. Completion alone does not prove response correctness. If no goals are configured, a green status does not prove that performance thresholds were checked.
+
+When goals fail, the Overview shows their metric, expected value, and actual value. Use this evidence to distinguish a missed latency or throughput target from a replay setup problem. See [Report Status](./status.md) and [Performance Details](./performance-details.md).

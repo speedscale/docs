@@ -21,6 +21,8 @@ If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:supp
   - [Authentication](#authentication)
   - [Core Settings](#core-settings)
   - [Image Configuration](#image-configuration)
+    - [Bring your own Redis and Java runtime images](#bring-your-own-redis-and-java-runtime-images)
+    - [Private registry example](#private-registry-example)
   - [Resource Management](#resource-management)
   - [Network Configuration](#network-configuration)
   - [Security Settings](#security-settings)
@@ -77,6 +79,85 @@ helm install speedscale-operator speedscale/speedscale-operator \
 | `image.tag` | string | `"v2.3.709"` | Image tag for Speedscale components. |
 | `image.pullPolicy` | string | `"Always"` | Image pull policy. Valid values: `Always`, `IfNotPresent`, `Never`. |
 
+#### Bring your own Redis and Java runtime images
+
+Use these values when your organization already approves Redis and Java runtime images in a private registry. Choose a chart version whose `helm show values speedscale/speedscale-operator` output includes these options; older charts do not support them.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `replayComponents.redis.image` | string | `""` | Full Redis image reference, including its tag or digest. Empty uses `image.registry/redis:7.4`. |
+| `jks.image` | string | `""` | Full Java 11+ runtime image reference, including its tag or digest. Empty uses `image.registry/amazoncorretto:23`. Applies when `createJKS` is enabled. |
+| `jks.truststorePath` | string | `""` | Path to the source truststore inside the Java image. Empty uses the runtime's `java.home/lib/security/cacerts`. |
+| `image.pullSecrets` | list | `[]` | Existing registry credentials, for example `[{name: artifactory-regcred}]`. Create the Secret in the installation namespace and every namespace that receives sidecars or replay components. |
+
+Explicit image references are used as supplied: `image.registry` and `image.tag` are not prepended or appended. The Redis and Java defaults have their own tags, independent of `image.tag`. Both use `image.pullPolicy` and `image.pullSecrets`.
+
+**Redis requirements.** Supply a standard Redis 7.x server image with `redis-server` on its executable path. The operator starts it directly with `--appendonly no --save "" --port 6379`; it does not run the image's entrypoint or supply image-specific initialization environment variables. The image must support those arguments and the configured security context. This selects the image for operator-managed Redis deployments, rather than an external Redis service.
+
+**Java requirements.** Supply a Java 11+ runtime with `java` on its executable path and a readable CA truststore using the password `changeit`. Eclipse Temurin and other Java 11+ JREs are supported; the integration tests cover `eclipse-temurin:11-jre` as well as Corretto 23. A JDK, shell, `curl`, and `kubectl` are not required in the image.
+
+The pre-install hook mounts a small truststore provisioner from a ConfigMap, runs it on that runtime, copies the source CA certificates, adds the Speedscale CA, and writes the `speedscale-jks` Secret through the Kubernetes API. It does not modify the image's own truststore. The Job uses the chart's global security contexts and supports a non-root user and a read-only root filesystem; the source truststore must be readable by the configured UID.
+
+Set `jks.truststorePath` only if the image keeps its CA truststore elsewhere, for example `/etc/company/java/cacerts`. This is the source path inside the image, not the destination of the generated JKS. The hook runs on installation, so changing `jks.image` or `jks.truststorePath` during a Helm upgrade does not regenerate an existing `speedscale-jks` Secret.
+
+#### Private registry example
+
+Mirror the required Speedscale component images into your registry and make your approved Redis and Java images available at the paths below. Replace the example host and repository paths with your own. Add this configuration to your installation values file, keeping your existing authentication and cluster settings:
+
+```yaml
+image:
+  registry: artifactory.example.com/speedscale
+  pullSecrets:
+    - name: artifactory-regcred
+
+replayComponents:
+  redis:
+    image: artifactory.example.com/approved/redis:7.4
+
+createJKS: true
+jks:
+  image: artifactory.example.com/approved/eclipse-temurin:11-jre
+  truststorePath: ""
+```
+
+Create `artifactory-regcred` before installation using your registry's credentials. It must exist in `speedscale` for the pre-install hook and in any namespace where Redis or other replay components run. Changing the registry does not remove the operator's need to connect to Speedscale cloud.
+
+Render the chart with your values to inspect the Java hook's image before installing:
+
+```bash
+helm repo update
+helm template speedscale-operator speedscale/speedscale-operator \
+  -n speedscale -f values.yaml > rendered.yaml
+```
+
+In the `speedscale-operator-create-jks` Job, confirm the `create-jks` container has:
+
+```yaml
+image: "artifactory.example.com/approved/eclipse-temurin:11-jre"
+```
+
+The rendered operator ConfigMap's `REDIS_CONFIG` should contain `"image":"artifactory.example.com/approved/redis:7.4"`. Redis deployments are created by the operator at runtime, so they do not appear in the rendered chart. Rendering confirms the configured references; it does not test registry authentication or image pulls.
+
+Install using the same values file:
+
+```bash
+helm install speedscale-operator speedscale/speedscale-operator \
+  -n speedscale --create-namespace -f values.yaml
+speedctl check operator -n speedscale
+```
+
+A successful operator check ends with `All checks were successful`. It checks persistent resources, including `speedscale-jks`, and excludes installation hooks deleted after success. It does not print or validate the custom image references.
+
+After the operator creates a Redis deployment, inspect its image in the replay namespace:
+
+```bash
+kubectl -n <replay-namespace> get deployments \
+  -l replay.speedscale.com/component=speedscale-redis \
+  -o jsonpath='{range .items[*]}{.metadata.name}{": "}{.spec.template.spec.containers[0].image}{"\n"}{end}'
+```
+
+Each returned image should be `artifactory.example.com/approved/redis:7.4`. If a pod reports `ImagePullBackOff`, inspect its events with `kubectl describe pod` and check the image path, registry access, and pull Secret in that namespace. If Java provisioning fails after the image starts, inspect `kubectl -n speedscale logs job/speedscale-operator-create-jks` and verify the Java version, truststore path, password, and file permissions.
+
 ### Resource Management
 
 | Parameter | Type | Default | Description |
@@ -103,12 +184,11 @@ helm install speedscale-operator speedscale/speedscale-operator \
 |-----------|------|---------|-------------|
 | `privilegedSidecars` | bool | `false` | Controls whether sidecar init containers should run with privileged mode enabled. |
 | `createTLSCerts` | bool | `true` | Creates the `speedscale-certs` and `speedscale-webhook-certs` Secrets. Set to `false` when your PKI or secret manager provisions them. |
-| `createJKS` | bool | `true` | Controls a pre-install Job that creates the `speedscale-jks` truststore from the standard OpenJDK CAs and the Speedscale CA. The Job runs as UID 0; disable it if Java truststore support is unnecessary or policy requires every container to run as non-root. |
 | `secretAccessList` | list | `[]` | Restricts the operator to the named Kubernetes Secrets plus required Speedscale internal Secrets. An empty list permits access to all Secrets in a managed namespace. |
+| `createJKS` | bool | `true` | Controls the pre-install job that creates the `speedscale-jks` Secret using the selected Java runtime. Supports non-root execution and a read-only root filesystem. Disable when JKS is unnecessary or the Secret is pre-provisioned. |
 | `disableSidecarSmartReverseDNS` | bool | `false` | Controls whether the sidecar should disable the smart DNS lookup feature (requires `NET_ADMIN` capability). |
 
-See [Kubernetes Security Requirements](/security/kubernetes-permissions) for the complete operator RBAC,
-admission webhook, replay certificate, and eBPF runtime permission summary.
+See [Kubernetes Security Requirements](/security/kubernetes-permissions) for the operator RBAC, admission webhook, replay certificate, and eBPF runtime permission summary.
 
 ### Advanced Configuration
 

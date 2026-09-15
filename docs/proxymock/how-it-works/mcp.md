@@ -23,7 +23,7 @@ MCP support requires proxymock be installed. **It's free.** Instructions are [he
 You can learn more at [proxymock.io](https://proxymock.io)
 
 An MCP server is built into **proxymock** to let Agent-based LLM tools like [Cursor](https://cursor.com), 
-[Claude Desktop](https://claude.ai/download), [VS Code](https://code.visualstudio.com) or [GitHub Copilot](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp) interact.
+[Claude Desktop](https://claude.ai/download), [VS Code](https://code.visualstudio.com), [GitHub Copilot](https://docs.github.com/en/copilot/customizing-copilot/extending-copilot-chat-with-mcp) or [Amazon Kiro](https://kiro.dev) interact.
 Once installed, you will be able to interact with proxymock using your normal chat interface. 
 This is made possible by the [Model Context Protocol](https://modelcontextprotocol.io).
 
@@ -106,4 +106,19 @@ If the `proxymock init` command fails or you are using an unknown IDE, you can m
 ```
 
 Additionally, you can re-detect and install by running `proxymock mcp install`.
+
+If proxymock runs somewhere your IDE cannot launch it directly (a remote dev box, a container), start it as a network server with `proxymock mcp run --http` and point the client at the Streamable HTTP endpoint instead. `proxymock mcp install --http` or `proxymock mcp json --http` produce the matching entry:
+
+```json
+{
+    "mcpServers": {
+        "proxymock": {
+            "type": "http",
+            "url": "http://localhost:8080/mcp"
+        }
+    }
+}
+```
+
+The older `--sse` flag still works but is deprecated: the HTTP server serves the legacy `/sse` endpoint on the same port, so existing SSE configurations keep connecting.
 :::

@@ -31,7 +31,7 @@ proxymock/
 │   └── <id>/payload.csv
 ├── secrets/                     # local credentials for transforms — never commit
 │   └── <name>/<key>             #   one plain file per secret value
-├── .metadata/                   # snapshot binding (transforms, tokenizer config)
+├── .metadata/                   # snapshot configuration (transforms, tokenizer config)
 │   └── snapshot.json
 ├── .proxymock/                  # web-UI state (backups, dismissed hints, vendored assets)
 └── .replay/                     # transient replay scratch — regenerated every run
@@ -58,7 +58,7 @@ prevents a later `record` run, or a replay that scans the workspace, from
 accidentally re-feeding itself last session's output.
 
 ### `blueprints/`
-Saved transform rules (credential swaps, JWT re-signing, value substitutions,
+Saved [blueprints](/proxymock/guides/blueprints.md) contain transform rules (credential swaps, JWT re-signing, value substitutions,
 and so on) created through the web UI or CLI. Blueprints are applied as an
 overlay at replay time; deleting this directory loses your saved transforms but
 not your recordings.
@@ -85,7 +85,7 @@ replay each loaded blueprint reports how many of its chains ran:
 Blueprint "mock-lab smart replace (token + order_id)": 2 transform chain(s) ran.
 ```
 
-A blueprint that ran none is called out as a warning. Pass
+A workspace blueprint that ran none is called out as a warning. Machine-wide blueprints that do not fire are not warned about. Pass
 `--require-blueprint <name>` to turn that into a non-zero exit, which is what
 you want in CI. Blueprint reporting is unavailable under `--load-test`, which
 drops the transform events the count is derived from.
@@ -107,7 +107,7 @@ recordings or blueprints. **Never commit `secrets/` to version control.** See
 [Secrets](/proxymock/guides/secrets.md) for the full reference.
 
 ### `.metadata/snapshot.json`
-The snapshot binding: tokenizer configuration and the transform set that applies
+The snapshot configuration: tokenizer configuration and the transform set that applies
 to the workspace. It lives at the workspace root and applies to every recording
 in the workspace, which is why a single-snapshot `cloud pull` writes it one level
 up from the `recorded-`/snapshot subdir. Replay walks parent directories to find
