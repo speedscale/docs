@@ -1059,10 +1059,10 @@
     "@babel/plugin-transform-modules-commonjs" "^7.29.7"
     "@babel/plugin-transform-typescript" "^7.29.7"
 
-"@babel/runtime-corejs3@^7.29.2":
-  version "7.29.7"
-  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs3/-/runtime-corejs3-7.29.7.tgz#2030fda34f3433647818660093751fb1ca2debf0"
-  integrity sha512-ppj9ouYku+RX0ljtgZd+KMO5mkM2bCqg8H2PYAFWnLsHEIKIdRojqbJ2i3eVHrisuxy7nOFCmngTDdWtUCdXUQ==
+"@babel/runtime-corejs3@^8.0.5":
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs3/-/runtime-corejs3-8.0.5.tgz#53ec3a0a0e9432cad65072690a4504d32a48f1a5"
+  integrity sha512-naC2fZjoJWXs8UGeOJg/btM9ks/634c6Trf72FdTGvmOYyGu1uohCLqHqyVq+PCcbKJkwREqdLg3eFhg6rp1vg==
   dependencies:
     core-js-pure "^3.48.0"
 
