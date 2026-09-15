@@ -48,14 +48,9 @@ if (stubs.length === 0) {
   process.exit(1);
 }
 
-// Every target here becomes an x-amz-website-redirect-location, which S3 will
-// serve as a 301 to wherever it points — including off-site. All of our
-// configured redirects are site-relative, so anything else means the build
-// produced something we did not intend; fail rather than publish an open
-// redirect on docs.speedscale.com. Note "//host" is protocol-relative and
-// leaves the origin, so a leading-slash check alone is not enough.
+// Reject browser URL normalization tricks before publishing any redirects.
 const offsite = stubs.filter(
-  ([, target]) => !target.startsWith("/") || target.startsWith("//"),
+  ([, target]) => !target.startsWith("/") || target.startsWith("//") || /[\\\x00-\x20\x7f&]/.test(target),
 );
 if (offsite.length > 0) {
   console.error("refusing to publish non-relative redirect targets:");

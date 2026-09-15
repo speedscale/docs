@@ -43,12 +43,10 @@ function parseRedirects(configContent) {
 
 /** Get changed files by diff-filter status */
 function getChangedFiles(filter, baseRef) {
-  // execFileSync, not execSync: baseRef comes from argv, so a value containing
-  // shell metacharacters would otherwise be interpreted by a shell. Passing an
-  // argv array keeps it a single opaque argument to git.
+  // Keep caller-supplied refs out of the shell.
   const args = baseRef
-    ? ["diff", `--diff-filter=${filter}`, "--name-only", `HEAD...${baseRef}`]
-    : ["diff", `--diff-filter=${filter}`, "--name-only", "--cached"];
+    ? ["diff", `--diff-filter=${filter}`, "--name-only", "--no-renames", `${baseRef}...HEAD`]
+    : ["diff", `--diff-filter=${filter}`, "--name-only", "--no-renames", "--cached"];
   try {
     const files = execFileSync("git", args, { cwd: WORK_DIR, encoding: "utf-8" })
       .trim()
@@ -56,7 +54,8 @@ function getChangedFiles(filter, baseRef) {
       .filter(Boolean);
     return files;
   } catch {
-    return [];
+    console.error("Unable to compare documentation changes; check the base ref.");
+    process.exit(1);
   }
 }
 
@@ -66,7 +65,6 @@ const baseRef = process.argv[2]; // e.g., "origin/main" for CI
 
 const deletedFiles = getChangedFiles("D", baseRef);
 const addedFiles = getChangedFiles("A", baseRef);
-const renamedFiles = getChangedFiles("R", baseRef);
 
 function findManualRenames(deleted, added) {
   const renames = [];

@@ -3,17 +3,9 @@ name: PR Preview
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-    branches: [main]
 
 permissions:
-  id-token: write # This is required for requesting the AWS JWT
-  contents: read # This is required for checkout
-  pull-requests: write # This is required for creating a comment
-
-env:
-  AWS_ROLE: ${{ secrets.AWS_ROLE }}
-  AWS_REGION: us-east-1
-  DOWNLOADS_PREVIEW_BUCKET: docs-preview.speedscale.com
+  contents: read
 
 jobs:
   build:
@@ -23,6 +15,7 @@ jobs:
       uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.0.0
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Setup Node.js
       uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
@@ -32,6 +25,9 @@ jobs:
 
     - name: install
       run: yarn --frozen-lockfile --silent
+
+    - name: security regression tests
+      run: node --test scripts/security-regressions.test.mjs
 
     - name: check redirects
       env:
@@ -46,8 +42,32 @@ jobs:
     - name: build
       run: yarn build
 
-    # Configured after install and build so the credentials are not in scope
-    # while third-party code runs. See the same note in main.yaml.
+    - name: save site artifact
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: docs-site
+        path: build/
+        if-no-files-found: error
+        retention-days: 1
+
+  publish:
+    needs: build
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pull-requests: write
+    env:
+      AWS_ROLE: ${{ secrets.AWS_ROLE }}
+      AWS_REGION: us-east-1
+      DOWNLOADS_PREVIEW_BUCKET: docs-preview.speedscale.com
+    steps:
+    - name: download site artifact
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      with:
+        name: docs-site
+        path: build/
+
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.0.0
       with:
