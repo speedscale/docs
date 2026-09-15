@@ -21,7 +21,7 @@
     "@babel/runtime": "^7.29.2",
     "@babel/runtime-corejs3": "^7.29.2",
     "@docsearch/css": "^4.6.2",
-    "@docsearch/react": "^4.6.2",
+    "@docsearch/react": "^5.1.0",
     "@docusaurus/bundler": "^3.10.1",
     "@docusaurus/core": "^3.10.1",
     "@docusaurus/cssnano-preset": "^3.10.1",
