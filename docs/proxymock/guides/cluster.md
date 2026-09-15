@@ -66,7 +66,9 @@ proxymock cluster replay prepare --in ./proxymock/recorded-2026-07-22
 
 The keys it prints are exactly the keys `start` accepts, so run `prepare` first to find out what to pass.
 
-`start` pushes the selected recordings to Speedscale cloud as a snapshot and creates the `TrafficReplay` that runs them in the cluster. Pick exactly one destination shape:
+`start` stages the selected recordings in the cluster and creates the `TrafficReplay` that runs them. The snapshot goes straight to the in-cluster forwarder over a port-forward, so an in-cluster replay needs nothing but your kubeconfig: no Speedscale cloud login, and no traffic leaving the cluster. If staging fails, `start` falls back to pushing the snapshot to Speedscale cloud and says so. Either way the result reports `snapshotSource`, `local` or `cloud`, so you can tell which happened. A `local` replay keeps its report in the cluster, so there is no dashboard link; read it with `proxymock cluster replay status`.
+
+Pick exactly one destination shape:
 
 ```shell
 # replay against a workload, mocking its database
@@ -80,7 +82,7 @@ proxymock cluster replay start --target http://banking-frontend.banking-app:80 -
 - `--workload NAME` replays against a workload in the cluster. Only this shape can mock dependencies, and only this shape reports on the workload's own behavior.
 - `--target URL` replays against a single address. Nothing in the cluster is modified and nothing is mocked.
 
-`--mock` takes an outbound dependency key from `prepare`; repeat it to mock more than one. Mocking a dependency makes the responder answer it from the recording instead of letting the workload reach the real thing, which is what makes a replay repeatable. `--route SLICE=WORKLOAD` splits the recording so one inbound slice goes to its own workload; every slice goes to exactly one destination. To reuse a snapshot already in the cloud, pass `--snapshot-id` instead of pushing again.
+`--mock` takes an outbound dependency key from `prepare`; repeat it to mock more than one. Mocking a dependency makes the responder answer it from the recording instead of letting the workload reach the real thing, which is what makes a replay repeatable. `--route SLICE=WORKLOAD` splits the recording so one inbound slice goes to its own workload; every slice goes to exactly one destination. To replay a snapshot that is already in Speedscale cloud, pass `--snapshot-id` instead; nothing is staged or pushed.
 
 Watch and tear down a running replay with the remaining verbs:
 
