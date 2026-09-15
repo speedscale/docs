@@ -42,13 +42,14 @@ Within each namespace managed by Speedscale, the operator needs read/write acces
 | --- | --- | --- |
 | Workloads | Deployments, StatefulSets, DaemonSets, ReplicaSets, Jobs, Pods, and Argo Rollouts | Inject or remove capture configuration, prepare the system under test, and create or clean up replay workloads. |
 | Replay support | Services, ServiceAccounts, ConfigMaps, Roles, RoleBindings, and Leases | Connect replay components, provide configuration, and coordinate their lifecycle. |
+| Service mesh | Istio EnvoyFilters, Sidecars, and PeerAuthentications | Configure traffic routing and TLS policy for replay. |
 | Secrets | Kubernetes Secrets | Mount the Speedscale certificate secrets and customer-approved credentials used by replay transforms or mocked dependencies. |
 | Speedscale APIs | `TrafficReplay`, `TrafficReplay/status`, `AgentTask`, and `AgentTask/status` | Create, reconcile, report status for, and clean up replay operations. |
 | Diagnostics | Pod logs, events, and pod metrics | Collect replay diagnostics and report data. |
 
 By default, an empty `namespaceSelector` gives the operator namespaced permissions across the cluster. Set `namespaceSelector` to create Roles and RoleBindings only in the selected application namespaces and the Speedscale installation namespace. The cluster-scoped discovery permissions above remain necessary.
 
-Secret access is also configurable. An empty `secretAccessList` permits access to all Secrets in a managed namespace. A nonempty list adds Kubernetes `resourceNames` restrictions, including `speedscale-certs`, `speedscale-apikey`, `speedscale-jks`, and `speedscale-webhook-certs`. Validate capture and replay with this setting: name restrictions do not grant `create` or `deletecollection`, and list/watch requests must select an allowed `metadata.name`. It is not a transparent filter over a namespace-wide Secret watch.
+Secret access is also configurable. An empty `secretAccessList` permits access to all Secrets in a managed namespace. A nonempty list adds Kubernetes `resourceNames` restrictions, including `speedscale-certs`, `speedscale-apikey`, `speedscale-jks`, and `speedscale-webhook-certs`. Validate capture and replay with this setting: [Kubernetes name restrictions](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#referring-to-resources) do not grant top-level `create` or `deletecollection`, and list/watch requests must select an allowed `metadata.name`. It is not a transparent filter over a namespace-wide Secret watch.
 
 ## Admission webhooks and the TrafficReplay API
 
@@ -71,7 +72,7 @@ Speedscale uses two in-cluster Secrets for TLS mocking and Java trust:
 | `speedscale-certs` | A CA certificate and private key used to generate certificates when mocking TLS APIs. Replay responders and workloads configured for TLS interception can receive the Secret through read-only volume mounts. Read-only mounts prevent file changes; they do not prevent those processes from reading the private key. |
 | `speedscale-jks` | An optional convenience Java truststore containing the public CA certificate from `speedscale-certs` plus the standard OpenJDK CA set. TLS-enabled Java workloads can mount it and point the JVM at `cacerts.jks`. |
 
-The chart creates `speedscale-certs` by default. Set `createTLSCerts: false` to use certificates provisioned by your own PKI or secret-management process. See [Bringing Your Own TLS Certs](/getting-started/installation/install/bring-your-own-cert).
+The chart creates `speedscale-certs` and the admission server's `speedscale-webhook-certs` by default. Set `createTLSCerts: false` when your PKI or secret manager provisions both Secrets. You must also populate the admission webhook CA bundles, for example through cert-manager annotations. See [Bringing Your Own TLS Certs](/getting-started/installation/install/bring-your-own-cert).
 
 The `speedscale-jks` Secret is built by an optional pre-install Job. In chart 2.5.978 it uses the global security contexts, defaults to UID/GID 2100 with privilege escalation disabled, and supports a read-only root filesystem. It copies the selected runtime's truststore instead of modifying it in place. Older charts ran this Job as UID 0. Set `createJKS: false` when the Secret is pre-provisioned or Java truststore support is unnecessary. See [Java runtime image requirements](/reference/helm#bring-your-own-redis-and-java-runtime-images) and [Java TLS trust](/reference/java/tls).
 
