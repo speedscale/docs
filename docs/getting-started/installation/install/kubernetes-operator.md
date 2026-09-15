@@ -21,3 +21,7 @@ that will be always present on the cluster.
 > [Quick Start – Install Speedscale Operator](../../quick-start.md#install-speedscale-operator-optional).
 
 For additional background and architecture, complete the [Quick Start](../../quick-start.md) first, then return here for conceptual details about how the operator works within your cluster.
+
+## Private registry images
+
+If your organization requires approved Redis or Java runtime images, configure `replayComponents.redis.image` and `jks.image` in your Helm values. The [Helm values reference](/reference/helm#bring-your-own-redis-and-java-runtime-images) covers runtime requirements and truststore behavior, with a [private registry example](/reference/helm#private-registry-example) for Artifactory.

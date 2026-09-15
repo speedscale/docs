@@ -6,14 +6,7 @@ on:
       - main
 
 permissions:
-  id-token: write # This is required for requesting the AWS JWT
-  contents: read # This is required for checkout
-
-env:
-  AWS_ROLE: ${{ secrets.AWS_ROLE }}
-  AWS_REGION: us-east-1
-  DOCS_BUCKET: docs.speedscale.com
-  DIST_ID: ${{ secrets.DIST_ID }}
+  contents: read
 
 jobs:
   build:
@@ -23,6 +16,7 @@ jobs:
       uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.0.0
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Setup Node.js
       uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
@@ -33,20 +27,52 @@ jobs:
     - name: install
       run: yarn --frozen-lockfile --silent
 
+    - name: security regression tests
+      run: node --test scripts/security-regressions.test.mjs
+
     - name: check redirects
       env:
-        BASE_SHA: ${{ github.before }}
+        BASE_SHA: ${{ github.event.before }}
       run: node scripts/check-redirects.mjs "$BASE_SHA"
 
     - name: build
       run: yarn build
 
-    # AWS credentials are configured as late as possible, immediately before the
-    # first step that needs them. Everything above this point executes code we do
-    # not control -- npm lifecycle hooks during install, and Docusaurus/webpack
-    # plugins across the whole dependency tree during build. Credentials placed
-    # ahead of those steps are readable by any one of them, and this role can
-    # `s3 sync --delete` the production bucket.
+    - name: save site artifact
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: docs-site
+        path: build/
+        if-no-files-found: error
+        retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_ROLE: ${{ secrets.AWS_ROLE }}
+      AWS_REGION: us-east-1
+      DOCS_BUCKET: docs.speedscale.com
+      DIST_ID: ${{ secrets.DIST_ID }}
+    steps:
+    # Load deploy code from the pushed commit, never from the build artifact.
+    - name: checkout
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.0.0
+      with:
+        persist-credentials: false
+
+    - name: download site artifact
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      with:
+        name: docs-site
+        path: build/
+
+    - name: validate redirect objects
+      run: node scripts/deploy-redirect-objects.mjs build "$DOCS_BUCKET" --dry-run
+
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.0.0
       with:
@@ -65,8 +91,13 @@ jobs:
     - name: invalidate cache
       run: aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths '/*'
 
+  notify:
+    needs: [build, deploy]
+    if: always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure')
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
     - name: notify on failure
-      if: failure()
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         REF_NAME: ${{ github.ref_name }}

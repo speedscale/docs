@@ -16,7 +16,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | .NET       | Language | Full    | See [.NET](/reference/languages/dotnet#proxymock) and [TLS](/reference/languages/dotnet#tls-trust) |
 | C++        | Language | Full    | See [sidecar TLS](/getting-started/installation/sidecar/tls/) |
 | Go         | Language | Full    | See [Go](/reference/languages/golang#proxymock) and [TLS](/reference/languages/golang#tls-trust) |
-| Java       | Language | Full    | See [Java](/reference/languages/java#proxymock) and [TLS](/reference/languages/java#tls-trust) |
+| Java       | Language | Mode-dependent | See [Java setup](/reference/languages/java), [agent compatibility](/reference/java/agent#compatibility), and [TLS trust](/reference/java/tls). |
 | Node.js    | Language | Full    | See [Node.js](/reference/languages/nodejs#proxymock) and [TLS](/reference/languages/nodejs#tls-trust) |
 | Python     | Language | Full    | See [Python](/reference/languages/python#proxymock) and [TLS](/reference/languages/python#tls-trust) |
 | Ruby       | Language | Full    | See [sidecar TLS](/getting-started/installation/sidecar/tls/) |
@@ -28,7 +28,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
-| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql.md). See [details](/guides/capture/bodies#graphql) |
+| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/). See [details](/guides/capture/bodies#graphql) |
 | gRPC              | Protocol | Full         | See [details](/guides/capture/bodies#grpc)                                             |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |

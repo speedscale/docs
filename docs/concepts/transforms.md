@@ -1,5 +1,5 @@
 ---
-description: "Utilize Speedscale transforms to automatically modify traffic during replay, ensuring your app's data is accurate and up-to-date for seamless API testing."
+description: "Modify captured requests and responses with shared transform chains in Speedscale Cloud templates and proxymock blueprints."
 sidebar_position: 9
 ---
 
@@ -8,6 +8,14 @@ sidebar_position: 9
 <iframe src="https://www.youtube.com/embed/RojqxxHL7oc?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 Automatically modify traffic before or during a replay.
+
+## Transforms, templates, and blueprints
+
+A **transform** is one operation, such as replacing a value or re-signing a JWT. A **transform chain** starts with an extractor and runs ordered transforms on the extracted value. Filters can restrict the traffic a chain acts on.
+
+Speedscale Cloud saves reusable configurations as **Traffic Transform Templates**. proxymock saves them in **blueprints**, which wrap the transform configuration with a name, activation state, and local metadata. Both use the same engine and transform library.
+
+Use the [Cloud transformation guide](/guides/transformation/overview.md) for snapshot templates or [Create and Verify Blueprints](/proxymock/guides/blueprints.md) for local authoring, preview, and runtime checks.
 
 ## Basic Principles
 
@@ -29,7 +37,7 @@ First, data is extracted from the [RRPair](/reference/glossary.md#rrpair) using 
 
 Next, the token is mutated or further isolated using a **Transform**. Transforms can do simple things like change the data to a hard coded text value. They can also do more complex things like parse and shift a date or insert a value selectively like a switch statement in a programming language. Transforms are always executed sequentially.
 
-Transforms also have a data cache where **variables** can be stored. Variables function as named short term storage for the life of the request, just like in a programming language hashmap.
+Transforms also have a data cache where **variables** can be stored. Variables are named values that can be stored and reused across requests. Their lifetime depends on the execution context; generator variables are scoped to a virtual user.
 
 Last, the transformed data is re-inserted into the RRPair in exactly the same location. Each transform runs in reverse order to re-encode the new **token** and place it back in its correct place.
 
@@ -74,7 +82,7 @@ Test variables are scoped to the [vUser](/reference/glossary.md#vuser). For exam
 
 How can the request and response both use the same transforms? Because each transform chain starts with an extractor that specifically targets the request or the response. In the generator, that means if the extractor references the HTTP Request Body, then the request will be modified before it is sent to the SUT. If an HTTP Request Body is extracted in a responder chain, then the request is modified before signature matching (response lookup) is run.
 
-A complete set of traffic transformation configuration is stored as a Traffic Transform Template (TTT). You can view and edit these in the main [UI](https://app.speedscale.com/trafficTransforms). Although TTT's can be edited graphically, they are stored as JSONs for easy portability.  The JSON structure is fairly straightforward:
+In Speedscale Cloud, a reusable transform configuration is stored as a Traffic Transform Template (TTT). You can view these in [Traffic Transforms](https://app.speedscale.com/trafficTransforms). The following example is a bare transform configuration. In a proxymock blueprint, this configuration lives under `tokenizeConfig`:
 
 ```json
 {
@@ -119,7 +127,7 @@ Transform variables provide a way to share data between requests.  For example, 
 Variables can be thought of as a map of key=value pairs. Once set, they can be retrieved and modified using a set of transforms including:
 
 - **[var_store](/guides/transformation/transforms/variable_store)** - Assign a new value to a variable
-- **[var_load](/guides/transformation/transforms/variable_store)** - Replace current value with the value of a variable
+- **[var_load](/guides/transformation/transforms/variable_load)** - Replace current value with the value of a variable
 
 This is the simplest way to interact with the variable storage system, but not necessarily the most powerful. Keep in mind that [smart replace](/guides/transformation/transforms/smart_replace.md) transforms are independent of the variable cache and changes made in one will not be reflected in the other. Variables are for custom use cases. Smart replace is for more automated use cases and is a better starting place for most users.
 
