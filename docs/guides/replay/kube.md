@@ -14,7 +14,31 @@ The Speedscale Kubernetes Operator **must** be installed.
 
 Once you have created a snapshot you can replay it at any time in your own environment.
 
-![Test environment with all components deployed](./test-architecture.png)
+```mermaid
+flowchart TB
+    subgraph speedscale["Speedscale"]
+        snapshot["Previously captured traffic"]
+        config["Test settings"]
+        analysis["Analysis engine"]
+        results["Test results"]
+        analysis --> results
+    end
+
+    subgraph cluster["Your Kubernetes cluster"]
+        operator["Speedscale Operator"]
+        generator["Load generator"]
+        sut["Service under test"]
+        responder["Responder<br/>mock dependencies"]
+        operator -->|"captured traffic for replay"| generator
+        operator -->|"mock data and test config"| responder
+        generator --> sut
+        sut --> responder
+    end
+
+    snapshot --> operator
+    config --> operator
+    operator --> analysis
+```
 
 When you replay these are the key ingredients that you will use:
 
@@ -65,4 +89,3 @@ If this is the first time you are running a replay, you should start with the
 doesn't the report will give you an idea of how to configuration the data
 transformation. For more information about test configs see the
 [docs](../../reference/configuration/README.md).
-

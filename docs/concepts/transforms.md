@@ -13,7 +13,17 @@ Automatically modify traffic before or during a replay.
 
 In order to replay properly, most apps require traffic to contain up to date JWTs, timestamps and more. Speedscale provides a general purpose data transformation system very similar to Unix pipes for this purpose.
 
-![Data is extracted, transformed and re-inserted into the RRPair](./transforms/diagram.png)
+```mermaid
+flowchart LR
+    rrpair["RRPair"] --> extractor["Extractor"]
+    extractor --> transform1["Transform 1"]
+    transform1 --> transform2["Transform 2"]
+    transform2 --> more["..."]
+    more --> transform2
+    transform2 --> transform1
+    transform1 --> extractor
+    extractor --> rrpair
+```
 
 First, data is extracted from the [RRPair](/reference/glossary.md#rrpair) using an **Extractor**. For example, an extractor might pull the value of a particular HTTP header in an request. Extractors always produce a string that can be further transformed. The extracted string is called a **token** throughout this documentation.
 
@@ -23,7 +33,18 @@ Transforms also have a data cache where **variables** can be stored. Variables f
 
 Last, the transformed data is re-inserted into the RRPair in exactly the same location. Each transform runs in reverse order to re-encode the new **token** and place it back in its correct place.
 
-![Concrete example of two transforms](./transforms/diagram_with_data.png)
+```mermaid
+flowchart LR
+    subgraph rrpair["RRPair"]
+        header["Record-Timestamp:<br/>Sat, 20 Nov 2019 07:16:26 GMT"]
+        body["order-id: 52-3059"]
+    end
+
+    header --> extractHeader["Extract header"] --> dateOffset["Date offset"]
+    dateOffset --> extractHeader --> header
+    body --> extractJson["Extract JSON"] --> insertText["Insert text"]
+    insertText --> extractJson --> body
+```
 
 ## Where to Transform Traffic
 
@@ -114,7 +135,7 @@ If you need more of a "global replace" functionality you should use variables fr
 
 ### Embedded
 
-Variable values — and several special keywords — can be embedded within other transform
+Variable values and several special keywords can be embedded within other transform
 configuration fields using the `${{...}}` syntax. The simplest form replaces a placeholder with the
 value of a variable (if known) wherever it is found in the transform configuration. For example, you
 may want to embed a variable inside of a constant to produce `new_value=<some value from variable 1>`:

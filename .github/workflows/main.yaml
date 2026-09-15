@@ -47,7 +47,16 @@ jobs:
       run: yarn build
 
     - name: upload main
-      run: aws s3 sync --delete  build s3://${{ env.DOCS_BUCKET }} && aws cloudfront create-invalidation --distribution-id ${{ env.DIST_ID }} --paths '/*'
+      run: aws s3 sync --delete  build s3://${{ env.DOCS_BUCKET }}
+
+    # The sync above re-uploads the client-redirect stubs (200 + meta refresh)
+    # every deploy; replace them with website-redirect objects so the S3
+    # website endpoint answers 301 before the cache invalidation below.
+    - name: deploy redirect objects
+      run: node scripts/deploy-redirect-objects.mjs build ${{ env.DOCS_BUCKET }}
+
+    - name: invalidate cache
+      run: aws cloudfront create-invalidation --distribution-id ${{ env.DIST_ID }} --paths '/*'
 
     - name: notify on failure
       if: failure()

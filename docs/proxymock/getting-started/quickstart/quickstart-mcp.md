@@ -79,19 +79,19 @@ This tutorial assumes you allow the MCP server configuration to be installed in 
     Open a chat session and instruct your AI assistant:
 
     ```
-    First, clone the git repository https://github.com/speedscale/mock-lab. Next, open a new cursor window with only the mock-lab/go directory in the workspace.
+    First, clone the git repository https://github.com/speedscale/mock-lab. Next, open a new cursor window with only the mock-lab/languages/go directory in the workspace.
     ```
 
-    A new IDE window should open in the mock-lab/go directory.
+    A new IDE window should open in the mock-lab/languages/go directory.
   </TabItem>
   <TabItem value="claude" label="Claude Code">
     Open Claude Code from the command line and instruct your AI assistant:
 
     ```
-    First, clone the git repository https://github.com/speedscale/mock-lab. Next, change your working directory to mock-lab/go.
+    First, clone the git repository https://github.com/speedscale/mock-lab. Next, change your working directory to mock-lab/languages/go.
     ```
 
-    Claude will change its working directory to mock-lab/go.
+    Claude will change its working directory to mock-lab/languages/go.
   </TabItem>
   <TabItem value="copilot" label="Visual Studio Copilot">
     Visual Studio Copilot Agent-mode does not currently support direct git repository cloning. For the moment, it may be easier to run the CLI-based [workflow](./quickstart-cli.md).
@@ -101,7 +101,7 @@ This tutorial assumes you allow the MCP server configuration to be installed in 
     If your LLM/IDE of choice supports Agent mode and can run commands like git directly then you can likely use the following prompt. Otherwise, check out the CLI-based [demo](./quickstart-cli.md).
 
     ```
-    First, clone the git repository https://github.com/speedscale/mock-lab. Next, change your working directory to mock-lab/go.
+    First, clone the git repository https://github.com/speedscale/mock-lab. Next, change your working directory to mock-lab/languages/go.
     ```
 
     This should cause your chatbot to switch directories 
@@ -123,7 +123,7 @@ The LLM should take a series of steps:
 1. Start the proxymock recording
 1. Discover and run tests against the endpoint
 1. Investigate the proxymock logs
-1. Produce a new directory of recordings in a new directory `mock-lab/go/proxymock/recorded-...`
+1. Produce a new directory of recordings in a new directory `mock-lab/languages/go/proxymock/recorded-...`
 
 **Ask your AI assistant:**
 > "Show me the recorded traffic files"

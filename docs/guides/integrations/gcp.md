@@ -14,8 +14,8 @@ The Speedscale operator is compatible with GCP GKE (Google Kubernetes Engine) Au
 
 ### GKE Autopilot
 
-Autopilot is an operational mode for GKE in which the entire cluster configuration, nodes, scaling, etc. are all managed by Google. It applies strict security policies — most notably, it does not allow pods with privileged containers — which changes how Speedscale captures traffic.
+Autopilot is an operational mode for GKE in which the entire cluster configuration, nodes, scaling, etc. are all managed by Google. Its strict security policies do not normally allow pods with privileged containers, which changes how Speedscale captures traffic.
 
-Speedscale supports two capture paths on Autopilot: **eBPF** (via a customer-owned WorkloadAllowlist) and a **sidecar in dual proxy mode** (transparent proxy is not supported). Both, along with the required Autopilot Helm values and per-workload annotations, are documented on the single dedicated page:
+Speedscale uses **eBPF** capture on Autopilot through a customer-owned WorkloadAllowlist. Existing deployments that cannot use eBPF can fall back to a **sidecar in dual proxy mode**; transparent proxy mode is not supported. Both paths and the required Autopilot Helm values are documented on the dedicated page:
 
 ➡️ **[GKE Autopilot install guide](/getting-started/installation/install/gke-autopilot)**

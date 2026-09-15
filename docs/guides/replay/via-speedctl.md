@@ -23,7 +23,7 @@ If `--namespace` is omitted and the snapshot was captured from a single namespac
 
 ### Wait for service mocks
 
-Use `speedctl wait replay` before an external test driver sends traffic. This workflow requires Speedscale v2.5.789 or newer in the cluster and `speedctl` v2.5.789 or newer on the client. Older operators do not publish the `MocksReady` condition consumed by the CLI.
+Use `speedctl wait replay` before an external test driver sends traffic. This workflow requires Speedscale v2.5.789 or newer in the cluster and `speedctl` v2.5.833 or newer on the client. Older operators do not publish the `MocksReady` condition consumed by the CLI. Older clients cannot scope the wait to the target cluster and namespace.
 
 ```bash
 REPORT_ID=$(speedctl infra replay \
@@ -36,6 +36,8 @@ REPORT_ID=$(speedctl infra replay \
 
 speedctl wait replay "$REPORT_ID" \
   --for mocks-ready \
+  --cluster {cluster_name} \
+  --namespace {namespace} \
   --timeout 10m \
   --poll-interval 5s
 ```

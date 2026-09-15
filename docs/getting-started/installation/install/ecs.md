@@ -13,9 +13,28 @@ This workflow is currently in preview status. Please provide feedback in our [sl
 1. [Speedctl is installed](../../../getting-started/quick-start.md)
 2. [ECS Service Discovery is setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html)
 
+For capture to your own S3 bucket, use the [BYOC on ECS/Fargate](../../../guides/byoc-ecs.md) variant. It adds an OpenTelemetry collector to the forwarder task and configures separate cloud and BYOC filters.
+
 ## Working with ECS
 
-![Architecture](./ecs/arch.png)
+```mermaid
+flowchart LR
+    client["Client / Internet"] --> loadBalancer["Load balancer"]
+
+    subgraph ecs["ECS task"]
+        certInit["Certificate init"]
+        proxy["goproxy<br/>inbound 4143 / outbound 4140"]
+        service["Application service"]
+        forwarder["Forwarder"]
+        certInit --> proxy
+        certInit --> service
+        proxy <--> service
+        proxy --> forwarder
+    end
+
+    loadBalancer --> proxy
+    forwarder --> cloud["Speedscale Cloud"]
+```
 
 To capture traffic for a service running in ECS, we need to setup some components shown above. The examples snippets in this guide will be in the form of Terraform but all the parameters used have equivalents in CloudFormation, the AWS CLI, the AWS console, etc.
 
@@ -37,7 +56,7 @@ resource "aws_ecs_task_definition" "forwarder" {
   container_definitions = jsonencode([
     {
       name      = "forwarder"
-      image     = "gcr.io/speedscale/forwarder:v2.3.586"
+      image     = "gcr.io/speedscale/forwarder:v2.5.967"
       essential = true
       healthCheck = {
         command = [
@@ -230,7 +249,7 @@ resource "aws_ecs_task_definition" "with-speedscale" {
     },
     {
       name      = "goproxy"
-      image     = "gcr.io/speedscale/goproxy:v2.3.586"
+      image     = "gcr.io/speedscale/goproxy:v2.5.967"
       essential = true
       logConfiguration = {
         logDriver = "awslogs",

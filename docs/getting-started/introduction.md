@@ -31,7 +31,7 @@ Choose the operating model that matches your security requirements:
 
 ### AI Assistant
 
-The fastest way to get started is the **AI assistant** on the home screen. Ask it questions in natural language — it can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
+The fastest way to get started is the **AI assistant** on the home screen. Ask it questions in natural language. It can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
 
 Speedscale follows a 3-part workflow: **Observe**, **Analyze**, and **Replay**.
 
@@ -39,9 +39,34 @@ Speedscale follows a 3-part workflow: **Observe**, **Analyze**, and **Replay**.
 
 In **Observe**, use eBPF collection first in late-stage containerized environments (for example UAT, staging, or production). If eBPF is not suitable, use goproxy sidecars. For local workflows outside Kubernetes, use proxymock for the same record/mock/replay pattern.
 
-![](../speedscale-data-capture.png)
+```mermaid
+flowchart LR
+    subgraph sources["Traffic sources"]
+        users["Users and clients"]
+        services["Internal APIs"]
+    end
 
-The proxy captures two data flows: inbound traffic to your API and outbound traffic to dependencies, including responses. This allows Speedscale to transform inbound requests into replayable tests and dependency traffic into mocked services for isolated replay.
+    subgraph cluster["Kubernetes cluster"]
+        app["Application workload"]
+        nettap["nettap eBPF collector"]
+        forwarder["Forwarder<br/>filtering and DLP"]
+    end
+
+    subgraph dependencies["Dependencies"]
+        saas["External APIs"]
+        data["Databases and services"]
+    end
+
+    users --> app
+    services --> app
+    app --> saas
+    app --> data
+    nettap -. "observes inbound and outbound traffic" .-> app
+    nettap --> forwarder
+    forwarder --> cloud["Speedscale Cloud"]
+```
+
+The collector captures two data flows: inbound traffic to your API and outbound traffic to dependencies, including responses. This allows Speedscale to transform inbound requests into replayable tests and dependency traffic into mocked services for isolated replay.
 
 Captured traffic is sent to Speedscale for storage and analysis.
 

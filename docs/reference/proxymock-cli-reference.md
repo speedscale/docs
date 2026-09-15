@@ -330,6 +330,7 @@ proxymock import [command]
 **Subcommands**
 
 - `import s3` - Import historical traffic from a BYOC S3 bucket (see below)
+- `import gcs` - Import historical traffic from a BYOC Google Cloud Storage bucket using Google credentials
 - `import har` - Import a HAR document into local RRPair files
 - `import postman` - Import a Postman collection into local RRPair files
 - `import wiremock` - Import a WireMock project into local RRPair files
@@ -403,6 +404,27 @@ proxymock import s3 --bucket my-bucket --prefix byoc/ --from now-15m --dlp-confi
 - `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
 - `--timeout duration` - Command timeout, e.g. `10s`, `5m`, `1h` (default `12h`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+### `import gcs`
+
+Import historical BYOC traffic directly from Google Cloud Storage using the native API and Google Application Default Credentials (ADC). The import shares the S3 command's OTLP-JSON parsing, bucket layout handling, filters, DLP, and follow mode.
+
+**Usage**
+
+```shell
+gcloud auth application-default login
+
+proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ \
+  --service checkout --from now-1h
+```
+
+For other environments, set `GOOGLE_APPLICATION_CREDENTIALS` to a credentials file or use workload identity. The identity needs `storage.objects.list` and `storage.objects.get` on the bucket. AWS HMAC keys are not used.
+
+Use the same filter, follow, and output flags as `import s3`. The default output directory is `proxymock/imported-gcs-<timestamp>/`. The S3-specific flags `--region`, `--s3-endpoint-url`, and `--s3-force-path-style` do not apply.
+
+`--bucket` takes only the bucket name. Set `--prefix` to an object-key prefix such as `byoc/`, not a `gs://` URL or a path containing the bucket name. Omit `--prefix` for the legacy Fluent Bit layout with objects at the bucket root.
+
+See [Google Cloud Storage in the BYOC bucket guide](/proxymock/guides/byoc-bucket.md#google-cloud-storage) for credentials and the optional S3 interoperability compatibility path.
 
 ### `send-one`
 

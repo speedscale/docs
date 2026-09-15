@@ -1,11 +1,8 @@
 ---
 title: Speedscale with Argo Rollouts
-description: "Integrate Speedscale with Argo Rollouts to enhance Kubernetes deployment control, ensuring proper setup and sidecar management for effective traffic replay."
+description: "Capture traffic from Argo Rollouts with the Speedscale eBPF collector and account for Java agent rollout changes."
 sidebar_position: 30
 ---
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 [Argo Rollouts](https://argoproj.github.io/argo-rollouts/) are a popular way to
 gain more control over application deployment in Kubernetes but their design
@@ -26,108 +23,66 @@ kubectl rollout restart deployment/speedscale-inspector -n speedscale
 This restart is necessary because the inspector only creates watchers for Argo Rollouts if they're detected at startup.
 :::
 
-One of the primary selling points of a rollout is the ability to perform a
-partial deployment, promote it forward, or roll it back if it doesn't work. We
-respect your choice to maintain this control and for that reason all rollout
-modifications through Speedscale will require an extra step on your part to
-fully promote the change.
+## Capture rollout traffic with eBPF
 
-<Tabs>
+The eBPF collector observes traffic from the node and does not inject a container into rollout pods. Enabling capture for a non-Java workload therefore does not create a new ReplicaSet, pause a rollout, or require promotion.
 
-<TabItem value="webapp" label="Web App">
+Java TLS capture is an exception. The required `capture.speedscale.com/java-agent: "true"` annotation changes the pod template so the Operator can load the JVMTI agent. Treat that annotation change like any other Argo Rollouts pod template change and promote the resulting ReplicaSet.
 
-From the [Speedscale web app](https://app.speedscale.com/) click on `Add
-service` and select your cluster configuration.
+Enable eBPF in the Operator Helm values and target the stable label shared by the rollout pods:
 
-![add-argo-rollout](./argo/add-service-argo-rollout.png)
+```yaml title="ebpf-values.yaml"
+ebpf:
+  enabled: true
+  configuration:
+    capture:
+      targets:
+        - name: rollouts-demo
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: my-namespace
+          podSelector:
+            matchLabels:
+              app: rollouts-demo
+```
 
-Once the sidecar has been added to the rollout the sidecar will be added to
-some pods. The status on the wizard will spin until the rollout has been
-promoted.
-
-![service-status](./argo/verify-argo-service.png)
-
-Verify changes and promote the rollout to apply to the rest of the pods:
+Apply the values:
 
 ```bash
-kubectl argo rollouts get rollout <rollout-name>
-kubectl argo rollouts promote <rollout-name>
+helm upgrade speedscale-operator speedscale/speedscale-operator \
+  --namespace speedscale \
+  --reuse-values \
+  -f ebpf-values.yaml
 ```
 
-The status on the wizard should complete and send a test request.
+Use an application label that remains stable across canary and stable ReplicaSets. Do not target `rollouts-pod-template-hash`, because that value changes with each rollout revision.
 
-</TabItem>
-
-<TabItem value="speedctl" label="speedctl CLI">
-
-Make sure you have [speedctl installed](/getting-started/installation/install/cli.md) before you
-start.  Verify you have the [inspector](/reference/glossary.md#inspector)
-running in your cluster with:
+Verify that nettap is running and both rollout revisions match the target:
 
 ```bash
-speedctl infra inspectors -o pretty
+kubectl -n speedscale get daemonset nettap
+kubectl -n my-namespace get pods -l app=rollouts-demo
 ```
 
-Using the proper cluster name, add the sidecar to the rollout:
+See [eBPF Traffic Collection](/reference/ebpf-traffic-collection) for TLS support, system requirements, and additional target options.
 
-```bash
-speedctl infra sidecar add <rollout-name> --cluster <cluster-name> -n <namespace> --workload-type argorollout
-```
+:::warning Legacy sidecar deployments
+Existing deployments that intentionally use sidecar capture can continue to use `speedctl infra sidecar` and `sidecar.speedscale.com/inject`. Sidecar injection changes the rollout pod template and must be promoted through Argo Rollouts. New deployments should use eBPF capture.
+:::
 
-This will apply the sidecar to some pods. Verify changes and promote the
-rollout to apply to the rest of the pods:
+## Remove a sidecar from a rollout
 
-```bash
-kubectl argo rollouts get rollout <rollout-name>
-kubectl argo rollouts promote <rollout-name>
-```
-
-</TabItem>
-
-<TabItem value="annotation" label="Kubernetes Annotation">
-
-With cluster access you can add the sidecar with an annotation on your
-workload.
-
-Add the following annotation to the rollout:
-
-```yaml
-annotations:
-  sidecar.speedscale.com/inject: "true"
-```
-
-Unlike a deployment we need to patch the rollout to trigger the change:
-
-```bash
-now=$(date) && kubectl patch rollout rollouts-demo -p '{"spec": {"template": {"metadata": {"annotations": {"speedscale.com/restartedAt": "'$now'"}}}}}' --type merge
-```
-
-This will apply the sidecar to some pods. Verify changes and promote the
-rollout to apply to the rest of the pods:
-
-```bash
-kubectl argo rollouts get rollout <rollout-name>
-kubectl argo rollouts promote <rollout-name>
-```
-
-</TabItem>
-
-</Tabs>
-
-
-## Uninstall
-
-To uninstall the sidecar on an argo rollout, do the following.
-
-Modify the following annotation to the rollout, setting it to `false`:
+To remove a sidecar from an existing rollout, set the inject annotation to `false`:
 
 ```yaml
 annotations:
   sidecar.speedscale.com/inject: "false"
 ```
 
-Depending on how your rollout is configured, it may not immediately change. In order to force it to change, you can add an annotation like this and your should see the rollout cycle and your sidecar is removed.
+Depending on how the rollout is configured it may not cycle right away. Patch the pod template to force it:
 
-```
+```bash
 now=$(date) && kubectl patch rollout rollouts-demo -p '{"spec": {"template": {"metadata": {"annotations": {"speedscale.com/restartedAt": "'$now'"}}}}}' --type merge
 ```
+
+The rollout cycles and the sidecar is removed. This does not affect eBPF capture, which is controlled separately by the capture targets.

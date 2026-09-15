@@ -205,6 +205,7 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   --set clusterName="${CLUSTER_NAME}" \
   --set image.registry=gcr.io/speedscale \
   --set ebpf.enabled=true \
+  --set ensureMinimumEphemeralStorage=true \
   --set 'sidecar.resources.limits.cpu=500m' \
   --set 'sidecar.resources.limits.memory=512Mi' \
   --set 'sidecar.resources.limits.ephemeral-storage=100Mi' \
@@ -213,7 +214,36 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   --set 'sidecar.resources.requests.ephemeral-storage=100Mi'
 ```
 
-Autopilot requires that resource requests and limits match, and that every container declares `ephemeral-storage`. The `ephemeral-storage` values are required for Speedscale replay init containers to pass Warden admission.
+Autopilot requires that resource requests and limits match, and that every container declares `ephemeral-storage`. The sidecar values cover replay init containers. `ensureMinimumEphemeralStorage=true` adds a `100Mi` request and limit to the Java Agent init container.
+
+The `ensureMinimumEphemeralStorage` setting requires operator chart `2.5.828` or later. If your WorkloadAllowlist is pinned to an older chart, request an updated allowlist before enabling the Java Agent.
+
+Chart `2.5.828` does not restart a running operator when this value changes during a Helm upgrade. Restart the operator once so it reads the updated ConfigMap:
+
+```bash
+kubectl rollout restart deployment/speedscale-operator -n speedscale
+kubectl rollout status deployment/speedscale-operator -n speedscale
+```
+
+### Workaround for an existing chart `2.5.828` installation
+
+If a Helm upgrade is difficult, add the setting to the operator override ConfigMap:
+
+```bash
+kubectl create configmap speedscale-operator-override \
+  --namespace speedscale \
+  --from-literal=ENSURE_MINIMUM_EPHEMERAL_STORAGE=true \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+Restart the operator so it reads the override:
+
+```bash
+kubectl rollout restart deployment/speedscale-operator -n speedscale
+kubectl rollout status deployment/speedscale-operator -n speedscale
+```
+
+The override ConfigMap takes precedence over the Helm ConfigMap. The override remains active after a Helm upgrade.
 
 Verify the install:
 
@@ -241,7 +271,7 @@ helm upgrade speedscale-operator speedscale/speedscale-operator \
 
 Generate traffic against the workload, then confirm it appears in Speedscale.
 
-## Updating Speedscale Versions
+## Updating Speedscale versions
 
 The Speedscale WorkloadAllowlist matches the approved workload shape and image repositories rather than a specific operator version. Upgrade the operator normally with Helm; the existing `workload-allowlist.yaml` and `AllowlistSynchronizer` continue to apply.
 
@@ -254,11 +284,11 @@ helm upgrade speedscale-operator speedscale/speedscale-operator \
 
 If Speedscale changes the privileged workload shape, Speedscale support will provide an updated allowlist. Upload it to the existing bucket path and the `AllowlistSynchronizer` will install it automatically.
 
-## Java Agent Notes
+## Java Agent notes
 
 For workloads that make outbound HTTPS calls, the Speedscale [Java Agent](../../../reference/languages/java.md) instruments `SSLSocketImpl` and `SSLEngineImpl` to decrypt TLS traffic.
 
-On Autopilot, the operator's Java Agent init container can be rejected if the injected container does not declare explicit `ephemeral-storage` resources. Speedscale support can provide a workload-specific patch when outbound HTTPS capture is required. If you manually patch a deployment for the Java Agent, re-apply the patch after each replay, since replay cleanup restores the target deployment to its pre-replay state.
+On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior. If you enable the setting by upgrading chart `2.5.828`, restart the operator as shown in Step 6.
 
 ## Troubleshooting
 
@@ -269,6 +299,7 @@ On Autopilot, the operator's Java Agent init container can be rejected if the in
 | AllowlistSynchronizer not Ready | Bucket IAM, path mismatch, invalid YAML, or incompatible GKE version | Confirm `container-engine-robot` has `objectViewer` and `bucketViewer`, then inspect synchronizer status |
 | Nettap pods rejected by Warden | Resource requests and limits do not match | Reinstall with matching requests and limits |
 | Replay init containers rejected by Warden | Missing `ephemeral-storage` values | Reinstall with the `sidecar.resources.*.ephemeral-storage=100Mi` values |
+| `speedscale-initproxy-java-agent` rejected with an `ephemeral-storage` minimum such as `10Mi` | The Java Agent storage setting is disabled, the operator has not restarted, or the chart is older than `2.5.828` | Install chart `2.5.828` or later. Set `ensureMinimumEphemeralStorage=true`, or use the override ConfigMap workaround. Restart the operator, then retry the capture update. |
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
 
 ## Sidecar Capture (Dual Proxy Mode)

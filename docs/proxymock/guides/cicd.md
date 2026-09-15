@@ -15,7 +15,16 @@ deployment with confidence.
 Run **proxymock** after your build and unit tests, but before deploying to
 production.
 
-![CI Pipeline](./cicd/cicd-flow.png)
+```mermaid
+flowchart LR
+    code["Code"] --> commit["Commit"]
+    commit --> build["Build"]
+    build --> unit["Unit tests"]
+    unit --> replay["proxymock integration tests"]
+    replay --> review["Review"]
+    review --> staging["Staging"]
+    staging --> production["Production"]
+```
 
 Adding anything to your CI/CD pipeline generally involves the same 3 steps:
 
