@@ -1,0 +1,219 @@
+{
+  "demoCommit": "fc089c8fbb8d66dde3381007c8875dd45e5e8558",
+  "binary": "cluster-plan-proxymock",
+  "binarySHA256": "54c2b372a46f7c7d44964d04ca032225b685b49d7b35443cd3e56fac20c268fa",
+  "node": "v26.8.2",
+  "platform": "darwin",
+  "arch": "arm64",
+  "metric": "reset + fixture discovery + complete session workload + journal assertions",
+  "excludes": [
+    "initial capture",
+    "process startup",
+    "cluster setup",
+    "artifact upload"
+  ],
+  "real": {
+    "samples": 8,
+    "meanMs": 142.42000537499993,
+    "medianMs": 143.186958,
+    "minMs": 137.94908399999986,
+    "maxMs": 145.03254199999992,
+    "standardDeviationMs": 2.4727547283057967
+  },
+  "mock": {
+    "samples": 8,
+    "meanMs": 149.55767687499997,
+    "medianMs": 149.4576454999999,
+    "minMs": 146.08687499999996,
+    "maxMs": 152.73433300000033,
+    "standardDeviationMs": 2.1765251488827655
+  },
+  "medianReductionPercent": -4.379370570886697,
+  "samples": [
+    {
+      "trial": 0,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 144.386792,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "mock": {
+        "elapsedMs": 148.55712499999981,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    },
+    {
+      "trial": 1,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 151.56116699999984,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "real": {
+        "elapsedMs": 143.6666250000003,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    },
+    {
+      "trial": 2,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 144.94645899999978,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "mock": {
+        "elapsedMs": 149.52987499999972,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    },
+    {
+      "trial": 3,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 152.73433300000033,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "real": {
+        "elapsedMs": 142.7072909999997,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    },
+    {
+      "trial": 4,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 137.94908399999986,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "mock": {
+        "elapsedMs": 146.08687499999996,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    },
+    {
+      "trial": 5,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 147.00270799999998,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "real": {
+        "elapsedMs": 139.46254199999976,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    },
+    {
+      "trial": 6,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 141.20870800000012,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "mock": {
+        "elapsedMs": 151.60391600000003,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    },
+    {
+      "trial": 7,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 149.38541600000008,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      },
+      "real": {
+        "elapsedMs": 145.03254199999992,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3
+      }
+    }
+  ],
+  "interpretation": "Local fast dependency only. Descriptive samples, not a claim about full CI cycle time or remote dependency reliability."
+}
