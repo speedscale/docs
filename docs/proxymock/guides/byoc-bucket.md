@@ -124,3 +124,8 @@ In `proxymock web`, the import source picker offers a BYOC bucket as a source al
 - [Author DLP and filter rules locally](./local-rules.md) redacts or trims the pulled traffic before you use it.
 - [Explore and Replay Sessions Locally](./sessions.md) walks the record-and-replay loop the imported traffic feeds into.
 - [Fix Replay Failures with Recommendations](./recommendations.md) correlates rotating values so imported traffic replays cleanly.
+
+
+## Load-test with Locust
+
+[Export to Locust](/guides/integrations/export/locust) turns downloaded inbound requests into a Locust test. Keep the outbound records to run the application with Speedscale dependency mocks. The guide links to a runnable Kubernetes example.
