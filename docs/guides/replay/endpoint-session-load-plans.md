@@ -12,8 +12,8 @@ whether posting latency increases. Both workloads run against the same app.
 :::info Release candidate
 This guide accompanies the endpoint and session load-plan release candidate.
 Use compatible proxymock, generator, operator and cloud components. The proxymock
-visual editor supports local replay and cloud-backed **Run in cluster**. Dashboard
-authoring and inline plan staging for namespaced installations remain in progress.
+visual editor supports local replay and cloud-backed **Run in cluster**. Dashboard controls cover groups, shared arrival pools, budgets and scoped goals.
+Recording preview parity and inline plan staging for namespaced installations remain in progress.
 Final acceptance of the cluster launch integration is still pending.
 :::
 
@@ -293,7 +293,7 @@ prove the test passed.
 
 ## Try the banking demo
 
-The [sessions demo](https://github.com/speedscale/demo/tree/main/sessions-demo)
+The [sessions demo](https://github.com/speedscale/demo/tree/master/sessions-demo)
 includes a real banking app, statement dependency, authentication and an
 independent request journal. Its grouped tests exercise request and session
 workloads, budgets, composition, identity, cloning and intentional failures:
@@ -309,3 +309,40 @@ Kubernetes operator/generator/report path. For quick local iterations, select
 statement dependency can make dependency behavior predictable while preserving
 the real bank's authentication, ledger and shared-resource contention. Keep the
 real dependency path in validation for behavior that the mock cannot establish.
+
+## Edit groups in the dashboard
+
+Open **Test Config > Load Pattern**. Add request or session groups, then set their
+filters and independent schedules. Changing schedule modes resets stage targets
+to one and clears incompatible capacity and budget settings; the editor displays
+this before the change. Ordinary edits preserve identity and transform settings.
+
+For an 80/20 workload, add an arrival pool with request or session units. Assign
+compatible groups to it and set their shares to 80% and 20%. Active shares must
+sum to 100%; disabling a group does not redistribute its allocation. Pool members
+inherit the schedule, start offset and spacing. A member retains its own admission
+bounds and optional primary-start budget. Once-only sessions cannot use shares.
+
+A primary-start budget caps request or journey attempts, not successful responses.
+The default allowed missed starts is zero. Increasing that allowance does not
+suppress HTTP, identity, cancellation or scoped-goal failures.
+
+Under **Group goals**, choose a supported latency metric or HTTP attempt count,
+set an upper or lower threshold, and optionally narrow the endpoint filter and
+time window. A blank minimum sample count means one; insufficient samples fail.
+A blank end includes requests started during drain.
+
+## Inspect stage and source evidence
+
+Report **Overview** includes a group summary. Missing metrics display a dash, and
+incomplete assertions do not make a group pass. Select **Load stage and source
+evidence** to retrieve the original generator artifact on demand.
+
+Choose a group to compare scheduled starts with actual starts, or expected HTTP
+requests with measured HTTP requests for adaptive TPS. Stage and timeline tables
+separate HTTP attempts from journey starts. The drain row is separate from scheduled
+stages. Session source counts show how recorded actors were reused.
+
+The download requires a compatible cloud API. An older API, missing artifact, or
+failed download leaves an explicit warning rather than substituting summary counts.
+The summary remains available. This view does not contact the target application.
