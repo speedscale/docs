@@ -12,8 +12,9 @@ whether posting latency increases. Both workloads run against the same app.
 :::info Release candidate
 This guide accompanies the endpoint and session load-plan release candidate.
 Use compatible proxymock, generator, operator and cloud components. The proxymock
-visual editor supports local replay and cloud-backed **Run in cluster**. Dashboard controls cover groups, shared arrival pools, budgets and scoped goals.
-Recording preview parity and inline plan staging for namespaced installations remain in progress.
+visual editor supports local replay and **Run in cluster**, including inline plans
+carried by namespaced replay requests. Dashboard controls cover groups, shared
+arrival pools, budgets, scoped goals and recording previews.
 Final acceptance of the cluster launch integration is still pending.
 :::
 
@@ -167,6 +168,36 @@ locations and other transforms remain unassessed; coverage remains advisory.
 **Advanced JSON** retains options the visual controls do not yet edit, including
 identity mappings. Download the plan to use the same configuration in the CLI.
 Quote 64-bit integers such as seeds and budgets so browser edits preserve them.
+
+### Preview in the dashboard
+
+In the test configuration's load-pattern editor, choose **Preview against a
+recording**, select a snapshot and run the preview. The preview uses the same
+traffic preparation and load-plan compiler as proxymock; it does not send traffic.
+It shows selected endpoints, request ownership, source sessions, population and
+clone slots, scheduled arrivals, unmatched requests and reserved worker capacity.
+
+Credential rewrite coverage and recorded login/JWT warnings are advisory. Review
+existing **Automations** and **Sessions** settings when fresh credentials are
+needed. Editing the plan or choosing another recording clears the previous
+result. Use **Refresh recording preview** after editing the snapshot itself.
+The cloud preview accepts up to 32 MiB of analyzed replay traffic; use a smaller
+snapshot if it exceeds that limit. Preview does not change or save replay settings.
+
+### Inline plans in namespaced installations
+
+With namespaced mode configured, **Run in cluster** carries the plan in the
+immutable replay request. The coordinator transfers it to the generator, which
+replaces the base configuration's generator settings and then applies the target
+URI override. The client does not create a cloud test configuration or add a
+cloud-login step. The snapshot and base test configuration still need to be
+available to the installation through its existing replay setup.
+
+Inline plans are limited to 64 KiB in this path. They use replay-request payload
+version 2; an older coordinator rejects the request instead of ignoring the plan.
+Use matching updated coordinator and generator images. Requests without an inline
+plan retain their existing payload and test-configuration-ID behavior. Live
+acceptance of this path remains a release gate.
 
 ## Pick the right schedule
 
