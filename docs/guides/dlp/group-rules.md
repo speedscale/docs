@@ -17,11 +17,63 @@ A "group" is whatever unit owns redaction in your organization — a team, a pro
 compliance domain. Speedscale does not impose a structure: a group is simply a name you put on a rule and the
 set of workloads you scope it to.
 
+## The baseline rule and `SPEEDSCALE_DLP_CONFIG`
+
+`SPEEDSCALE_DLP_CONFIG` is a forwarder setting that names **one** DLP rule, by its id, for the whole install.
+That rule is the **baseline**: it applies to every request the forwarder captures, whichever workload produced
+it. This is how DLP has always been configured, and group rules do not change it.
+
+You set it at install time through Helm values:
+
+```yaml
+dlp:
+  enabled: true     # redaction on or off
+  config: standard  # the id of the rule to apply
+```
+
+or afterwards in the dashboard, under **Infrastructure → your forwarder → Redaction rule**. Either way the
+operator ends up holding the same two keys:
+
+```yaml
+SPEEDSCALE_DLP_CONFIG: standard
+WITH_DLP: "true"
+```
+
+`standard` here is not a filename or a keyword — it is the `id` of a DLP rule, the same id that appears inside
+the rule document itself:
+
+```json
+{
+  "id": "standard",
+  "name": "standard",
+  "redactlist": {
+    "entries": { "all": ["authorization", "password", "ssn"] }
+  }
+}
+```
+
+That is the whole linkage: the setting holds an id, and the rule with that id is fetched and applied to
+everything. `WITH_DLP` (Helm: `dlp.enabled`) turns redaction off without discarding the selection, so you can
+disable redaction without losing which rule you had chosen. Changing either value restarts the forwarder.
+
+### What the setting does and does not select
+
+- **It selects the baseline** — one rule, applied to all captured traffic.
+- **It does not list group rules.** Group rules appear nowhere in the forwarder's configuration. They apply
+  because their scope matches the traffic, so you never edit `SPEEDSCALE_DLP_CONFIG` to add a group's rule.
+  Adding a group means publishing a rule, not changing a setting.
+- **A scoped rule used as the baseline loses its scope.** If you point `SPEEDSCALE_DLP_CONFIG` at a rule that
+  has a `scope`, that rule is applied install-wide like any other baseline. Name an unscoped rule here.
+
+If your install has no baseline worth keeping, you can leave `SPEEDSCALE_DLP_CONFIG` on a small
+organization-wide rule and let group rules carry the rest. What you should not do is delete the baseline and
+assume group rules cover everything: traffic no group rule scopes is redacted by the baseline alone.
+
 ## How a group rule differs from a baseline rule
 
 | | Baseline rule | Group rule |
 |---|---|---|
-| Selected by | `SPEEDSCALE_DLP_CONFIG` on the forwarder | nothing — it applies because of its scope |
+| Selected by | `SPEEDSCALE_DLP_CONFIG` on the forwarder (see above) | nothing — it applies because of its scope |
 | Covers | every workload the forwarder captures | only the clusters, namespaces and services it names |
 | Owned by | whoever administers the install | one group |
 | Typical content | organization-wide fields (`authorization`, `ssn`) | fields specific to that group's APIs |
@@ -76,6 +128,54 @@ configuration.
 Redaction is **additive**. A group rule can only redact more than the baseline for its own workloads. It cannot
 switch off the baseline, and it cannot reach traffic outside its scope. Two groups that share a namespace both
 apply, and neither needs to see the other's rule.
+
+### A worked example
+
+An install with one baseline and two group rules:
+
+```yaml
+# forwarder setting
+SPEEDSCALE_DLP_CONFIG: standard
+WITH_DLP: "true"
+```
+
+```json
+// rule id "standard" — the baseline, no scope
+{
+  "id": "standard",
+  "redactlist": { "entries": { "all": ["authorization", "password"] } }
+}
+
+// rule id "payments" — a group rule
+{
+  "id": "payments",
+  "owner": "payments-group",
+  "enabled": true,
+  "scope": { "namespaces": ["payments"] },
+  "redactlist": { "entries": { "all": ["cardnumber"] } }
+}
+
+// rule id "search" — another group rule
+{
+  "id": "search",
+  "owner": "search-group",
+  "enabled": true,
+  "scope": { "namespaces": ["search"] },
+  "redactlist": { "entries": { "all": ["querytoken"] } }
+}
+```
+
+What each workload gets:
+
+| Traffic from | Redacted fields | Why |
+|---|---|---|
+| `payments` namespace | `authorization`, `password`, `cardnumber` | baseline plus the `payments` rule |
+| `search` namespace | `authorization`, `password`, `querytoken` | baseline plus the `search` rule |
+| any other namespace | `authorization`, `password` | baseline only — no group rule scopes it |
+| traffic with no namespace | `authorization`, `password` | baseline only — see below |
+
+Note that `SPEEDSCALE_DLP_CONFIG` still names only `standard`. Nothing about it changes when the `payments` or
+`search` rule is added, edited or turned off.
 
 ### Traffic that cannot be attributed
 
