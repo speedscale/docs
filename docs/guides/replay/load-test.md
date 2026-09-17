@@ -107,3 +107,6 @@ sustained load exhausts a resource, which can take time.  Extend your traffic
 with the test config **Duration** setting.  This will run your traffic in a
 loop for the entirety of the duration.
 
+## Independent endpoint and session workloads
+
+To ramp one endpoint while holding another steady, use [endpoint and session load plans](./endpoint-session-load-plans.md). The [banking how-to](./endpoint-load-how-to.md) covers request groups, rotating complete sessions, scoped goals and report interpretation. Existing whole-recording load patterns remain available.

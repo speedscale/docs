@@ -19,6 +19,10 @@ arrival pools, budgets, scoped goals and recording previews.
 Final acceptance of the cluster launch integration is still pending.
 :::
 
+For an executable walkthrough, start with [Test one endpoint while stressing
+another](./endpoint-load-how-to.md). See the [load-plan field reference](../../reference/configuration/endpoint-load-plans.md)
+for JSON fields, units, ownership and compatibility rules.
+
 ## Choose requests or complete sessions
 
 | Selection | What a filter selects | What an execution does |
@@ -38,8 +42,8 @@ through the population as journeys finish. Increasing concurrency does not creat
 new credentials. Cloning requires explicit identity fields and transformations
 that produce accounts accepted by the target application.
 
-When groups overlap, earlier groups own matching traffic within each selection
-type. Review the compiled preview for ownership, exclusions and selected
+When groups overlap, session groups claim complete journeys first, in configured
+order. Request groups then claim remaining records in configured order. Review the compiled preview for ownership, exclusions and selected
 endpoints. Set `loadUnmatchedPolicy` explicitly: exclude unmatched traffic or
 fail preparation with `LOAD_UNMATCHED_ERROR`.
 
@@ -284,8 +288,9 @@ launches the TrafficReplay with the saved configuration. Routes and selected
 dependency mocks follow the existing cluster workflow. A cloud service that
 changes or drops the plan causes launch to fail before creating a TrafficReplay.
 
-Namespaced installations using replay requests still require a staged snapshot
-and test configuration ID. Inline plan upload is not yet available on that path.
+Namespaced installations carry inline plans in version 2 replay requests; see
+[Inline plans in namespaced installations](#inline-plans-in-namespaced-installations)
+for compatibility and size limits.
 
 To launch directly with a saved configuration and Kubernetes manifest, follow
 the steps below.

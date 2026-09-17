@@ -236,3 +236,7 @@ passed/failed, Flagged) double as filters over the per-session result table.
   follow one identifier across every service, no OpenTelemetry required.
 - [Tune a Replay Locally](/proxymock/guides/replay-tuning.md) — measure and close
   replay misses with the same mock-lab demo.
+
+## Load test a session population
+
+Selecting one session isolates one actor. To rotate across actors, define a session load group over the eligible population and choose concurrency or a session arrival rate. Follow the [banking load how-to](../../guides/replay/endpoint-load-how-to.md) and [load-plan reference](../../reference/configuration/endpoint-load-plans.md). Existing readiness and credential workflows still apply; increasing load does not create valid credentials.

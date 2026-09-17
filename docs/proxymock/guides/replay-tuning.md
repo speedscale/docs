@@ -152,3 +152,7 @@ mock-lab includes a proof script that records real app traffic, creates a stale 
 ```
 
 Use this when you want to validate the tuning workflow itself before applying it to your own traffic.
+
+## Add controlled load after tuning
+
+Once the recording and dependency mocks are usable, follow the [endpoint load how-to](../../guides/replay/endpoint-load-how-to.md) to stress selected endpoints or rotate complete sessions. Load delivery and scoped latency goals measure different outcomes from this guide's mock match-rate threshold.
