@@ -51,6 +51,24 @@ Java uses a truststore. The desktop and Kubernetes paths differ:
 See [Java TLS trust](/reference/java/tls) for complete commands, custom corporate CAs, replay, and troubleshooting. Truststore settings do not route traffic; configure [Java proxy settings](/proxymock/guides/java) when using a forward proxy.
 
 </TabItem>
+<TabItem value="php" label="PHP">
+
+```shell
+export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
+```
+
+PHP cURL does not consistently read `SSL_CERT_FILE`. Pass it to cURL as `CURLOPT_CAINFO`; the [PHP language page](/reference/languages/php#tls-trust) includes the complete example.
+
+</TabItem>
+<TabItem value="rust" label="Rust">
+
+```shell
+export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
+```
+
+Rust certificate handling depends on the HTTP client and TLS backend. Add this certificate to the client's root certificate store. The [Rust language page](/reference/languages/rust#tls-trust) describes the rustls and OpenSSL paths.
+
+</TabItem>
 <TabItem value="cpp" label="C++">
 
 ```shell

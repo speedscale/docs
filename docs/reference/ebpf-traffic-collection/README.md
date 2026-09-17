@@ -58,9 +58,7 @@ captured traffic with pod name, namespace, labels, and other metadata.
 
 ## TLS Traffic Visibility
 
-Speedscale captures TLS-encrypted traffic in plaintext, without needing certificates, proxies, or application
-changes. There are three primary capture mechanisms: uprobes for applications/runtimes using OpenSSL 3.x
-libraries, uprobes on Go's `crypto/tls`, and a Java instrumentation agent for the JVM.
+Speedscale captures TLS-encrypted traffic in plaintext, without needing certificates, proxies, or application changes. There are four primary capture mechanisms: uprobes for applications and runtimes using OpenSSL 3.x libraries, uprobes on Go's `crypto/tls`, uprobes on Rust's rustls library, and a Java instrumentation agent for the JVM.
 
 OpenSSL support works for **both** dynamically and statically linked 3.x libraries. Processes that use this
 will have uprobes attached to OpenSSL read/write functions. This allows data to be captured before
@@ -70,6 +68,8 @@ Go applications are instrumented with eBPF uprobes attached to the read/write me
 package. The idea is the same as OpenSSL. Support for this requires Go versions **1.18 or newer** and requires
 binaries to preserve the ELF symbol table, i.e. they must be **unstripped** and built **without** using
 `-ldflags="-s"`.
+
+Rust applications that use rustls are instrumented at the rustls plaintext read and write boundaries. This requires `nettap` **v0.1.77 or newer** and a Linux ELF binary that retains its symbol table. Do not strip the binary or use link-time optimization that removes or inlines the rustls probe targets. The verified matrix includes rustls 0.23, tokio-rustls 0.26, and Apollo Router 2.17. Rust applications that use OpenSSL 3.x use the OpenSSL capture path instead. See [Rust language support](/reference/languages/rust#ebpf-capture) for build settings and verification steps.
 
 For JVM applications, the Java agent captures supported socket and TLS paths inside the JVM. Coverage depends on the transport, TLS provider, and agent version. See [Java agent setup and framework support](/reference/java/agent) for the tested matrix and known gaps. Loading the agent requires a JVM restart.
 
@@ -81,10 +81,11 @@ tested and verified:
 | -------- | -------------------------- | ----------- | ----------------------------------------------------------------- |
 | Go       | eBPF uprobe (`crypto/tls`) | Native      | See above                                                         |
 | Java     | Java instrumentation agent                | JSSE hook   | Requires `nettap` Java agent (Handled by the Speedscale Operator) |
-| PHP      | eBPF uprobe (OpenSSL)      | OpenSSL 3.x |                                                                   |
+| [PHP](/reference/languages/php#ebpf-capture) | eBPF uprobe (OpenSSL) | OpenSSL 3.x | PHP cURL or another OpenSSL-backed client |
 | .NET     | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Linux only; SChannel not supported                                |
 | Python   | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Python `ssl` module                                               |
 | Node.js  | eBPF uprobe (OpenSSL)      | OpenSSL 3.x |                                                                   |
+| [Rust](/reference/languages/rust#ebpf-capture) | eBPF uprobe (rustls or OpenSSL) | rustls 0.23 or OpenSSL 3.x | rustls requires `nettap` v0.1.77+ and an unstripped ELF binary |
 
 ### What This Means in Practice
 
@@ -238,6 +239,7 @@ The logs will indicate which probe type was selected for each process (kprobe, u
 - **OpenSSL version** - TLS capture via uprobes is limited to OpenSSL 3.x. Applications using older
   OpenSSL versions, BoringSSL, or LibreSSL will not have TLS traffic captured, though plaintext TCP
   traffic is still visible.
+- **Rust symbols** - rustls capture requires a Linux ELF binary that retains the rustls function symbols. Stripped binaries and builds whose link-time optimization removes the probe targets fall back to opaque TLS capture. Plaintext TCP traffic remains visible.
 
 ## Overhead
 

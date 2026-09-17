@@ -107,6 +107,8 @@ Language-specific notes:
 - Python: [Python reference](/reference/languages/python.md)
 - Go: [Go reference](/reference/languages/golang.md)
 - .NET: [.NET reference](/reference/languages/dotnet.md)
+- PHP: [PHP reference](/reference/languages/php.md)
+- Rust: [Rust reference](/reference/languages/rust.md)
 
 ### Examples
 

@@ -32,6 +32,16 @@ const languageLinks = [
     description: 'Ruby demo app',
   },
   {
+    label: 'PHP',
+    href: '/reference/languages/php#proxymock',
+    description: 'PHP demo app',
+  },
+  {
+    label: 'Rust',
+    href: '/reference/languages/rust#proxymock',
+    description: 'Rust demo app',
+  },
+  {
     label: 'C++',
     href: '/reference/languages/cpp#proxymock',
     description: 'C++ demo app',

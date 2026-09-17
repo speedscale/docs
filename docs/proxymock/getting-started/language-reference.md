@@ -186,13 +186,14 @@ end
 </TabItem>
 <TabItem value="php" label="PHP">
 
-PHP does not automatically use environment variables so it must be set explicitly. There multiple ways to configure proxies depending on the method used.
+PHP proxy behavior depends on the client and build. Configure the proxy explicitly when the client does not honor environment variables. See the [PHP language page](/reference/languages/php#proxymock) for a complete record, mock, and replay workflow.
 
 Using cURL:
 ```php
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_PROXY, "http://localhost:4140");
+curl_setopt($ch, CURLOPT_CAINFO, getenv('SSL_CERT_FILE'));
 // For SOCKS proxy
 // curl_setopt($ch, CURLOPT_PROXY, "socks5://localhost:4140");
 
@@ -211,7 +212,7 @@ $context = stream_context_create([
         'request_fulluri' => true,
     ],
     'ssl' => [
-        'verify_peer' => false,  // Only for testing
+        'cafile' => getenv('SSL_CERT_FILE'),
     ]
 ]);
 
@@ -247,6 +248,8 @@ export HTTP_PROXY=http://localhost:4140
 export HTTPS_PROXY=http://localhost:4140
 export NO_PROXY=localhost,127.0.0.1
 ```
+
+Certificate handling depends on the selected TLS backend. Add the certificate at `SSL_CERT_FILE` to the client's root certificate store. See the [Rust language page](/reference/languages/rust#proxymock) for a complete record, mock, and replay workflow.
 
 Use the SOCKS proxy to capture database traffic (requires socks feature in Cargo.toml):
 ```shell
