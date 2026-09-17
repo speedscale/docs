@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # New Relic
 
-The New Relic integration sends application OpenTelemetry traces and metrics alongside Speedscale RRPair logs. New Relic APM shows the application topology, latency, throughput, and errors. The correlated RRPairs contain the requests and responses needed to reproduce what the trace observed.
+The New Relic integration sends application OpenTelemetry traces and metrics alongside Speedscale RRPair logs. New Relic APM shows the application topology, latency, throughput, and errors. When the captured request contains a valid W3C `traceparent` header, the matching RRPair log carries the trace ID needed for correlation. Requests without that header still appear in Logs but are not linked to an APM trace.
 
 ## How it works
 
@@ -70,6 +70,32 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 5. Trigger an HTTP 5xx response and confirm the transaction and span appear as errors.
 6. Use **Metrics and events** to confirm application metrics are arriving.
 
+## Use the capture with proxymock
+
+New Relic is the observability view, not the portable RRPair archive. There is no direct `proxymock import newrelic` command. Retain the same traffic in Speedscale Cloud, Amazon S3, or Google Cloud Storage if developers need to turn a trace into local tests and mocks.
+
+Pull a Speedscale snapshot by ID:
+
+```bash
+proxymock cloud pull snapshot '<SNAPSHOT_ID>' --out ./newrelic-capture
+proxymock mock --in ./newrelic-capture
+proxymock replay --in ./newrelic-capture \
+  --test-against http://localhost:8080
+```
+
+For an S3 or GCS BYOC channel, copy the trace ID from New Relic and retrieve the matching RRPairs:
+
+```bash
+proxymock import s3 --bucket '<BUCKET>' --prefix byoc/ \
+  --trace-id '<TRACE_ID>' --out ./newrelic-capture
+
+# Native GCS uses Google Application Default Credentials.
+proxymock import gcs --bucket '<GCS_BUCKET>' --prefix byoc/ \
+  --trace-id '<TRACE_ID>' --out ./newrelic-capture
+```
+
+See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for authentication, filtering, and cluster discovery.
+
 ## Evidence
 
 The BYOC chart is rendered and validated with the pinned OpenTelemetry Collector image in CI, including the logs, traces, and metrics pipelines and Secret-backed `api-key` header. Live account validation requires enabling the New Relic channel with an ingest license key for the intended destination account.
@@ -85,6 +111,8 @@ speedctl export newrelic '<REPORT_ID>' \
 ```
 
 Use the live channel for APM and trace correlation. Use the report export when you only need completed replay results in a New Relic dashboard.
+
+![A completed Speedscale report in New Relic](./new-relic/new-relic-dashboard.png)
 
 ## References
 

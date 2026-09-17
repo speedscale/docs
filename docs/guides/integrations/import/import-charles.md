@@ -30,8 +30,8 @@ Charles session.chlz ready_for_speedscale.har
 
 Note the location of the newly created `.har` file.
 
-## Replay
+## Import and replay
 
-It's now time to import the HAR file into Speedscale. Remember to select whether you want tests or mocks to be generated. Speedscale has the ability to reverse incoming traffic so that it forms the basis for a service mock. Practically speaking that means you can record traffic from your browser to a backend using Charles Proxy and then have Speedscale mock out the back end services the browser is talking to.
+Import the HAR file into Speedscale Cloud or local proxymock files. Select inbound traffic for tests or outbound traffic for dependency mocks. This lets you record browser-to-backend traffic with Charles Proxy and then test the browser code against recorded backend responses.
 
-Continue importing the HAR file by following the import from HAR [guide](./import-har.md).
+Continue with the [HAR import guide](./import-har.md). Its cloud and local commands work with the HAR file produced by Charles.

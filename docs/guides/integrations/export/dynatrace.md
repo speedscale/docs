@@ -7,6 +7,8 @@ sidebar_position: 2
 
 The Dynatrace integration sends application OpenTelemetry traces and metrics alongside Speedscale RRPair logs. Application spans populate Services and Distributed Tracing. RRPairs preserve the API request and response that can be used to reproduce the same behavior outside the monitored environment.
 
+Trace correlation requires a valid W3C `traceparent` header on the captured application request. Requests without one still appear in Logs, but Dynatrace cannot link them to an application trace.
+
 ## How it works
 
 ```mermaid
@@ -68,6 +70,32 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 4. Open **Logs** and query `msgType == "rrpair"`.
 5. Compare the RRPair log's trace ID with the application trace.
 6. Trigger an HTTP 5xx response and confirm the service failure rate and HTTP error charts change.
+
+## Use the capture with proxymock
+
+Dynatrace is the observability view, not the portable RRPair archive. There is no direct `proxymock import dynatrace` command. Retain the same traffic in Speedscale Cloud, Amazon S3, or Google Cloud Storage if developers need to turn a trace into local tests and mocks.
+
+Pull a Speedscale snapshot by ID:
+
+```bash
+proxymock cloud pull snapshot '<SNAPSHOT_ID>' --out ./dynatrace-capture
+proxymock mock --in ./dynatrace-capture
+proxymock replay --in ./dynatrace-capture \
+  --test-against http://localhost:8080
+```
+
+For an S3 or GCS BYOC channel, copy the trace ID from Dynatrace and retrieve the matching RRPairs:
+
+```bash
+proxymock import s3 --bucket '<BUCKET>' --prefix byoc/ \
+  --trace-id '<TRACE_ID>' --out ./dynatrace-capture
+
+# Native GCS uses Google Application Default Credentials.
+proxymock import gcs --bucket '<GCS_BUCKET>' --prefix byoc/ \
+  --trace-id '<TRACE_ID>' --out ./dynatrace-capture
+```
+
+See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for authentication, filtering, and cluster discovery.
 
 ## Evidence
 

@@ -268,8 +268,12 @@ The output should contain one entry for every enabled destination. If an entry i
 **2. OTel Collector is receiving**
 
 ```bash
-kubectl -n <BACKEND_NAMESPACE> logs deploy/otel-collector | grep -i "log records"
+kubectl -n <BACKEND_NAMESPACE> get deployments
+kubectl -n <BACKEND_NAMESPACE> logs deploy/<COLLECTOR_DEPLOYMENT> \
+  | grep -i "log records"
 ```
+
+The deployment name depends on the chart and Helm release name. For example, release `byoc-datadog` creates deployment `byoc-datadog-datadog`, while the S3 chart uses `otel-collector`.
 
 **3. Backend is writing**
 
@@ -293,7 +297,9 @@ proxymock mock --in ./snapshot
 
 For GCS, run `proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ --from now-1h` with Google Application Default Credentials. The native pull uses Google credentials independently of the collector chart's HMAC credentials. See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for the complete GCS command, filtering, and MCP workflow.
 
-This object-store import does not query Loki or Elasticsearch. See those charts' READMEs for backend-specific retrieval.
+For Datadog, use the [Datadog-to-proxymock recipe](https://github.com/speedscale/speedscale-byoc/tree/main/recipes/datadog-to-replay) to retrieve one trace directly from Datadog. Dynatrace and New Relic do not have direct proxymock importers; run an S3 or GCS channel alongside those observability channels when local reuse is required.
+
+Loki, Elasticsearch, and Azure Blob Storage also require backend-specific gather scripts before proxymock can read the RRPairs. See each chart's README for the supported retrieval command. Do not point `proxymock import s3` at those APIs.
 
 ## Further reading
 
