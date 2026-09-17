@@ -71,7 +71,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MongoDB               | DBMS | Full         | See [proxymock guide](/proxymock/guides/mongodb)  |
 | MySQL                 | DBMS | Full         |                                                  |
 | Postgres              | DBMS | Full         | See [details](/guides/capture/bodies#postgres)       |
-| Redis                 | DBMS | Capture Only | See [details](/guides/capture/bodies#redis)          |
+| Redis                 | DBMS | Full         | See [Redis mocking](/guides/mocking/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
 
 ### Supported APIs
 
