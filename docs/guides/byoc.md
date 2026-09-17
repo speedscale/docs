@@ -1,63 +1,71 @@
 ---
 title: Bring Your Own Cloud
-description: "Route Speedscale RRPair data to your own storage — Loki, Elasticsearch, Amazon S3, or Google Cloud Storage — using public Helm charts and OpenTelemetry."
+description: "Route Speedscale RRPair data to independent storage and observability destinations using public Helm charts and OpenTelemetry."
 ---
 
 # Bring Your Own Cloud
 
-Speedscale's **Bring Your Own Cloud (BYOC)** mode lets you keep all captured traffic inside your own infrastructure. The Speedscale Forwarder ships RRPairs as OTLP log records to a collector you run, which fans out to the storage backend of your choice. Configure the cloud exporter separately if captured RRPairs must stay in your infrastructure. BYOC export does not disable cloud registration, configuration downloads, or operational telemetry.
+Speedscale's **Bring Your Own Cloud (BYOC)** mode lets you route captured traffic to storage and observability systems that you control. The Speedscale Forwarder ships RRPairs as OTLP log records to a collector dedicated to one destination. Configure the cloud exporter separately if captured RRPairs must stay in your infrastructure. BYOC export does not disable cloud registration, configuration downloads, or operational telemetry.
 
 :::info
 
-BYOC requires a Speedscale Enterprise plan. Contact [support@speedscale.com](mailto:support@speedscale.com) to enable the `byoc_otel` exporter on your account.
+BYOC requires a Speedscale Enterprise plan. Contact [support@speedscale.com](mailto:support@speedscale.com) to enable Forwarder BYOC exporters on your account.
 
 :::
 
 ## How it works
 
-The Forwarder exports captured traffic through an OpenTelemetry log exporter (`byoc_otel`) over OTLP/gRPC to a collector inside your cluster. The collector forwards to your chosen storage backend.
+The Forwarder exports captured traffic through named OpenTelemetry log exporters over OTLP/gRPC. Each exporter points to a collector for one destination. This keeps credentials, DLP rules, filters, retry queues, failures, and enablement independent.
 
 ```mermaid
 flowchart LR
     apps([Your apps]) --> fwd[Speedscale Forwarder]
-    fwd -->|OTLP gRPC :4317| col[OTel Collector]
-    col --> storage[(Your storage<br/>Loki · ES · S3 · GCS)]
+    fwd -->|byoc_s3| s3col[S3 collector]
+    fwd -->|byoc_datadog| ddcol[Datadog collector]
+    fwd -->|byoc_dynatrace| dtcol[Dynatrace collector]
+    s3col --> s3[(S3)]
+    ddcol --> dd[(Datadog)]
+    dtcol --> dt[(Dynatrace)]
 ```
 
-## What Is BYOC?
+## What is BYOC?
 
 Bring Your Own Cloud is a deployment model where Speedscale software runs inside your own cloud account instead of a vendor-hosted SaaS. You keep data, networking, and runtime boundaries under your control while still receiving managed software updates and support from Speedscale.
 
 **Advantages**
 
 - Data control: choose where captured RRPairs are stored and apply filters and DLP before export.
-- Lower latency — collectors and exporters run near your apps, reducing egress and round trips.
-- Cost control — leverage your cloud pricing (reserved, spot, private links).
+- Lower latency: collectors and exporters run near your apps, reducing egress and round trips.
+- Cost control: use your cloud pricing for reserved, spot, and private-link capacity.
 
 **Tradeoffs**
 
-- You manage the cloud surface area — Kubernetes, ingress, IAM, and network policies must exist.
+- You manage the cloud surface area: Kubernetes, ingress, IAM, and network policies must exist.
 - Upgrades are simple, but you own cluster health, scale, and access control.
-- Integration work — SSO, networking, and security reviews are usually part of the rollout.
+- Integration work: SSO, networking, and security reviews are usually part of the rollout.
 
 ## Reference architectures
 
-Speedscale publishes four ready-to-install Helm charts at [github.com/speedscale/speedscale-byoc](https://github.com/speedscale/speedscale-byoc). Pick the one that matches your infrastructure:
+Speedscale publishes ready-to-install Helm charts at [github.com/speedscale/speedscale-byoc](https://github.com/speedscale/speedscale-byoc). Install one independent channel for each enabled destination:
 
 | Chart | Stack | Best for |
 |-------|-------|----------|
 | `grafana` | OTel Collector → Loki → Grafana | Live dashboards, ad-hoc log queries, proxymock replay |
 | `elasticsearch` | OTel Collector → Elasticsearch → Kibana | Full-text search, Kibana Discover, existing ES clusters |
+| `gcs` | OTel Collector → Google Cloud Storage | Native GCS archive, BigQuery external tables, compliance retention |
 | `fluentbit-gcs` | OTel Collector with `awss3` exporter → Google Cloud Storage | GCS data lake, BigQuery external tables, compliance retention |
 | `fluentbit-s3` | OTel Collector with `awss3` exporter → Amazon S3 | S3 data lake, Athena/Glue queries, IRSA-native EKS |
+| `datadog` | OTel Collector → Datadog | APM, traces, metrics, correlated RRPair logs |
+| `dynatrace` | OTel Collector → Dynatrace OTLP API | Services, distributed traces, metrics, correlated RRPair logs |
+| `newrelic` | OTel Collector → New Relic OTLP API | APM, distributed traces, metrics, correlated RRPair logs |
 
-The `fluentbit-gcs` and `fluentbit-s3` chart names are historical and remain unchanged for existing Helm installations. Both charts now write OTLP-JSON directly with the OpenTelemetry `awss3` exporter; they no longer use Fluent Bit.
+The `fluentbit-gcs` chart is the legacy GCS path that uses the S3-compatible API and HMAC credentials. New GCS installations should use the native `gcs` chart. The `fluentbit-s3` name is historical; the chart now writes OTLP-JSON directly with the OpenTelemetry `awss3` exporter.
 
-Each chart ships its own OTel Collector ConfigMap pre-wired for its backend — you only supply credentials and bucket/cluster names.
+Each chart ships its own OTel Collector ConfigMap wired for its backend. You supply credentials and bucket or cluster names.
 
 For a deployment without Kubernetes, see [BYOC on ECS/Fargate](byoc-ecs.md). It uses a forwarder and collector in one ECS task with an S3 task role. The Helm instructions below apply to Kubernetes.
 
-### Azure Blob Storage
+### Azure Blob storage
 
 The [`azureblob` chart](https://github.com/speedscale/speedscale-byoc/tree/main/charts/azureblob) writes captured RRPairs to Azure Blob Storage through the OpenTelemetry `azureblob` exporter. It supports storage archival, but proxymock cannot pull directly from Azure Blob Storage.
 
@@ -67,10 +75,10 @@ For manual retrieval, the chart repo includes [`scripts/azure-gather.py`](https:
 
 ## Prerequisites
 
-- Kubernetes cluster (any flavor — minikube, EKS, GKE, AKS, k3s)
+- Kubernetes cluster such as minikube, EKS, GKE, AKS, or k3s
 - `kubectl` pointed at the cluster and `helm` v3
 - Speedscale API key with BYOC enabled
-- Cloud credentials for your chosen backend (S3 bucket, GCS bucket — none needed for Grafana or Elasticsearch)
+- Credentials for each enabled destination, stored in separate Kubernetes Secrets
 
 ## Install
 
@@ -111,18 +119,22 @@ helm upgrade --install byoc-elasticsearch speedscale-byoc/elasticsearch \
 
 **OpenTelemetry → Google Cloud Storage**
 
-```bash
-# Create a Kubernetes secret with your GCS HMAC credentials first:
-kubectl create namespace byoc-fluentbit-gcs
-kubectl -n byoc-fluentbit-gcs create secret generic gcs-hmac \
-  --from-literal=accessKeyId="<HMAC_ACCESS_KEY>" \
-  --from-literal=secretAccessKey="<HMAC_SECRET>"
+Grant a Google service account `roles/storage.objectCreator` on the bucket and configure GKE Workload Identity in `values-gcs.yaml`:
 
-helm upgrade --install byoc-fluentbit-gcs speedscale-byoc/fluentbit-gcs \
-  -n byoc-fluentbit-gcs --create-namespace \
-  --set gcs.bucket="<YOUR_GCS_BUCKET>" \
-  --set gcs.region="auto" \
-  --set gcs.credentialsSecret="gcs-hmac"
+```yaml
+gcs:
+  project: <GCP_PROJECT>
+  bucket: <GCS_BUCKET>
+  region: <GCS_REGION>
+serviceAccount:
+  annotations:
+    iam.gke.io/gcp-service-account: byoc-gcs@<GCP_PROJECT>.iam.gserviceaccount.com
+```
+
+```bash
+helm upgrade --install byoc-gcs speedscale-byoc/gcs \
+  -n byoc-gcs --create-namespace \
+  -f values-gcs.yaml
 ```
 
 **OpenTelemetry → Amazon S3 (static credentials)**
@@ -153,18 +165,18 @@ helm upgrade --install byoc-fluentbit-s3 speedscale-byoc/fluentbit-s3 \
 
 See each chart's README on GitHub for full prerequisites, IAM policy examples, and verify steps.
 
-### 4. Install the Speedscale Operator wired to your backend
+### 4. Install the Speedscale Operator wired to each backend
 
-Replace `<NAMESPACE>` with your backend namespace (e.g. `byoc-grafana`):
+Add one named entry under `forwarder.exporters` for every destination you want to enable. This example installs one S3 channel:
 
 ```bash
 helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   -n speedscale --create-namespace \
   --set apiKeySecret=speedscale-apikey \
   --set clusterName=<YOUR_CLUSTER_NAME> \
-  --set 'forwarder.exporters.byoc_otel.otel_endpoint=http://otel-collector.<NAMESPACE>.svc.cluster.local:4317' \
-  --set 'forwarder.exporters.byoc_otel.filter_rule=standard' \
-  --set 'forwarder.exporters.byoc_otel.dlp_config_id=standard'
+  --set 'forwarder.exporters.byoc_s3.otel_endpoint=http://otel-collector.byoc-fluentbit-s3.svc.cluster.local:4317' \
+  --set 'forwarder.exporters.byoc_s3.filter_rule=standard' \
+  --set 'forwarder.exporters.byoc_s3.dlp_config_id=standard'
 ```
 
 Or equivalently in `values.yaml`:
@@ -172,7 +184,23 @@ Or equivalently in `values.yaml`:
 ```yaml
 forwarder:
   exporters:
-    byoc_otel:
+    byoc_s3:
+      otel_endpoint: "http://otel-collector.byoc-fluentbit-s3.svc.cluster.local:4317"
+      filter_rule: standard
+      dlp_config_id: standard
+    byoc_datadog:
+      otel_endpoint: "http://byoc-datadog-datadog.byoc-datadog.svc.cluster.local:4317"
+      filter_rule: standard
+      dlp_config_id: standard
+    byoc_dynatrace:
+      otel_endpoint: "http://byoc-dynatrace-dynatrace.byoc-dynatrace.svc.cluster.local:4317"
+      filter_rule: standard
+      dlp_config_id: standard
+    byoc_newrelic:
+      otel_endpoint: "http://byoc-newrelic-newrelic.byoc-newrelic.svc.cluster.local:4317"
+      filter_rule: standard
+      dlp_config_id: standard
+    byoc_grafana:
       otel_endpoint: "http://otel-collector.byoc-grafana.svc.cluster.local:4317"
       filter_rule: standard
       dlp_config_id: standard
@@ -180,7 +208,7 @@ forwarder:
 
 :::caution
 
-The `otel_endpoint` value **must** include the `http://` scheme. A bare hostname causes a silent gRPC dial failure — traffic appears captured but nothing arrives at the collector.
+The `otel_endpoint` value **must** include the `http://` scheme. A bare hostname causes a silent gRPC dial failure. Traffic appears captured but nothing arrives at the collector.
 
 :::
 
@@ -235,7 +263,7 @@ kubectl -n speedscale get cm speedscale-forwarder \
   -o jsonpath='{.data.EXPORTERS}' | jq .
 ```
 
-The output should contain `byoc_otel` with your endpoint. If `EXPORTERS` is missing `byoc_otel`, the Operator values were not applied — rerun step 4.
+The output should contain one entry for every enabled destination. If an entry is missing, the Operator values were not applied. Rerun step 4 with that destination configured.
 
 **2. OTel Collector is receiving**
 
@@ -249,6 +277,9 @@ kubectl -n <BACKEND_NAMESPACE> logs deploy/otel-collector | grep -i "log records
 - **Elasticsearch**: `kubectl -n byoc-elasticsearch exec -it deploy/elasticsearch -- curl -s localhost:9200/rrpairs/_count`
 - **S3**: `aws s3 ls s3://<BUCKET>/byoc/`
 - **GCS**: `gcloud storage ls gs://<BUCKET>/byoc/`
+- **Datadog**: open **APM > Traces** and **Logs > Explorer**; see the [Datadog guide](./integrations/export/datadog.md)
+- **Dynatrace**: open **Services > Explorer** and **Distributed Tracing**; see the [Dynatrace guide](./integrations/export/dynatrace.md)
+- **New Relic**: open **APM & Services** and **Logs**; see the [New Relic guide](./integrations/export/new-relic.md)
 
 ## Replay captured traffic with proxymock
 
@@ -266,6 +297,6 @@ This object-store import does not query Loki or Elasticsearch. See those charts'
 
 ## Further reading
 
-- [speedscale-byoc on GitHub](https://github.com/speedscale/speedscale-byoc) — chart source, detailed READMEs per scenario
-- [speedscale.com/byoc](https://www.speedscale.com/byoc/) — product overview and use cases
+- [speedscale-byoc on GitHub](https://github.com/speedscale/speedscale-byoc): chart source and detailed READMEs per scenario
+- [speedscale.com/byoc](https://www.speedscale.com/byoc/): product overview and use cases
 - [Why autonomous agents require BYOC](https://www.speedscale.com/blog/byoc-autonomous-agents-sovereign-ai-factory/)
