@@ -72,6 +72,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MySQL                 | DBMS | Full         |                                                  |
 | Postgres              | DBMS | Full         | See [details](/guides/capture/bodies#postgres)       |
 | Redis                 | DBMS | Full         | See [Redis mocking](/guides/mocking/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
+| Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/guides/mocking/redis). |
 
 ### Supported APIs
 
