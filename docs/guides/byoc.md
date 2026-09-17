@@ -282,8 +282,8 @@ The deployment name depends on the chart and Helm release name. For example, rel
 - **S3**: `aws s3 ls s3://<BUCKET>/byoc/`
 - **GCS**: `gcloud storage ls gs://<BUCKET>/byoc/`
 - **Datadog**: open **APM > Traces** and **Logs > Explorer**; see the [Datadog guide](./integrations/export/datadog.md)
-- **Dynatrace**: open **Services > Explorer** and **Distributed Tracing**; see the [Dynatrace guide](./integrations/export/dynatrace.md)
-- **New Relic**: open **APM & Services** and **Logs**; see the [New Relic guide](./integrations/export/new-relic.md)
+- **Dynatrace**: open **Services > Explorer**, **Distributed Tracing**, and **Logs**; see the [Dynatrace guide](./integrations/export/dynatrace.md)
+- **New Relic**: open **APM & Services**, **Distributed tracing**, and **Logs**; see the [New Relic guide](./integrations/export/new-relic.md)
 
 ## Replay captured traffic with proxymock
 
@@ -297,7 +297,7 @@ proxymock mock --in ./snapshot
 
 For GCS, run `proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ --from now-1h` with Google Application Default Credentials. The native pull uses Google credentials independently of the collector chart's HMAC credentials. See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for the complete GCS command, filtering, and MCP workflow.
 
-For Datadog, use the [Datadog-to-proxymock recipe](https://github.com/speedscale/speedscale-byoc/tree/main/recipes/datadog-to-replay) to retrieve one trace directly from Datadog. Dynatrace and New Relic do not have direct proxymock importers; run an S3 or GCS channel alongside those observability channels when local reuse is required.
+Use the [Datadog-to-proxymock recipe](https://github.com/speedscale/speedscale-byoc/tree/main/recipes/datadog-to-replay) to retrieve one trace directly from Datadog. Dynatrace and New Relic do not have direct proxymock importers; run an S3 or GCS channel alongside those observability channels when local reuse is required.
 
 Loki, Elasticsearch, and Azure Blob Storage also require backend-specific gather scripts before proxymock can read the RRPairs. See each chart's README for the supported retrieval command. Do not point `proxymock import s3` at those APIs.
 

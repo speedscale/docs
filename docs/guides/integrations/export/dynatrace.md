@@ -26,6 +26,7 @@ Dynatrace's ingest API accepts OTLP over HTTP. The collector receives gRPC or HT
 - marks spans with HTTP 5xx responses or exception events as errors;
 - copies the captured workload to `service.name`;
 - extracts W3C trace context from captured request headers;
+- adds `speedscale.workload` and `speedscale.direction` to RRPair logs;
 - converts cumulative metrics to delta temporality before export.
 
 ## Why use it
@@ -67,9 +68,12 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 1. Open **Services > Explorer** and confirm each application `service.name` appears.
 2. Confirm throughput and response-time charts contain recent data.
 3. Open **Distributed Tracing** from a service and inspect a trace.
-4. Open **Logs** and query `msgType == "rrpair"`.
-5. Compare the RRPair log's trace ID with the application trace.
-6. Trigger an HTTP 5xx response and confirm the service failure rate and HTTP error charts change.
+4. Open **Logs** and query `content.$.msgType = rrpair`.
+5. Open the column picker and show `trace_id`, `service.name`, `speedscale.workload`, and `speedscale.direction`. Dynatrace stores these OTLP attributes separately from the JSON log body.
+6. Compare the RRPair log's `trace_id` with the application trace.
+7. Trigger an HTTP 5xx response and confirm the service failure rate and HTTP error charts change.
+
+![Dynatrace Services Explorer showing live throughput, response time, failure rate, and HTTP errors](./dynatrace/services.png)
 
 ## Use the capture with proxymock
 
@@ -84,22 +88,22 @@ proxymock replay --in ./dynatrace-capture \
   --test-against http://localhost:8080
 ```
 
-For an S3 or GCS BYOC channel, copy the trace ID from Dynatrace and retrieve the matching RRPairs:
+For an S3 or GCS BYOC channel, retrieve recent RRPairs by service and time range:
 
 ```bash
 proxymock import s3 --bucket '<BUCKET>' --prefix byoc/ \
-  --trace-id '<TRACE_ID>' --out ./dynatrace-capture
+  --service '<SERVICE_NAME>' --from now-1h --out ./dynatrace-capture
 
 # Native GCS uses Google Application Default Credentials.
 proxymock import gcs --bucket '<GCS_BUCKET>' --prefix byoc/ \
-  --trace-id '<TRACE_ID>' --out ./dynatrace-capture
+  --service '<SERVICE_NAME>' --from now-1h --out ./dynatrace-capture
 ```
 
 See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for authentication, filtering, and cluster discovery.
 
 ## Evidence
 
-In the staging-decoy validation, Dynatrace showed five microsvc services, including `ai-service`, with live throughput. The frontend service view also showed a nonzero failure rate and HTTP error volume. This confirms that traces reached Services and that the error mapping populated the service-level failure views.
+In the staging-decoy validation, Dynatrace showed five microsvc services, including `ai-service`, with live throughput. The frontend service view also showed a nonzero failure rate and HTTP error volume. Logs contained RRPairs with populated `trace_id`, `service.name`, `speedscale.workload`, and `speedscale.direction` attributes.
 
 The chart's collector configuration is rendered and validated with its pinned OpenTelemetry Collector image in CI. Dynatrace also exposes ingest health metrics such as accepted and rejected OTLP metric data points and received spans for troubleshooting.
 

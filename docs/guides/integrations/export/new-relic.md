@@ -66,9 +66,10 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 1. Open **APM & Services > Services** and find the application's `service.name`.
 2. Open **Distributed tracing** and filter for that service.
 3. Open **Logs** and query `msgType = 'rrpair'`.
-4. Open a trace and confirm a matching RRPair log has the same `trace.id`.
-5. Trigger an HTTP 5xx response and confirm the transaction and span appear as errors.
-6. Use **Metrics and events** to confirm application metrics are arriving.
+4. Add `trace.id`, `service.name`, `speedscale.workload`, and `speedscale.direction` as table columns.
+5. Open a trace and confirm a matching RRPair log has the same `trace.id`.
+6. Trigger an HTTP 5xx response and confirm the transaction and span appear as errors.
+7. Use **Metrics and events** to confirm application metrics are arriving.
 
 ## Use the capture with proxymock
 
@@ -83,22 +84,22 @@ proxymock replay --in ./newrelic-capture \
   --test-against http://localhost:8080
 ```
 
-For an S3 or GCS BYOC channel, copy the trace ID from New Relic and retrieve the matching RRPairs:
+For an S3 or GCS BYOC channel, retrieve recent RRPairs by service and time range:
 
 ```bash
 proxymock import s3 --bucket '<BUCKET>' --prefix byoc/ \
-  --trace-id '<TRACE_ID>' --out ./newrelic-capture
+  --service '<SERVICE_NAME>' --from now-1h --out ./newrelic-capture
 
 # Native GCS uses Google Application Default Credentials.
 proxymock import gcs --bucket '<GCS_BUCKET>' --prefix byoc/ \
-  --trace-id '<TRACE_ID>' --out ./newrelic-capture
+  --service '<SERVICE_NAME>' --from now-1h --out ./newrelic-capture
 ```
 
 See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for authentication, filtering, and cluster discovery.
 
 ## Evidence
 
-The BYOC chart is rendered and validated with the pinned OpenTelemetry Collector image in CI, including the logs, traces, and metrics pipelines and Secret-backed `api-key` header. Live account validation requires enabling the New Relic channel with an ingest license key for the intended destination account.
+The BYOC chart is rendered and validated with the pinned OpenTelemetry Collector image in CI, including the logs, traces, and metrics pipelines and Secret-backed `api-key` header.
 
 ## One-time report export
 

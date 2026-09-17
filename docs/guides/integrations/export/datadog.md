@@ -10,7 +10,7 @@ The Datadog integration sends two related data streams to one Datadog organizati
 - Application OpenTelemetry traces and metrics populate APM services, traces, latency, throughput, and error views.
 - Speedscale RRPairs arrive as structured logs containing the captured API request and response.
 
-When an application request contains a valid W3C `traceparent` header, the collector copies its trace and span IDs onto the matching RRPair log. From an APM trace, you can then find the captured transaction, inspect what crossed the wire, and turn that traffic into a regression test or dependency mock. Requests without a valid `traceparent` header still appear as logs, but they are not linked to an APM trace.
+When an application request contains a valid W3C `traceparent` header, the collector copies its trace and span IDs onto the matching RRPair log. From an APM trace, you can find the captured transaction, inspect what crossed the wire, and turn that traffic into a regression test or dependency mock. Requests without a valid `traceparent` header still appear as logs, but they are not linked to an APM trace.
 
 ## How it works
 
@@ -69,8 +69,11 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 1. Open **APM > Services** and find the application's `service.name`.
 2. Open **APM > Traces** and filter on `service:<SERVICE_NAME>`.
 3. Open **Logs > Explorer** and query `@msgType:rrpair service:<SERVICE_NAME>`.
-4. Open a trace and confirm the correlated log has the same trace ID.
-5. Trigger an HTTP 5xx response and confirm the span appears as an error in the trace and service views.
+4. Add `trace_id`, `speedscale.workload`, and `speedscale.direction` as table columns.
+5. Open a trace and confirm the correlated log has the same trace ID.
+6. Trigger an HTTP 5xx response and confirm the span appears as an error in the trace and service views.
+
+![Datadog APM showing a live ai-service trace](./datadog/apm-trace.png)
 
 ## Use the capture with proxymock
 
@@ -104,7 +107,7 @@ proxymock import s3 --bucket '<BUCKET>' --prefix byoc/ \
 
 ## Evidence
 
-The staging-decoy validation produced APM traces for the microsvc application and structured `rrpair` logs in the dedicated partner organization. The chart is also rendered and validated with its pinned OpenTelemetry Collector image in CI. The validation rejects any collector that includes a second destination exporter.
+The staging-decoy validation produced APM traces and hundreds of searchable `rrpair` logs in the dedicated partner organization. The log records include `service.name`, `trace_id`, `speedscale.workload`, and `speedscale.direction`. The chart is also rendered and validated with its pinned OpenTelemetry Collector image in CI.
 
 ## One-time report export
 
@@ -116,7 +119,7 @@ speedctl export datadog '<REPORT_ID>' --apiKey '<DATADOG_API_KEY>'
 
 Use the live channel for APM and trace correlation. Use the report export when you only need a completed replay result as a Datadog event.
 
-![A completed Speedscale report in the Datadog event stream](./datadog-event.png)
+![A completed Speedscale report in the Datadog event stream](./datadog/datadog-event.png)
 
 ## References
 
