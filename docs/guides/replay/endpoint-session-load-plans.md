@@ -11,7 +11,8 @@ whether posting latency increases. Both workloads run against the same app.
 
 :::info Release candidate
 This guide accompanies the endpoint and session load-plan release candidate.
-Use compatible proxymock, generator, operator and cloud components. The proxymock
+The completed engine is included in v2.5.1012. Use compatible proxymock,
+generator, operator and cloud components. The proxymock
 visual editor supports local replay and **Run in cluster**, including inline plans
 carried by namespaced replay requests. Dashboard controls cover groups, shared
 arrival pools, budgets, scoped goals and recording previews.
@@ -188,8 +189,8 @@ snapshot if it exceeds that limit. Preview does not change or save replay settin
 
 With namespaced mode configured, **Run in cluster** carries the plan in the
 immutable replay request. The coordinator transfers it to the generator, which
-replaces the base configuration's generator settings and then applies the target
-URI override. The client does not create a cloud test configuration or add a
+replaces the base configuration's schedule fields and then applies the target
+URI override. Existing request and DLP settings remain in effect. The client does not create a cloud test configuration or add a
 cloud-login step. The snapshot and base test configuration still need to be
 available to the installation through its existing replay setup.
 
