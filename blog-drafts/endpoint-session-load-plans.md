@@ -69,6 +69,12 @@ Neither path substitutes for the other. A local mock cannot establish that an op
 
 Our [eight matched real/mock trials](./endpoint-load-plan-feedback-measurements.json) measured reset, discovery, complete session work, and journal assertions. Median time was 143.19 ms with the real local dependency and 149.46 ms with the mock. Capture, startup, cluster setup, and artifact uploads were excluded.
 
+A [repeat on the tagged engine](./endpoint-load-plan-feedback-30-pairs.json) used 30 matched pairs and retained p95 plus process
+resource snapshots. Live median/p95 was 133.88/136.90 ms; mocked median/p95 was
+137.35/140.41 ms. The mock was 2.59% slower. A concurrent local acceptance run
+shared the host, so this remains a descriptive comparison rather than an isolated
+capacity benchmark.
+
 That result supports no claim of faster delivery. It gives us a baseline and a controlled test dependency. We will measure slower and less predictable dependencies separately.
 
 ## Start with one interference test
