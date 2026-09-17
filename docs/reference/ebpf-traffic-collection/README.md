@@ -71,7 +71,7 @@ binaries to preserve the ELF symbol table, i.e. they must be **unstripped** and 
 
 Rust applications that use rustls are instrumented at the rustls plaintext read and write boundaries. This requires `nettap` **v0.1.77 or newer** and a Linux ELF binary that retains its symbol table. Do not strip the binary or use link-time optimization that removes or inlines the rustls probe targets. The verified matrix includes rustls 0.23, tokio-rustls 0.26, and Apollo Router 2.17. Rust applications that use OpenSSL 3.x use the OpenSSL capture path instead. See [Rust language support](/reference/languages/rust#ebpf-capture) for build settings and verification steps.
 
-For JVM applications, the Java agent captures supported socket and TLS paths inside the JVM. Coverage depends on the transport, TLS provider, and agent version. See [Java agent setup and framework support](/reference/java/agent) for the tested matrix and known gaps. Loading the agent requires a JVM restart.
+For JVM applications, including Java and Kotlin services, the Java agent captures supported socket and TLS paths inside the JVM. Coverage depends on the transport, TLS provider, and agent version. See [Java agent setup and framework support](/reference/java/agent) for the tested matrix and known gaps, and [Kotlin language support](/reference/languages/kotlin#ebpf-java-agent) for the Kotlin workflow. Loading the agent requires a JVM restart.
 
 Language/runtime support is tied to the TLS capture mechanism mentioned above, but they all share the same
 kernel and architecture baseline (see [System Requirements](#system-requirements)). The following have been
@@ -81,6 +81,7 @@ tested and verified:
 | -------- | -------------------------- | ----------- | ----------------------------------------------------------------- |
 | Go       | eBPF uprobe (`crypto/tls`) | Native      | See above                                                         |
 | Java     | Java instrumentation agent                | JSSE hook   | Requires `nettap` Java agent (Handled by the Speedscale Operator) |
+| [Kotlin](/reference/languages/kotlin#ebpf-java-agent) | Java instrumentation agent | JSSE hook | Same JVM capture path and compatibility matrix as Java |
 | [PHP](/reference/languages/php#ebpf-capture) | eBPF uprobe (OpenSSL) | OpenSSL 3.x | PHP cURL or another OpenSSL-backed client |
 | .NET     | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Linux only; SChannel not supported                                |
 | Python   | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Python `ssl` module                                               |

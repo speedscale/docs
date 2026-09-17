@@ -17,6 +17,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | C++        | Language | Full    | See [sidecar TLS](/getting-started/installation/sidecar/tls/) |
 | Go         | Language | Full    | See [Go](/reference/languages/golang#proxymock) and [TLS](/reference/languages/golang#tls-trust) |
 | Java       | Language | Mode-dependent | See [Java setup](/reference/languages/java), [agent compatibility](/reference/java/agent#compatibility), and [TLS trust](/reference/java/tls). |
+| Kotlin     | Language | Mode-dependent | See [Kotlin](/reference/languages/kotlin). Kotlin uses the JVM agent and Java TLS/proxy configuration. |
 | Node.js    | Language | Full    | See [Node.js](/reference/languages/nodejs#proxymock) and [TLS](/reference/languages/nodejs#tls-trust) |
 | PHP        | Language | Full    | See [PHP](/reference/languages/php), including proxymock and OpenSSL 3.x eBPF requirements. |
 | Python     | Language | Full    | See [Python](/reference/languages/python#proxymock) and [TLS](/reference/languages/python#tls-trust) |

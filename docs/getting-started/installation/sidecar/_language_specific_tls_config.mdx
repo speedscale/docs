@@ -51,6 +51,11 @@ Java uses a truststore. The desktop and Kubernetes paths differ:
 See [Java TLS trust](/reference/java/tls) for complete commands, custom corporate CAs, replay, and troubleshooting. Truststore settings do not route traffic; configure [Java proxy settings](/proxymock/guides/java) when using a forward proxy.
 
 </TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+Kotlin/JVM applications use the same JKS truststore and JVM properties as Java. See [Kotlin TLS trust](/reference/languages/kotlin#tls-trust) for the Kotlin workflow and [Java TLS trust](/reference/java/tls) for the full truststore reference.
+
+</TabItem>
 <TabItem value="php" label="PHP">
 
 ```shell

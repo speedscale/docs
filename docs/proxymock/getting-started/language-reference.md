@@ -88,6 +88,11 @@ For a SOCKS-capable TCP client, use `-DsocksProxyHost=localhost -DsocksProxyPort
 See [Java with proxymock](/proxymock/guides/java) for complete HTTP, SOCKS, database, IDE, and CI examples. See [Java TLS trust](/reference/java/tls) for certificate setup.
 
 </TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+Kotlin/JVM uses the Java networking stack. Standard JVM HTTP clients ignore `HTTP_PROXY` and `HTTPS_PROXY`, so use JVM proxy properties or the SOCKS proxy plus a JKS truststore. See the [Kotlin language page](/reference/languages/kotlin#proxymock) for the complete setup.
+
+</TabItem>
 <TabItem value="python" label="Python">
 
 Python respects proxy environment variables.
