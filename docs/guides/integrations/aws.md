@@ -12,6 +12,8 @@ Speedscale is a certified member of the AWS Partner Network (APN). This includes
 
 The Speedscale operator is compatible with AWS EKS (Elastic Kubernetes Service), versions v1.16 and newer.
 
+For AWS-managed Bottlerocket nodes, follow the [EKS Auto Mode installation guide](/getting-started/installation/install/eks-auto-mode). It covers the required eBPF SELinux setting and the transparent sidecar alternative.
+
 ### Traffic capture support
 
 The Speedscale [eBPF collector](/reference/ebpf-traffic-collection) captures supported traffic sent to AWS services without adding a proxy to each workload. Supported services include the following (this list is not exhaustive):

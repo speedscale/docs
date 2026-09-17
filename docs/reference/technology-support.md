@@ -124,6 +124,7 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | Argo Rollouts                                  | See [guide](../guides/argo.md)                                                          |
 | AWS Elastic Container Service (ECS) or Fargate | See [guide](../getting-started/installation/install/ecs.md)                                                    |
 | AWS Elastic Kubernetes Service (EKS)           |                                                                                         |
+| AWS EKS Auto Mode                              | See [EKS Auto Mode guide](/getting-started/installation/install/eks-auto-mode) (eBPF or transparent sidecar) |
 | AWS Elastic Beanstalk                          | See [guide](../getting-started/installation/install/beanstalk.md)                                              |
 | AWS Elastic Compute Cloud (EC2)                | See [guide](../getting-started/installation/install/vm.md)                                                     |
 | Canonical Microk8s                             | Must enable DNS                                                                         |
