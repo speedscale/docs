@@ -184,43 +184,138 @@ service — for example, traffic recorded outside a cluster — matches **no** g
 baseline. This is deliberate: unlabelled traffic must not inherit another group's rules by accident. It also
 means the baseline is what protects anything your group rules do not cover.
 
-## Authoring a group rule
+## Editing rules in proxymock web
 
-1. **Start from what your traffic contains.** Follow [Discovering PII](./discovering-pii.md) and
-   [Recommendations](./recommendations.md) on a recording from your own service.
-2. **Create the rule** as described in [Creating DLP Rules](./creating-rules.md), then add `owner` and `scope`.
-   Leave `enabled` set to `false` while you work.
-3. **Test it against real traffic** before enabling it (see below).
-4. **Enable it**, then apply the configuration to the cluster as described in
-   [Applying DLP Rules](./applying-rules.md).
-5. **Verify** by taking a snapshot and confirming your fields are redacted and that other groups' traffic is
-   unchanged.
+proxymock web is where group rules are authored today. Rules live in the workspace
+(`proxymock/dlprules/<id>.json`), so they travel with the repository and are the same documents
+`proxymock cloud push/pull dlp` moves.
 
-### Testing a scoped rule locally
+Open **DLP Rules** in the Config section of the sidebar.
 
-In proxymock web, the DLP editor tests the rule in your editor against the traffic in your workspace.
+### The rule list
 
-Locally recorded traffic has no namespace or service of its own — it never went through a pod — so a scoped rule
-matches nothing by default and looks broken. Use the **test as** fields beside the Test button to present the
-recorded traffic as a workload in your scope:
+Each row shows the rule id, its owner and what it covers, so you can tell your rule from another group's at a
+glance:
+
+```
+payments
+payments-group · payments
+
+search
+search-group · search, query
+
+standard
+2026-09-17 20:01
+```
+
+A rule with a scope that is not enabled is marked `off`. A rule with no scope, like `standard` above, shows no
+coverage line — it is a baseline rule.
+
+### Creating and editing
+
+**+ New** starts a rule from a template that is already a group rule: scoped to one namespace, `enabled` set to
+`false`, and an empty `owner` for you to fill in.
+
+```json
+{
+  "id": "payments",
+  "name": "payments",
+  "owner": "",
+  "enabled": false,
+  "scope": { "namespaces": ["my-namespace"] },
+  "redactlist": { "entries": { "all": ["authorization", "email", "password"] } },
+  "discoverPatterns": true
+}
+```
+
+Edit the document on the **Rule** tab and press **Save**. Saving validates the rule the way the capture path
+will use it, so a document that cannot build a redactor, or a `scope` that names nothing, is refused there and
+then rather than failing later on a forwarder.
+
+Delete the `scope`, `owner` and `enabled` fields to author a baseline rule instead.
+
+### Testing against traffic
+
+The **Test against traffic** tab runs the rule in your editor over the recordings in the workspace and reports
+what it would redact. Nothing is modified.
+
+Because locally recorded traffic has no namespace or service, use the **test as** fields beside the Test button
+to present it as a workload in your scope:
 
 ```
 test as   namespace: payments    service: checkout
 ```
 
-The test then reports what the rule would redact in that namespace. Leave the fields empty to test an unscoped
-baseline rule.
+Without this a scoped rule matches nothing and looks broken. Leave the fields empty when testing a baseline
+rule.
 
-:::tip
-If a scoped rule reports zero redacted fields, check the **test as** values before changing the rule itself.
-A mismatched namespace is the most common cause.
+**Apply → write redacted copies** writes redacted copies of the workspace recordings into a new results
+directory. It is a way to inspect the outcome on real traffic — it does not deploy anything.
+
+### Previewing what a cluster receives
+
+Your rule is only part of what a forwarder runs. **Preview effective**, under the rule list, resolves the whole
+set the way a cluster would: enter the baseline rule id (and optionally a cluster) and it lists every scoped
+rule that would apply, with its owner and coverage.
+
+```
+Baseline standard + 2 scoped rules
+payments   payments-group · payments
+search     search-group · search, query
+```
+
+This is read-only. Use it to confirm your rule is included, and to see what is already being redacted, before
+you change anything.
+
+### Applying to a cluster
+
+The **Settings** panel writes the forwarder configuration: **Redaction rule** (`SPEEDSCALE_DLP_CONFIG`) and
+**Redact sensitive data** (`WITH_DLP`). Applying writes the resolved document — baseline plus the group rules
+that cover the cluster — into the cluster, so the forwarder reads it directly instead of downloading a single
+rule. This needs a connected cluster; without one the panel is read-only.
+
+## Editing rules in the dashboard
+
+The dashboard manages DLP rules under **DLP Rules**, and selects the baseline under **Infrastructure → your
+forwarder → Redaction rule**. Both work as they always have for baseline rules.
+
+:::warning
+The dashboard does not yet understand `scope`, `owner` or `enabled`.
+
+- Pasting a rule containing those fields into the **Advanced** JSON tab is rejected with an unknown-field error.
+- Opening an existing group rule in the dashboard editor and saving it **silently drops** those three fields,
+  turning it back into an unscoped rule.
+
+Until the dashboard is updated, manage group rules in proxymock web, and use the dashboard for baseline rules
+and for choosing which rule `SPEEDSCALE_DLP_CONFIG` names.
 :::
 
-### Previewing everything the cluster will receive
+Cloud-side assembly is also not wired up yet: a scoped rule pushed to Speedscale Cloud is not combined into a
+resolved document there. If you point `SPEEDSCALE_DLP_CONFIG` at a scoped rule, the forwarder downloads it and
+applies it like any baseline — scope and all its restraint ignored — so redaction lands on every workload. Apply
+group rules from proxymock web instead.
 
-Your own rule is only part of what the forwarder runs. proxymock web can show the full assembled document —
-baseline plus every enabled group rule that covers the cluster — so you can confirm your rule is present and see
-what else is already redacted before applying anything.
+## Which surface does what
+
+| Task | proxymock web | Dashboard |
+|---|---|---|
+| Create or edit a baseline rule | yes | yes |
+| Create or edit a group rule (scope, owner, enabled) | yes | not yet |
+| Test a rule against recorded traffic | yes, with a workload override | via snapshots |
+| Preview the resolved rule set for a cluster | yes | not yet |
+| Choose which rule `SPEEDSCALE_DLP_CONFIG` names | yes, in Settings | yes, in Infrastructure |
+| Apply the resolved document to a cluster | yes | not yet |
+
+## Authoring checklist
+
+1. **Start from your own traffic.** Follow [Discovering PII](./discovering-pii.md) and
+   [Recommendations](./recommendations.md) on a recording from your service.
+2. **Create the rule** in proxymock web, fill in `owner`, and scope it to the workloads your group owns. Leave
+   `enabled` at `false` while you work.
+3. **Test it** with the **test as** fields set to a workload in your scope.
+4. **Preview effective** to see your rule alongside the baseline and any other group's rules.
+5. **Enable it** and apply the configuration to the cluster.
+6. **Verify** with a snapshot: your fields redacted, other groups' traffic unchanged.
 
 ## Best practices
 
@@ -256,8 +351,11 @@ the sensitive value itself.
 
 - **Ownership is advisory.** `owner` records which group maintains a rule; it does not yet stop another group from
   editing it. Rules are per-group documents, so access controls attach to them when that capability lands.
-- **Rules are resolved where they are applied.** Group rules assembled by proxymock web are written to the
-  cluster when you apply them. Managing the same rule set from Speedscale Cloud is a separate step.
+- **The dashboard cannot author group rules yet.** It drops `scope`, `owner` and `enabled` on save and rejects
+  them in the JSON editor, so group rules are managed in proxymock web for now.
+- **Rules are resolved where they are applied.** proxymock web assembles the document and writes it to the
+  cluster. Speedscale Cloud does not assemble group rules, so a scoped rule named by `SPEEDSCALE_DLP_CONFIG` is
+  downloaded and applied install-wide.
 - **Scope names are exact.** There is no wildcard or label selector; list the namespaces and services you mean.
 
 ## Related documentation
