@@ -60,6 +60,7 @@ flowchart TD
 - [Understanding DLP Recommendations](./recommendations.md)
 - [Creating DLP Rules](./creating-rules.md)
 - [Applying Rules to Production](./applying-rules.md)
+- [DLP Rules for Multiple Groups](./group-rules.md)
 - [Generating Test Data](./test-data-generation.md)
 
 ### Advanced Topics
@@ -78,6 +79,8 @@ Before diving in, familiarize yourself with these key concepts:
 - **REDACTED Token**: A placeholder value that replaces PII in production traffic
 - **Transform Chain**: A sequence of filters, extractors, and transforms that process data
 - **Forwarder**: A component that forwards traffic to Speedscale cloud
+- **Baseline Rule**: The install-wide rule named by `SPEEDSCALE_DLP_CONFIG`, applied to all captured traffic
+- **Group Rule**: A rule scoped to the namespaces and services one group owns, applied on top of the baseline
 - **Snapshot**: A captured set of API traffic at a point in time
 
 ## Need Help?
