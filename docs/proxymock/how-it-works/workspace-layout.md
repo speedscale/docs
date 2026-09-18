@@ -13,6 +13,12 @@ current directory). Everything proxymock reads and writes lives under that one
 directory, so the workspace is portable: copy it between machines, commit parts
 of it to git, or push it to the cloud as a [snapshot](/reference/glossary.md#snapshot).
 
+That includes everything that changes how a replay or mock behaves: blueprints,
+test configs, DLP and filter rules, and pulled reports are read only from the
+workspace, and `proxymock cloud pull` writes them into it. The Speedscale home
+directory (`~/.speedscale`) holds your login, the local TLS certificates, and
+temporary caches, but nothing in it is applied to a replay.
+
 This page is the reference for what each directory is, when it gets created, and
 what is safe to remove. For how recording, replay, and mocking flow through
 these directories, see [Lifecycle](/proxymock/how-it-works/lifecycle.md).
@@ -27,6 +33,10 @@ proxymock/
 │   ├── replayed-<timestamp>/    #   one dir per `proxymock replay`
 │   └── mocked-<timestamp>/      #   one dir per `proxymock mock`
 ├── blueprints/                  # saved transform rules
+├── testconfigs/                 # test configs, one <id>.json each
+├── dlprules/                    # DLP redaction rules, one <id>.json each
+├── filters/                     # filter rules, one <id>.json each
+├── reports/                     # pulled report metadata and artifacts
 ├── dataframes/                  # payloads referenced by transforms
 │   └── <id>/payload.csv
 ├── secrets/                     # local credentials for transforms — never commit
@@ -64,10 +74,12 @@ overlay at replay time; deleting this directory loses your saved transforms but
 not your recordings.
 
 `replay` and `mock` look for blueprints in the directory you pass to `--in` and
-in its immediate parent, under either `blueprints/` or `proxymock/blueprints/`,
-plus the machine-wide `~/.speedscale/data/transforms/`. The walk stops at the
-parent, so a `blueprints/` directory two or more levels above `--in` is not
-found. Every blueprint that applies is named on startup along with the file it
+in its immediate parent, under either `blueprints/` or `proxymock/blueprints/`.
+The walk stops at the parent, so a `blueprints/` directory two or more levels
+above `--in` is not found. Blueprints come only from the workspace: nothing
+under `~/.speedscale` is applied. To use a Speedscale Cloud transform set, pull
+it into the workspace with `proxymock cloud pull transform <id>`, which writes
+`proxymock/blueprints/<id>.json`. Every blueprint that applies is named on startup along with the file it
 came from:
 
 ```
@@ -85,10 +97,33 @@ replay each loaded blueprint reports how many of its chains ran:
 Blueprint "mock-lab smart replace (token + order_id)": 2 transform chain(s) ran.
 ```
 
-A workspace blueprint that ran none is called out as a warning. Machine-wide blueprints that do not fire are not warned about. Pass
+A blueprint that ran none is called out as a warning. Pass
 `--require-blueprint <name>` to turn that into a non-zero exit, which is what
 you want in CI. Blueprint reporting is unavailable under `--load-test`, which
 drops the transform events the count is derived from.
+
+### `testconfigs/`
+[Test configs](/proxymock/guides/test-configs.md) that set how a replay runs:
+load stages, responder replicas and resources, chaos, goals and assertions. Each
+file is one complete `TestConfig` as JSON, named `<id>.json`, and its `id` field
+(when present) must match the file name. The proxymock web editor, `proxymock
+test-config`, `--test-config` on every replay command, and the MCP server all
+read this directory. A snapshot push uploads every config in it, and a snapshot
+pull or `proxymock cloud pull test-config <id>` writes back into it. The built-in
+`regression` config has no file here.
+
+### `dlprules/` and `filters/`
+[DLP and filter rules](/proxymock/guides/local-rules.md), one `<id>.json` per
+rule. The DLP Rules and Filter Rules editors in proxymock web save here,
+`proxymock cloud pull dlp <id>` and `proxymock cloud pull filter <id>` write
+here, `proxymock cloud push dlp|filter` reads from here, and a bare rule id
+passed to `--dlp-config` or `--filter-config` is looked up here.
+
+### `reports/`
+Reports pulled with `proxymock cloud pull report <id>`: the report metadata as
+`reports/<id>.json` and its artifacts under `reports/<id>/`. The report's
+RRPairs are expanded separately into `proxymock/report-<id>/` unless you pass
+`--no-out`.
 
 ### `dataframes/`
 Payloads referenced by transforms — for example the CSV a `csv_dataframe`
@@ -135,6 +170,8 @@ the same thing and equally safe to remove.)
 | `.proxymock/` | Mostly | Web-UI convenience state (backups, dismissed hints) |
 | `recorded-<timestamp>/` | **No** | Your recordings — the source of truth |
 | `.metadata/`, `blueprints/`, `dataframes/` | **No** | Transform and snapshot configuration |
+| `testconfigs/`, `dlprules/`, `filters/` | **No** | Test configs and rules you authored or pulled |
+| `reports/` | Yes, if you can pull them again | Pulled report metadata and artifacts |
 | `secrets/` | **No** | Your local credentials (not regenerable, not committed) |
 
 The quickest way to prune everything proxymock can regenerate — `results/` and

@@ -45,6 +45,7 @@ proxymock [command]
 - `replay` - Replay tests to make requests to your app
 - `report` - Generate a performance/reliability/security report from captured RRPairs
 - `send-one` - Send a single test (RRPair) to an arbitrary URL
+- `test-config` - Author the generator/responder configuration a replay runs with
 - `transform` - Author and validate traffic transforms against local RRPair files
 - `validate` - Validate recorded HTTP responses against an OpenAPI spec
 - `version` - Prints current version of client and cloud
@@ -221,6 +222,7 @@ proxymock replay --test-against localhost:9092
 - `--performance` - Deprecated alias for `--load-test`
 - `--rewrite-host` - Rewrite the HTTP `Host` header to match the target host and port
 - `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
+- `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 - `-n, --times uint` - Number of times to replay the traffic (default `1`)
 - `-u, --vus uint` - Number of virtual users to run in parallel (default `1`)
@@ -274,10 +276,13 @@ proxymock inspect --demo
 proxymock inspect --in ./my-recording
 
 # inspect a snapshot file on disk
-proxymock inspect --snapshot ~/.speedscale/data/snapshots/<uuid>/raw.jsonl
+proxymock inspect --snapshot ./raw.jsonl
 
-# inspect a snapshot from the local snapshot repository by ID
+# inspect a snapshot pulled into the workspace (proxymock/snapshot-<id>) by ID
 proxymock inspect --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
+
+# the same, naming the workspace with --in
+proxymock inspect --in ./my-repo --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
 ```
 
 **Flags**
@@ -285,7 +290,7 @@ proxymock inspect --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
 - `--demo` - Use demo data to explore the TUI without recording traffic first
 - `--in strings` - Directories to recursively read RRPair files from (default current directory)
 - `--log-to string` - File path to write logs to
-- `--snapshot string` - Snapshot ID to target
+- `--snapshot string` - Snapshot to inspect: a snapshot file path, or the ID of a snapshot pulled into the workspace named by `--in`
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 
 ## Utility commands
@@ -468,6 +473,47 @@ proxymock send-one path/to/test.json http://orders:8080/foo/bar
 
 - `-h, --help` - help for send-one
 
+## Test config commands
+
+### `test-config`
+
+Inspect and validate the [test configs](/proxymock/guides/test-configs.md) in a workspace. A test config is `proxymock/testconfigs/<id>.json`, holding exactly one complete `TestConfig` as JSON. It is read strictly: an unknown field is an error naming it. `--in` may point at the repo root, the `proxymock` directory, or a recording inside it; all three find the same workspace.
+
+**Usage**
+
+```bash
+proxymock test-config [command]
+```
+
+**Aliases**
+
+```text
+test-config, test-configs, testconfig
+```
+
+**Available subcommands**
+
+- `list` - List the test configs available to this workspace, plus the built-in `regression`
+- `show <name>` - Show one test config, where it came from, its warnings and any validation problems
+- `compile <name>` - Validate a test config and print it exactly as it is sent; fails with the problems listed when it is not valid
+- `meta` - Show which run paths (local, cluster, cloud) honour each field, and which fields the operator overrides
+
+**Examples**
+
+```bash
+proxymock test-config list -o pretty
+proxymock test-config show big-responder
+proxymock test-config compile big-responder
+proxymock test-config meta
+```
+
+**Flags**
+
+- `--in strings` - Workspace directory whose test configs to use (default current directory)
+- `-o, --output string` - Output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+Pass a config to a replay with `--test-config` on `proxymock replay`, `proxymock cluster replay start` and `proxymock cloud replay`.
+
 ## Replay tuning commands
 
 These commands tune a replay offline, from RRPair files on disk. No replay run, cluster, or Speedscale account is needed. They accept the same `-o/--output` formats as the rest of the CLI. `match-rate` and `recommendations` are separate id spaces: `match-rate` works the Mocks-view outbound match-rate fixes, `recommendations` works the general replay-tuning findings. Both write filter-scoped transforms into the workspace's per-service tuning blueprint rather than rewriting RRPair files, and later replay and mock runs apply the blueprint automatically.
@@ -565,7 +611,7 @@ Author and validate DLP (data loss prevention) redaction rules. The redaction pi
 # report per-field match counts and locations
 proxymock dlp test --dlp-config my-dlp.json --in ./recorded
 
-# test a rule previously downloaded with 'proxymock cloud pull dlp standard'
+# test a rule saved in the workspace (proxymock/dlprules/standard.json), e.g. by 'proxymock cloud pull dlp standard'
 proxymock dlp test --dlp-config standard --in ./recorded
 
 # show the full before/after redaction of one file
@@ -577,7 +623,7 @@ proxymock dlp apply --dlp-config my-dlp.json --in ./recorded --out ./redacted
 
 **Flags**
 
-- `--dlp-config string` - DLP config JSON file, or the id of a rule downloaded with `proxymock cloud pull dlp`
+- `--dlp-config string` - DLP config JSON file, or the id of a rule in the workspace's `proxymock/dlprules/` directory (resolved from the first `--in`)
 - `--in strings` - Directories or RRPair files to read from (default `.`)
 - `--show-redacted string` - (`test`) Print the full before/after redaction of this RRPair file instead of the summary
 - `--out string` - (`apply`) Directory to write redacted copies to (must be outside `--in`)
@@ -606,7 +652,7 @@ proxymock filter apply --filter-config my-filter.json --in ./recorded --out ./fi
 
 **Flags**
 
-- `--filter-config string` - Filter config JSON file, or the id of a rule downloaded with `proxymock cloud pull filter`
+- `--filter-config string` - Filter config JSON file, or the id of a rule in the workspace's `proxymock/filters/` directory (resolved from the first `--in`)
 - `--in strings` - Directories or RRPair files to read from (default `.`)
 - `--show-dropped` - (`test`) List every dropped RRPair instead of a sample
 - `--out string` - (`apply`) Directory to write the passing RRPairs to (must be outside `--in`)
@@ -634,7 +680,7 @@ proxymock transform test --transform-config my-transforms.json --show ./recorded
 
 **Flags**
 
-- `--transform-config string` - Transform config JSON file, or the id of a set downloaded with `proxymock cloud pull transform`
+- `--transform-config string` - Transform config or blueprint JSON file, or the id of a blueprint in the `--in` workspace (`proxymock/blueprints/<id>.json`)
 - `--in strings` - Directories or RRPair files to read from (default `.`)
 - `--show string` - (`test`) Print the full before/after transform of this RRPair file instead of the summary
 - `--out string` - (`apply`) Directory to write transformed copies to (must be outside `--in`)
@@ -760,8 +806,12 @@ proxymock cloud [command]
 
 **Available subcommands**
 
+- `delete` - Delete artifacts from Speedscale Cloud or a bucket
+- `list` - List artifacts in Speedscale Cloud
 - `pull` - Pull artifacts from Speedscale Cloud
 - `push` - Push artifacts to Speedscale Cloud
+- `replay` - Run the recordings in a registered cluster via Speedscale Cloud; takes `--test-config` (see [Choose Where a Replay Runs](/proxymock/guides/replay-paths.md#via-speedscale-cloud))
+- `search` - Search remote traffic for a service
 
 ### `cloud pull`
 
@@ -786,7 +836,7 @@ pull, download
 - `filter` - Pull a filter rule set
 - `report` - Pull a report and its artifacts
 - `snapshot` - Pull a snapshot and its artifacts
-- `test-config` - Pull a test config
+- `test-config` - Pull a test config into the workspace (`proxymock/testconfigs/<id>.json`); warns before overwriting a differing file, `--force` overwrites without asking, `--as` names an editable copy
 - `transform` - Pull a transform set
 - `user-data` - Pull user-defined documents
 
@@ -925,6 +975,7 @@ proxymock cluster replay [command]
 - `--route strings` - start: send one inbound slice to its own workload as `SLICE=WORKLOAD`; repeatable
 - `--mock strings` - start: outbound dependency key to mock, from `replay prepare`; repeatable
 - `--snapshot-id string` - start: replay a snapshot already in Speedscale Cloud instead of pushing these recordings
+- `--test-config string` - start: workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to stage in the cluster and run this replay with (default `regression`)
 - `--wait` - start: block until the replay reaches a terminal state, reporting each stage
 - `--all` - status: include replays that are no longer running but still in the cluster
 - `--source strings` - logs: only stream this component: generator, responder or collector
