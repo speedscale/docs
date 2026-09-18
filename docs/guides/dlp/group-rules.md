@@ -184,135 +184,14 @@ service — for example, traffic recorded outside a cluster — matches **no** g
 baseline. This is deliberate: unlabelled traffic must not inherit another group's rules by accident. It also
 means the baseline is what protects anything your group rules do not cover.
 
-## Editing rules in proxymock web
+## Where to edit group rules
 
-proxymock web is where group rules are authored today. Rules live in the workspace
-(`proxymock/dlprules/<id>.json`), so they travel with the repository and are the same documents
-`proxymock cloud push/pull dlp` moves.
+Group rules can be managed from two places, each with its own page:
 
-Open **DLP Rules** in the Config section of the sidebar.
-
-### The rule list
-
-Each row shows the rule id, its owner and what it covers, so you can tell your rule from another group's at a
-glance:
-
-```
-payments
-payments-group · payments
-
-search
-search-group · search, query
-
-standard
-2026-09-17 20:01
-```
-
-A rule with a scope that is not enabled is marked `off`. A rule with no scope, like `standard` above, shows no
-coverage line — it is a baseline rule.
-
-### Creating and editing
-
-**+ New** starts a rule from a template that is already a group rule: scoped to one namespace, `enabled` set to
-`false`, and an empty `owner` for you to fill in.
-
-```json
-{
-  "id": "payments",
-  "name": "payments",
-  "owner": "",
-  "enabled": false,
-  "scope": { "namespaces": ["my-namespace"] },
-  "redactlist": { "entries": { "all": ["authorization", "email", "password"] } },
-  "discoverPatterns": true
-}
-```
-
-Edit the document on the **Rule** tab and press **Save**. Saving validates the rule the way the capture path
-will use it, so a document that cannot build a redactor, or a `scope` that names nothing, is refused there and
-then rather than failing later on a forwarder.
-
-Delete the `scope`, `owner` and `enabled` fields to author a baseline rule instead.
-
-### Testing against traffic
-
-The **Test against traffic** tab runs the rule in your editor over the recordings in the workspace and reports
-what it would redact. Nothing is modified.
-
-Because locally recorded traffic has no namespace or service, use the **test as** fields beside the Test button
-to present it as a workload in your scope:
-
-```
-test as   namespace: payments    service: checkout
-```
-
-Without this a scoped rule matches nothing and looks broken. Leave the fields empty when testing a baseline
-rule.
-
-**Apply → write redacted copies** writes redacted copies of the workspace recordings into a new results
-directory. It is a way to inspect the outcome on real traffic — it does not deploy anything.
-
-### Previewing what a cluster receives
-
-Your rule is only part of what a forwarder runs. **Preview effective**, under the rule list, resolves the whole
-set the way a cluster would: enter the baseline rule id (and optionally a cluster) and it lists every scoped
-rule that would apply, with its owner and coverage.
-
-```
-Baseline standard + 2 scoped rules
-payments   payments-group · payments
-search     search-group · search, query
-```
-
-This is read-only. Use it to confirm your rule is included, and to see what is already being redacted, before
-you change anything.
-
-### Applying to a cluster
-
-The **Settings** panel writes the forwarder configuration: **Redaction rule** (`SPEEDSCALE_DLP_CONFIG`) and
-**Redact sensitive data** (`WITH_DLP`). Applying writes the resolved document — baseline plus the group rules
-that cover the cluster — into the cluster, so the forwarder reads it directly instead of downloading a single
-rule. This needs a connected cluster; without one the panel is read-only.
-
-## Editing rules in the dashboard
-
-The dashboard manages DLP rules under **DLP Rules**, and selects the baseline under **Infrastructure → your
-forwarder → Redaction rule**.
-
-Selecting a rule shows a one-line summary above it: a baseline, or a group rule with its owner, the workloads it
-covers, and whether it is switched off.
-
-### The Scope tab
-
-The **Scope** tab turns a rule into a group rule and edits its three fields:
-
-- **Rule type** — *Baseline* applies to all captured traffic; *Group rule* applies only to the workloads named
-  below. Switching to a group rule starts it disabled.
-- **Owner** and **Enabled**.
-- **Clusters**, **Namespaces** and **Services**. Suggestions are what is running now, the same live lists the
-  Infrastructure pages show: connected clusters; namespaces in the clusters the rule names (or in every connected
-  cluster if it names none); and workloads in the namespaces it names. Every field also accepts a name that is
-  not running yet. A service is matched against each pod's `app` label, which is usually the workload name.
-
-Save is refused while a group rule's scope names nothing, on the Scope tab and on the Advanced tab alike.
-
-The **Advanced** tab still holds the whole rule as JSON. Edits made there carry over when you switch tabs; if the
-JSON does not parse, you are asked before it is discarded.
-
-### When a saved rule takes effect
-
-Saving an enabled group rule is all it takes. Speedscale Cloud combines the baseline with every enabled group
-rule that covers a cluster, and tells the clusters a rule covers to reload, so the change reaches their forwarders
-without touching `SPEEDSCALE_DLP_CONFIG`. The forwarder restarts to pick it up, which briefly pauses capture in
-that cluster.
-
-This needs Speedscale **v2.5.1022 or later** in the cloud and on the cluster (forwarder and inspector). An older
-forwarder keeps fetching the single rule `SPEEDSCALE_DLP_CONFIG` names and never sees group rules.
-
-:::warning
-Do not point `SPEEDSCALE_DLP_CONFIG` at a scoped rule to make it apply. The forwarder treats whatever that
-setting names as the baseline and ignores its scope, so its redaction lands on every workload.
-:::
+- **[Managing Group Rules in proxymock web](./group-rules-proxymock.md)** — author a rule next to your recordings,
+  test it against real traffic, preview everything a cluster would receive, and apply the result to a cluster.
+- **[Managing Group Rules in the Dashboard](./group-rules-dashboard.md)** — edit the rules stored in Speedscale
+  Cloud with the **Scope** tab. An enabled rule saved there reaches your forwarders automatically.
 
 ## Which surface does what
 
@@ -320,7 +199,7 @@ setting names as the baseline and ignores its scope, so its redaction lands on e
 |---|---|---|
 | Create or edit a baseline rule | yes | yes |
 | Create or edit a group rule (scope, owner, enabled) | yes | yes, on the Scope tab |
-| Test a rule against recorded traffic | yes, with a workload override | via snapshots |
+| Test a rule against recorded traffic | yes, with **test as** | via snapshots |
 | Preview the resolved rule set for a cluster | yes | not yet |
 | Choose which rule `SPEEDSCALE_DLP_CONFIG` names | yes, in Settings | yes, in Infrastructure |
 | Get group rules onto a forwarder | writes the resolved document to the cluster | automatic: the cloud resolves it for each forwarder |
@@ -329,11 +208,13 @@ setting names as the baseline and ignores its scope, so its redaction lands on e
 
 1. **Start from your own traffic.** Follow [Discovering PII](./discovering-pii.md) and
    [Recommendations](./recommendations.md) on a recording from your service.
-2. **Create the rule** in proxymock web, fill in `owner`, and scope it to the workloads your group owns. Leave
-   `enabled` at `false` while you work.
-3. **Test it** with the **test as** fields set to a workload in your scope.
+2. **Create the rule** in [proxymock web](./group-rules-proxymock.md#create-a-rule) or the
+   [dashboard](./group-rules-dashboard.md#create-a-group-rule), fill in `owner`, and scope it to the workloads
+   your group owns. Leave `enabled` at `false` while you work.
+3. **Test it** in proxymock web with the **test as** fields set to a workload in your scope.
 4. **Preview effective** to see your rule alongside the baseline and any other group's rules.
-5. **Enable it** and apply the configuration to the cluster.
+5. **Enable it**: save it in the dashboard, push it with `proxymock cloud push dlp`, or apply it to the cluster
+   from proxymock web.
 6. **Verify** with a snapshot: your fields redacted, other groups' traffic unchanged.
 
 ## Best practices
@@ -371,16 +252,21 @@ the sensitive value itself.
 - **Ownership is advisory.** `owner` records which group maintains a rule; it does not yet stop another group from
   editing it. Rules are per-group documents, so access controls attach to them when that capability lands.
 - **The dashboard rule list does not show owners or coverage yet**, and there is no dashboard preview of the
-  resolved document. Open a rule to see its summary line; use proxymock web's **Preview effective** to see
-  everything a cluster receives.
-- **A rule change restarts the forwarder.** Saving a group rule reloads the forwarders in the clusters it covers,
-  which briefly pauses capture there.
+  resolved document. Open a rule to see its summary line; use proxymock web's
+  [Preview effective](./group-rules-proxymock.md#preview-what-a-cluster-receives) to see everything a cluster
+  receives.
+- **A rule change restarts forwarders.** Saving a group rule in Speedscale Cloud reloads the forwarder in every
+  connected cluster, not only the clusters it covers, which briefly pauses capture.
+- **Deleting a rule is not pushed.** Turn a group rule off and save before deleting it, or forwarders keep using it
+  until they next restart.
 - **One rule id per request.** A redacted request records the resolved document's id, not which group rule
   redacted it.
 - **Scope names are exact.** There is no wildcard or label selector; list the namespaces and services you mean.
 
 ## Related documentation
 
+- [Managing Group Rules in proxymock web](./group-rules-proxymock.md) — author, test and preview group rules
+- [Managing Group Rules in the Dashboard](./group-rules-dashboard.md) — the Scope tab and cloud delivery
 - [Creating DLP Rules](./creating-rules.md) — the rule format and how to build one
 - [Applying DLP Rules](./applying-rules.md) — getting a rule onto a forwarder
 - [Best Practices](./best-practices.md) — DLP practices beyond multi-group management

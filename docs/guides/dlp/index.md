@@ -61,6 +61,8 @@ flowchart TD
 - [Creating DLP Rules](./creating-rules.md)
 - [Applying Rules to Production](./applying-rules.md)
 - [DLP Rules for Multiple Groups](./group-rules.md)
+  - [Managing Group Rules in proxymock web](./group-rules-proxymock.md)
+  - [Managing Group Rules in the Dashboard](./group-rules-dashboard.md)
 - [Generating Test Data](./test-data-generation.md)
 
 ### Advanced Topics
