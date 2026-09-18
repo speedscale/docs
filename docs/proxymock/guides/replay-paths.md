@@ -18,7 +18,7 @@ Every replay sends recorded requests at a target and reports how the responses c
 | Does anything leave the cluster or laptop | no | no | yes: the recordings are pushed as a snapshot |
 | Where the report lands | your workspace | the cluster, read with proxymock | the Speedscale dashboard |
 
-In proxymock web all three live in the **Where it runs** strip at the top of the Replay tab. Picking one decides what the rest of the form asks for, and the run button changes with it.
+In proxymock web all three live in the **Where it runs** strip at the top of the Replay tab. Picking one decides what the rest of the form asks for, and the run button changes with it. The **Test config** picker below it applies to all three paths; see [Configure a Replay with Test Configs](./test-configs.md).
 
 ## On this machine
 

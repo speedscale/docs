@@ -61,7 +61,7 @@ At startup, proxymock reports loaded blueprints and their source files. After re
 
 ## Storage and discovery
 
-Saved rules normally live in `proxymock/blueprints/`. Replay and mock commands search the directory supplied to `--in` and its immediate parent, under either `blueprints/` or `proxymock/blueprints/`. They also load machine-wide rules from `~/.speedscale/data/transforms/`. This search stops at the immediate parent.
+Saved rules normally live in `proxymock/blueprints/`. Replay and mock commands search the directory supplied to `--in` and its immediate parent, under either `blueprints/` or `proxymock/blueprints/`. This search stops at the immediate parent. Blueprints come only from the workspace: nothing under `~/.speedscale` is applied, so what is in the repo is what runs.
 
 Blueprints are reusable across recordings in a workspace. You do not need to recreate one to bind it to a new snapshot ID. Activation and matching filters determine whether it contributes changes. Keep filters narrow when a workspace contains traffic for several services.
 
@@ -71,7 +71,7 @@ The [workspace layout reference](../how-it-works/workspace-layout.md#blueprints)
 
 [Cloud push and pull](/reference/proxymock-cli-reference.md#cloud) transfer snapshot configuration and supporting artifacts. A snapshot push merges active blueprint chains into the uploaded snapshot's transform configuration and preserves blueprint files for reuse. Inspect the destination configuration and test a small replay after transfer, especially when paths, credentials, or target addresses change.
 
-For a standalone Cloud transform template, use `proxymock cloud pull transform` and the local transform commands. Keep the distinction between a bare transform configuration and a blueprint wrapper when editing JSON.
+For a standalone Cloud transform template, use `proxymock cloud pull transform <id>`, which writes it into the workspace as `proxymock/blueprints/<id>.json`, so the next replay or mock of that workspace applies it. `proxymock cloud push transform <id>` reads the same file. Keep the distinction between a bare transform configuration and a blueprint wrapper when editing JSON.
 
 ## Troubleshooting
 
@@ -80,6 +80,6 @@ For a standalone Cloud transform template, use `proxymock cloud pull transform` 
 | No blueprint is loaded | Confirm the input directory, discovery depth, valid JSON, and activation state. Check the source paths printed at startup. |
 | Blueprint loads but no chain runs | Check the chain's filters and generator/responder side. During replay, a `network_address` filter must match the replay target: `localhost` does not match `127.0.0.1`. |
 | A field changes in preview but replay fails | Inspect runtime variables, secret resolution, and authentication responses. Preview cannot supply a credential that only the app creates during replay. |
-| An unexpected rule applies | Inspect machine-wide rules as well as the workspace's blueprints. Startup messages identify each source. |
-| No activity warning appears | Load mode omits attribution. Machine-wide rules that do not fire are not warned about like workspace rules. |
+| An unexpected rule applies | Check the blueprints in the `--in` directory and its immediate parent. Startup messages identify each source file. |
+| No activity warning appears | Load mode (`--load-test`) omits transform attribution, so no per-blueprint activity is reported. |
 | A required blueprint ran but the result is wrong | Inspect individual chains and the replay verdict. The requirement checks that at least one chain ran, not application correctness. |
