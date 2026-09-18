@@ -198,7 +198,9 @@ Using cURL:
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_PROXY, "http://localhost:4140");
-curl_setopt($ch, CURLOPT_CAINFO, getenv('SSL_CERT_FILE'));
+if ($ca = getenv('SSL_CERT_FILE')) {
+    curl_setopt($ch, CURLOPT_CAINFO, $ca);
+}
 // For SOCKS proxy
 // curl_setopt($ch, CURLOPT_PROXY, "socks5://localhost:4140");
 
@@ -216,9 +218,9 @@ $context = stream_context_create([
         'proxy' => 'tcp://localhost:4140',
         'request_fulluri' => true,
     ],
-    'ssl' => [
+    'ssl' => array_filter([
         'cafile' => getenv('SSL_CERT_FILE'),
-    ]
+    ]),
 ]);
 
 $response = file_get_contents('https://example.com', false, $context);

@@ -88,7 +88,7 @@ Confirm that the capture container received the SELinux type:
 
 ```bash
 kubectl get daemonset -n speedscale speedscale-nettap \
-  -o jsonpath='{.spec.template.spec.containers[?(@.name=="capture")].securityContext.seLinuxOptions.type}{"\n"}'
+  -o jsonpath='{.spec.template.spec.containers[?(@.name=="speedscale-nettap-capture")].securityContext.seLinuxOptions.type}{"\n"}'
 ```
 
 The command should print `control_t`.
@@ -154,7 +154,7 @@ Bottlerocket documents `control_t` as a privileged SELinux label. It grants more
 Inspect the capture container logs:
 
 ```bash
-kubectl logs -n speedscale -l app=speedscale-nettap -c capture --tail=200
+kubectl logs -n speedscale -l app=speedscale-nettap -c speedscale-nettap-capture --tail=200
 ```
 
 | Symptom | Likely cause | Fix |

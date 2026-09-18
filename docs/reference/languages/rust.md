@@ -31,7 +31,7 @@ Do not run `strip` on the resulting binary. Aggressive link-time optimization ca
 After targeting the workload, verify that the collector found the expected TLS backend:
 
 ```shell
-kubectl -n speedscale logs daemonset/nettap | grep -E "rustls|ssl"
+kubectl -n speedscale logs daemonset/speedscale-nettap -c speedscale-nettap-capture | grep -E "rustls|ssl"
 ```
 
 For rustls, the logs report `attaching rustls uprobes/uretprobes for process`. If the binary is stripped or its required functions are absent, TLS payloads remain opaque while plaintext TCP traffic remains visible.

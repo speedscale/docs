@@ -39,7 +39,9 @@ $proxy = getenv('HTTPS_PROXY') ?: getenv('HTTP_PROXY');
 $ca = getenv('SSL_CERT_FILE');
 
 curl_setopt($ch, CURLOPT_PROXY, $proxy);
-curl_setopt($ch, CURLOPT_CAINFO, $ca);
+if ($ca) {
+    curl_setopt($ch, CURLOPT_CAINFO, $ca);
+}
 ```
 
 See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and [TLS Support](/getting-started/installation/sidecar/tls.md) for shared sidecar behavior.
