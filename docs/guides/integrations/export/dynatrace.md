@@ -66,14 +66,15 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 
 ## Verify in Dynatrace
 
-1. Open **Services > Explorer** and confirm each application `service.name` appears.
-2. Confirm throughput and response-time charts contain recent data.
-3. Open **Distributed Tracing** from a service and inspect a trace.
-4. Open **Logs** and add filters where `msgType` is `rrpair` and `speedscale.direction` is `OUT`. These are OTLP log attributes; do not query them as fields inside `content`.
-5. Open the column picker and show `content`, `hostname`, `service.name`, `speedscale.workload`, `speedscale.protocol`, `speedscale.command`, `speedscale.status`, and `trace_id`.
-6. Confirm the source and destination are distinct. For example, an LLM call can show `banking-ai` as `service.name` and `api.anthropic.com` as `hostname`. PostgreSQL and Kafka records should show their cluster hostnames and protocols even when `trace_id` is empty.
-7. Compare an HTTP RRPair log's `trace_id` with the application trace.
-8. Trigger an HTTP 5xx response and confirm the service failure rate and HTTP error charts change.
+Open **Logs**, paste this expression into the **Filter field**, and select **Run query**:
+
+```text
+msgType = rrpair AND speedscale.direction = OUT
+```
+
+This is filter-field syntax, not DQL. The table only needs four columns: `timestamp`, `Log message`, `service.name`, and `hostname`. `service.name` is the source service and `hostname` is the remote destination. For example, PostgreSQL traffic can show `accounts-service` and `banking-postgres.banking-app.svc.cluster.local`.
+
+Open **Services** separately to confirm that application throughput, response-time, and failure charts contain current data.
 
 ![Dynatrace Services Explorer showing live throughput, response time, failure rate, and HTTP errors](./dynatrace/services.png)
 
