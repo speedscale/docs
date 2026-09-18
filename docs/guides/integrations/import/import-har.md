@@ -1,6 +1,6 @@
 ---
 title: Import from Browser/HAR
-description: "Import traffic from HAR files into Speedscale to create tests or mocks, enabling efficient API testing and traffic replay for your development needs"
+description: "Import browser HAR files into Speedscale Cloud or local proxymock tests and mocks."
 sidebar_position: 4
 ---
 
@@ -8,26 +8,23 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 
-In this guide we will walk through importing traffic from an
-[HTTP Archive format](https://en.wikipedia.org/wiki/HAR_(file_format)) (HAR)
-file.  HAR files are supported by many tools, including browser plugins which
-allow traffic capture from a web browser.
+This guide imports traffic from an [HTTP Archive](https://en.wikipedia.org/wiki/HAR_(file_format)) (HAR) file. Browsers and HTTP debugging tools can export this format with both requests and recorded responses.
 
 We'll take the following steps:
 
-1. Create a HAR file from browser traffic
-2. Import the traffic to Speedscale
-3. Replay
+1. Create a HAR file from browser traffic.
+2. Import the traffic to Speedscale Cloud or proxymock.
+3. Replay the requests or serve the responses as mocks.
 
-## Create HAR from Browser
+## Create a HAR file from a browser
 
 <Tabs>
 
 <TabItem value="chrome" label="Chrome">
 
-Open [dev tools](https://developer.chrome.com/docs/devtools/open/) and select the `Network` tab.
+Open [DevTools](https://developer.chrome.com/docs/devtools/open/) and select the **Network** tab.
 
-Navigate to, and use, your service in the browser to generate traffic.
+Use your service in the browser to generate traffic.
 
 Click
 [Export HAR](https://developer.chrome.com/docs/devtools/network/reference/#save-as-har)
@@ -37,9 +34,9 @@ to export the traffic to a HAR file.
 
 <TabItem value="firefox" label="Firefox">
 
-Open [dev tools](https://firefox-source-docs.mozilla.org/devtools-user/) and select the `Network` tab.
+Open [Developer Tools](https://firefox-source-docs.mozilla.org/devtools-user/) and select the **Network** tab.
 
-Navigate to, and use, your service in the browser to generate traffic.
+Use your service in the browser to generate traffic.
 
 Click the cog and choose [Save All as HAR](https://firefox-source-docs.mozilla.org/devtools-user/network_monitor/request_list/index.html#managing-har-data)
 to export the traffic to a HAR file.
@@ -48,28 +45,45 @@ to export the traffic to a HAR file.
 
 </Tabs>
 
-## Import to Speedscale
+## Import to Speedscale Cloud
 
-Navigate to the [services](https://app.speedscale.com) in the speedscale UI.
-Click on `Add service` and selction the `Build from HAR` option.
+Open [Services](https://app.speedscale.com) in the Speedscale UI. Click **Add service**, then select **Build from HAR**.
 
-![Postman Import](./import-har/har-import.png)
+![Build from HAR option in the Add service dialog](./import-har/har-import.png)
 
-A pop up will appear asking you for a snapshot name, traffic director (tests vs mocks) a HAR file and a unique Service Name. Note that the Service Name can be whatever you like but to prevent confusion it's better not to pick a real service that you are actually monitoring. Don't worry about picking the perfect service name, you'll put in the real URL of your service during replay. Most users will just leave it as the default.
+The dialog asks for a snapshot name, traffic direction, HAR file, and service name. Use inbound direction to create tests and outbound direction to create dependency mocks. The service name identifies the imported traffic; the replay wizard asks for the real target URL later.
 
-If you select Inbound (create tests)  then Speedscale will generate a set of tests to exercise your API exaactly as your browser did in the original HAR recording.
-If you select Outbound (create service mocks) then Speedscale will generate a service mock that you can use to test your browser code while Speedscale simulates the backend API.
+The equivalent CLI command is:
+
+```bash
+speedctl import har --name {SNAPSHOT_NAME} \
+  --service-name {SERVICE_NAME} --from recording.har
+```
+
+## Import to local proxymock files
+
+The local importer does not require a Speedscale account. Each HAR entry becomes an inbound test, and its recorded response can also be served as an outbound mock:
+
+```bash
+proxymock import har recording.har --out ./har-rrpairs
+
+# Replay requests against an application.
+proxymock replay --in ./har-rrpairs --test-against http://localhost:8080
+
+# Or serve the recorded responses as dependency mocks.
+proxymock mock --in ./har-rrpairs
+```
 
 ## View Snapshot
 
-A traffic snapshot is created from your HAR file. Snapshots are collections of requests that can be replayed in your cluster or from your local desktop. After import, you will be taken to the Snapshot summary screen for your postman requests.
+A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot summary.
 
 ![Snapshot](../../snapshot.png)
 
-If you click `View Traffic` you'll see your recorded requests ready to replay.
+Click **View Traffic** to inspect the requests before replay.
 
 ## Replay
 
-HAR-generated snapshots can be replayed like any other snapshot using the instructions on the Snapshot Summary page.  Remember that you will need to put in a `Custom URL` to point at the correct service during replay. This is different than replaying a recorded snapshot because Speedscale typically has an automatically discovered default that is reasonable.
+HAR-generated cloud snapshots can be replayed from the snapshot summary. Set **Custom URL** to the service under test because an imported HAR does not have a discovered cluster destination.
 
-For more information on initiating replays, check out the full [replay guide](../../replay/README.md)
+For the cloud workflow, see the full [replay guide](../../replay/README.md). For local commands, run `proxymock import har --help` and `proxymock replay --help`.
