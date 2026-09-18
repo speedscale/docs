@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Dynatrace
 
-The Dynatrace integration sends application OpenTelemetry traces and metrics alongside Speedscale RRPair logs. Application spans populate Services and Distributed Tracing. RRPairs preserve the API request and response that can be used to reproduce the same behavior outside the monitored environment.
+The Dynatrace integration sends application OpenTelemetry traces and metrics alongside normalized Speedscale capture logs. Application spans populate Services and Distributed Tracing. Capture logs identify the source workload, remote destination, protocol, command, and status; retain the full RRPair in Speedscale Cloud or a BYOC object-storage channel when it must be replayed.
 
 Trace correlation requires a valid W3C `traceparent` header on the captured application request. Requests without one still appear in Logs, but Dynatrace cannot link them to an application trace.
 
@@ -24,14 +24,15 @@ flowchart LR
 Dynatrace's ingest API accepts OTLP over HTTP. The collector receives gRPC or HTTP inside the cluster, then sends each signal to the correct Dynatrace path. It also:
 
 - marks spans with HTTP 5xx responses or exception events as errors;
-- copies the captured workload to `service.name`;
+- identifies the source workload with `service.name` and `speedscale.workload`;
+- identifies the remote destination with `hostname`, `server.address`, and `network.peer.address`;
+- emits a readable message and `speedscale.protocol`, `speedscale.command`, and `speedscale.status` for HTTP, PostgreSQL, Kafka, and other captured protocols;
 - extracts W3C trace context from captured request headers;
-- adds `speedscale.workload` and `speedscale.direction` to RRPair logs;
 - converts cumulative metrics to delta temporality before export.
 
 ## Why use it
 
-Dynatrace Services shows service health, request rate, response time, endpoints, and failures from the application spans. Distributed Tracing shows individual request paths. Speedscale captures add the request and response payload needed to build tests and dependency mocks from the traffic behind those service views.
+Dynatrace Services shows service health, request rate, response time, endpoints, and failures from the application spans. Distributed Tracing shows individual request paths. Speedscale capture logs add the protocol and remote-destination context needed to identify the corresponding full traffic in Speedscale Cloud or a BYOC object-storage channel.
 
 ## Install the channel
 
@@ -68,10 +69,11 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 1. Open **Services > Explorer** and confirm each application `service.name` appears.
 2. Confirm throughput and response-time charts contain recent data.
 3. Open **Distributed Tracing** from a service and inspect a trace.
-4. Open **Logs** and query `content.$.msgType = rrpair`.
-5. Open the column picker and show `trace_id`, `service.name`, `speedscale.workload`, and `speedscale.direction`. Dynatrace stores these OTLP attributes separately from the JSON log body.
-6. Compare the RRPair log's `trace_id` with the application trace.
-7. Trigger an HTTP 5xx response and confirm the service failure rate and HTTP error charts change.
+4. Open **Logs** and add filters where `msgType` is `rrpair` and `speedscale.direction` is `OUT`. These are OTLP log attributes; do not query them as fields inside `content`.
+5. Open the column picker and show `content`, `hostname`, `service.name`, `speedscale.workload`, `speedscale.protocol`, `speedscale.command`, `speedscale.status`, and `trace_id`.
+6. Confirm the source and destination are distinct. For example, an LLM call can show `banking-ai` as `service.name` and `api.anthropic.com` as `hostname`. PostgreSQL and Kafka records should show their cluster hostnames and protocols even when `trace_id` is empty.
+7. Compare an HTTP RRPair log's `trace_id` with the application trace.
+8. Trigger an HTTP 5xx response and confirm the service failure rate and HTTP error charts change.
 
 ![Dynatrace Services Explorer showing live throughput, response time, failure rate, and HTTP errors](./dynatrace/services.png)
 
@@ -103,9 +105,7 @@ See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for auth
 
 ## Evidence
 
-In the staging-decoy validation, Dynatrace showed five microsvc services, including `ai-service`, with live throughput. The frontend service view also showed a nonzero failure rate and HTTP error volume. Logs contained RRPairs with populated `trace_id`, `service.name`, `speedscale.workload`, and `speedscale.direction` attributes.
-
-The chart's collector configuration is rendered and validated with its pinned OpenTelemetry Collector image in CI. Dynatrace also exposes ingest health metrics such as accepted and rejected OTLP metric data points and received spans for troubleshooting.
+The chart's collector configuration is rendered and validated with its pinned OpenTelemetry Collector image in CI. A runtime test sends HTTPS, PostgreSQL, and Kafka RRPairs through the rendered collector in one mixed batch and verifies readable messages, source-service isolation, real upstream hostnames, protocol metadata, and trace behavior. Dynatrace also exposes ingest health metrics such as accepted and rejected OTLP metric data points and received spans for troubleshooting.
 
 ## References
 

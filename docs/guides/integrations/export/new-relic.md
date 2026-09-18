@@ -22,15 +22,17 @@ flowchart LR
 The collector sends all signals to New Relic's native OTLP endpoint with an ingest license key. It also:
 
 - marks spans with HTTP 5xx responses or exception events as errors;
-- copies the captured workload to `service.name`;
+- identifies the source workload with `service.name` and `speedscale.workload`;
+- identifies the remote destination with `hostname`, `server.address`, and `network.peer.address`;
+- emits a readable message and `speedscale.protocol`, `speedscale.command`, and `speedscale.status` for HTTP, PostgreSQL, Kafka, and other captured protocols;
 - extracts W3C trace context from captured request headers;
-- adds `speedscale.workload` and `speedscale.direction` to RRPair logs.
+- keeps records without W3C trace context searchable instead of discarding them.
 
 No New Relic account ID is needed for OTLP ingest. Keep account IDs, license keys, and partner tenant details out of values files and source control.
 
 ## Why use it
 
-New Relic APM identifies the service and span involved in an error. The matching RRPair shows the API input and output at that point in the trace. That traffic can become a regression test or a dependency mock, giving developers a repeatable way to investigate the behavior seen in APM.
+New Relic APM identifies the service and span involved in an error. The matching capture log identifies the source workload, remote destination, protocol, command, and status at that point in the trace. Retain the full traffic in Speedscale Cloud or a BYOC object-storage channel when developers need to turn it into a regression test or dependency mock.
 
 ## Install the channel
 
@@ -65,11 +67,14 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 
 1. Open **APM & Services > Services** and find the application's `service.name`.
 2. Open **Distributed tracing** and filter for that service.
-3. Open **Logs** and query `msgType = 'rrpair'`.
-4. Add `trace.id`, `service.name`, `speedscale.workload`, and `speedscale.direction` as table columns.
-5. Open a trace and confirm a matching RRPair log has the same `trace.id`.
-6. Trigger an HTTP 5xx response and confirm the transaction and span appear as errors.
-7. Use **Metrics and events** to confirm application metrics are arriving.
+3. Open **Logs** and filter for `msgType = 'rrpair'` and `speedscale.direction = 'OUT'`.
+4. Add `message`, `hostname`, `service.name`, `speedscale.workload`, `speedscale.protocol`, `speedscale.command`, `speedscale.status`, and `trace.id` as table columns.
+5. Confirm the source and destination are distinct. For example, an LLM call can show `banking-ai` as `service.name` and `api.anthropic.com` as `hostname`. PostgreSQL and Kafka records should show their cluster hostnames and protocols even when `trace.id` is empty.
+6. Open an HTTP trace and confirm a matching RRPair log has the same `trace.id`.
+7. Trigger an HTTP 5xx response and confirm the transaction and span appear as errors.
+8. Use **Metrics and events** to confirm application metrics are arriving.
+
+![New Relic APM service overview with populated throughput and transaction charts](./new-relic/apm-overview.png)
 
 ## Use the capture with proxymock
 
@@ -99,7 +104,7 @@ See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for auth
 
 ## Evidence
 
-The BYOC chart is rendered and validated with the pinned OpenTelemetry Collector image in CI, including the logs, traces, and metrics pipelines and Secret-backed `api-key` header.
+The BYOC chart is rendered and validated with the pinned OpenTelemetry Collector image in CI, including the logs, traces, and metrics pipelines and Secret-backed `api-key` header. A runtime test sends HTTPS, PostgreSQL, and Kafka RRPairs through the rendered collector in one mixed batch and verifies readable messages, source-service isolation, real upstream hostnames, protocol metadata, and trace behavior.
 
 ## One-time report export
 

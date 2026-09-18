@@ -26,9 +26,11 @@ flowchart LR
 The collector uses the Datadog exporter for all three signals and the Datadog connector to derive the RED metrics used by APM service views. It also:
 
 - marks spans with HTTP 5xx responses or exception events as errors;
-- copies the captured workload to `service.name`;
+- identifies the source workload with `service.name` and `speedscale.workload`;
+- identifies the remote destination with `hostname`, `server.address`, and `network.peer.address`;
+- adds `speedscale.protocol`, `speedscale.command`, and `speedscale.status` for HTTP and non-HTTP traffic;
 - extracts `trace_id` and `span_id` from the captured `traceparent` header;
-- adds `speedscale.workload` and `speedscale.direction` to RRPair logs.
+- preserves the complete RRPair log body so it remains importable by the Datadog-to-proxymock recipe.
 
 ## Why use it
 
@@ -68,10 +70,11 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 
 1. Open **APM > Services** and find the application's `service.name`.
 2. Open **APM > Traces** and filter on `service:<SERVICE_NAME>`.
-3. Open **Logs > Explorer** and query `@msgType:rrpair service:<SERVICE_NAME>`.
-4. Add `trace_id`, `speedscale.workload`, and `speedscale.direction` as table columns.
-5. Open a trace and confirm the correlated log has the same trace ID.
-6. Trigger an HTTP 5xx response and confirm the span appears as an error in the trace and service views.
+3. Open **Logs > Explorer** and query `@msgType:rrpair @speedscale.direction:OUT`. Add `service:<SERVICE_NAME>` only when you want to narrow the results to one source workload.
+4. Add `service`, `@hostname`, `@speedscale.workload`, `@speedscale.protocol`, `@speedscale.command`, `@speedscale.status`, and `trace_id` as table columns.
+5. Confirm the source and destination are distinct. For example, an LLM call can show `banking-ai` as the workload and `api.anthropic.com` as `@hostname`. PostgreSQL and Kafka records should show their cluster hostnames and protocols even when they have no trace ID.
+6. Open an HTTP trace and confirm the correlated log has the same trace ID.
+7. Trigger an HTTP 5xx response and confirm the span appears as an error in the trace and service views.
 
 ![Datadog APM showing a live ai-service trace](./datadog/apm-trace.png)
 
@@ -107,7 +110,7 @@ proxymock import s3 --bucket '<BUCKET>' --prefix byoc/ \
 
 ## Evidence
 
-The staging-decoy validation produced APM traces and hundreds of searchable `rrpair` logs in the dedicated partner organization. The log records include `service.name`, `trace_id`, `speedscale.workload`, and `speedscale.direction`. The chart is also rendered and validated with its pinned OpenTelemetry Collector image in CI.
+The chart is rendered and validated with its pinned OpenTelemetry Collector image in CI. A runtime test sends HTTPS, PostgreSQL, and Kafka RRPairs through the rendered collector in one mixed batch and verifies source-service isolation, upstream hostnames, protocol metadata, trace correlation, and preservation of the complete Datadog RRPair body.
 
 ## One-time report export
 
