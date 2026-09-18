@@ -61,7 +61,7 @@ Need another OS like Windows or are you having issues? See advanced [installatio
 
 - **Works with APIs, databases and even gRPC** - Record and playback a wide variety of protocols include HTTP, Postgres, gRPC, AWS services, GCP services and [more](../reference/technology-support.md). Instead of standing up a test environment for Postgres, just record off the network and create a Postgres simulation with exact data.
 
-- **Terminal UI** - proxymock :heart: s both vim and GUI users. Navigate your traffic using a built in tui or view requests directly with an IDE.
+- **Web UI** - proxymock :heart: s both vim and GUI users. Navigate your traffic in the local `proxymock web` UI or view requests directly with an IDE.
 
 - **MCP inegration** - proxymock makes its tools available via MCP. Check out our YouTube [channel](https://www.youtube.com/@speedscale) for prompt ideas that let your LLM use proxymock to analyze bugs.
 
