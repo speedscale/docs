@@ -279,28 +279,39 @@ rule. This needs a connected cluster; without one the panel is read-only.
 The dashboard manages DLP rules under **DLP Rules**, and selects the baseline under **Infrastructure → your
 forwarder → Redaction rule**. Both work as they always have for baseline rules.
 
+For group rules the dashboard is safe but not equipped. It keeps `scope`, `owner` and `enabled` intact when you
+edit a rule, and you can change them by hand on the **Advanced** tab, which holds the whole rule as JSON. What
+it does not have is any UI for them:
+
+- no scope picker, owner field or enabled toggle — the **Transforms** tab edits transform chains only, and
+  preserves the other fields rather than editing them
+- no owner or coverage column in the rule list, so a group rule and a baseline rule look alike
+- no preview of the resolved document
+
 :::warning
-The dashboard does not yet understand `scope`, `owner` or `enabled`.
+A group rule edited in the dashboard does not take effect on its own. Speedscale Cloud does not assemble group
+rules into a resolved document yet, so nothing applies them to a forwarder — that happens when proxymock web
+applies the resolved document to a cluster.
 
-- Pasting a rule containing those fields into the **Advanced** JSON tab is rejected with an unknown-field error.
-- Opening an existing group rule in the dashboard editor and saving it **silently drops** those three fields,
-  turning it back into an unscoped rule.
+Pointing `SPEEDSCALE_DLP_CONFIG` at a scoped rule does not help either: the forwarder downloads that rule and
+applies it like any baseline, ignoring its scope, so its redaction lands on every workload.
 
-Until the dashboard is updated, manage group rules in proxymock web, and use the dashboard for baseline rules
-and for choosing which rule `SPEEDSCALE_DLP_CONFIG` names.
+Author and apply group rules in proxymock web. Use the dashboard for baseline rules and for choosing which rule
+`SPEEDSCALE_DLP_CONFIG` names.
 :::
 
-Cloud-side assembly is also not wired up yet: a scoped rule pushed to Speedscale Cloud is not combined into a
-resolved document there. If you point `SPEEDSCALE_DLP_CONFIG` at a scoped rule, the forwarder downloads it and
-applies it like any baseline — scope and all its restraint ignored — so redaction lands on every workload. Apply
-group rules from proxymock web instead.
+:::note
+Dashboard releases from before scoped rules shipped behave worse: they reject a rule containing these fields on
+the Advanced tab, and silently strip the fields from a group rule when you save it. Check that your dashboard
+is current before editing a group rule there.
+:::
 
 ## Which surface does what
 
 | Task | proxymock web | Dashboard |
 |---|---|---|
 | Create or edit a baseline rule | yes | yes |
-| Create or edit a group rule (scope, owner, enabled) | yes | not yet |
+| Create or edit a group rule (scope, owner, enabled) | yes | JSON only, no UI for scope |
 | Test a rule against recorded traffic | yes, with a workload override | via snapshots |
 | Preview the resolved rule set for a cluster | yes | not yet |
 | Choose which rule `SPEEDSCALE_DLP_CONFIG` names | yes, in Settings | yes, in Infrastructure |
@@ -351,8 +362,9 @@ the sensitive value itself.
 
 - **Ownership is advisory.** `owner` records which group maintains a rule; it does not yet stop another group from
   editing it. Rules are per-group documents, so access controls attach to them when that capability lands.
-- **The dashboard cannot author group rules yet.** It drops `scope`, `owner` and `enabled` on save and rejects
-  them in the JSON editor, so group rules are managed in proxymock web for now.
+- **The dashboard has no UI for scope.** It preserves `scope`, `owner` and `enabled` and lets you edit them as
+  raw JSON, but has no picker, no coverage column and no resolved preview, so group rules are managed in
+  proxymock web for now.
 - **Rules are resolved where they are applied.** proxymock web assembles the document and writes it to the
   cluster. Speedscale Cloud does not assemble group rules, so a scoped rule named by `SPEEDSCALE_DLP_CONFIG` is
   downloaded and applied install-wide.
