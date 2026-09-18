@@ -67,7 +67,7 @@ speedctl export snapshot --type gatling --limit 50 --output MySimulation.java {S
 1. Export your snapshot:
    ```bash
    proxymock export gatling --in ./proxymock --out MySimulation.java
-   ```bash
+   ```
 
 2. Copy the generated `.java` file into your Gatling project's `src/test/java/` directory.
 

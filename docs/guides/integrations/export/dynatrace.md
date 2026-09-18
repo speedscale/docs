@@ -64,6 +64,14 @@ forwarder:
 
 Send application OTLP data to the same collector service on port `4317` for gRPC or `4318` for HTTP.
 
+The chart's NetworkPolicy only admits traffic from the `speedscale` namespace by default. Add each application namespace that sends OTLP data:
+
+```bash
+helm upgrade byoc-dynatrace speedscale-byoc/dynatrace \
+  --namespace byoc-dynatrace --reuse-values \
+  --set 'networkPolicy.allowedNamespaces={speedscale,<APP_NAMESPACE>}'
+```
+
 ## Verify in Dynatrace
 
 Open **Logs**, paste this expression into the **Filter field**, and select **Run query**:
