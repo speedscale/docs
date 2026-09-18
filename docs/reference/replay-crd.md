@@ -9,6 +9,8 @@ sidebar_position: 15
 
 The `TrafficReplay` CRD enables traffic replay functionality within Kubernetes clusters managed by the Speedscale operator. It allows users to replay captured API traffic against target workloads for testing and validation purposes.
 
+The operator Helm chart installs and upgrades this CRD as a chart-managed resource. See the [CRD lifecycle](/reference/helm#crd-lifecycle) for upgrade ordering, verification commands, and GitOps considerations.
+
 ## API Reference
 
 - **Group**: `speedscale.com`
