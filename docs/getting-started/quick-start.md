@@ -76,6 +76,8 @@ helm install speedscale-operator speedscale/speedscale-operator \
 Navigate to the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md)
 for all configuration options available for the Helm chart.
 
+For a resource-by-resource explanation of installation, upgrades, hooks, and CRD handling, see the [Helm install and upgrade lifecycle](/reference/helm#install-and-upgrade-lifecycle).
+
 </TabItem>
 
 <TabItem value="cli" label="CLI (Mac/Linux)">
@@ -150,6 +152,8 @@ syncPolicy:
 :::caution
 
 Installing via `helm install` is preferred as different GitOps engines treat Helm charts differently and Helm guarantees an order of operations during the install.
+
+Review the [rendered manifest and GitOps lifecycle differences](/reference/helm#rendered-manifests-and-gitops) before enabling automated sync. A rendered chart contains hook resources, but applying the YAML does not reproduce Helm's hook ordering.
 
 :::
 

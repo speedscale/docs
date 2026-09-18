@@ -17,6 +17,12 @@ If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:supp
 
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Install and Upgrade Lifecycle](#install-and-upgrade-lifecycle)
+  - [Resource Ownership](#resource-ownership)
+  - [Install Flow](#install-flow)
+  - [Upgrade Flow](#upgrade-flow)
+  - [CRD Lifecycle](#crd-lifecycle)
+  - [Rendered Manifests and GitOps](#rendered-manifests-and-gitops)
 - [Configuration Reference](#configuration-reference)
   - [Authentication](#authentication)
   - [Core Settings](#core-settings)
@@ -50,6 +56,167 @@ helm install speedscale-operator speedscale/speedscale-operator \
   --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
   --set clusterName=<YOUR-CLUSTER-NAME>
 ```
+
+## Install and Upgrade Lifecycle
+
+The Helm chart installs the operator and the Kubernetes resources it needs to start. The operator then creates and reconciles runtime components such as the forwarder and inspector. This split matters during security review and troubleshooting because a successful Helm release does not mean every operator-managed component is ready yet.
+
+### Resource Ownership
+
+| Owner | Resources and actions |
+|-------|-----------------------|
+| Helm | The `TrafficReplay` CRD, operator ServiceAccount and RBAC, operator ConfigMap, admission webhook configurations, operator Service and Deployment, and the optional nettap DaemonSet and its RBAC |
+| Pre-install chart hooks | API key Secret when `apiKey` is supplied, TLS and webhook certificate Secrets, API-key and connectivity validation, and the optional Java truststore Secret |
+| Kubernetes | Runs hook Jobs and workloads, stores the CRD and Secrets, serves admission webhooks, and performs Deployment or DaemonSet rollouts |
+| Speedscale operator | Registers the cluster, starts controllers and webhooks, and reconciles runtime components such as the forwarder and inspector from the installed configuration |
+
+Resources created during a replay, including generator, responder, and Redis workloads, are also reconciled by the operator. They are not part of the Helm release manifest.
+
+Inspect the exact chart and values before approving a change:
+
+```bash
+helm repo update
+helm show chart speedscale/speedscale-operator
+helm show values speedscale/speedscale-operator > speedscale-default-values.yaml
+helm template speedscale-operator speedscale/speedscale-operator \
+  --namespace speedscale \
+  -f values.yaml > speedscale-rendered.yaml
+```
+
+The rendered file contains sensitive Secret data if `apiKey` is set in `values.yaml`. Store and share it according to your secret-handling policy.
+
+### Install Flow
+
+```mermaid
+sequenceDiagram
+    actor Admin as Cluster administrator
+    participant Helm
+    participant Hooks as Pre-install hooks
+    participant K8s as Kubernetes API
+    participant Operator as Speedscale operator
+    participant Cloud as Speedscale Cloud
+
+    Admin->>Helm: helm install
+    Helm->>Hooks: Create credential and certificate resources
+    Hooks->>Cloud: Validate API key and connectivity
+    Cloud-->>Hooks: Validation succeeds
+    Hooks->>K8s: Create optional Java truststore Secret
+    Hooks-->>Helm: Pre-install phase succeeds
+    Helm->>K8s: Apply CRD, RBAC, webhooks, Service, Deployment, and optional nettap
+    K8s->>Operator: Start operator pod
+    Operator->>Cloud: Authenticate and register cluster
+    Operator->>K8s: Reconcile forwarder and inspector
+    Admin->>K8s: Verify rollouts and health
+```
+
+The install proceeds in these phases:
+
+1. **Helm renders the release.** Templates resolve the selected chart version and values, including image references, RBAC scope, webhook configuration, and optional eBPF resources.
+2. **Pre-install hooks prepare and validate the installation.** The chart creates or references the API key Secret, creates the TLS Secrets, validates the API key and Speedscale Cloud connectivity, and creates the Java truststore Secret when `createJKS` is enabled. If a required hook fails, Helm stops before applying the regular release resources.
+3. **Helm applies the release resources.** These include the `TrafficReplay` CRD, operator RBAC, admission webhook configurations, the operator ConfigMap, Service, and Deployment, plus nettap resources when eBPF is enabled.
+4. **Kubernetes starts the operator.** The operator authenticates with Speedscale Cloud, registers the cluster, starts its controllers and admission webhooks, and reconciles the forwarder and inspector.
+5. **The administrator verifies both layers.** Check the Helm release and operator Deployment first, then confirm the operator-managed components are ready.
+
+```bash
+helm -n speedscale status speedscale-operator
+kubectl get crd trafficreplays.speedscale.com
+kubectl -n speedscale rollout status deployment/speedscale-operator
+kubectl -n speedscale get deployment,daemonset,pods
+speedctl check operator -n speedscale
+```
+
+`speedctl check operator` should end with `All checks were successful`. A successful Helm status with a failed operator check usually means the chart resources were accepted but the operator could not finish registration or runtime reconciliation.
+
+### Upgrade Flow
+
+Use the same values file on every upgrade. Review release notes before a major chart version change because a major version can require manual migration steps.
+
+```bash
+helm repo update
+helm -n speedscale get values speedscale-operator -o yaml > current-values.yaml
+helm -n speedscale upgrade speedscale-operator speedscale/speedscale-operator \
+  -f current-values.yaml
+```
+
+
+`current-values.yaml` can contain the API key and other sensitive settings. Protect or delete the file according to your secret-handling policy. Rotate an externally managed `apiKeySecret` through your secret manager; `helm upgrade` does not rerun the install-only hook that creates `speedscale-apikey`.
+```mermaid
+sequenceDiagram
+    actor Admin as Cluster administrator
+    participant Helm
+    participant K8s as Kubernetes API
+    participant Operator as Speedscale operator
+
+    Admin->>Helm: helm upgrade
+    Note over Helm: Pre-install hooks do not run
+    Helm->>K8s: Patch CRD and chart-managed resources
+    K8s->>Operator: Restart if the pod template changed
+    Operator->>K8s: Reconcile forwarder and inspector
+    Admin->>K8s: Restart captured workloads when sidecar images changed
+    Admin->>K8s: Verify CRD, rollouts, and health
+```
+
+During an upgrade:
+
+1. **Helm renders the new chart with the supplied values.** Omitted values can fall back to new chart defaults, so prefer a reviewed values file over a command that depends on implicit defaults.
+2. **Pre-install hooks do not run.** The API-key preflight, certificate generation, and Java truststore Job are `pre-install` hooks. Changing `apiKey`, `jks.image`, or certificate-related values during `helm upgrade` does not rerun those hooks or regenerate their Secrets.
+3. **Helm patches chart-managed resources.** This includes the `TrafficReplay` CRD, RBAC, operator configuration, admission webhooks, Service, Deployment, and optional nettap resources.
+4. **Kubernetes rolls workloads whose pod templates changed.** An operator image or pod-template change recreates the operator pod. A ConfigMap-only change may require `kubectl -n speedscale rollout restart deployment/speedscale-operator`; follow the setting-specific documentation when it calls for a restart.
+5. **The operator reconciles its runtime components.** After it is ready, it updates the forwarder and inspector when their desired configuration has changed. Existing application pods keep their current injected sidecar image until the application workload rolls.
+
+Verify the result before restarting application workloads:
+
+```bash
+helm -n speedscale status speedscale-operator
+kubectl get crd trafficreplays.speedscale.com \
+  -o jsonpath='{.spec.versions[?(@.storage==true)].name}{"\n"}'
+kubectl -n speedscale rollout status deployment/speedscale-operator
+speedctl check operator -n speedscale
+```
+
+If the upgrade changes a goproxy sidecar image or injection configuration, restart each captured workload after the operator is healthy:
+
+```bash
+kubectl -n <application-namespace> rollout restart deployment/<deployment-name>
+kubectl -n <application-namespace> rollout status deployment/<deployment-name>
+```
+
+Do not restart all deployments in a namespace unless every deployment is intended to receive the same rollout.
+
+### CRD Lifecycle
+
+The current chart renders `trafficreplays.speedscale.com` from `templates/crds/trafficreplays.yaml`. It is a normal Helm release resource, not a file in Helm's special top-level `crds/` directory. As a result:
+
+- `helm install` creates the CRD before the operator begins processing `TrafficReplay` objects.
+- `helm upgrade` patches the CRD schema with the version included in the selected chart.
+- Existing `TrafficReplay` objects remain in the cluster during an upgrade.
+- Kubernetes begins validating new and updated objects against the upgraded schema as soon as the CRD patch succeeds.
+
+Do not delete the CRD before an upgrade. Deleting it also deletes every `TrafficReplay` custom resource in the cluster. Apply or sync the CRD before creating objects that use fields introduced by the new chart, then wait for the upgraded operator to become ready.
+
+Confirm that an existing release contains the chart-managed CRD:
+
+```bash
+helm -n speedscale get manifest speedscale-operator | \
+  grep -A2 'kind: CustomResourceDefinition'
+kubectl get crd trafficreplays.speedscale.com \
+  -o jsonpath='{.spec.versions[*].name}{"\n"}'
+```
+
+If an older or customized installation manages the CRD outside Helm, compare the live CRD with the CRD rendered by the target chart and update it before the operator. Contact Speedscale Support before changing ownership between deployment systems.
+
+### Rendered Manifests and GitOps
+
+`helm template` renders the same objects but does not execute Helm's lifecycle. Hook annotations remain in the YAML, and a plain `kubectl apply` does not honor Helm hook weights, wait for hook Jobs, or delete successful hook resources. Template rendering also cannot use live-cluster lookups to preserve generated certificates.
+
+GitOps controllers handle Helm and Argo CD hook annotations differently. The chart marks the operator ConfigMap and admission webhook configurations as Argo CD `PreSync` resources, while credential validation and certificate resources use Helm `pre-install` hooks. Before enabling automated sync, verify that your controller:
+
+- Applies the CRD and prerequisite Secrets before the operator Deployment.
+- Waits for the API-key preflight and optional Java truststore Job to succeed.
+- Preserves existing TLS and webhook certificate Secrets during re-render and sync.
+- Allows the cluster-scoped CRD, admission webhook, and RBAC resources required by the selected `namespaceSelector` configuration.
+
+Re-render the complete chart for every upgrade. Do not copy only the operator Deployment or image tag because the chart can include matching CRD, RBAC, webhook, and configuration changes. If your GitOps engine cannot reproduce the hook ordering, manage the prerequisite Secrets and CRD as explicit earlier sync stages or contact Speedscale Support for a reviewed manifest layout.
 
 ## Configuration Reference
 
@@ -446,13 +613,13 @@ hostNetwork: true
 
 ### Upgrading
 
-After upgrading the chart, restart workloads to pick up the latest sidecar:
+Follow the [upgrade flow](#upgrade-flow) to update the chart-managed CRD and operator resources, verify operator health, and identify any ConfigMap changes that require an operator restart.
+
+After the operator is healthy, restart captured workloads that need to pick up a new sidecar image or injection configuration:
 
 ```bash
-kubectl -n <namespace> rollout restart deployment
+kubectl -n <namespace> rollout restart deployment/<deployment-name>
 ```
-
-**Note:** CRDs are not updated by default. Update them manually if needed.
 
 ### Support
 
