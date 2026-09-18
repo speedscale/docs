@@ -103,8 +103,8 @@ Three fields turn a DLP rule into a group rule:
 
 - **`scope`** names the workloads the rule covers. Each dimension (`clusters`, `namespaces`, `services`) is a
   list of exact names. A dimension you leave out means "any".
-- **`owner`** records the group that maintains the rule — any name your organization recognizes. It is a label
-  today, shown in the rule list and attached to redactions the rule performs.
+- **`owner`** records the group that maintains the rule — any name your organization recognizes. It is a label:
+  proxymock web shows it in the rule list, and the dashboard in the summary line above a rule.
 - **`enabled`** decides whether the rule participates at all. New rules start disabled so a half-written rule
   never redacts production traffic before its author has looked at it.
 
@@ -277,33 +277,41 @@ rule. This needs a connected cluster; without one the panel is read-only.
 ## Editing rules in the dashboard
 
 The dashboard manages DLP rules under **DLP Rules**, and selects the baseline under **Infrastructure → your
-forwarder → Redaction rule**. Both work as they always have for baseline rules.
+forwarder → Redaction rule**.
 
-For group rules the dashboard is safe but not equipped. It keeps `scope`, `owner` and `enabled` intact when you
-edit a rule, and you can change them by hand on the **Advanced** tab, which holds the whole rule as JSON. What
-it does not have is any UI for them:
+Selecting a rule shows a one-line summary above it: a baseline, or a group rule with its owner, the workloads it
+covers, and whether it is switched off.
 
-- no scope picker, owner field or enabled toggle — the **Transforms** tab edits transform chains only, and
-  preserves the other fields rather than editing them
-- no owner or coverage column in the rule list, so a group rule and a baseline rule look alike
-- no preview of the resolved document
+### The Scope tab
+
+The **Scope** tab turns a rule into a group rule and edits its three fields:
+
+- **Rule type** — *Baseline* applies to all captured traffic; *Group rule* applies only to the workloads named
+  below. Switching to a group rule starts it disabled.
+- **Owner** and **Enabled**.
+- **Clusters**, **Namespaces** and **Services**. Suggestions are what is running now, the same live lists the
+  Infrastructure pages show: connected clusters; namespaces in the clusters the rule names (or in every connected
+  cluster if it names none); and workloads in the namespaces it names. Every field also accepts a name that is
+  not running yet. A service is matched against each pod's `app` label, which is usually the workload name.
+
+Save is refused while a group rule's scope names nothing, on the Scope tab and on the Advanced tab alike.
+
+The **Advanced** tab still holds the whole rule as JSON. Edits made there carry over when you switch tabs; if the
+JSON does not parse, you are asked before it is discarded.
+
+### When a saved rule takes effect
+
+Saving an enabled group rule is all it takes. Speedscale Cloud combines the baseline with every enabled group
+rule that covers a cluster, and tells the clusters a rule covers to reload, so the change reaches their forwarders
+without touching `SPEEDSCALE_DLP_CONFIG`. The forwarder restarts to pick it up, which briefly pauses capture in
+that cluster.
+
+This needs Speedscale **v2.5.1022 or later** in the cloud and on the cluster (forwarder and inspector). An older
+forwarder keeps fetching the single rule `SPEEDSCALE_DLP_CONFIG` names and never sees group rules.
 
 :::warning
-A group rule edited in the dashboard does not take effect on its own. Speedscale Cloud does not assemble group
-rules into a resolved document yet, so nothing applies them to a forwarder — that happens when proxymock web
-applies the resolved document to a cluster.
-
-Pointing `SPEEDSCALE_DLP_CONFIG` at a scoped rule does not help either: the forwarder downloads that rule and
-applies it like any baseline, ignoring its scope, so its redaction lands on every workload.
-
-Author and apply group rules in proxymock web. Use the dashboard for baseline rules and for choosing which rule
-`SPEEDSCALE_DLP_CONFIG` names.
-:::
-
-:::note
-Dashboard releases from before scoped rules shipped behave worse: they reject a rule containing these fields on
-the Advanced tab, and silently strip the fields from a group rule when you save it. Check that your dashboard
-is current before editing a group rule there.
+Do not point `SPEEDSCALE_DLP_CONFIG` at a scoped rule to make it apply. The forwarder treats whatever that
+setting names as the baseline and ignores its scope, so its redaction lands on every workload.
 :::
 
 ## Which surface does what
@@ -311,11 +319,11 @@ is current before editing a group rule there.
 | Task | proxymock web | Dashboard |
 |---|---|---|
 | Create or edit a baseline rule | yes | yes |
-| Create or edit a group rule (scope, owner, enabled) | yes | JSON only, no UI for scope |
+| Create or edit a group rule (scope, owner, enabled) | yes | yes, on the Scope tab |
 | Test a rule against recorded traffic | yes, with a workload override | via snapshots |
 | Preview the resolved rule set for a cluster | yes | not yet |
 | Choose which rule `SPEEDSCALE_DLP_CONFIG` names | yes, in Settings | yes, in Infrastructure |
-| Apply the resolved document to a cluster | yes | not yet |
+| Get group rules onto a forwarder | writes the resolved document to the cluster | automatic: the cloud resolves it for each forwarder |
 
 ## Authoring checklist
 
@@ -362,12 +370,13 @@ the sensitive value itself.
 
 - **Ownership is advisory.** `owner` records which group maintains a rule; it does not yet stop another group from
   editing it. Rules are per-group documents, so access controls attach to them when that capability lands.
-- **The dashboard has no UI for scope.** It preserves `scope`, `owner` and `enabled` and lets you edit them as
-  raw JSON, but has no picker, no coverage column and no resolved preview, so group rules are managed in
-  proxymock web for now.
-- **Rules are resolved where they are applied.** proxymock web assembles the document and writes it to the
-  cluster. Speedscale Cloud does not assemble group rules, so a scoped rule named by `SPEEDSCALE_DLP_CONFIG` is
-  downloaded and applied install-wide.
+- **The dashboard rule list does not show owners or coverage yet**, and there is no dashboard preview of the
+  resolved document. Open a rule to see its summary line; use proxymock web's **Preview effective** to see
+  everything a cluster receives.
+- **A rule change restarts the forwarder.** Saving a group rule reloads the forwarders in the clusters it covers,
+  which briefly pauses capture there.
+- **One rule id per request.** A redacted request records the resolved document's id, not which group rule
+  redacted it.
 - **Scope names are exact.** There is no wildcard or label selector; list the namespaces and services you mean.
 
 ## Related documentation
