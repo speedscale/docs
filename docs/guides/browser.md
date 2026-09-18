@@ -76,16 +76,10 @@ Open the site you want to record and exercise the pages or flows you care about.
 
 When you are done browsing, stop the recorder with `CTRL-C`.
 
-To inspect the recording in the terminal:
+To inspect the recording in the local web UI:
 
 ```shell
-proxymock inspect --in proxymock/browser-recording
-```
-
-To inspect it in the local web UI:
-
-```shell
-proxymock web
+proxymock web --in proxymock/browser-recording
 ```
 
 You can also inspect the files directly:

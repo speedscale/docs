@@ -55,13 +55,11 @@ Normally *PGPORT* and *PGUSER* will default to the default postgres installation
 
 ### What Gets Recorded
 
-You can inspect the recording using the inspect command:
+You can browse the recording in your browser with proxymock web:
 
 ```bash
-proxymock inspect
+proxymock web
 ```
-
-![example RRPairs](./postgres/postgres-rrpairs.png)
 
 proxymock captures PostgreSQL traffic as RRPair files containing:
 

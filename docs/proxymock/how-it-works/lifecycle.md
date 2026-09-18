@@ -41,9 +41,8 @@ app.
 **proxymock** files will be read and automatically compiled every time a
 **proxymock** command is run so files can be changed on the fly.  This means you
 can change the details of a test or mock by modifying the appropriate file and
-re-running **proxymock**. Request and response data can also be modified from
-the `proxymock inspect`
-[TUI](https://en.wikipedia.org/wiki/Text-based_user_interface).
+re-running **proxymock**. Request and response data can also be inspected and
+modified from `proxymock web`.
 
 ## Sharing Traffic
 
