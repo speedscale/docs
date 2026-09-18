@@ -74,6 +74,10 @@ msgType = rrpair AND speedscale.direction = OUT
 
 This is filter-field syntax, not DQL. The table only needs four columns: `timestamp`, `Log message`, `service.name`, and `hostname`. `service.name` is the source service and `hostname` is the remote destination. For example, PostgreSQL traffic can show `accounts-service` and `banking-postgres.banking-app.svc.cluster.local`.
 
+Append `AND speedscale.protocol = https` to show only HTTPS traffic.
+
+![Dynatrace Logs showing outbound HTTPS traffic with source services and remote hostnames](./dynatrace/logs.png)
+
 Open **Services** separately to confirm that application throughput, response-time, and failure charts contain current data.
 
 ![Dynatrace Services Explorer showing live throughput, response time, failure rate, and HTTP errors](./dynatrace/services.png)

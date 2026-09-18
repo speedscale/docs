@@ -75,6 +75,8 @@ The default table only needs four columns: `timestamp`, `message`, `hostname`, a
 
 To focus on one source service, append `AND service.name:<SERVICE_NAME>` to the query. Records without W3C trace context, such as PostgreSQL and Kafka traffic, are still displayed even though they cannot link to a distributed trace.
 
+![New Relic Logs showing outbound LLM traffic with source services and remote hostnames](./new-relic/logs.png)
+
 Open **APM & Services** separately to confirm that application service throughput and transaction charts contain current data.
 
 ![New Relic APM service overview with populated throughput and transaction charts](./new-relic/apm-overview.png)

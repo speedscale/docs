@@ -76,6 +76,8 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 6. Open an HTTP trace and confirm the correlated log has the same trace ID.
 7. Trigger an HTTP 5xx response and confirm the span appears as an error in the trace and service views.
 
+![Datadog Logs Explorer showing outbound Speedscale traffic and the remote hostname](./datadog/logs.png)
+
 ![Datadog APM showing a live ai-service trace](./datadog/apm-trace.png)
 
 ## Use the capture with proxymock
