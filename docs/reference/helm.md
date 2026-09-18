@@ -23,6 +23,7 @@ If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:supp
   - [Upgrade Flow](#upgrade-flow)
   - [CRD Lifecycle](#crd-lifecycle)
   - [Rendered Manifests and GitOps](#rendered-manifests-and-gitops)
+    - [Repackaging the Chart for Argo CD](#repackaging-the-chart-for-argo-cd)
 - [Configuration Reference](#configuration-reference)
   - [Authentication](#authentication)
   - [Core Settings](#core-settings)
@@ -209,7 +210,11 @@ If an older or customized installation manages the CRD outside Helm, compare the
 
 `helm template` renders the same objects but does not execute Helm's lifecycle. Hook annotations remain in the YAML, and a plain `kubectl apply` does not honor Helm hook weights, wait for hook Jobs, or delete successful hook resources. Template rendering also cannot use live-cluster lookups to preserve generated certificates.
 
-GitOps controllers handle Helm and Argo CD hook annotations differently. The chart marks the operator ConfigMap and admission webhook configurations as Argo CD `PreSync` resources, while credential validation and certificate resources use Helm `pre-install` hooks. Before enabling automated sync, verify that your controller:
+GitOps controllers handle Helm and Argo CD hook annotations differently. Argo CD uses Helm to render manifests, then Argo CD owns the application lifecycle. The chart marks the operator ConfigMap and admission webhook configurations as Argo CD `PreSync` resources, while credential validation and certificate resources use Helm `pre-install` hooks.
+
+Argo CD's [Helm hook behavior](https://argo-cd.readthedocs.io/en/stable/user-guide/helm/#helm-hooks) has an important consequence for this chart: when rendered manifests include any native Argo CD hook, Argo CD does not translate Helm hook annotations into Argo CD phases. Do not assume the Speedscale `pre-install` resources will retain their Helm ordering after Argo CD renders the chart.
+
+Before enabling automated sync, verify that your controller or wrapper chart:
 
 - Applies the CRD and prerequisite Secrets before the operator Deployment.
 - Waits for the API-key preflight and optional Java truststore Job to succeed.
@@ -217,6 +222,51 @@ GitOps controllers handle Helm and Argo CD hook annotations differently. The cha
 - Allows the cluster-scoped CRD, admission webhook, and RBAC resources required by the selected `namespaceSelector` configuration.
 
 Re-render the complete chart for every upgrade. Do not copy only the operator Deployment or image tag because the chart can include matching CRD, RBAC, webhook, and configuration changes. If your GitOps engine cannot reproduce the hook ordering, manage the prerequisite Secrets and CRD as explicit earlier sync stages or contact Speedscale Support for a reviewed manifest layout.
+
+#### Repackaging the Chart for Argo CD
+
+Some platform teams import the Speedscale chart into an internal wrapper chart before Argo CD deploys it. Keep the upstream chart version pinned and preserve the full resource set. A wrapper that copies only Deployments or image values can miss a matching CRD, RBAC, webhook, Secret, or hook change.
+
+```mermaid
+flowchart LR
+    Upstream[Pinned Speedscale chart] --> Wrapper[Internal wrapper chart]
+    Wrapper --> Render[Argo CD renders manifests]
+    Render --> Review[Compare resources, values, and hooks]
+    Review --> PreSync[Apply prerequisites and PreSync resources]
+    PreSync --> Sync[Sync CRD, RBAC, webhooks, operator, and optional nettap]
+    Sync --> Reconcile[Operator reconciles forwarder and inspector]
+```
+
+Use this review sequence for every imported chart version:
+
+1. **Pin the upstream version.** Record the Speedscale chart version in the wrapper chart dependency or import metadata. Do not track an unbounded latest version.
+2. **Render both charts.** Render the upstream Speedscale chart and the internal wrapper with equivalent values, then compare the outputs. Account for intentional platform labels, annotations, registry rewrites, and Secret references.
+3. **Compare the inventory.** Confirm that the wrapper still contains the `TrafficReplay` CRD, RBAC, webhook configurations, Service, operator Deployment, optional nettap resources, and every prerequisite Secret and Job.
+4. **Translate lifecycle behavior.** Define explicit Argo CD sync phases and waves for resources whose Helm hook behavior is not preserved. Make prerequisite Jobs idempotent because Argo CD treats each deployment as a sync, not as a distinct Helm install or upgrade.
+5. **Sync and verify in layers.** Check the Argo CD phase first, then Kubernetes rollout status, then operator-managed components. This identifies which system owns the failure before changing the chart.
+
+Render the two inputs with the same values before committing a wrapper update:
+
+```bash
+helm template speedscale-upstream speedscale/speedscale-operator \
+  --version <CHART-VERSION> \
+  --namespace speedscale \
+  -f values.yaml > upstream-rendered.yaml
+helm template speedscale-wrapper ./path/to/internal-chart \
+  --namespace speedscale \
+  -f values.yaml > wrapper-rendered.yaml
+diff -u upstream-rendered.yaml wrapper-rendered.yaml
+```
+
+Expected platform-specific differences should be documented in the wrapper repository. Investigate missing resources, changed hook annotations, unexpected value overrides, or generated Secret changes before Argo CD syncs them.
+
+| Failure boundary | First checks |
+|------------------|--------------|
+| Chart rendering | Wrapper dependency version, values precedence, missing templates, registry rewrites |
+| Argo CD `PreSync` | Hook annotations, sync waves, API key Secret, certificate Secrets, Job logs and RBAC |
+| Argo CD `Sync` | CRD acceptance, cluster-scoped RBAC permissions, admission webhook configuration, operator Service and Deployment |
+| Kubernetes rollout | Pod events, image pulls, Secret mounts, readiness probes, operator logs |
+| Operator reconciliation | Cluster registration, forwarder and inspector Deployments, operator-managed ConfigMaps, `speedctl check operator` |
 
 ## Configuration Reference
 
