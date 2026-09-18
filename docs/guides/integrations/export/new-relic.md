@@ -65,14 +65,17 @@ Send application OTLP data to the same collector service on port `4317` for gRPC
 
 ## Verify in New Relic
 
-1. Open **APM & Services > Services** and find the application's `service.name`.
-2. Open **Distributed tracing** and filter for that service.
-3. Open **Logs** and filter for `msgType = 'rrpair'` and `speedscale.direction = 'OUT'`.
-4. Add `message`, `hostname`, `service.name`, `speedscale.workload`, `speedscale.protocol`, `speedscale.command`, `speedscale.status`, and `trace.id` as table columns.
-5. Confirm the source and destination are distinct. For example, an LLM call can show `banking-ai` as `service.name` and `api.anthropic.com` as `hostname`. PostgreSQL and Kafka records should show their cluster hostnames and protocols even when `trace.id` is empty.
-6. Open an HTTP trace and confirm a matching RRPair log has the same `trace.id`.
-7. Trigger an HTTP 5xx response and confirm the transaction and span appear as errors.
-8. Use **Metrics and events** to confirm application metrics are arriving.
+Open **Logs** and paste this Lucene query into the search bar:
+
+```text
+msgType:rrpair AND speedscale.direction:OUT
+```
+
+The default table only needs four columns: `timestamp`, `message`, `hostname`, and `service.name`. `service.name` is the source service and `hostname` is the remote destination. For example, an LLM request can show `ai-service` and `api.anthropic.com`, while database traffic shows `accounts-service` and `banking-postgres.banking-app.svc.cluster.local`.
+
+To focus on one source service, append `AND service.name:<SERVICE_NAME>` to the query. Records without W3C trace context, such as PostgreSQL and Kafka traffic, are still displayed even though they cannot link to a distributed trace.
+
+Open **APM & Services** separately to confirm that application service throughput and transaction charts contain current data.
 
 ![New Relic APM service overview with populated throughput and transaction charts](./new-relic/apm-overview.png)
 
