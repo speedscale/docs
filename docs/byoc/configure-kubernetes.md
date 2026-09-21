@@ -143,6 +143,10 @@ forwarder:
       otel_endpoint: "http://otel-collector.byoc-s3.svc.cluster.local:4317"
       filter_rule: standard
       dlp_config_id: standard
+    byoc_gcs:
+      otel_endpoint: "http://byoc-gcs-gcs.byoc-gcs.svc.cluster.local:4317"
+      filter_rule: standard
+      dlp_config_id: standard
     byoc_grafana:
       otel_endpoint: "http://otel-collector.byoc-grafana.svc.cluster.local:4317"
       filter_rule: standard
