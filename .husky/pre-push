@@ -1,3 +1,7 @@
+# Git exports repository-local variables to hooks. Clear them so tests that
+# create temporary repositories do not accidentally operate on this worktree.
+unset $(git rev-parse --local-env-vars)
+
 yarn check:writing:pushed
 yarn test:writing
 yarn build
