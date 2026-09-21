@@ -1,10 +1,9 @@
 ---
-title: Pull Traffic from a BYOC Bucket
+title: Use BYOC Traffic with proxymock
 description: "Bring-your-own-cloud keeps captured traffic in your own Amazon S3 or Google Cloud Storage bucket. Use proxymock import s3, proxymock import gcs, or the pull_byoc_bucket MCP tool to pull historical traffic from that bucket into a local workspace you can search, mock, and replay, without the traffic leaving your account through Speedscale."
-sidebar_position: 14
 ---
 
-# Pull Traffic from a BYOC Bucket
+# Use BYOC Traffic with proxymock
 
 In a bring-your-own-cloud (BYOC) deployment, captured traffic never leaves your account: the in-cluster Speedscale collector writes it to an object-store bucket you own, in your own cloud. proxymock pulls historical traffic from that bucket into a local workspace, so you can search, mock, and replay real production traffic without routing it through Speedscale.
 
@@ -24,7 +23,7 @@ Point `--prefix` at `byoc/` for the current layout. proxymock prunes the object 
 
 ## Before you begin
 
-- `proxymock` [installed](../getting-started/quickstart/quickstart-cli.md).
+- `proxymock` [installed](/proxymock/getting-started/quickstart/quickstart-cli.md).
 - Read access to the BYOC bucket. For S3, use the standard AWS credential chain: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, or an instance role. For GCS, use Google Application Default Credentials as described below. No Speedscale account or API key is required for the pull.
 
 ## Pull with the CLI {#cli}
@@ -60,7 +59,7 @@ Pass `--dlp-config` to apply a local DLP config to matched RRPairs before they a
 proxymock import s3 --bucket my-bucket --prefix byoc/ --from now-15m --dlp-config my-dlp.json
 ```
 
-See [Author DLP and filter rules locally](./local-rules.md) for how to build and test that config.
+See [Author DLP and filter rules locally](/proxymock/guides/local-rules.md) for how to build and test that config.
 
 ### Keep pulling as traffic arrives
 
@@ -113,7 +112,7 @@ The `pull_byoc_bucket` MCP tool gives an AI coding assistant the same pull. It r
 
 > Pull the last 15 minutes of checkout 500s from the `my-bucket` BYOC bucket and replay them against my local build.
 
-Set `storage-provider` to `gcs` for Google Cloud Storage; the default is `s3`. The tool takes `bucket` plus the same narrowing parameters as the CLI (`prefix`, `from`, `to`, `service`, `namespace`, `status`, `trace-id`, or a full `filter`), returns the import summary, and writes RRPair files to `./proxymock/imported-s3-<timestamp>/` or `./proxymock/imported-gcs-<timestamp>/` for GCS. This is distinct from `pull_remote_recording`, which pulls from Speedscale-managed cloud; use `pull_byoc_bucket` when the traffic lives in your own bucket. See the [MCP Tools reference](../how-it-works/mcp-tools.md) for the full parameter list.
+Set `storage-provider` to `gcs` for Google Cloud Storage; the default is `s3`. The tool takes `bucket` plus the same narrowing parameters as the CLI (`prefix`, `from`, `to`, `service`, `namespace`, `status`, `trace-id`, or a full `filter`), returns the import summary, and writes RRPair files to `./proxymock/imported-s3-<timestamp>/` or `./proxymock/imported-gcs-<timestamp>/` for GCS. This is distinct from `pull_remote_recording`, which pulls from Speedscale-managed cloud; use `pull_byoc_bucket` when the traffic lives in your own bucket. See the [MCP Tools reference](/proxymock/how-it-works/mcp-tools.md) for the full parameter list.
 
 ## Pull from proxymock web {#web}
 
@@ -121,9 +120,9 @@ In `proxymock web`, the import source picker offers a BYOC bucket as a source al
 
 ## Next steps
 
-- [Author DLP and filter rules locally](./local-rules.md) redacts or trims the pulled traffic before you use it.
-- [Explore and Replay Sessions Locally](./sessions.md) walks the record-and-replay loop the imported traffic feeds into.
-- [Fix Replay Failures with Recommendations](./recommendations.md) correlates rotating values so imported traffic replays cleanly.
+- [Author DLP and filter rules locally](/proxymock/guides/local-rules.md) redacts or trims the pulled traffic before you use it.
+- [Explore and Replay Sessions Locally](/proxymock/guides/sessions.md) walks the record-and-replay loop the imported traffic feeds into.
+- [Fix Replay Failures with Recommendations](/proxymock/guides/recommendations.md) correlates rotating values so imported traffic replays cleanly.
 
 
 ## Load-test with Locust

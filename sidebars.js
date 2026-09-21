@@ -49,6 +49,30 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "BYOC",
+      link: {
+        type: "doc",
+        id: "byoc/index",
+      },
+      items: [
+        "byoc/how-it-works",
+        "byoc/backends",
+        "byoc/configure-kubernetes",
+        "byoc/verify",
+        "byoc/use-traffic",
+        {
+          type: "category",
+          label: "Examples",
+          link: { type: "doc", id: "byoc/examples/index" },
+          items: ["byoc/examples/ecs"],
+          collapsed: true,
+        },
+        "byoc/troubleshooting",
+      ],
+      collapsed: false,
+    },
+    {
+      type: "category",
       label: "Guides",
       link: {
         type: "doc",
@@ -133,7 +157,6 @@ const sidebars = {
             "guides/cli",
             "guides/load-patterns",
             "guides/troubleshooting",
-            "guides/byoc",
           ],
           collapsed: true,
         },

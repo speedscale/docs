@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 :::tip Security-first setup options
 - **Local-first recording:** use `proxymock` for desktop workflows when you want captured traffic to stay local by default.
-- **Enterprise boundary control:** use [Bring Your Own Cloud (BYOC)](/guides/byoc/) when you need customer-controlled cloud isolation.
+- **Enterprise boundary control:** use [Bring Your Own Cloud (BYOC)](/byoc/) when you need customer-controlled cloud isolation.
 - **Sensitive data controls:** enable [DLP](/guides/dlp/) so sensitive fields are redacted before data leaves your network.
 :::
 

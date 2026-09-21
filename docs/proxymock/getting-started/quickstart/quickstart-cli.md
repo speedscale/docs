@@ -18,7 +18,7 @@ This guide provides a step-by-step approach to creating a [mock server](/referen
 - **Local-first:** proxymock keeps recorded traffic local by default.
 - **One-time activation:** proxymock runs locally, but you register a valid email once via `proxymock init` to activate it. It's free and your traffic stays on your machine.
 - **Optional cloud sync:** push snapshots only when you explicitly choose to.
-- **Enterprise controls:** if your org requires cloud boundary ownership, pair workflows with [BYOC](/guides/byoc/) and use [DLP](/guides/dlp/) for sensitive fields.
+- **Enterprise controls:** if your org requires cloud boundary ownership, pair workflows with [BYOC](/byoc/) and use [DLP](/guides/dlp/) for sensitive fields.
 :::
 
 ## Choose Your Environment

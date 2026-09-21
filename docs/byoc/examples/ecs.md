@@ -20,7 +20,7 @@ flowchart LR
 
 ## Prerequisites
 
-Use the networking and application setup in [AWS ECS/Fargate](../getting-started/installation/install/ecs.md). You need a Speedscale account with BYOC enabled, a bucket, an ECS cluster, and a private service discovery name for the forwarder. The examples below extend that installation; they do not create the VPC or bucket.
+Use the networking and application setup in [AWS ECS/Fargate](/getting-started/installation/install/ecs.md). You need a Speedscale account with BYOC enabled, a bucket, an ECS cluster, and a private service discovery name for the forwarder. The examples below extend that installation; they do not create the VPC or bucket.
 
 Allow application tasks to reach the forwarder on TCP 8888. The collector listens only on localhost inside the forwarder task. Provide outbound connectivity for image pulls, Secrets Manager, CloudWatch Logs, S3, and the Speedscale API. Adding `EXPORTERS` does not disable the cloud exporter or make this an offline installation.
 
@@ -174,7 +174,7 @@ resource "aws_ecs_task_definition" "forwarder" {
 }
 ```
 
-Deploy this task definition through the forwarder ECS service from the [ECS installation guide](../getting-started/installation/install/ecs.md#setup-the-forwarder), with `platform_version = "1.4.0"`. Keep its service discovery registration on the forwarder and set the application's `FORWARDER_ADDR` to that DNS name on port 8888. Set `desired_count = 1` after the secret has a value and the filter exists.
+Deploy this task definition through the forwarder ECS service from the [ECS installation guide](/getting-started/installation/install/ecs.md#setup-the-forwarder), with `platform_version = "1.4.0"`. Keep its service discovery registration on the forwarder and set the application's `FORWARDER_ADDR` to that DNS name on port 8888. Set `desired_count = 1` after the secret has a value and the filter exists.
 
 The tested application task used nginx on port 80 and goproxy with `REVERSE_PROXY_HOST=127.0.0.1`, `REVERSE_PROXY_PORT=80`, `CAPTURE_MODE=proxy`, `PROXY_TYPE=dual`, and `PROXY_PROTOCOL=tcp:http`. Requests entered goproxy on port 4143. For this plain HTTP check, `TLS_IN_UNWRAP` and `TLS_OUT_UNWRAP` were both `false`. Configure TLS separately using the ECS guide when your application needs it.
 
@@ -207,13 +207,13 @@ jq '.resourceLogs[].scopeLogs[].logRecords[].body.kvlistValue.values[] |
 
 The synthetic validation produced the service label, the `ecs_byoc_validation=synthetic` request URI, HTTP status 200, and the nginx response body. Running tasks alone do not verify capture. This check validates HTTP capture and S3 delivery. The lifecycle below was also validated with inbound and outbound TLS captures from an ECS task using nginx on HTTPS port 8443.
 
-For importing stored traffic, see [BYOC bucket imports](../proxymock/guides/byoc-bucket.md). Scale both services to zero through your IaC when capture is no longer needed. Keep the bucket and its retention policy under the same infrastructure lifecycle.
+For importing stored traffic, see [Use BYOC traffic with proxymock](/byoc/use-traffic.md). Scale both services to zero through your IaC when capture is no longer needed. Keep the bucket and its retention policy under the same infrastructure lifecycle.
 
 ## Analyze and replay the BYOC capture
 
 ### 1. Install proxymock and pull the capture
 
-Follow the [proxymock CLI setup](../proxymock/getting-started/quickstart/quickstart-cli.md) first. Run the following commands from your application repository so the imported capture and replay results stay with that application. You need AWS read access to the BYOC bucket and `jq` for the replay verdict check. Importing from S3 uses your AWS credentials and does not require uploading traffic to Speedscale Cloud.
+Follow the [proxymock CLI setup](/proxymock/getting-started/quickstart/quickstart-cli.md) first. Run the following commands from your application repository so the imported capture and replay results stay with that application. You need AWS read access to the BYOC bucket and `jq` for the replay verdict check. Importing from S3 uses your AWS credentials and does not require uploading traffic to Speedscale Cloud.
 
 Pull a bounded capture window directly from S3:
 

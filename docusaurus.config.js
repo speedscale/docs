@@ -37,6 +37,18 @@ const config = {
       {
         redirects: [
           {
+            from: "/guides/byoc/",
+            to: "/byoc/",
+          },
+          {
+            from: "/guides/byoc-ecs/",
+            to: "/byoc/examples/ecs/",
+          },
+          {
+            from: "/proxymock/guides/byoc-bucket/",
+            to: "/byoc/use-traffic/",
+          },
+          {
             from: "/getting-started/introduction/",
             to: "/",
           },

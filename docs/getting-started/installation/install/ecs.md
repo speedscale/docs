@@ -13,7 +13,7 @@ This workflow is currently in preview status. Please provide feedback in our [sl
 1. [Speedctl is installed](../../../getting-started/quick-start.md)
 2. [ECS Service Discovery is setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html)
 
-For capture to your own S3 bucket, use the [BYOC on ECS/Fargate](../../../guides/byoc-ecs.md) variant. It adds an OpenTelemetry collector to the forwarder task and configures separate cloud and BYOC filters.
+For capture to your own S3 bucket, use the [BYOC on ECS/Fargate](/byoc/examples/ecs.md) variant. It adds an OpenTelemetry collector to the forwarder task and configures separate cloud and BYOC filters.
 
 ## Working with ECS
 
