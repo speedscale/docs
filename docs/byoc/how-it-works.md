@@ -48,7 +48,7 @@ The reference collectors accept OTLP/gRPC on port `4317`. The Forwarder infers t
 | `4317` | OTLP/gRPC; used by the reference charts |
 | `4318` | OTLP/HTTP |
 
-The protocols are not interchangeable. The endpoint must include the scheme, for example `http://otel-collector.byoc-s3.svc.cluster.local:4317`.
+The protocols are not interchangeable. Include the scheme for compatibility across Forwarder versions, for example `http://otel-collector.byoc-s3.svc.cluster.local:4317`. Forwarder v2.5.617 and later also accept a scheme-less gRPC endpoint.
 
 For a custom collector, enable the protocol that matches the Forwarder endpoint:
 

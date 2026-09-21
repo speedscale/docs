@@ -63,7 +63,41 @@ helm upgrade --install byoc-s3 speedscale-byoc/fluentbit-s3 \
 
 ### Native Google Cloud Storage
 
-Grant a Google service account `roles/storage.objectCreator` on the bucket. Configure GKE Workload Identity in `values-gcs.yaml`:
+The chart reuses an existing bucket. Its Google service account (GSA) therefore needs `storage.objects.create` to write objects and `storage.buckets.get` to check that the bucket exists. `roles/storage.objectCreator` contains only the first permission, so add a narrowly scoped custom role for the second.
+
+Create the GSA and custom role, then grant both roles on the bucket:
+
+```bash
+gcloud iam service-accounts create byoc-gcs \
+  --project=<GCP_PROJECT>
+
+gcloud iam roles create speedscaleByocBucketReader \
+  --project=<GCP_PROJECT> \
+  --title="Speedscale BYOC bucket reader" \
+  --permissions=storage.buckets.get \
+  --stage=GA
+
+gcloud storage buckets add-iam-policy-binding gs://<GCS_BUCKET> \
+  --member="serviceAccount:byoc-gcs@<GCP_PROJECT>.iam.gserviceaccount.com" \
+  --role="roles/storage.objectCreator"
+
+gcloud storage buckets add-iam-policy-binding gs://<GCS_BUCKET> \
+  --member="serviceAccount:byoc-gcs@<GCP_PROJECT>.iam.gserviceaccount.com" \
+  --role="projects/<GCP_PROJECT>/roles/speedscaleByocBucketReader"
+```
+
+The [GCS exporter documents](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/googlecloudstorageexporter#using-with-bucket-level-permissions-only) the extra bucket-read permission required by `reuse_if_exists`. The predefined [Storage Object Creator role](https://docs.cloud.google.com/storage/docs/access-control/iam-roles#storage.objectCreator) does not include it.
+
+With Workload Identity Federation enabled on the cluster and node pool, link the deterministic Kubernetes service account (KSA) `byoc-gcs` in namespace `byoc-gcs` to the GSA. Both this IAM binding and the annotation in the Helm values are required by the [GKE service-account linking procedure](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#kubernetes-sa-to-iam):
+
+```bash
+gcloud iam service-accounts add-iam-policy-binding \
+  byoc-gcs@<GCP_PROJECT>.iam.gserviceaccount.com \
+  --role="roles/iam.workloadIdentityUser" \
+  --member="serviceAccount:<GCP_PROJECT>.svc.id.goog[byoc-gcs/byoc-gcs]"
+```
+
+Configure the KSA name and GSA annotation in `values-gcs.yaml`:
 
 ```yaml
 gcs:
@@ -71,6 +105,7 @@ gcs:
   bucket: <GCS_BUCKET>
   region: <GCS_REGION>
 serviceAccount:
+  name: byoc-gcs
   annotations:
     iam.gke.io/gcp-service-account: byoc-gcs@<GCP_PROJECT>.iam.gserviceaccount.com
 ```
@@ -126,7 +161,7 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
 
 :::caution
 
-Every `otel_endpoint` must include `http://` and use the receiver's actual protocol port. A reference collector normally uses OTLP/gRPC on `4317`.
+Use the receiver's actual protocol port. A reference collector normally uses OTLP/gRPC on `4317`. Including `http://` is recommended for compatibility with Forwarder versions older than v2.5.617; newer Forwarders also accept scheme-less gRPC endpoints.
 
 :::
 

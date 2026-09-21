@@ -7,19 +7,27 @@ description: Choose a BYOC backend for retention, search, dashboards, and proxym
 
 Speedscale publishes reference Helm charts in the [speedscale-byoc repository](https://github.com/speedscale/speedscale-byoc). Install one independent collector channel for each destination you need.
 
-| Chart | Destination | Best for | Direct proxymock import |
-| --- | --- | --- | --- |
-| `fluentbit-s3` | Amazon S3 through the OTel `awss3` exporter | Durable object storage, Athena/Glue, EKS IAM roles | Yes, `proxymock import s3` |
-| `gcs` | Native Google Cloud Storage | Durable object storage, BigQuery, GKE Workload Identity | Yes, `proxymock import gcs` |
-| `fluentbit-gcs` | GCS through its S3-compatible API | Existing HMAC-based deployments | Yes, native GCS or S3 interoperability |
-| `grafana` | Loki and Grafana | Live dashboards and ad hoc log queries | Gather script |
-| `elasticsearch` | Elasticsearch and Kibana | Full-text search and existing Elastic operations | Gather script |
-| `azureblob` | Azure Blob Storage | Azure-native archival and retention | No; use `azure-gather.py` |
-| `datadog` | Datadog | APM, traces, metrics, and correlated RRPair logs | Trace recipe |
-| `dynatrace` | Dynatrace | Services, distributed traces, metrics, and logs | No |
-| `newrelic` | New Relic | APM, distributed traces, metrics, and logs | No |
+| Chart | Destination | Speedscale capture signal | Optional application signals | Direct proxymock import |
+| --- | --- | --- | --- | --- |
+| `fluentbit-s3` | Amazon S3 through the OTel `awss3` exporter | RRPair logs | None | Yes, `proxymock import s3` |
+| `gcs` | Native Google Cloud Storage | RRPair logs | None | Yes, `proxymock import gcs` |
+| `fluentbit-gcs` | GCS through its S3-compatible API | RRPair logs | None | Yes, native GCS or S3 interoperability |
+| `grafana` | Loki and Grafana | RRPair logs | Other application logs when configured separately | Gather script |
+| `elasticsearch` | Elasticsearch and Kibana | RRPair logs | Other application logs when configured separately | Gather script |
+| `azureblob` | Azure Blob Storage | RRPair logs | None | No; use `azure-gather.py` |
+| `datadog` | Datadog | RRPair logs | Application traces and metrics sent independently; the Datadog connector can derive APM trace metrics | Trace recipe |
+| `dynatrace` | Dynatrace | RRPair logs | Application traces and metrics sent independently | No |
+| `newrelic` | New Relic | RRPair logs | Application traces and metrics sent independently | No |
 
 The `fluentbit-s3` name is historical; the chart writes OTLP JSON directly with the OpenTelemetry `awss3` exporter. New GCS installations should use the native `gcs` chart. Keep the legacy `fluentbit-gcs` chart only for an existing S3-interoperability and HMAC workflow.
+
+The Forwarder itself emits RRPairs as OTLP **logs**. A collector can accept application traces and metrics on additional pipelines, but those signals appear only when the application or another agent sends them independently. For Datadog, review the [Datadog exporter and connector guidance](https://docs.datadoghq.com/opentelemetry/setup/collector_exporter/datadog_exporter/) before customizing the reference chart; Datadog recommends OTLP/HTTP and the `span_metrics` connector for new custom configurations.
+
+## Collector versions and support boundary
+
+The published reference charts pin collector images instead of following a floating tag. The current Amazon S3, native GCS, Azure Blob, Datadog, Dynatrace, and New Relic charts pin OpenTelemetry Collector Contrib `0.160.0` by image digest. The legacy `fluentbit-gcs` and Elasticsearch reference charts remain on `0.108.0`.
+
+The upstream [`awss3`](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/awss3exporter), [`google_cloud_storage`](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/googlecloudstorageexporter), and [`azureblob`](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azureblobexporter) exporters are alpha. Speedscale validates and supports the collector image and configuration pinned by each published chart. Treat an image override, unpinned upgrade, or custom collector pipeline as a custom deployment and validate retention, retries, and retrieval before relying on it for production traffic.
 
 ## Choose for replayability
 

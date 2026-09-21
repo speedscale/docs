@@ -17,7 +17,7 @@ Use a unique exporter name for each destination. Reusing a mapping key replaces 
 
 Check all of the following:
 
-- The endpoint includes `http://`.
+- The endpoint includes `http://` when compatibility with Forwarder versions older than v2.5.617 is required. Newer Forwarders also accept scheme-less gRPC endpoints.
 - The service name and namespace resolve from the `speedscale` namespace.
 - The endpoint port matches the collector receiver: `4317` for OTLP/gRPC or `4318` for OTLP/HTTP.
 - NetworkPolicy and security-group rules allow the connection.

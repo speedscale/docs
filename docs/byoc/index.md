@@ -47,3 +47,29 @@ BYOC export keeps captured RRPairs in destinations you control. It does not, by 
 - [Data Loss Prevention](/guides/dlp/)
 - [Traffic capture](/guides/capture/traffic/)
 - [proxymock](/proxymock/)
+
+## Continue from the previous BYOC guide
+
+The original single-page guide is now split by task. These compatibility anchors preserve its deep links and point to the new canonical pages.
+
+<span id="how-it-works"></span>
+<span id="what-is-byoc"></span>
+<span id="reference-architectures"></span>
+<span id="azure-blob-storage"></span>
+<span id="prerequisites"></span>
+<span id="install"></span>
+<span id="1-add-the-helm-repos"></span>
+<span id="2-create-the-api-key-secret"></span>
+<span id="3-install-your-chosen-backend"></span>
+<span id="4-install-the-speedscale-operator-wired-to-each-backend"></span>
+<span id="5-annotate-a-workload-to-capture-its-traffic"></span>
+<span id="otlp-transport-grpc-vs-http"></span>
+<span id="verify"></span>
+<span id="replay-captured-traffic-with-proxymock"></span>
+<span id="further-reading"></span>
+
+- Architecture and transport: [How BYOC works](./how-it-works.md)
+- Reference architectures and Azure Blob: [Storage and observability backends](./backends.md)
+- Prerequisites and installation: [Configure BYOC on Kubernetes](./configure-kubernetes.md)
+- Deployment checks: [Verify a BYOC deployment](./verify.md)
+- Replay and local use: [Use BYOC traffic with proxymock](./use-traffic.md)

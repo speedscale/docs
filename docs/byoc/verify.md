@@ -14,7 +14,7 @@ kubectl -n speedscale get cm speedscale-forwarder \
   -o jsonpath='{.data.EXPORTERS}' | jq .
 ```
 
-The output should contain one named entry for every configured destination. Confirm that each endpoint includes the scheme and the expected collector namespace and port.
+The output should contain one named entry for every configured destination. Confirm the expected collector namespace and port. A scheme is recommended for compatibility with Forwarder versions older than v2.5.617.
 
 Check the Forwarder log for exporter startup:
 
@@ -41,14 +41,16 @@ Look for rejected records, authentication errors, retries, or destination thrott
 ## 3. Confirm destination writes
 
 - **S3:** `aws s3 ls s3://<BUCKET>/byoc/ --recursive`
-- **GCS:** `gcloud storage ls gs://<BUCKET>/byoc/**`
+- **GCS:** `gcloud storage ls --recursive gs://<BUCKET>/byoc/`
 - **Grafana:** open **Explore**, select Loki, and query `{exporter="OTLP"}`
 - **Elasticsearch:** query the RRPair index count from the Elasticsearch service
-- **Datadog:** check **APM > Traces** and **Logs > Explorer**
-- **Dynatrace:** check **Services**, **Distributed Tracing**, and **Logs**
-- **New Relic:** check **APM & Services**, **Distributed tracing**, and **Logs**
+- **Datadog:** check **Logs > Explorer** for the captured RRPair log
+- **Dynatrace:** check **Logs** for the captured RRPair log
+- **New Relic:** check **Logs** for the captured RRPair log
 
 Narrow the destination query to the test workload and request time. For object storage, inspect one newly written OTLP JSON object and confirm it contains the expected service, URL, status, and response data.
+
+The Speedscale Forwarder sends RRPairs through the **logs** pipeline. Check APM services, traces, or metrics only when the application independently sends those signals to the same collector. Their absence does not indicate a failed capture-only BYOC installation.
 
 ## 4. Confirm the reuse path
 

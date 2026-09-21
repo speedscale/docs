@@ -1,11 +1,13 @@
 ---
 title: Use BYOC Traffic with proxymock
-description: "Bring-your-own-cloud keeps captured traffic in your own Amazon S3 or Google Cloud Storage bucket. Use proxymock import s3, proxymock import gcs, or the pull_byoc_bucket MCP tool to pull historical traffic from that bucket into a local workspace you can search, mock, and replay, without the traffic leaving your account through Speedscale."
+description: "Use proxymock import s3, proxymock import gcs, or the pull_byoc_bucket MCP tool to pull historical traffic directly from your bucket into a local workspace."
 ---
 
 # Use BYOC Traffic with proxymock
 
-In a bring-your-own-cloud (BYOC) deployment, captured traffic never leaves your account: the in-cluster Speedscale collector writes it to an object-store bucket you own, in your own cloud. proxymock pulls historical traffic from that bucket into a local workspace, so you can search, mock, and replay real production traffic without routing it through Speedscale.
+In a bring-your-own-cloud (BYOC) deployment, the in-cluster Speedscale collector can write captured traffic to an object-store bucket you own. proxymock pulls historical traffic directly from that bucket into a local workspace, so the import operation does not route the downloaded traffic through Speedscale.
+
+Enabling a BYOC exporter does not automatically disable the Speedscale Cloud exporter. Configure exporters separately when captured RRPairs must remain only in customer-controlled destinations. See [Network and data boundaries](./how-it-works.md#network-and-data-boundaries).
 
 The pull runs entirely locally against your bucket. Credentials come from the AWS credential chain for S3 or Google Application Default Credentials for GCS, and the traffic lands as ordinary RRPair files, so every proxymock workflow works on it unchanged.
 
