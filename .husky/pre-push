@@ -1,1 +1,3 @@
+yarn test:writing
+yarn check:writing
 yarn build

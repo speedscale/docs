@@ -60,3 +60,7 @@ Use this checklist when adding or updating docs pages:
 - Use clear headings and short sections that can be quoted out of context.
 - Prefer decision/comparison tables for "which option should I choose" content.
 - Align product descriptions with `speedscale.com` and `llms.txt` wording.
+
+### Public Writing Checks
+
+Run `yarn check:writing` before pushing documentation changes. It checks added public prose by default, while `yarn check:writing --all` reports the existing backlog. The same checker runs in pull request and main-branch CI. Internal contributors should also follow the canonical rules in `/Users/kahrens/spd-workspace/spd-ai-notes/INSTRUCTION - Read Before Writing Content.md`.
