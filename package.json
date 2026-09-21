@@ -37,7 +37,7 @@
     "@docusaurus/theme-mermaid": "^3.10.1",
     "@docusaurus/theme-search-algolia": "^3.10.1",
     "@mdx-js/react": "^3.0.1",
-    "algoliasearch": "^5.50.2",
+    "algoliasearch": "^5.59.0",
     "cheerio": "1.2.0",
     "clsx": "^2.0.0",
     "csv-parser": "^3.0.0",
