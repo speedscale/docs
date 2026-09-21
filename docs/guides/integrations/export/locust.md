@@ -15,7 +15,7 @@ Use a proxymock release that includes the `locust` export subcommand:
 proxymock export locust --in ./traffic --out locustfile.py
 ```
 
-The input directory can contain files from `proxymock record`, a downloaded Speedscale snapshot, or a [BYOC bucket import](/proxymock/guides/byoc-bucket). Inbound HTTP/HTTPS requests are exported by default.
+The input directory can contain files from `proxymock record`, a downloaded Speedscale snapshot, or a [BYOC bucket import](/byoc/use-traffic). Inbound HTTP/HTTPS requests are exported by default.
 
 | Flag | Default | Behavior |
 | --- | --- | --- |

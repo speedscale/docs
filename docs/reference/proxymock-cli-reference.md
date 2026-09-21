@@ -376,7 +376,7 @@ proxymock import --file /path/to/snapshot.json --out some/local/path
 
 ### `import s3`
 
-Import historical BYOC traffic from a customer's own S3 bucket into a local proxymock directory. The BYOC OpenTelemetry `awss3` exporter writes objects under the `byoc/` prefix in hive-style `year=/month=/day=/hour=/minute=` partitions; proxymock reads `_speedscale/byoc-layout.json` when present to enumerate workload-specific prefixes directly, and the legacy Fluent Bit layout is also supported. Use `--local-dir` to read from a local directory tree with the same layout, in which case `--bucket` and AWS credentials are not used. See the [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) guide for the full workflow.
+Import historical BYOC traffic from a customer's own S3 bucket into a local proxymock directory. The BYOC OpenTelemetry `awss3` exporter writes objects under the `byoc/` prefix in hive-style `year=/month=/day=/hour=/minute=` partitions; proxymock reads `_speedscale/byoc-layout.json` when present to enumerate workload-specific prefixes directly, and the legacy Fluent Bit layout is also supported. Use `--local-dir` to read from a local directory tree with the same layout, in which case `--bucket` and AWS credentials are not used. See [Use BYOC traffic with proxymock](/byoc/use-traffic.md) for the full workflow.
 
 **Usage**
 
@@ -445,7 +445,7 @@ Use the same filter, follow, and output flags as `import s3`. The default output
 
 `--bucket` takes only the bucket name. Set `--prefix` to an object-key prefix such as `byoc/`, not a `gs://` URL or a path containing the bucket name. Omit `--prefix` for the legacy Fluent Bit layout with objects at the bucket root.
 
-See [Google Cloud Storage in the BYOC bucket guide](/proxymock/guides/byoc-bucket.md#google-cloud-storage) for credentials and the optional S3 interoperability compatibility path.
+See [Google Cloud Storage in the BYOC guide](/byoc/use-traffic.md#google-cloud-storage) for credentials and the optional S3 interoperability compatibility path.
 
 ### `send-one`
 
