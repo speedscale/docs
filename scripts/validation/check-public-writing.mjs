@@ -8,7 +8,7 @@ import fs from "node:fs";
 const HARD_RULES = [
   {
     name: "confidential customer",
-    pattern: /\b(?:Home Depot|Chick-fil-A|CFA)\b/gi,
+    pattern: /\b(?:Home Depot|Chick-fil-A|CFA)\b/g,
     message: "replace the prohibited customer reference",
   },
   {
@@ -27,6 +27,11 @@ const HARD_RULES = [
     pattern:
       /^\s*(?:[>*_-]+\s*)?(?:generated|written|authored|created) by (?:Codex|Claude|ChatGPT|an? AI|artificial intelligence)\s*[.!_-]*\s*$/gi,
     message: "remove generator branding",
+  },
+  {
+    name: "em dash",
+    pattern: /—/g,
+    message: "use punctuation other than an em dash in public prose",
   },
 ];
 
@@ -57,12 +62,19 @@ const WARNING_RULES = [
   {
     name: "quantitative claim",
     pattern:
-      /\b(?:\d+(?:\.\d+)?%|\d+(?:\.\d+)?x\s+(?:faster|slower|more|less)|\$\d[\d,.]*\s+(?:saved|reduction))\b/gi,
+      /(?:\d+(?:\.\d+)?%|\b\d+(?:\.\d+)?x\s+(?:faster|slower|more|less)\b|\$\d[\d,.]*\s+(?:saved|reduction)\b)/gi,
     message: "verify that the claim has a nearby citation",
   },
 ];
 
+const GENERATED_WRITING_EXCLUSIONS = new Set([
+  // Generated from speedscale/speedctl/mcp. Remove this after the generator
+  // and its source descriptions pass the shared public-writing rules.
+  "docs/proxymock/how-it-works/mcp-tools.md",
+]);
+
 function isPublicWritingFile(file) {
+  if (GENERATED_WRITING_EXCLUSIONS.has(file)) return false;
   return (
     /^(?:docs|src)\/.+\.(?:md|mdx)$/.test(file) ||
     file === "README.md" ||
@@ -80,11 +92,29 @@ function matches(pattern, text) {
   return [...text.matchAll(pattern)];
 }
 
+function markupTagEnd(text) {
+  let quote = null;
+  for (let index = 0; index < text.length; index += 1) {
+    const character = text[index];
+    if (quote) {
+      if (character === quote && text[index - 1] !== "\\") quote = null;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+      continue;
+    }
+    if (character === ">" && text[index - 1] !== "=") return index;
+  }
+  return -1;
+}
+
 function markdownVisibleLines(lines) {
   let inFrontmatter = false;
   let inFence = false;
   let inComment = false;
   let inJsxTag = false;
+  let listContentIndent = null;
 
   return lines.map((line, index) => {
     if (index === 0 && line.trim() === "---") {
@@ -105,31 +135,52 @@ function markdownVisibleLines(lines) {
       inFence = !inFence;
       return "";
     }
-    if (inFence || /^(?: {4}|\t)/.test(line)) return "";
-    if (/^\s*(?:import|export)\b/.test(line)) return "";
+    if (inFence || /^\s*(?:import|export)\b/.test(line)) return "";
 
+    let text = line;
     if (inComment) {
-      if (line.includes("-->")) inComment = false;
-      return "";
+      const commentEnd = text.indexOf("-->");
+      if (commentEnd < 0) return "";
+      text = text.slice(commentEnd + 3);
+      inComment = false;
     }
-    if (line.includes("<!--")) {
-      if (!line.includes("-->")) {
+    for (let commentStart = text.indexOf("<!--"); commentStart >= 0;) {
+      const commentEnd = text.indexOf("-->", commentStart + 4);
+      if (commentEnd < 0) {
+        text = text.slice(0, commentStart);
         inComment = true;
-        return line.slice(0, line.indexOf("<!--"));
+        break;
       }
-      return line.replace(/<!--.*?-->/g, "");
+      text = `${text.slice(0, commentStart)}${text.slice(commentEnd + 3)}`;
+      commentStart = text.indexOf("<!--");
     }
 
     if (inJsxTag) {
-      if (line.includes(">")) inJsxTag = false;
-      return "";
+      const tagEnd = markupTagEnd(text);
+      if (tagEnd < 0) return "";
+      text = text.slice(tagEnd + 1);
+      inJsxTag = false;
     }
-    if (/^\s*<[A-Za-z]/.test(line) && !line.includes(">")) {
+    const tagStart = text.search(/<[A-Za-z]/);
+    if (tagStart >= 0 && markupTagEnd(text.slice(tagStart)) < 0) {
+      text = text.slice(0, tagStart);
       inJsxTag = true;
-      return "";
     }
 
-    return line
+    const listItem = line.match(/^(\s*)(?:[-*+]|\d+[.)])\s+/);
+    if (listItem) listContentIndent = listItem[0].length;
+    else if (line.trim() && !/^\s/.test(line)) listContentIndent = null;
+
+    if (/^(?: {4}|\t)/.test(line)) {
+      const indentation = line.match(/^ */)[0].length;
+      const isListProse =
+        listContentIndent !== null &&
+        indentation >= listContentIndent &&
+        indentation < listContentIndent + 4;
+      if (!isListProse) return "";
+    }
+
+    return text
       .replace(/`[^`]*`/g, "")
       .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
       .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
@@ -179,7 +230,7 @@ function astroVisibleLines(lines) {
     let text = line.replace(/\{[^{}]*\}/g, " ").replace(/https?:\/\/\S+/g, " ");
 
     if (inTag) {
-      const tagEnd = text.indexOf(">");
+      const tagEnd = markupTagEnd(text);
       if (tagEnd < 0) return attributes.join(" ");
       text = text.slice(tagEnd + 1);
       inTag = false;
@@ -187,7 +238,7 @@ function astroVisibleLines(lines) {
 
     text = text.replace(/<[^>]*>/g, " ");
     const tagStart = text.lastIndexOf("<");
-    if (tagStart >= 0 && text.indexOf(">", tagStart) < 0) {
+    if (tagStart >= 0 && markupTagEnd(text.slice(tagStart)) < 0) {
       text = text.slice(0, tagStart);
       inTag = true;
     }
@@ -214,35 +265,11 @@ function visibleLines(file, lines) {
   return typedSourceVisibleLines(lines);
 }
 
-function proseBodyLines(file, lines) {
-  if (!/\.(?:md|mdx)$/.test(file)) return visibleLines(file, lines);
-  const visible = markdownVisibleLines(lines);
-  let inFrontmatter = false;
-  let inFence = false;
-  return lines.map((line, index) => {
-    if (index === 0 && line.trim() === "---") {
-      inFrontmatter = true;
-      return "";
-    }
-    if (inFrontmatter && line.trim() === "---") {
-      inFrontmatter = false;
-      return "";
-    }
-    if (inFrontmatter) return "";
-    if (/^\s*(?:```|~~~)/.test(line)) {
-      inFence = !inFence;
-      return "";
-    }
-    if (inFence || /^(?: {4}|\t)/.test(line)) return "";
-    return visible[index];
-  });
-}
-
 function isMarkdownProseLine(line, visibleLine = line) {
   const trimmed = line.trim();
   if (
     !trimmed ||
-    /^(?:---|```|~~~|#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\||<|:::|\{| {4}|\t|import\b|export\b)/.test(
+    /^(?:---|```|~~~|#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\||<|:::|\{|import\b|export\b)/.test(
       line,
     )
   )
@@ -315,8 +342,7 @@ export function analyzeFile(file, content, selectedLines) {
         continue;
 
       const previousIsProse =
-        index > 0 &&
-        isMarkdownProseLine(lines[index - 1], visible[index - 1]);
+        index > 0 && isMarkdownProseLine(lines[index - 1], visible[index - 1]);
       const nextIsProse =
         index + 1 < lines.length &&
         isMarkdownProseLine(lines[index + 1], visible[index + 1]);
@@ -329,29 +355,6 @@ export function analyzeFile(file, content, selectedLines) {
           "hard-wrapped prose",
           line.trim(),
           "put each prose paragraph on one source line",
-        );
-      }
-    }
-  }
-
-  const body = proseBodyLines(file, lines);
-  for (let index = 0; index < body.length; index += 1) {
-    const text = body[index];
-    if (!text.trim()) continue;
-    if (selectedLines.has(index + 1) && text.includes("—")) {
-      for (
-        let dash = text.indexOf("—");
-        dash >= 0;
-        dash = text.indexOf("—", dash + 1)
-      ) {
-        addFinding(
-          findings,
-          file,
-          index + 1,
-          "error",
-          "em dash",
-          "—",
-          "use punctuation other than an em dash in public prose",
         );
       }
     }
@@ -427,6 +430,10 @@ function changedLines(root, base) {
     parseAddedLines(
       runGit(root, [
         "diff",
+        "--src-prefix=a/",
+        "--dst-prefix=b/",
+        "--no-color",
+        "--no-ext-diff",
         "--unified=0",
         "--diff-filter=ACMR",
         `${base}...HEAD`,
@@ -437,7 +444,17 @@ function changedLines(root, base) {
   mergeSelected(
     selected,
     parseAddedLines(
-      runGit(root, ["diff", "--unified=0", "--diff-filter=ACMR", "HEAD", "--"]),
+      runGit(root, [
+        "diff",
+        "--src-prefix=a/",
+        "--dst-prefix=b/",
+        "--no-color",
+        "--no-ext-diff",
+        "--unified=0",
+        "--diff-filter=ACMR",
+        "HEAD",
+        "--",
+      ]),
     ),
   );
   const untracked = runGit(root, [

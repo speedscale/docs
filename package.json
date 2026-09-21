@@ -14,6 +14,7 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "gen:mcp-docs": "bash scripts/gen-mcp-docs.sh",
     "check:writing": "node scripts/validation/check-public-writing.mjs",
+    "check:writing:pushed": "node scripts/validation/check-pushed-writing.mjs",
     "test:writing": "node --test scripts/tests/check-public-writing.test.mjs",
     "prepare": "husky",
     "postinstall": "node ./scripts/apply-patch.mjs"

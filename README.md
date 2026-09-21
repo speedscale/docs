@@ -63,4 +63,4 @@ Use this checklist when adding or updating docs pages:
 
 ### Public Writing Checks
 
-Run `yarn check:writing` before pushing documentation changes. It checks added public prose by default, while `yarn check:writing --all` reports the existing backlog. The same checker runs in pull request and main-branch CI. Internal contributors should also follow the canonical rules in `/Users/kahrens/spd-workspace/spd-ai-notes/INSTRUCTION - Read Before Writing Content.md`.
+Follow the [repository public-writing rules](./AGENTS.md#public-writing) and run `yarn check:writing` before pushing documentation changes. It checks added public prose by default, while `yarn check:writing --all` reports the existing backlog. The same checker runs in pull request and main-branch CI.
