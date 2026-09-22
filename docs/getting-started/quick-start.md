@@ -59,6 +59,35 @@ If your organization cannot use Helm tooling at all, [contact Speedscale Support
 
 <Tabs>
 
+<TabItem value="agent" label="AI agent">
+
+Let your coding agent (Claude Code, Cursor, Codex, Gemini CLI, Kiro, or any
+assistant that can read a URL and run commands) do the whole install. Paste
+this into the chat:
+
+```text
+Install Speedscale for me. First fetch the agent skill at
+https://raw.githubusercontent.com/speedscale/skills/main/skills/install-speedscale/SKILL.md
+and the references/ and scripts/ files it links to (same base URL), save them
+under your skills directory, then follow the skill. Ask me before touching a
+Kubernetes cluster.
+```
+
+The [install-speedscale skill](https://github.com/speedscale/skills) walks the
+agent through the same steps as the tabs on this page: it installs `speedctl`
+and `proxymock`, installs Helm and kubectl if they are missing, sets up your API
+key without ever printing it, picks Helm values for your platform (EKS, GKE,
+AKS, minikube, kind, OpenShift), verifies the operator, and wires the
+proxymock MCP server into the agent. Every mutating step is announced before it
+runs, and the agent stops for you at browser sign-in and before touching a
+cluster whose name looks like production.
+
+Already have proxymock? `proxymock mcp install --yes` installs the same skill
+for Claude Code, and `/plugin marketplace add speedscale/skills` or
+`npx skills add speedscale/skills` work for other agents.
+
+</TabItem>
+
 <TabItem value="helm" label="Helm" default>
 
 Make sure you have [Helm 3](https://helm.sh/docs/intro/install/) installed. Then,
