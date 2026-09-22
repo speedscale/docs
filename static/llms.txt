@@ -15,6 +15,14 @@
 - [Tutorial](https://docs.speedscale.com/getting-started/tutorial/)
 - [Installation](https://docs.speedscale.com/getting-started/installation/)
 
+## Agent skills
+
+Skills an AI coding agent can fetch and follow. Raw URLs, safe to load directly.
+
+- [install-speedscale](https://raw.githubusercontent.com/speedscale/skills/main/skills/install-speedscale/SKILL.md): end-to-end install of speedctl, proxymock and the Speedscale Operator Helm chart, including prerequisites, API key setup, per-platform Helm values, verification and MCP wiring. References and scripts live under the same base URL (`references/`, `scripts/`).
+- [improve-mock-match-rate](https://raw.githubusercontent.com/speedscale/skills/main/skills/improve-mock-match-rate/SKILL.md): pull a replay report and tune mock blueprints until the projected match rate stops improving.
+- Repository and other install routes (Claude Code plugin marketplace, `npx skills add speedscale/skills`): https://github.com/speedscale/skills
+
 ## Core concepts
 
 - [Traffic Capture](https://docs.speedscale.com/concepts/capture/)
