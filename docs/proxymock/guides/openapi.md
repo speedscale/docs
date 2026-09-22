@@ -9,7 +9,7 @@ sidebar_position: 7
 
 The OpenAPI to RRPair feature in proxymock allows you to instantly generate a complete set of mock API responses from any OpenAPI 3.0+ specification (JSON or YAML). This enables rapid prototyping, testing, and development without needing to manually record or handcraft mock data.
 
-With a single command, you can convert your OpenAPI spec into a directory of RRPair markdown files. From therer you can use the `proxymock mock` server to respond and `proxymock inspect` to modify specific responses.
+With a single command, you can convert your OpenAPI spec into a directory of RRPair markdown files. From therer you can use the `proxymock mock` server to respond and `proxymock web` to modify specific responses.
 
 ## Why Use This Feature?
 

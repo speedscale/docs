@@ -129,10 +129,10 @@ make local-capture
 make client-capture
 ```
 
-5. This will generate traffic, and you can view the traffic with this command:
+5. This will generate traffic, and you can browse the traffic in your browser with this command:
 
 ```bash
-proxymock inspect --in proxymock/recorded-YOUR_TIMESTAMP
+proxymock web --in proxymock/recorded-YOUR_TIMESTAMP
 ```
 
 6. If you want to push this data to Speedscale cloud you can with the command:

@@ -20,7 +20,7 @@ Most users will want to:
 1. Use `proxymock record` to start recording.
 2. Start the app with the appropriate proxy environment variables set, or let `proxymock` wrap the app directly.
 3. Exercise the app so it calls remote systems.
-4. Inspect the traffic you recorded with `proxymock inspect`.
+4. Inspect the traffic you recorded with `proxymock web`.
 5. Run `proxymock mock` to serve mock responses.
 6. Exercise the app again against the mock server, or replay captured traffic with `proxymock replay`.
 
@@ -29,7 +29,7 @@ Most users will want to:
 - `proxymock record` captures inbound and outbound traffic as RRPair files.
 - `proxymock mock` serves mock responses for outbound traffic.
 - `proxymock replay` sends recorded test traffic back to your app.
-- `proxymock inspect` opens the TUI for exploring recorded traffic.
+- `proxymock web` opens a local web UI for exploring recorded traffic.
 
 ## How it works
 

@@ -17,13 +17,11 @@ To import the mock, you can use the following command (point to the file in your
 proxymock import --file default.jsonl
 ```
 
-Take note of the snapshot ID that is returned. Run the following command to view the mock:
+The import prints the directory it wrote the RRPair files to (under `proxymock/`). Run the following command to browse the mock in your browser:
 
 ```bash
-proxymock inspect --snapshot <snapshot-id>
+proxymock web --in <directory>
 ```
-
-![list](./dynamodb/dynamodb-list.png)
 
 ## Request Format
 

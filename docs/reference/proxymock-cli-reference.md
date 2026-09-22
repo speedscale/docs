@@ -36,7 +36,6 @@ proxymock [command]
 - `help` - Help about any command
 - `import` - Import traffic from a snapshot file or a BYOC S3 bucket
 - `init` - Initializes proxymock installation and configuration
-- `inspect` - Inspect Speedscale traffic (test / mock files)
 - `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
@@ -253,40 +252,6 @@ proxymock replay --test-against localhost:9092
 - `requests.total`
 
 Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
-
-### `inspect`
-
-Inspect Speedscale traffic in a TUI.
-
-**Usage**
-
-```bash
-proxymock inspect [flags]
-```
-
-**Examples**
-
-```bash
-# inspect demo data
-proxymock inspect --demo
-
-# inspect RRPair files from a directory
-proxymock inspect --in ./my-recording
-
-# inspect a snapshot file on disk
-proxymock inspect --snapshot ~/.speedscale/data/snapshots/<uuid>/raw.jsonl
-
-# inspect a snapshot from the local snapshot repository by ID
-proxymock inspect --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
-```
-
-**Flags**
-
-- `--demo` - Use demo data to explore the TUI without recording traffic first
-- `--in strings` - Directories to recursively read RRPair files from (default current directory)
-- `--log-to string` - File path to write logs to
-- `--snapshot string` - Snapshot ID to target
-- `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 
 ## Utility commands
 
