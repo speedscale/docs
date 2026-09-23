@@ -193,9 +193,11 @@ Handle conflicts:
 
 After applying rules to production:
 
+- [DLP Rules for Multiple Groups](./group-rules.md) - Let each group manage redaction for its own workloads
 - [Generating Test Data](./test-data-generation.md) - Create test data from redacted snapshots
 
 ## Related Documentation
 
 - [Creating DLP Rules](./creating-rules.md) - Rule creation guide
+- [DLP Rules for Multiple Groups](./group-rules.md) - Scoping rules per group on a shared forwarder
 - [Cluster Inspector](../capture/infra.md) - Infrastructure and forwarder configuration

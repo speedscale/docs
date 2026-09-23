@@ -178,6 +178,34 @@ Best practices:
 - **Change History**: Document change history
 - **Maintenance**: Keep documentation updated
 
+## Managing DLP Across Groups
+
+When one forwarder captures traffic for several groups (teams, products, business units, however redaction ownership is divided in your organization), give each group its own scoped rule rather than having everyone edit a single document. See [DLP Rules for Multiple Groups](./group-rules.md) for the mechanics; the practices below are about how groups divide the work.
+
+### Dividing Redaction Between Groups
+
+- **Baseline for what is sensitive everywhere**: credentials, authorization headers, government identifiers
+- **Group rules for what is specific to one API**: an internal customer id, a partner reference, a domain field
+- **One rule per group**, holding that group's fields, rather than one rule per field
+- **Scope to the namespaces and services the group owns**, and no wider
+
+### Ownership
+
+- **Name an owner on every rule** so the group to ask is recorded, not remembered
+- **Let the owning group change its own rule** without coordinating with other groups
+- **Require agreement for baseline changes**, because they affect every group
+- **Keep disabled rules** instead of deleting them, so the history of what was redacted survives an audit
+
+### Keeping Coverage Honest
+
+- **Review scopes when workloads are renamed**: a scope names namespaces and services exactly, so a rename
+  takes the rule out of service silently
+- **Check new services**: a service in a namespace nobody scoped receives only the baseline
+- **Verify with a snapshot after every change**, confirming both that your fields are redacted and that other
+  groups' traffic is unchanged
+- **Remember that unattributed traffic gets the baseline only**, which is what makes a well-maintained baseline
+  worth the effort
+
 ## Production Deployment
 
 ### Gradual Rollout
