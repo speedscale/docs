@@ -180,10 +180,7 @@ Best practices:
 
 ## Managing DLP Across Groups
 
-When one forwarder captures traffic for several groups — teams, products, business units, however redaction
-ownership is divided in your organization — give each group its own scoped rule rather than having everyone
-edit a single document. See [DLP Rules for Multiple Groups](./group-rules.md) for the mechanics; the
-practices below are about how groups divide the work.
+When one forwarder captures traffic for several groups (teams, products, business units, however redaction ownership is divided in your organization), give each group its own scoped rule rather than having everyone edit a single document. See [DLP Rules for Multiple Groups](./group-rules.md) for the mechanics; the practices below are about how groups divide the work.
 
 ### Dividing Redaction Between Groups
 
