@@ -11,13 +11,13 @@ This guide covers how to use proxymock to mock MongoDB database connections and 
 
 MongoDB is one of the world's most popular NoSQL document databases, using a binary wire protocol (OP_MSG) for client-server communication. **proxymock** is able to record and mock MongoDB databases. This allows you to mock a MongoDB database, including real data, without running a MongoDB instance or populating it with data. To do this, we record your app talking to a MongoDB database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, check out the [quick start](../getting-started/quickstart/index.md).
 
-## Why `--map` Is Required {#why-map}
+## When to use `--map` {#why-map}
 
-Unlike HTTP-based services, MongoDB clients generally cannot be proxied using environment variables like `ALL_PROXY` or `http_proxy`. This is especially true for the **Java MongoDB driver**, which uses its own NIO/Netty-based transport layer that bypasses `java.net.Socket` entirely. JVM-level SOCKS flags (`-DsocksProxyHost`, `-DsocksProxyPort`) have no effect because the driver never goes through the standard socket path.
+Use `--map` when you can change the MongoDB connection address and want to avoid driver-specific proxy configuration. proxymock listens on a local port and forwards that connection to MongoDB.
 
-Python and Node.js MongoDB drivers may partially support SOCKS proxying, but behavior varies across versions and is fragile.
+HTTP proxy environment variables do not route MongoDB's wire protocol. SOCKS support depends on the driver and transport. The current Java Sync Driver has explicit `proxyHost` and `proxyPort` options; it ignores those options when using a Unix domain socket or configured `TransportSettings`. See [MongoDB's Java SOCKS5 guide](https://www.mongodb.com/docs/drivers/java/sync/current/security/socks/).
 
-The `--map` flag is the reliable, language-agnostic approach for MongoDB. It tells proxymock to listen on a local port and forward traffic to the real MongoDB server, requiring only a port change in your application configuration.
+Do not assume JVM-wide SOCKS properties or `ALL_PROXY` configure your MongoDB driver. Use its documented options or the port-mapping example below. See [Java proxy configuration](./java.md) for the differences.
 
 ## Recording MongoDB Traffic {#recording-intro}
 
@@ -37,9 +37,9 @@ This tells the recorder to listen on port 37017 for MongoDB traffic and forward 
 
 For proxymock to capture MongoDB traffic, point your application at the mapped port. The exact mechanism depends on your language and framework.
 
-**Java (Spring Boot / Micronaut)**
+**Java (Spring Boot)**
 
-Externalize the MongoDB host and port so you can switch between the real and mapped ports without code changes. In `application.properties` or `application.yml`:
+Externalize the MongoDB host and port so you can switch between the real and mapped ports without code changes. In `application.yml`:
 
 ```yaml
 # application.yml
@@ -73,10 +73,10 @@ The key ingredient is redirecting your application's MongoDB connection to `loca
 
 ### What Gets Recorded
 
-You can inspect the recording using the inspect command:
+You can browse the recording in your browser with proxymock web:
 
 ```bash
-proxymock inspect
+proxymock web
 ```
 
 ![MongoDB RRPairs](./mongodb/mongodb-rrpairs.png)
@@ -91,7 +91,7 @@ The actual wire protocol is binary but proxymock displays request and response d
 
 ### Troubleshooting Recording
 
-- SOCKS proxy does not work with the Java MongoDB driver — use `--map` instead
+- If SOCKS settings have no effect, check your driver version and transport, or use `--map`.
 - Python/Node.js drivers have inconsistent SOCKS support — `--map` is simpler and more reliable across all languages
 - Verify MongoDB server is accessible from proxymock
 - If using authentication, make sure to exercise the full connection lifecycle so the SCRAM handshake is captured

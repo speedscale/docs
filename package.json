@@ -13,6 +13,9 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "gen:mcp-docs": "bash scripts/gen-mcp-docs.sh",
+    "check:writing": "node scripts/validation/check-public-writing.mjs",
+    "check:writing:pushed": "node scripts/validation/check-pushed-writing.mjs",
+    "test:writing": "node --test scripts/tests/check-public-writing.test.mjs",
     "prepare": "husky",
     "postinstall": "node ./scripts/apply-patch.mjs"
   },
@@ -37,22 +40,21 @@
     "@docusaurus/theme-mermaid": "^3.10.1",
     "@docusaurus/theme-search-algolia": "^3.10.1",
     "@mdx-js/react": "^3.0.1",
-    "algoliasearch": "^5.50.2",
+    "algoliasearch": "^5.59.0",
     "cheerio": "1.2.0",
     "clsx": "^2.0.0",
     "csv-parser": "^3.0.0",
-    "dompurify": "^3.4.0",
+    "dompurify": "^3.4.15",
     "estree-util-value-to-estree": "^3.5.0",
-    "katex": "^0.16.45",
+    "katex": "^0.18.7",
     "prism-react-renderer": "^2.1.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.1",
     "@docusaurus/types": "^3.10.1",
-    "husky": "^9.1.7",
-    "patch-package": "^8.0.1"
+    "husky": "^9.1.7"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -66,11 +68,10 @@
     "@babel/helpers": "^7.29.2",
     "@babel/plugin-transform-modules-systemjs": "^7.29.7",
     "prismjs": "^1.30.0",
-    "dompurify": "^3.4.0",
-    "katex": "^0.16.45",
+    "dompurify": "^3.4.15",
+    "katex": "^0.18.7",
     "fast-uri": "^3.1.2",
     "serialize-javascript": "^7.0.5",
-    "tmp": "^0.2.7",
     "mermaid": "^11.15.0",
     "qs": "^6.15.2",
     "uuid": "^14.0.1",

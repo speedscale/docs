@@ -13,8 +13,8 @@ Because the output is the standard WireMock stub-mapping format (`{"mappings": [
 
 The exporter converts each recorded HTTP/HTTPS request/response pair into one WireMock stub mapping:
 
-- **request** — the `method` and `urlPath`, plus `queryParameters` matchers (`equalTo`) for any recorded query string.
-- **response** — the `status`, response `headers`, and the recorded `body`, byte for byte.
+- **request**: the `method` and `urlPath`, plus `queryParameters` matchers (`equalTo`) for any recorded query string.
+- **response**: the `status`, response `headers`, and the recorded `body`, byte for byte.
 
 Request headers are not turned into matchers. Stubs match on method and path so they are not over-constrained by per-request headers like auth tokens or user agents, which is the right default when you want recorded responses served back reliably. Each mapping also carries a stable `id` (the request UUID) and `persistent: true` so runners that persist stubs keep them across restarts.
 

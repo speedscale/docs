@@ -3,7 +3,6 @@ description: "Modify tests and mock responses in proxymock recordings effortless
 sidebar_position: 5
 ---
 
-import RRPairList from './modify-rrpairs/rrpair-list.png'
 import RRPairDetail from './modify-rrpairs/rrpair-response-detail.png'
 import FieldTransformMenu from './modify-rrpairs/field-transform-menu.png'
 import PreviewBlueprintsStepper from './modify-rrpairs/preview-blueprints-stepper.png'
@@ -18,26 +17,10 @@ Make sure you have:
 
 - proxymock [installed](../getting-started/quickstart/quickstart-cli.md)
 - existing proxymock recording (like this [one](https://github.com/speedscale/mock-lab/tree/main/lab/proxymock))
-- (optional) set $EDITOR environment varaible inr your terminal (ex: `export EDITOR=code`)
-
-## Editing from the TUI
-
-proxymock provides a terminal UI for viewing request/response pairs (RRPairs). Open this view opening a terminal,  switching to the parent directory of your recording and running:
-
-```shell
-proxymock inspect
-```
-
-<img src={RRPairList} alt="proxymock tui" width="500" style={{ display: 'block', margin: '0 auto' }} />
-
-Press the `e` key to open an RRPair in your editor of choice. Your `$EDITOR` environment variable must be set for this to work.
-
-Modify the RRPair and save the file. proxymock will **automatically** update its view. The next time you run proxymock as a mock or test server the new data will be used.
-
 
 ## Editing raw files
 
-If you don't want to use the terminal UI, you can navigate the proxymock files and edit them like normal markdown. Each recording is srored in its own directory under the `proxymock` parent directory.
+RRPairs are plain markdown files, so you can edit them in any editor. Each recording is stored in its own directory under the `proxymock` parent directory. Modify the RRPair and save the file; the next time you run proxymock as a mock or test server the new data will be used.
 
 
 For more information about the RRPair file format, check this [link](../how-it-works/rrpair-format.md).
@@ -45,7 +28,7 @@ For more information about how mock signatures are built from the raw traffic re
 
 ## Applying transforms in proxymock web
 
-The TUI and raw-file edits above change the recorded data in place. When you instead want to *overlay* a change at run time — swap an expired token, mask a field, substitute a constant — apply a **transform** from the request detail in `proxymock web`. Transforms are saved as [blueprints](./recommendations.md#inspecting-and-editing-the-blueprint) and applied every time you run proxymock as a mock or test server; the recording itself is untouched.
+Raw-file edits change the recorded data in place. When you instead want to *overlay* a change at run time, such as swapping an expired token or masking a field, apply a **transform** from the request detail in `proxymock web`. Transforms are saved as [blueprints](./blueprints.md) and applied every time you run proxymock as a mock or test server; the recording itself is untouched.
 
 Start the web UI from the parent of `proxymock/`:
 

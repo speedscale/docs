@@ -12,7 +12,7 @@
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { cwd } from "node:process";
 
@@ -43,17 +43,19 @@ function parseRedirects(configContent) {
 
 /** Get changed files by diff-filter status */
 function getChangedFiles(filter, baseRef) {
+  // Keep caller-supplied refs out of the shell.
   const args = baseRef
-    ? `git diff --diff-filter=${filter} --name-only HEAD...${baseRef}`
-    : `git diff --diff-filter=${filter} --name-only --cached`;
+    ? ["diff", `--diff-filter=${filter}`, "--name-only", "--no-renames", `${baseRef}...HEAD`]
+    : ["diff", `--diff-filter=${filter}`, "--name-only", "--no-renames", "--cached"];
   try {
-    const files = execSync(args, { cwd: WORK_DIR, encoding: "utf-8" })
+    const files = execFileSync("git", args, { cwd: WORK_DIR, encoding: "utf-8" })
       .trim()
       .split("\n")
       .filter(Boolean);
     return files;
   } catch {
-    return [];
+    console.error("Unable to compare documentation changes; check the base ref.");
+    process.exit(1);
   }
 }
 
@@ -63,7 +65,6 @@ const baseRef = process.argv[2]; // e.g., "origin/main" for CI
 
 const deletedFiles = getChangedFiles("D", baseRef);
 const addedFiles = getChangedFiles("A", baseRef);
-const renamedFiles = getChangedFiles("R", baseRef);
 
 function findManualRenames(deleted, added) {
   const renames = [];

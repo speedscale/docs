@@ -22,6 +22,10 @@ used to confirm your application behavior during [replay](#replay). Use a
 [test configs](#test-config). Assertions have no effect when running in [low
 data mode](#low-data-mode).
 
+### Blueprint
+
+A saved proxymock configuration containing transform chains and local metadata, including its name and activation state. Active blueprints apply during replay or mocking. They use the same transform engine as Cloud Traffic Transform Templates. See [Create and Verify Blueprints](/proxymock/guides/blueprints.md).
+
 ### Collector
 
 A Speedscale component that collects logs and metric data from pods during a
@@ -220,6 +224,8 @@ Snapshots are listed on the [snapshots page](https://app.speedscale.com/snapshot
 
 See [creating a snapshot](/guides/creating-a-snapshot.md) for more information.
 
+A snapshot can be [locked](/guides/locking-a-snapshot.md) to make it read-only until the locking user or an Admin unlocks it.
+
 ### speedctl
 
 The Speedscale CLI which can be used to interact with Speedscale resources in
@@ -284,6 +290,14 @@ the protocol in use.
 The number of [requests](#request) completed in a single second of
 measurement. Requests per second (RPS) are used to describe the throughput
 of one endpoint or a service as a whole.
+
+### Traffic Transform Template
+
+A reusable Cloud transform configuration that can be applied to snapshots. The transform configuration inside a proxymock [blueprint](#blueprint) uses the same engine; the complete saved JSON wrappers differ. See [Traffic Transform Templates](/guides/transformation/overview.md#traffic-transform-templates).
+
+### Transform Chain
+
+An extractor followed by ordered [transforms](#transform), optionally restricted by traffic filters. A chain belongs to a generator or responder configuration. See [Transforms](/concepts/transforms.md).
 
 ### Transform
 

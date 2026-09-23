@@ -16,10 +16,13 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | .NET       | Language | Full    | See [.NET](/reference/languages/dotnet#proxymock) and [TLS](/reference/languages/dotnet#tls-trust) |
 | C++        | Language | Full    | See [sidecar TLS](/getting-started/installation/sidecar/tls/) |
 | Go         | Language | Full    | See [Go](/reference/languages/golang#proxymock) and [TLS](/reference/languages/golang#tls-trust) |
-| Java       | Language | Full    | See [Java](/reference/languages/java#proxymock) and [TLS](/reference/languages/java#tls-trust) |
+| Java       | Language | Full    | See [Java setup](/reference/languages/java), [agent compatibility](/reference/java/agent#compatibility), and [TLS trust](/reference/java/tls). |
+| Kotlin     | Language | Full    | See [Kotlin](/reference/languages/kotlin). Kotlin uses the JVM agent and Java TLS/proxy configuration. |
 | Node.js    | Language | Full    | See [Node.js](/reference/languages/nodejs#proxymock) and [TLS](/reference/languages/nodejs#tls-trust) |
+| PHP        | Language | Full    | See [PHP](/reference/languages/php), including proxymock and OpenSSL 3.x eBPF requirements. |
 | Python     | Language | Full    | See [Python](/reference/languages/python#proxymock) and [TLS](/reference/languages/python#tls-trust) |
 | Ruby       | Language | Full    | See [sidecar TLS](/getting-started/installation/sidecar/tls/) |
+| Rust       | Language | Full    | See [Rust](/reference/languages/rust), including proxymock and rustls eBPF requirements. |
 
 ### Supported Protocols
 
@@ -28,7 +31,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
-| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql.md). See [details](/guides/capture/bodies#graphql) |
+| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/). See [details](/guides/capture/bodies#graphql) |
 | gRPC              | Protocol | Full         | See [details](/guides/capture/bodies#grpc)                                             |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |
@@ -68,7 +71,8 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MongoDB               | DBMS | Full         | See [proxymock guide](/proxymock/guides/mongodb)  |
 | MySQL                 | DBMS | Full         |                                                  |
 | Postgres              | DBMS | Full         | See [details](/guides/capture/bodies#postgres)       |
-| Redis                 | DBMS | Capture Only | See [details](/guides/capture/bodies#redis)          |
+| Redis                 | DBMS | Full         | See [Redis mocking](/guides/mocking/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
+| Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/guides/mocking/redis). |
 
 ### Supported APIs
 
@@ -121,6 +125,7 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | Argo Rollouts                                  | See [guide](../guides/argo.md)                                                          |
 | AWS Elastic Container Service (ECS) or Fargate | See [guide](../getting-started/installation/install/ecs.md)                                                    |
 | AWS Elastic Kubernetes Service (EKS)           |                                                                                         |
+| AWS EKS Auto Mode                              | See [EKS Auto Mode guide](/getting-started/installation/install/eks-auto-mode) (eBPF or transparent sidecar) |
 | AWS Elastic Beanstalk                          | See [guide](../getting-started/installation/install/beanstalk.md)                                              |
 | AWS Elastic Compute Cloud (EC2)                | See [guide](../getting-started/installation/install/vm.md)                                                     |
 | Canonical Microk8s                             | Must enable DNS                                                                         |

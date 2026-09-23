@@ -19,7 +19,7 @@ Each is available three ways: as a CLI verb (`proxymock dlp`, `proxymock filter`
 ## Before you begin
 
 - `proxymock` [installed](../getting-started/quickstart/quickstart-cli.md).
-- A directory of RRPair files to test against, for example a `recorded-*` run or an [imported BYOC pull](./byoc-bucket.md).
+- A directory of RRPair files to test against, for example a `recorded-*` run or an [imported BYOC pull](/byoc/use-traffic.md).
 - A rule to test. Write one by hand, or start from a cloud rule: `proxymock cloud pull dlp standard` writes the shipped `standard` DLP rule to disk. Pulling needs an account; testing and applying do not.
 
 ## Redact with DLP {#dlp}
@@ -45,7 +45,7 @@ When the rule is right, `dlp apply` writes redacted copies to a separate directo
 proxymock dlp apply --dlp-config my-dlp.json --in ./recorded --out ./redacted
 ```
 
-You can also redact at the moment traffic enters your workspace. `proxymock import s3 --dlp-config` applies the rule to matched RRPairs before they are written, so sensitive values from a [BYOC pull](./byoc-bucket.md) never touch disk unredacted, and `proxymock record --dlp-config` redacts at capture time.
+You can also redact at the moment traffic enters your workspace. `proxymock import s3 --dlp-config` applies the rule to matched RRPairs before they are written, so sensitive values from a [BYOC pull](/byoc/use-traffic.md) never touch disk unredacted, and `proxymock record --dlp-config` redacts at capture time.
 
 ## Keep or drop with filters {#filter}
 
@@ -110,6 +110,6 @@ The same `pull`/`push` pair works for `filter` and `transform`. Author where it 
 
 ## Next steps
 
-- [Pull Traffic from a BYOC Bucket](./byoc-bucket.md) is the natural source of traffic to redact and filter.
+- [Use BYOC Traffic with proxymock](/byoc/use-traffic.md) is the natural source of traffic to redact and filter.
 - [Fix Replay Failures with Recommendations](./recommendations.md) generates transform chains for rotating values.
 - The [proxymock CLI reference](/reference/proxymock-cli-reference.md#local-rule-authoring-commands) lists every flag for `dlp`, `filter`, and `transform`.

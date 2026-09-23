@@ -1,0 +1,31 @@
+version: 2
+
+multi-ecosystem-groups:
+  docs-dependencies:
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "deps"
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    patterns: ["*"]
+    multi-ecosystem-group: "docs-dependencies"
+    open-pull-requests-limit: 1
+    groups:
+      security-actions:
+        applies-to: "security-updates"
+        patterns: ["*"]
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    patterns: ["*"]
+    multi-ecosystem-group: "docs-dependencies"
+    open-pull-requests-limit: 1
+    groups:
+      security-npm:
+        applies-to: "security-updates"
+        patterns: ["*"]

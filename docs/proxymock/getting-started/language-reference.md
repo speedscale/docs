@@ -20,7 +20,7 @@ If you want the full language-specific first-success path, start here:
 As the name implies, **proxymock** is a proxy which works by routing traffic from your application through **proxymock** before it goes to the final destination.
 
 :::warning
-99% of the time proxy configuration does not require a code change, but some HTTP client libraries have their own proxy configuration that may override or ignore environment variables.  Check the documentation for your specific library.
+Proxy support depends on the client library. Some clients ignore environment variables or require explicit proxy settings. Check your client configuration and confirm that a request appears in the recording.
 :::
 
 Record inbound traffic by setting the `--app-port` flag and making requests to port `4143` instead of your application's port.
@@ -54,7 +54,7 @@ proxymock record --map 65432=postgres://localhost:5432
 proxymock record --map 1443=https://httpbin.org:443
 ```
 
-For more examples, see the [MongoDB guide](../guides/mongodb.md), [MySQL guide](../guides/mysql.md), [PostgreSQL guide](../guides/postgres.md), and [Kafka guide](/guides/message-brokers/kafka).
+For more examples, see the [Redis mocking guide](/guides/mocking/redis), [MongoDB guide](../guides/mongodb.md), [MySQL guide](../guides/mysql.md), [PostgreSQL guide](../guides/postgres.md), and [Kafka guide](/guides/message-brokers/kafka).
 
 <Tabs groupId="language">
 <TabItem value="golang" label="Go">
@@ -75,40 +75,22 @@ export ALL_PROXY=socks5://localhost:4140
 </TabItem>
 <TabItem value="java" label="Java">
 
-Java supports `-D` flags to set system properties, which can be set in an environment variable.
+For a JVM started by proxymock, HTTP/HTTPS proxy and truststore properties are supplied automatically:
 
 ```shell
-export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=localhost -Dhttp.proxyPort=4140 -Dhttps.proxyHost=localhost -Dhttps.proxyPort=4140"
+proxymock record -- java -jar app.jar
 ```
 
-Use the SOCKS proxy to capture JDBC database traffic (MySQL, PostgreSQL):
-```shell
-export JAVA_TOOL_OPTIONS="-DsocksProxyHost=localhost -DsocksProxyPort=4140"
-```
+Set `JAVA_HOME` to your JDK so proxymock can create the truststore if needed. For a separate JVM or IDE, configure `http.proxyHost`, `http.proxyPort`, `https.proxyHost`, and `https.proxyPort`, plus the Java truststore. Standard Java networking does not use `HTTP_PROXY` or `SOCKS_PROXY` as a substitute for these properties.
 
-:::caution
-The **MongoDB Java driver** uses its own NIO/Netty transport that bypasses `java.net.Socket` entirely. JVM SOCKS flags (`-DsocksProxyHost`, `-DsocksProxyPort`) have no effect. Use `--map` instead for MongoDB traffic — see the [MongoDB guide](../guides/mongodb.md).
-:::
+For a SOCKS-capable TCP client, use `-DsocksProxyHost=localhost -DsocksProxyPort=4140`. Driver and transport support varies; use `--map` when the client ignores proxy settings.
 
-With authentication and TLS certificates:
-```shell
-export JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=localhost -Dhttp.proxyPort=4140 -Dhttps.proxyHost=localhost -Dhttps.proxyPort=4140 -Djavax.net.ssl.trustStore=$HOME/.speedscale/certs/cacerts.jks -Djavax.net.ssl.trustStorePassword=changeit"
-```
+See [Java with proxymock](/proxymock/guides/java) for complete HTTP, SOCKS, database, IDE, and CI examples. See [Java TLS trust](/reference/java/tls) for certificate setup.
 
-Bypass proxy for specific hosts:
-```shell
--Dhttp.nonProxyHosts="localhost|127.0.0.1|*.internal.domain"
-```
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-:::warning
-Support across runtimes or libraries may vary.  For example,
-[Maven](https://maven.apache.org/) requires that `-D` flags are set through
-`-Dspring-boot.run.jvmArguments`.
-:::
-
-:::note
-These options include the `-D` flags for TLS. See the Decrypting-TLS section below.
-:::
+Kotlin/JVM uses the Java networking stack. Standard JVM HTTP clients ignore `HTTP_PROXY` and `HTTPS_PROXY`, so use JVM proxy properties or the SOCKS proxy plus a JKS truststore. See the [Kotlin language page](/reference/languages/kotlin#proxymock) for the complete setup.
 
 </TabItem>
 <TabItem value="python" label="Python">
@@ -209,13 +191,16 @@ end
 </TabItem>
 <TabItem value="php" label="PHP">
 
-PHP does not automatically use environment variables so it must be set explicitly. There multiple ways to configure proxies depending on the method used.
+PHP proxy behavior depends on the client and build. Configure the proxy explicitly when the client does not honor environment variables. See the [PHP language page](/reference/languages/php#proxymock) for a complete record, mock, and replay workflow.
 
 Using cURL:
 ```php
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_PROXY, "http://localhost:4140");
+if ($ca = getenv('SSL_CERT_FILE')) {
+    curl_setopt($ch, CURLOPT_CAINFO, $ca);
+}
 // For SOCKS proxy
 // curl_setopt($ch, CURLOPT_PROXY, "socks5://localhost:4140");
 
@@ -233,9 +218,9 @@ $context = stream_context_create([
         'proxy' => 'tcp://localhost:4140',
         'request_fulluri' => true,
     ],
-    'ssl' => [
-        'verify_peer' => false,  // Only for testing
-    ]
+    'ssl' => array_filter([
+        'cafile' => getenv('SSL_CERT_FILE'),
+    ]),
 ]);
 
 $response = file_get_contents('https://example.com', false, $context);
@@ -270,6 +255,8 @@ export HTTP_PROXY=http://localhost:4140
 export HTTPS_PROXY=http://localhost:4140
 export NO_PROXY=localhost,127.0.0.1
 ```
+
+Certificate handling depends on the selected TLS backend. Add the certificate at `SSL_CERT_FILE` to the client's root certificate store. See the [Rust language page](/reference/languages/rust#proxymock) for a complete record, mock, and replay workflow.
 
 Use the SOCKS proxy to capture database traffic (requires socks feature in Cargo.toml):
 ```shell

@@ -108,40 +108,32 @@ Go to Requests → pick the active run from the Run selector. Inspect inbound/ou
 
 ![Drilled-in RRPair detail pane](./images/proxymock-web-request-detail.png)
 
-## 6) Optional — Run in cluster (replay recordings inside your cluster)
+## 6) Optional - Run in cluster (replay recordings inside your cluster)
 
-You can take any local recordings (`./proxymock/recorded-*`) and run them against a target in your connected cluster. Results stream back live over the Forwarder tap.
+Any local recordings (`./proxymock/recorded-*`) can be replayed against a workload in your connected cluster.
+
+This path runs entirely through the Kubernetes API. proxymock reaches the cluster with your kubeconfig, analyzes the recordings on this machine, and stages the snapshot directly in the in-cluster forwarder over a port-forward. **The snapshot is never sent to Speedscale cloud**, no cloud login is needed, and the report stays in the cluster. Results stream back live over the Forwarder tap.
 
 Steps (Replay tab):
-1) Pick one or more recordings (left side)
-2) Source & Target → choose a destination:
-   - URL (custom) or
-   - Cluster Workload / Service (preferred)
-3) Optional: enable Mock dependencies, click Rescan to load outbound dependencies, and keep the ones to mock
-4) Click “Run in cluster”
+1) In **Where it runs**, pick **In your cluster**
+2) Pick one or more recordings
+3) Choose the **Cluster context** and the **Namespace** your workload runs in
+4) Set **Send all to** to a **Workload** or **Service**. A plain URL is resolved inside the generator pod, not on your machine
+5) Optional: open **Options** to mock outbound dependencies, so the workload answers from the recording instead of reaching the real thing
+6) Click **Run in cluster**
 
 While running:
-- A stepper shows progress (build, push, run)
-- A bottom drawer streams live generator/responder/SUT logs
-- The persistent live-tap card shows ‘Live replay’ with counters
+- The Live tab shows a stage stepper and streams generator, responder and SUT logs
+- The persistent live-tap card shows 'Live replay' with counters
 
-On completion, proxymock web opens the report and scopes the Requests tab to the run output directory.
+On completion, proxymock web opens the report and scopes the Requests tab to the run output directory. The report stays in the cluster, so there is no dashboard link; past runs are listed under the **Cluster runs** tab.
 
-![Pick the recordings to feed the replay](./images/proxymock-web-replay-select-recordings.png)
-
-![Cluster namespace + Cluster Workload destination](./images/proxymock-web-replay-destination.png)
-
-![Mock dependencies enabled with the inferred outbound list](./images/proxymock-web-replay-mock-deps.png)
-
-![Run in cluster button in the replay toolbar](./images/proxymock-web-replay-cluster-button.png)
-
-![Stage stepper during a live in-cluster replay](./images/proxymock-web-replay-stepper.png)
-
-![Bottom drawer streaming live generator/responder/SUT logs](./images/proxymock-web-replay-logs.png)
+![Choosing In your cluster, with the cluster context and namespace pickers](../../../guides/images/replay-where-cluster.png)
 
 Troubleshooting:
-- If “Run in cluster” is unavailable, ensure you’ve run `proxymock init` (browser sign-in) and that Observability shows a connected cluster
-- Mocking requires a Workload/Service destination (not just a URL)
+- If **In your cluster** is disabled, proxymock web cannot reach the forwarder. Check that Observability shows a connected cluster and that you started proxymock web with the right `--kube-context`
+- Mocking requires a Workload or Service destination, not a URL
+- To run the same recordings through Speedscale cloud instead, pick **Via Speedscale cloud**. See [Choose Where a Replay Runs](../../../guides/replay-paths.md)
 
 ## Next steps
 - [Local quickstart](/proxymock/getting-started/quickstart/local/) — record and replay traffic against an app on your machine, no cluster required

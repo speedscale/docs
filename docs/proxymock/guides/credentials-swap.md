@@ -117,7 +117,7 @@ From the parent of `proxymock/`, start the web UI:
 proxymock web
 ```
 
-The default workspace is the `proxymock/` subdirectory of wherever you run the command. The first start mints a stable snapshot id and writes it to `proxymock/.metadata/snapshot.json`; that file pins all subsequent automations, dataframes, and blueprints to one identity that survives restarts.
+The default workspace is the `proxymock/` subdirectory of your application directory. Saved blueprints and dataframes survive restarts and can be reused across recordings. Local blueprints do not require a matching snapshot ID. See [Blueprint storage and discovery](./blueprints.md#storage-and-discovery).
 
 ## 5. Run the Basic auth credentials swap
 
@@ -225,22 +225,22 @@ grep -q "^Authorization: $expected" "$latest"/*/*.md
 | 5. Generate swap dataframe + blueprint | `proxymock automation credentials-basic --in ./proxymock [--replay-user recorded=replay …] [--replay-pass recorded=replay …]` |
 | 6. Edit `replay_user` / `replay_pass` | Pre-fill via the `--replay-user` / `--replay-pass` flags on step 5, **or** edit `proxymock/dataframes/credentials-basic-<id>/payload.csv` with your editor of choice between steps 5 and 7 |
 | 7. Run replay | `proxymock replay --in ./proxymock --test-against <host:port>` |
-| 8. Verify | `grep "^Authorization:" ./proxymock/results/replayed-*/<host>/*.md` (or `proxymock inspect <results-dir>` for the TUI) |
+| 8. Verify | `grep "^Authorization:" ./proxymock/results/replayed-*/<host>/*.md` (or `proxymock web --in <results-dir>` to browse it) |
 
 ## What got persisted
 
 | Path | Survives restart? | Purpose |
 |---|---|---|
-| `proxymock/.metadata/snapshot.json` | Yes | Stable snapshot id. All blueprints and dataframes the workflow creates are tagged with this id. |
+| `proxymock/.metadata/snapshot.json` | Yes | Snapshot configuration used by replay. Local blueprint activation does not depend on a matching snapshot ID. |
 | `proxymock/blueprints/<uuid>.json` | Yes | The `http_auth(smart_replace=true)` chain. Edit it from the **Blueprints** tab if you need to widen or narrow which requests it applies to. |
 | `proxymock/dataframes/credentials-basic-<id>/payload.csv` | Yes | The user/pass swap table. Re-open from the **Dataframes** tab to add or change rows; saves take effect on the next replay. |
-| `proxymock/.proxymock-replay/.metadata/snapshot.json` | Overwritten on every replay | Transient — proxymock merges the active blueprints here and tells the replay runner to read it. Never edit by hand. |
+| `proxymock/.replay/.metadata/snapshot.json` | Overwritten on every replay | Transient configuration assembled from active blueprints for replay. Never edit by hand. |
 | `proxymock/results/replayed-<timestamp>/` | Yes | The observed request/response pairs from a replay run. Pick one from the **Run** dropdown in the Requests view. |
 
 ## Troubleshooting
 
 **The replay log doesn't say "Applied N active blueprint(s)…"**
-The replay runner couldn't find a matching blueprint for the workspace's current snapshot id. Most often this means `proxymock/.metadata/snapshot.json` was deleted (or the workspace was opened with an older proxymock build that didn't persist it). Re-run **Basic auth credentials swap** — it will create a fresh blueprint tied to the current snapshot id.
+Check the startup messages for the loaded blueprint name and source path, then inspect the completed-chain count. Verify the blueprint is active and within the input directory or its immediate parent. If it loads but does not run, inspect its filters and replay target. Use `--require-blueprint <name>` to require activity, and follow [Blueprint troubleshooting](./blueprints.md#troubleshooting).
 
 **The `Authorization` header on the replayed request still decodes to the recorded credentials.**
 You saved the dataframe with `replay_user`/`replay_pass` equal to the recorded values (the editor auto-fills them on first generation to make the workflow a safe no-op). Open the dataframe from the **Dataframes** tab, set the replay cells to the credentials you actually want, save, and re-run the replay.
