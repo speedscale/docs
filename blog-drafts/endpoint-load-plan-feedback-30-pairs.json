@@ -1,0 +1,3609 @@
+{
+  "demoCommit": "4b89e936e67fdbe71508fbd17b29e87bcd3c8bc2",
+  "binary": "/Users/matthewleray/sandbox/speedscale/.tmp/load-plan/proxymock-v2.5.1012",
+  "setupMs": 2556.183625,
+  "resourceSampling": "Process-tree RSS and cumulative CPU snapshots before/after each trial, outside its timing interval; not peak usage or per-mode CPU attribution. Driver lives in the parent process.",
+  "binarySHA256": "d175311c5202bef903bd97c4fb7415d701b1b6320db925856d47674fdeb2188b",
+  "node": "v26.8.2",
+  "platform": "darwin",
+  "arch": "arm64",
+  "metric": "reset + fixture discovery + complete session workload + journal assertions",
+  "excludes": [
+    "initial capture",
+    "process startup",
+    "cluster setup",
+    "artifact upload"
+  ],
+  "real": {
+    "samples": 30,
+    "meanMs": 133.81081389999994,
+    "medianMs": 133.8841040000002,
+    "p95Ms": 136.9032500000012,
+    "minMs": 130.79383399999915,
+    "maxMs": 138.77612499999987,
+    "standardDeviationMs": 1.8256894385859879
+  },
+  "mock": {
+    "samples": 30,
+    "meanMs": 137.48966946666667,
+    "medianMs": 137.35222900000008,
+    "p95Ms": 140.40762499999983,
+    "minMs": 133.24270799999977,
+    "maxMs": 141.05962499999987,
+    "standardDeviationMs": 1.7112022591933294
+  },
+  "medianReductionPercent": -2.5903934047315036,
+  "samples": [
+    {
+      "trial": 0,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 134.27591699999994,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 95568,
+              "cpuTime": "0:00.34",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 113072,
+              "cpuTime": "0:00.17",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 43536,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 97920,
+              "cpuTime": "0:00.36",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 113072,
+              "cpuTime": "0:00.17",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 43904,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 138.78208300000006,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 99808,
+              "cpuTime": "0:00.36",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 113072,
+              "cpuTime": "0:00.17",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 43904,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 107664,
+              "cpuTime": "0:00.39",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 114128,
+              "cpuTime": "0:00.18",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 43904,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 1,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 138.43712499999992,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 109456,
+              "cpuTime": "0:00.39",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 114128,
+              "cpuTime": "0:00.18",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 43904,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 113840,
+              "cpuTime": "0:00.42",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 115264,
+              "cpuTime": "0:00.19",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 43904,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 136.65083400000003,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 114016,
+              "cpuTime": "0:00.42",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 115264,
+              "cpuTime": "0:00.19",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 43904,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 115024,
+              "cpuTime": "0:00.44",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 115264,
+              "cpuTime": "0:00.19",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44464,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 2,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 138.77612499999987,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 115184,
+              "cpuTime": "0:00.44",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 115264,
+              "cpuTime": "0:00.19",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44464,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 117536,
+              "cpuTime": "0:00.47",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 115264,
+              "cpuTime": "0:00.19",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44624,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 135.29149999999981,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 117696,
+              "cpuTime": "0:00.47",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 115264,
+              "cpuTime": "0:00.19",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44624,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 118096,
+              "cpuTime": "0:00.49",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 116400,
+              "cpuTime": "0:00.20",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44624,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 3,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 138.0860419999999,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 118256,
+              "cpuTime": "0:00.50",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 116400,
+              "cpuTime": "0:00.20",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44624,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 122480,
+              "cpuTime": "0:00.52",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 117568,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44624,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 134.76204199999938,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 124272,
+              "cpuTime": "0:00.52",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 117568,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 44624,
+              "cpuTime": "0:00.05",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 132176,
+              "cpuTime": "0:00.54",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 117568,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45008,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 4,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 134.06595800000014,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 132352,
+              "cpuTime": "0:00.54",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 117568,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45008,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 133536,
+              "cpuTime": "0:00.56",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 117568,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45872,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 139.66354200000023,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 135264,
+              "cpuTime": "0:00.56",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 117568,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45872,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 143280,
+              "cpuTime": "0:00.58",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 118704,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45872,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 5,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 137.13925000000017,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 145200,
+              "cpuTime": "0:00.58",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 118704,
+              "cpuTime": "0:00.21",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45872,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 147664,
+              "cpuTime": "0:00.62",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 119856,
+              "cpuTime": "0:00.22",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45872,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 135.1955420000004,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 147840,
+              "cpuTime": "0:00.62",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 119856,
+              "cpuTime": "0:00.22",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45872,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 148016,
+              "cpuTime": "0:00.63",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 119856,
+              "cpuTime": "0:00.22",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45904,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 6,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 134.25745800000004,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 148176,
+              "cpuTime": "0:00.63",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 119856,
+              "cpuTime": "0:00.22",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45904,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 148384,
+              "cpuTime": "0:00.65",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 119856,
+              "cpuTime": "0:00.22",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45920,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 136.27637499999946,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 148560,
+              "cpuTime": "0:00.65",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 119856,
+              "cpuTime": "0:00.22",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45920,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 148752,
+              "cpuTime": "0:00.67",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 121024,
+              "cpuTime": "0:00.23",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45920,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 7,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 138.27508399999988,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 148928,
+              "cpuTime": "0:00.67",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 121024,
+              "cpuTime": "0:00.23",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45920,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 149104,
+              "cpuTime": "0:00.68",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 122144,
+              "cpuTime": "0:00.24",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45920,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 132.3629579999997,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 149264,
+              "cpuTime": "0:00.69",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 122144,
+              "cpuTime": "0:00.24",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 45920,
+              "cpuTime": "0:00.06",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 149472,
+              "cpuTime": "0:00.70",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 122144,
+              "cpuTime": "0:00.24",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 8,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 135.1593329999996,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 149744,
+              "cpuTime": "0:00.71",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 122144,
+              "cpuTime": "0:00.24",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 151264,
+              "cpuTime": "0:00.73",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 122144,
+              "cpuTime": "0:00.24",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 136.84258299999965,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 151440,
+              "cpuTime": "0:00.73",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 122144,
+              "cpuTime": "0:00.24",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 151696,
+              "cpuTime": "0:00.76",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 124288,
+              "cpuTime": "0:00.25",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 9,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 136.45824999999968,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 151856,
+              "cpuTime": "0:00.76",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 124320,
+              "cpuTime": "0:00.25",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 152032,
+              "cpuTime": "0:00.77",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 125920,
+              "cpuTime": "0:00.26",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 134.44162500000039,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 152208,
+              "cpuTime": "0:00.77",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 125920,
+              "cpuTime": "0:00.26",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46096,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 152480,
+              "cpuTime": "0:00.79",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 125920,
+              "cpuTime": "0:00.26",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 10,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 134.54983300000004,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 152640,
+              "cpuTime": "0:00.79",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 125920,
+              "cpuTime": "0:00.26",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 152832,
+              "cpuTime": "0:00.81",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 125920,
+              "cpuTime": "0:00.26",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 136.01200000000063,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 152992,
+              "cpuTime": "0:00.81",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 125920,
+              "cpuTime": "0:00.26",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 153152,
+              "cpuTime": "0:00.83",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 127184,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 11,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 137.26895800000057,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 153328,
+              "cpuTime": "0:00.83",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 127184,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 153552,
+              "cpuTime": "0:00.85",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 128304,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 133.70225000000028,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 153712,
+              "cpuTime": "0:00.85",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 128304,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 154032,
+              "cpuTime": "0:00.88",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 128304,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 12,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 130.79383399999915,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 154192,
+              "cpuTime": "0:00.89",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 128304,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46112,
+              "cpuTime": "0:00.07",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 154416,
+              "cpuTime": "0:00.90",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 128304,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 135.62837500000023,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 154608,
+              "cpuTime": "0:00.91",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 128304,
+              "cpuTime": "0:00.27",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 154768,
+              "cpuTime": "0:00.92",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 129472,
+              "cpuTime": "0:00.28",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 13,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 133.24270799999977,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 154928,
+              "cpuTime": "0:00.92",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 129472,
+              "cpuTime": "0:00.28",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 155120,
+              "cpuTime": "0:00.94",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 130624,
+              "cpuTime": "0:00.29",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 132.55591699999968,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 155280,
+              "cpuTime": "0:00.95",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 130624,
+              "cpuTime": "0:00.29",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 155456,
+              "cpuTime": "0:00.96",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 130624,
+              "cpuTime": "0:00.29",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 14,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 132.8161250000012,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 155632,
+              "cpuTime": "0:00.96",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 130624,
+              "cpuTime": "0:00.29",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46128,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 155824,
+              "cpuTime": "0:00.98",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 130624,
+              "cpuTime": "0:00.29",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46192,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 136.30799999999908,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 155984,
+              "cpuTime": "0:00.98",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 130624,
+              "cpuTime": "0:00.29",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46192,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 156176,
+              "cpuTime": "0:01.00",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 131872,
+              "cpuTime": "0:00.30",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46192,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 15,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 138.8457499999986,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 156336,
+              "cpuTime": "0:01.00",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 131872,
+              "cpuTime": "0:00.30",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46192,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 156528,
+              "cpuTime": "0:01.02",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 133104,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46192,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 133.48616599999878,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 156688,
+              "cpuTime": "0:01.03",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 133104,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46192,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 156880,
+              "cpuTime": "0:01.04",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 133104,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46304,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 16,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 131.83091700000114,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 157040,
+              "cpuTime": "0:01.04",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 133104,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46304,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 157200,
+              "cpuTime": "0:01.06",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 133104,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46352,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 139.88287500000115,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 157376,
+              "cpuTime": "0:01.06",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 133104,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46352,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 157584,
+              "cpuTime": "0:01.09",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 134352,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46352,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 17,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 134.49012500000026,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 157744,
+              "cpuTime": "0:01.09",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 134352,
+              "cpuTime": "0:00.31",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46352,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 157920,
+              "cpuTime": "0:01.10",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 135472,
+              "cpuTime": "0:00.32",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46352,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 130.8814999999995,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 158096,
+              "cpuTime": "0:01.11",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 135472,
+              "cpuTime": "0:00.32",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46352,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 158288,
+              "cpuTime": "0:01.12",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 135472,
+              "cpuTime": "0:00.32",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 18,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 134.93454100000054,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 159456,
+              "cpuTime": "0:01.12",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 135472,
+              "cpuTime": "0:00.32",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.08",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 161264,
+              "cpuTime": "0:01.14",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 135472,
+              "cpuTime": "0:00.32",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 136.97662500000115,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 161424,
+              "cpuTime": "0:01.15",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 135472,
+              "cpuTime": "0:00.32",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 161616,
+              "cpuTime": "0:01.17",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 136592,
+              "cpuTime": "0:00.33",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 19,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 139.45408400000088,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 161776,
+              "cpuTime": "0:01.18",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 136592,
+              "cpuTime": "0:00.33",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 161952,
+              "cpuTime": "0:01.19",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 137856,
+              "cpuTime": "0:00.34",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 136.9032500000012,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 162128,
+              "cpuTime": "0:01.19",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 137856,
+              "cpuTime": "0:00.34",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 162288,
+              "cpuTime": "0:01.21",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 137856,
+              "cpuTime": "0:00.34",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 20,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 131.4198749999996,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 162448,
+              "cpuTime": "0:01.21",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 137856,
+              "cpuTime": "0:00.34",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46432,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 162640,
+              "cpuTime": "0:01.23",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 137856,
+              "cpuTime": "0:00.34",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 137.15754200000083,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 162800,
+              "cpuTime": "0:01.23",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 137856,
+              "cpuTime": "0:00.34",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 162960,
+              "cpuTime": "0:01.24",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 139040,
+              "cpuTime": "0:00.35",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 21,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 137.4354999999996,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 163136,
+              "cpuTime": "0:01.24",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 139040,
+              "cpuTime": "0:00.35",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 163296,
+              "cpuTime": "0:01.26",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 140224,
+              "cpuTime": "0:00.36",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 135.07258399999955,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 163456,
+              "cpuTime": "0:01.26",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 140224,
+              "cpuTime": "0:00.36",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 164000,
+              "cpuTime": "0:01.29",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 140224,
+              "cpuTime": "0:00.36",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 22,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 132.3992500000004,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 164176,
+              "cpuTime": "0:01.29",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 140224,
+              "cpuTime": "0:00.36",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 164368,
+              "cpuTime": "0:01.31",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 140224,
+              "cpuTime": "0:00.36",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 137.59458300000006,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 164560,
+              "cpuTime": "0:01.31",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 140224,
+              "cpuTime": "0:00.36",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 164736,
+              "cpuTime": "0:01.32",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 141408,
+              "cpuTime": "0:00.37",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 23,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 140.40762499999983,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 164896,
+              "cpuTime": "0:01.32",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 141408,
+              "cpuTime": "0:00.37",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 165248,
+              "cpuTime": "0:01.35",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 142608,
+              "cpuTime": "0:00.38",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 134.77879199999916,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 165424,
+              "cpuTime": "0:01.35",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 142608,
+              "cpuTime": "0:00.38",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46464,
+              "cpuTime": "0:00.09",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 165584,
+              "cpuTime": "0:01.36",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 142608,
+              "cpuTime": "0:00.38",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 24,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 131.51050000000032,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 165744,
+              "cpuTime": "0:01.36",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 142608,
+              "cpuTime": "0:00.38",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 165952,
+              "cpuTime": "0:01.38",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 142608,
+              "cpuTime": "0:00.38",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 138.2145419999997,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 166112,
+              "cpuTime": "0:01.38",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 142608,
+              "cpuTime": "0:00.38",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 166272,
+              "cpuTime": "0:01.40",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 143744,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 25,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 138.56062500000007,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 166448,
+              "cpuTime": "0:01.41",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 143744,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 166608,
+              "cpuTime": "0:01.43",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 144912,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 133.51708299999882,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 166768,
+              "cpuTime": "0:01.43",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 144912,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 166944,
+              "cpuTime": "0:01.44",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 144912,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 26,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 135.47320899999977,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 167104,
+              "cpuTime": "0:01.44",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 144912,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 167264,
+              "cpuTime": "0:01.46",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 144912,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 138.1142089999994,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 167440,
+              "cpuTime": "0:01.46",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 144912,
+              "cpuTime": "0:00.39",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 167616,
+              "cpuTime": "0:01.48",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 146096,
+              "cpuTime": "0:00.40",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 27,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 136.41358299999956,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 167776,
+              "cpuTime": "0:01.48",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 146096,
+              "cpuTime": "0:00.40",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 167968,
+              "cpuTime": "0:01.50",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 147248,
+              "cpuTime": "0:00.41",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 132.33445799999936,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 168128,
+              "cpuTime": "0:01.50",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 147248,
+              "cpuTime": "0:00.41",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 168288,
+              "cpuTime": "0:01.53",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 147248,
+              "cpuTime": "0:00.41",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 28,
+      "order": [
+        "real",
+        "mock"
+      ],
+      "real": {
+        "elapsedMs": 133.4194580000003,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 168448,
+              "cpuTime": "0:01.53",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 147248,
+              "cpuTime": "0:00.41",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 168624,
+              "cpuTime": "0:01.54",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 147248,
+              "cpuTime": "0:00.41",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "mock": {
+        "elapsedMs": 141.05962499999987,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 168784,
+              "cpuTime": "0:01.55",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 147248,
+              "cpuTime": "0:00.41",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 168944,
+              "cpuTime": "0:01.56",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 148400,
+              "cpuTime": "0:00.42",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "trial": 29,
+      "order": [
+        "mock",
+        "real"
+      ],
+      "mock": {
+        "elapsedMs": 136.37091599999985,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 169120,
+              "cpuTime": "0:01.56",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 148400,
+              "cpuTime": "0:00.42",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 169280,
+              "cpuTime": "0:01.58",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 149600,
+              "cpuTime": "0:00.43",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ]
+        }
+      },
+      "real": {
+        "elapsedMs": 131.9970830000002,
+        "actors": 12,
+        "sessions": 12,
+        "requests": 60,
+        "failures": 0,
+        "concurrency": 3,
+        "resources": {
+          "before": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 169440,
+              "cpuTime": "0:01.58",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 149600,
+              "cpuTime": "0:00.43",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46480,
+              "cpuTime": "0:00.10",
+              "executable": "node"
+            }
+          ],
+          "after": [
+            {
+              "pid": 89249,
+              "ppid": 46510,
+              "rssKiB": 169616,
+              "cpuTime": "0:01.60",
+              "executable": "node"
+            },
+            {
+              "pid": 89309,
+              "ppid": 89249,
+              "rssKiB": 149600,
+              "cpuTime": "0:00.43",
+              "executable": "proxymock-v2.5.1012"
+            },
+            {
+              "pid": 89312,
+              "ppid": 89249,
+              "rssKiB": 46496,
+              "cpuTime": "0:00.11",
+              "executable": "node"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "interpretation": "Local fast dependency only. Descriptive samples, not a claim about full CI cycle time or remote dependency reliability."
+}

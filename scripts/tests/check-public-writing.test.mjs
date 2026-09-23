@@ -315,3 +315,81 @@ test("checks committed push content without reading uncommitted files", () => {
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("ignores main's content brought in by merging main into a branch", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "writing-push-merge-"));
+  const git = (...args) =>
+    execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+  const write = (name, text) =>
+    fs.writeFileSync(path.join(root, "docs", name), text);
+  try {
+    git("init", "-q", "-b", "main");
+    git("config", "user.email", "test@example.com");
+    git("config", "user.name", "Writing Check");
+    fs.mkdirSync(path.join(root, "docs"), { recursive: true });
+    write("base.md", "Valid prose.\n");
+    git("add", ".");
+    git("commit", "-qm", "initial");
+
+    git("checkout", "-qb", "feature");
+    write("feature.md", "Feature prose.\n");
+    git("add", ".");
+    git("commit", "-qm", "feature");
+    const remoteSha = git("rev-parse", "HEAD");
+
+    // main gains a violation that predates the writing gate.
+    git("checkout", "-q", "main");
+    write("main.md", "Install Proxymock.\n");
+    git("add", ".");
+    git("commit", "-qm", "main change");
+    git("update-ref", "refs/remotes/origin/main", git("rev-parse", "HEAD"));
+
+    git("checkout", "-q", "feature");
+    git("merge", "-q", "--no-edit", "main");
+    const mergedSha = git("rev-parse", "HEAD");
+    let result = runPushed(
+      root,
+      `refs/heads/feature ${mergedSha} refs/heads/feature ${remoteSha}\n`,
+    );
+    assert.deepEqual(result.findings, []);
+
+    // A violation the branch itself adds is still caught.
+    write("feature.md", "Install Proxymock.\n");
+    git("add", ".");
+    git("commit", "-qm", "feature violation");
+    result = runPushed(
+      root,
+      `refs/heads/feature ${git("rev-parse", "HEAD")} refs/heads/feature ${mergedSha}\n`,
+    );
+    assert.deepEqual(
+      result.findings.map((finding) => [finding.file, finding.rule]),
+      [["docs/feature.md", "product capitalization"]],
+    );
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("nested list items are not hard-wrapped prose", () => {
+  const content = [
+    "- [Install](#install)",
+    "  - [Resource Ownership](#resource-ownership)",
+    "  - [Install Flow](#install-flow)",
+    "",
+    "4. **Migrate CSV Data Sets:**",
+    "   - Upload the CSV to Speedscale.",
+    "   - Replace the data field in your traffic.",
+    "",
+    "A paragraph that wraps",
+    "onto a second line.",
+  ].join("\n");
+  const findings = analyzeFile(
+    "docs/example.md",
+    content,
+    new Set(content.split("\n").map((_, index) => index + 1)),
+  ).filter((finding) => finding.rule === "hard-wrapped prose");
+  assert.deepEqual(
+    findings.map((finding) => finding.line),
+    [9, 10],
+  );
+});

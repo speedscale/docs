@@ -96,6 +96,10 @@ For this example we'll be using a simple demo app that accepts an API request, c
 
 ## Step 1: Install proxymock {#install}
 
+:::tip Let your coding agent install it
+Paste the prompt from [Install with your coding agent](../installation.md#install-with-ai-agent) into Claude Code, Cursor, Codex, or any agent that can run commands, then skip to Step 2. Prefer to install manually? Use the commands below.
+:::
+
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
     <MacCLIInstall />

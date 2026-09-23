@@ -19,7 +19,7 @@ The **Summary** tab shows a *Tuned* readiness card with the number still outstan
 
 ## Working through recommendations in the Tuning tab
 
-The Tuning tab is a review queue. It shows one recommendation at a time, the transform chain that recommendation would add, and — this is the part that saves the hunting — the actual request the recommendation is about, opened to the exact field it acts on.
+The Tuning tab is a review queue. It shows one recommendation at a time, the transform chain that recommendation would add, and the actual request the recommendation is about, opened to the exact field it acts on.
 
 The queue is ordered by blast radius, so the recommendation touching the most traffic is the first one you see.
 
@@ -48,11 +48,11 @@ Next walks the requests inside a recommendation before moving to the next recomm
 
 ### Seeing where a recommendation applies
 
-A recommendation usually touches many requests, and the analyzer records up to ten of them as examples. The **Where it applies** list shows those, and selecting one moves the viewer beside it to that request — the right half of the pair, the right sub-tab, and the field itself scrolled into view and marked.
+A recommendation usually touches many requests, and the analyzer records up to ten of them as examples. The **Where it applies** list shows those, and selecting one moves the viewer beside it to that request: the right half of the pair, the right sub-tab, and the field itself scrolled into view and marked.
 
 This is how you check that a fix generalizes. One example tells you the recommendation found *something*; stepping through several tells you it found the right thing everywhere.
 
-Some recommendations name no request at all — `X-Request-Id` and SASL authentication are detected from traffic patterns rather than from specific requests. Those say so, and their chain still applies to the traffic its filters match.
+Some recommendations name no request at all. `X-Request-Id` and SASL authentication are detected from traffic patterns rather than from specific requests. Those say so, and their chain still applies to the traffic its filters match.
 
 A recommendation can also target a whole body rather than one field, which the pane states rather than leaving you to wonder why no line is highlighted.
 

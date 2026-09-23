@@ -17,7 +17,9 @@ that contain specific annotations. It then automatically stands up an isolation
 test environment around the deployment. The operator itself is a deployment
 that will be always present on the cluster.
 
-> Looking to install the operator? Follow the step-by-step instructions in the
+> Looking to install the operator? The fastest way is to
+> [let your coding agent install it](../../quick-start.md#install-with-ai-agent).
+> Prefer to install manually? Follow the step-by-step instructions in
 > [Quick Start – Install Speedscale Operator](../../quick-start.md#install-speedscale-operator-optional).
 
 Platform teams reviewing what the chart creates or changes can use the [Helm install and upgrade lifecycle](/reference/helm#install-and-upgrade-lifecycle). It separates chart-managed resources, pre-install hooks, Kubernetes actions, and operator-managed runtime components.

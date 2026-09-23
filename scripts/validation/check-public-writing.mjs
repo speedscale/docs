@@ -270,7 +270,9 @@ function isMarkdownProseLine(line, visibleLine = line) {
   if (
     !trimmed ||
     /^(?:---|```|~~~|#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\||<|:::|\{|import\b|export\b)/.test(
-      line,
+      // Trimmed so a nested list item ("  - item") is a list item, not a
+      // wrapped continuation of the paragraph above it.
+      trimmed,
     )
   )
     return false;

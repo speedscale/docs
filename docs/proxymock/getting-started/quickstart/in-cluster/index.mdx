@@ -21,6 +21,10 @@ This path is best when you want realistic in-environment behavior or to validate
 - Kubernetes cluster access (`kubectl` working, correct context)
 - Authorized (if you plan to run in-cluster replay): `proxymock init` (browser sign-in)
 
+:::tip Let your coding agent do steps 1 and 2
+Paste the prompt from [Install with your coding agent](/getting-started/quick-start#install-with-ai-agent) into Claude Code, Cursor, Codex, or any agent that can run commands. It installs proxymock, signs you in, and installs the Speedscale Operator into your cluster, asking before it touches the cluster. Prefer to install manually? Follow steps 1 and 2 below.
+:::
+
 ## 1) Install the proxymock CLI (if not installed)
 
 Install proxymock locally — this gives you both the CLI and `proxymock web`.
