@@ -39,10 +39,7 @@ Prefer to install it yourself? Pick your OS:
 </Tabs>
 
 :::info Coding with AI Tools?
-Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp install`
-(`--yes` skips the per-client prompts). That command also drops the
-[install-speedscale](https://github.com/speedscale/skills) skill into Claude
-Code, so `/install-speedscale` can upgrade or repair everything later.
+Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp install` (`--yes` skips the per-client prompts). That command also drops the [install-speedscale](https://github.com/speedscale/skills) skill into Claude Code, so `/install-speedscale` can upgrade or repair everything later.
 
 :::
 
