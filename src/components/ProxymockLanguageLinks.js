@@ -7,6 +7,11 @@ const languageLinks = [
     description: 'Java demo app',
   },
   {
+    label: 'Kotlin',
+    href: '/reference/languages/kotlin#proxymock',
+    description: 'Kotlin demo app',
+  },
+  {
     label: '.NET',
     href: '/reference/languages/dotnet#proxymock',
     description: '.NET demo app',
@@ -30,6 +35,16 @@ const languageLinks = [
     label: 'Ruby',
     href: '/reference/languages/ruby#proxymock',
     description: 'Ruby demo app',
+  },
+  {
+    label: 'PHP',
+    href: '/reference/languages/php#proxymock',
+    description: 'PHP demo app',
+  },
+  {
+    label: 'Rust',
+    href: '/reference/languages/rust#proxymock',
+    description: 'Rust demo app',
   },
   {
     label: 'C++',

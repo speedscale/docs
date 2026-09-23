@@ -142,7 +142,9 @@ You'll need to understand which columns attach to which columns but the JSON mod
 
 ## Redis
 
-The Redis wire protocol is mostly human readable and easily editable. Every field received is a set of strings that can be easily modified.
+Speedscale represents the Redis wire protocol as structured command and argument arrays. Text values are human readable and editable, while binary values remain available for exact mock matching.
+
+Captured Redis traffic can also be replayed as a dependency mock. See [Redis Mocking](/guides/mocking/redis) for RESP2/RESP3 support, transaction requirements, and local proxymock commands.
 
 ```json
 "array": {

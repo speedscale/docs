@@ -24,7 +24,7 @@ Speedscale is different from static checks and synthetic-only tests because it v
 Choose the operating model that matches your security requirements:
 
 - **Local recording with proxymock:** For local workflows, proxymock keeps captured traffic on your machine by default and does not share traffic unless you explicitly authorize it. See [proxymock data and privacy](/proxymock/how-it-works/data_and_privacy/).
-- **Bring Your Own Cloud (BYOC):** For enterprise cloud isolation, run Speedscale in your own cloud account and keep network and data boundaries under your control. See [Bring Your Own Cloud](/guides/byoc/).
+- **Bring Your Own Cloud (BYOC):** For enterprise cloud isolation, run Speedscale in your own cloud account and keep network and data boundaries under your control. See [Bring Your Own Cloud](/byoc/).
 - **Data Loss Prevention (DLP):** Redact sensitive fields before traffic leaves your network during ingest. See [DLP guides](/guides/dlp/) and [Data Protection](/security/data_protection/).
 
 ![Speedscale home screen](./home-screen.png)

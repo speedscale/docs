@@ -46,6 +46,6 @@ Use the path syntax expected by the chosen transform. See [`dlp_json`](../transf
 
 The local DLP and filter editors let you author rules against RRPair files. `proxymock dlp test` previews a rule; `proxymock dlp apply` writes redacted copies. See [Author DLP and Filter Rules Locally](/proxymock/guides/local-rules.md) for commands and output handling.
 
-For BYOC imports, `--dlp-config` applies a local rule before imported RRPairs are written. See [Pull Traffic from a BYOC Bucket](/proxymock/guides/byoc-bucket.md#redact-on-the-way-in). The downloaded source objects still contain their original data; local import redaction does not rewrite the bucket.
+For BYOC imports, `--dlp-config` applies a local rule before imported RRPairs are written. See [Use BYOC Traffic with proxymock](/byoc/use-traffic.md#redact-on-the-way-in). The downloaded source objects still contain their original data; local import redaction does not rewrite the bucket.
 
 Continue with [DLP Recommendations](./recommendations.md), [Creating Rules](./creating-rules.md), and [Applying Rules](./applying-rules.md).

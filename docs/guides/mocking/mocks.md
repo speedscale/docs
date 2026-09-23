@@ -21,6 +21,8 @@ For these reasons and others, many organizations have moved away from the entire
 
 In the following sections we will discuss Speedscale's unique approach to service virtualization as well as explore common usage patterns.
 
+For database dependencies, see [Redis Mocking](/guides/mocking/redis) for recording RESP2/RESP3 traffic and running without a live Redis backend.
+
 :::tip Selective mocking via CLI
 Use `--mock-only` to mock only specific backends (e.g., rate-limited APIs or third-party services with idempotent transactions), or `--mock-except` to mock everything except services you want to call live. You can also exclude specific inbound services from replay with `--exclude-in`. See [Replay With speedctl — Controlling Outbound Mocks](/guides/replay/via-speedctl#controlling-outbound-mocks) for full details.
 :::

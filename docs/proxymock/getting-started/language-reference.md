@@ -54,7 +54,7 @@ proxymock record --map 65432=postgres://localhost:5432
 proxymock record --map 1443=https://httpbin.org:443
 ```
 
-For more examples, see the [MongoDB guide](../guides/mongodb.md), [MySQL guide](../guides/mysql.md), [PostgreSQL guide](../guides/postgres.md), and [Kafka guide](/guides/message-brokers/kafka).
+For more examples, see the [Redis mocking guide](/guides/mocking/redis), [MongoDB guide](../guides/mongodb.md), [MySQL guide](../guides/mysql.md), [PostgreSQL guide](../guides/postgres.md), and [Kafka guide](/guides/message-brokers/kafka).
 
 <Tabs groupId="language">
 <TabItem value="golang" label="Go">
@@ -86,6 +86,11 @@ Set `JAVA_HOME` to your JDK so proxymock can create the truststore if needed. Fo
 For a SOCKS-capable TCP client, use `-DsocksProxyHost=localhost -DsocksProxyPort=4140`. Driver and transport support varies; use `--map` when the client ignores proxy settings.
 
 See [Java with proxymock](/proxymock/guides/java) for complete HTTP, SOCKS, database, IDE, and CI examples. See [Java TLS trust](/reference/java/tls) for certificate setup.
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+Kotlin/JVM uses the Java networking stack. Standard JVM HTTP clients ignore `HTTP_PROXY` and `HTTPS_PROXY`, so use JVM proxy properties or the SOCKS proxy plus a JKS truststore. See the [Kotlin language page](/reference/languages/kotlin#proxymock) for the complete setup.
 
 </TabItem>
 <TabItem value="python" label="Python">
@@ -186,13 +191,16 @@ end
 </TabItem>
 <TabItem value="php" label="PHP">
 
-PHP does not automatically use environment variables so it must be set explicitly. There multiple ways to configure proxies depending on the method used.
+PHP proxy behavior depends on the client and build. Configure the proxy explicitly when the client does not honor environment variables. See the [PHP language page](/reference/languages/php#proxymock) for a complete record, mock, and replay workflow.
 
 Using cURL:
 ```php
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://example.com");
 curl_setopt($ch, CURLOPT_PROXY, "http://localhost:4140");
+if ($ca = getenv('SSL_CERT_FILE')) {
+    curl_setopt($ch, CURLOPT_CAINFO, $ca);
+}
 // For SOCKS proxy
 // curl_setopt($ch, CURLOPT_PROXY, "socks5://localhost:4140");
 
@@ -210,9 +218,9 @@ $context = stream_context_create([
         'proxy' => 'tcp://localhost:4140',
         'request_fulluri' => true,
     ],
-    'ssl' => [
-        'verify_peer' => false,  // Only for testing
-    ]
+    'ssl' => array_filter([
+        'cafile' => getenv('SSL_CERT_FILE'),
+    ]),
 ]);
 
 $response = file_get_contents('https://example.com', false, $context);
@@ -247,6 +255,8 @@ export HTTP_PROXY=http://localhost:4140
 export HTTPS_PROXY=http://localhost:4140
 export NO_PROXY=localhost,127.0.0.1
 ```
+
+Certificate handling depends on the selected TLS backend. Add the certificate at `SSL_CERT_FILE` to the client's root certificate store. See the [Rust language page](/reference/languages/rust#proxymock) for a complete record, mock, and replay workflow.
 
 Use the SOCKS proxy to capture database traffic (requires socks feature in Cargo.toml):
 ```shell

@@ -36,7 +36,6 @@ proxymock [command]
 - `help` - Help about any command
 - `import` - Import traffic from a snapshot file or a BYOC S3 bucket
 - `init` - Initializes proxymock installation and configuration
-- `inspect` - Inspect Speedscale traffic (test / mock files)
 - `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
@@ -256,43 +255,6 @@ proxymock replay --test-against localhost:9092
 
 Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
 
-### `inspect`
-
-Inspect Speedscale traffic in a TUI.
-
-**Usage**
-
-```bash
-proxymock inspect [flags]
-```
-
-**Examples**
-
-```bash
-# inspect demo data
-proxymock inspect --demo
-
-# inspect RRPair files from a directory
-proxymock inspect --in ./my-recording
-
-# inspect a snapshot file on disk
-proxymock inspect --snapshot ./raw.jsonl
-
-# inspect a snapshot pulled into the workspace (proxymock/snapshot-<id>) by ID
-proxymock inspect --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
-
-# the same, naming the workspace with --in
-proxymock inspect --in ./my-repo --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
-```
-
-**Flags**
-
-- `--demo` - Use demo data to explore the TUI without recording traffic first
-- `--in strings` - Directories to recursively read RRPair files from (default current directory)
-- `--log-to string` - File path to write logs to
-- `--snapshot string` - Snapshot to inspect: a snapshot file path, or the ID of a snapshot pulled into the workspace named by `--in`
-- `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
-
 ## Utility commands
 
 ### `generate`
@@ -381,7 +343,7 @@ proxymock import --file /path/to/snapshot.json --out some/local/path
 
 ### `import s3`
 
-Import historical BYOC traffic from a customer's own S3 bucket into a local proxymock directory. The BYOC OpenTelemetry `awss3` exporter writes objects under the `byoc/` prefix in hive-style `year=/month=/day=/hour=/minute=` partitions; proxymock reads `_speedscale/byoc-layout.json` when present to enumerate workload-specific prefixes directly, and the legacy Fluent Bit layout is also supported. Use `--local-dir` to read from a local directory tree with the same layout, in which case `--bucket` and AWS credentials are not used. See the [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) guide for the full workflow.
+Import historical BYOC traffic from a customer's own S3 bucket into a local proxymock directory. The BYOC OpenTelemetry `awss3` exporter writes objects under the `byoc/` prefix in hive-style `year=/month=/day=/hour=/minute=` partitions; proxymock reads `_speedscale/byoc-layout.json` when present to enumerate workload-specific prefixes directly, and the legacy Fluent Bit layout is also supported. Use `--local-dir` to read from a local directory tree with the same layout, in which case `--bucket` and AWS credentials are not used. See [Use BYOC traffic with proxymock](/byoc/use-traffic.md) for the full workflow.
 
 **Usage**
 
@@ -450,7 +412,7 @@ Use the same filter, follow, and output flags as `import s3`. The default output
 
 `--bucket` takes only the bucket name. Set `--prefix` to an object-key prefix such as `byoc/`, not a `gs://` URL or a path containing the bucket name. Omit `--prefix` for the legacy Fluent Bit layout with objects at the bucket root.
 
-See [Google Cloud Storage in the BYOC bucket guide](/proxymock/guides/byoc-bucket.md#google-cloud-storage) for credentials and the optional S3 interoperability compatibility path.
+See [Google Cloud Storage in the BYOC guide](/byoc/use-traffic.md#google-cloud-storage) for credentials and the optional S3 interoperability compatibility path.
 
 ### `send-one`
 

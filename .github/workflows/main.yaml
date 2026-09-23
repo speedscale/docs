@@ -24,6 +24,14 @@ jobs:
         node-version: '22'
         cache: yarn
 
+    - name: writing regression tests
+      run: yarn test:writing
+
+    - name: check public writing
+      env:
+        BASE_SHA: ${{ github.event.before }}
+      run: yarn check:writing --base "$BASE_SHA"
+
     - name: install
       run: yarn --frozen-lockfile --silent
 

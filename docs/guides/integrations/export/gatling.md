@@ -1,5 +1,5 @@
 ---
-description: "Export traffic captured by Speedscale as Gatling simulation scripts to leverage Gatling's load testing framework for effective API performance testing."
+description: "Export Speedscale snapshots or local proxymock recordings as Gatling Java simulations."
 sidebar_position: 3
 ---
 
@@ -7,7 +7,7 @@ sidebar_position: 3
 
 Speedscale can export traffic as [Gatling](https://gatling.io/) simulation scripts. This lets you use Gatling's load testing framework with traffic that was captured by Speedscale. Speedscale takes inbound requests from your snapshot and generates a complete Gatling simulation in Java DSL format, ready to run.
 
-## How it Works
+## How it works
 
 The exporter converts each inbound HTTP/HTTPS request in your snapshot into a Gatling `exec` block with the correct method, URL, headers, query parameters, and body. The result is a standalone `.java` file that can be run directly with Gatling 3.7+.
 
@@ -15,19 +15,36 @@ The exporter converts each inbound HTTP/HTTPS request in your snapshot into a Ga
 Only raw traffic is exported. Transforms and other data manipulation logic are not included in the export due to differences between the automated replay and script-driven paradigms.
 :::
 
-## Export
+## Export a cloud snapshot
 
 To export your snapshot as a Gatling simulation:
 
-```
+```bash
 speedctl export snapshot --type gatling --output MySimulation.java {SNAPSHOT_ID}
 ```
+
+## Export a local proxymock recording
+
+Export RRPair files created by `proxymock record`, a cloud snapshot pull, or a BYOC bucket import:
+
+```bash
+proxymock export gatling --in ./proxymock --out MySimulation.java
+```
+
+The local exporter accepts the same selection controls as snapshot export:
+
+```bash
+proxymock export gatling --in ./proxymock \
+  --service api.example.com --limit 50 --out ApiSimulation.java
+```
+
+Use `--inbound-only=false` to include outbound dependency calls. Use `--scheme http` or `--scheme https` to override recorded URL schemes.
 
 ### Options
 
 Like other export formats, you can control what gets exported:
 
-```
+```bash
 # Export only inbound traffic (default behavior)
 speedctl export snapshot --type gatling --output MySimulation.java {SNAPSHOT_ID}
 
@@ -38,7 +55,7 @@ speedctl export snapshot --type gatling --service my-service --output MySimulati
 speedctl export snapshot --type gatling --limit 50 --output MySimulation.java {SNAPSHOT_ID}
 ```
 
-## Running the Simulation
+## Run the simulation
 
 ### Prerequisites
 
@@ -48,8 +65,8 @@ speedctl export snapshot --type gatling --limit 50 --output MySimulation.java {S
 ### Steps
 
 1. Export your snapshot:
-   ```
-   speedctl export snapshot --type gatling --output MySimulation.java {SNAPSHOT_ID}
+   ```bash
+   proxymock export gatling --in ./proxymock --out MySimulation.java
    ```
 
 2. Copy the generated `.java` file into your Gatling project's `src/test/java/` directory.
@@ -59,7 +76,7 @@ speedctl export snapshot --type gatling --limit 50 --output MySimulation.java {S
    gatling.sh -sf src/test/java -s MySimulation
    ```
 
-## Generated Script Format
+## Generated script format
 
 The exported simulation uses Gatling's Java DSL and looks like this:
 
@@ -102,7 +119,7 @@ You can customize the generated script to add:
 - Assertions and checks
 - Feeders for parameterized data
 
-## Capturing Transformed Traffic
+## Capture transformed traffic
 
 If you want to export traffic that has been processed by Speedscale transforms (e.g., JWT regeneration, data masking), you can capture the transformed output:
 
@@ -116,8 +133,9 @@ This doesn't export the transform logic into the script, but it gives you the tr
 
 Check the latest export options by running:
 
-```
+```bash
 speedctl export snapshot --help
+proxymock export gatling --help
 ```
 
 Feel free to ask questions on the [Community](https://slack.speedscale.com).

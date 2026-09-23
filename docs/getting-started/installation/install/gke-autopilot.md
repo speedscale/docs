@@ -6,10 +6,6 @@ sidebar_position: 12
 
 # Working with GKE Autopilot
 
-:::caution
-This workflow is currently in preview status. Please provide feedback in our [Slack community](https://slack.speedscale.com).
-:::
-
 [GKE Autopilot](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview) is Google's fully managed mode for GKE. Autopilot blocks privileged workloads by default through its Warden admission controller. The Speedscale eBPF capture agent (`nettap`) needs Linux capabilities, host namespace access, and a few `hostPath` mounts that Warden rejects unless the workload is explicitly allowed.
 
 ## Capture Options on Autopilot
