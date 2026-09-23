@@ -25,7 +25,21 @@ function runGit(root, args) {
   }
 }
 
+function mergeBaseWithMain(root, localSha) {
+  try {
+    return runGit(root, ["merge-base", "origin/main", localSha]).trim();
+  } catch {
+    return "";
+  }
+}
+
+// Check what the branch adds on top of main, the same scope CI checks against
+// the PR base. Diffing from the previous remote head instead would count
+// everything a merge of main brings in as added by this push, so a branch
+// that merged main would be blocked by main's own history.
 function pushedBase(root, remoteSha, localSha) {
+  const mainBase = mergeBaseWithMain(root, localSha);
+  if (mainBase) return mainBase;
   if (!ZERO_SHA.test(remoteSha)) return remoteSha;
   return runGit(root, ["merge-base", "origin/main", localSha]).trim();
 }
