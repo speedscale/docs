@@ -20,7 +20,7 @@ Each is available three ways: as a CLI verb (`proxymock dlp`, `proxymock filter`
 
 - `proxymock` [installed](../getting-started/quickstart/quickstart-cli.md).
 - A directory of RRPair files to test against, for example a `recorded-*` run or an [imported BYOC pull](/byoc/use-traffic.md).
-- A rule to test. Write one by hand, or start from a cloud rule: `proxymock cloud pull dlp standard` writes the shipped `standard` DLP rule to disk. Pulling needs an account; testing and applying do not.
+- A rule to test. Write one by hand, or start from a cloud rule: `proxymock cloud pull dlp standard` writes the shipped `standard` DLP rule into your workspace as `proxymock/dlprules/standard.json`. Pulling needs an account; testing and applying do not.
 
 ## Redact with DLP {#dlp}
 
@@ -30,7 +30,7 @@ Each is available three ways: as a CLI verb (`proxymock dlp`, `proxymock filter`
 # report what a rule would redact
 proxymock dlp test --dlp-config my-dlp.json --in ./recorded
 
-# test a rule downloaded with 'proxymock cloud pull dlp standard'
+# test a rule saved in the workspace (proxymock/dlprules/standard.json), e.g. by 'proxymock cloud pull dlp standard'
 proxymock dlp test --dlp-config standard --in ./recorded
 
 # inspect the full before/after redaction of one file
@@ -92,7 +92,7 @@ Both tools run offline and read and write the same JSON documents as `proxymock 
 
 ## From proxymock web {#web}
 
-`proxymock web` ships editors for DLP and filter rules. Load a run, author the rule against its traffic, and preview what it redacts or drops before you save. The saved rule is the same JSON the CLI and MCP paths read, so you can start a rule in the browser and finish it on the command line, or the reverse.
+`proxymock web` ships editors for DLP and filter rules. Load a run, author the rule against its traffic, and preview what it redacts or drops before you save. The editors save rules into the workspace, DLP rules as `proxymock/dlprules/<id>.json` and filter rules as `proxymock/filters/<id>.json`, the same files `proxymock cloud pull` writes and the CLI and MCP paths read by id. You can start a rule in the browser and finish it on the command line, or the reverse.
 
 ## Round-trip to Speedscale Cloud {#round-trip}
 
@@ -106,7 +106,7 @@ proxymock dlp test --dlp-config standard --in ./recorded
 proxymock cloud push dlp
 ```
 
-The same `pull`/`push` pair works for `filter` and `transform`. Author where it is fastest to iterate, prove the behavior against real RRPairs, and enforce the identical rule in the cluster.
+The same `pull`/`push` pair works for `filter` and `transform`. Pulls write into the workspace found from `--in` (`proxymock/dlprules/`, `proxymock/filters/` or `proxymock/blueprints/`) and pushes read from there; nothing is read from or written to `~/.speedscale`. Author where it is fastest to iterate, prove the behavior against real RRPairs, and enforce the identical rule in the cluster.
 
 ## Next steps
 
