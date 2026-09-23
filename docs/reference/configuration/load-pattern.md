@@ -25,3 +25,6 @@ This load pattern will result in a throughput graph like this:
 
 ![throughput](throughput_50_rps.png)
 
+## Per-endpoint and session schedules
+
+Use [load groups](./endpoint-load-plans.md) when selected endpoints or complete sessions need independent schedules, shared arrival rates or budgets. Group ramps use the same duration/ramp semantics. See the [banking how-to](../../guides/replay/endpoint-load-how-to.md) for an interference test and the [feature guide](../../guides/replay/endpoint-session-load-plans.md) for dashboard and proxymock controls.

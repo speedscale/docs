@@ -23,3 +23,7 @@ When a snapshot is created data about the sessions will be aggregated into a sum
 ## Replay
 
 During replay, Speedscale will automatically replace session IDs with their new value as returned by the server. When the load generator "logs in" it will expect the server to produce a new `access_token` response. Speedscale will detect and re-use that token wherever it is used in subsequent calls.
+
+## Rotate a population under load
+
+A session load group selects a population of recorded actors and replays complete journeys. Population size is separate from concurrency and session starts per second. See [endpoint and session load plans](./endpoint-session-load-plans.md#rotate-complete-banking-journeys) for rotation, budgets and endpoint-specific goals within a journey.
