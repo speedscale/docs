@@ -369,3 +369,27 @@ test("ignores main's content brought in by merging main into a branch", () => {
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("nested list items are not hard-wrapped prose", () => {
+  const content = [
+    "- [Install](#install)",
+    "  - [Resource Ownership](#resource-ownership)",
+    "  - [Install Flow](#install-flow)",
+    "",
+    "4. **Migrate CSV Data Sets:**",
+    "   - Upload the CSV to Speedscale.",
+    "   - Replace the data field in your traffic.",
+    "",
+    "A paragraph that wraps",
+    "onto a second line.",
+  ].join("\n");
+  const findings = analyzeFile(
+    "docs/example.md",
+    content,
+    new Set(content.split("\n").map((_, index) => index + 1)),
+  ).filter((finding) => finding.rule === "hard-wrapped prose");
+  assert.deepEqual(
+    findings.map((finding) => finding.line),
+    [9, 10],
+  );
+});
