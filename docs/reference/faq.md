@@ -76,16 +76,19 @@ See the [sizing guide](./generator-sizing-guide.md) for general recommendations 
 
 ### What if I use Bottlerocket OS? <a href="#bottlerocket" id="bottlerocket"></a>
 
-[Bottlerocket](https://bottlerocket.dev/) is a minimal, security-focused Linux-based OS designed for running containers. Because of its locked-down nature, Speedscale's eBPF-based network tap requires `super_t` SELinux permissions to function properly. Add the following to your `values.yaml` when installing the Speedscale Helm chart:
+[Bottlerocket](https://bottlerocket.dev/) is a minimal, security-focused Linux-based OS designed for running containers. Speedscale's eBPF-based network tap requires the `control_t` SELinux type to inspect TLS libraries across Bottlerocket's pod isolation boundaries. Add the following to your `values.yaml` when installing the Speedscale Helm chart:
 
 ```yaml
 ebpf:
   enabled: true
   nettap:
-    securityContext:
-      seLinuxOptions:
-        type: super_t
+    capture:
+      podSecurityContext:
+        seLinuxOptions:
+          type: control_t
 ```
+
+This setting grants the capture container additional host access and should be reviewed by your platform and security teams. EKS Auto Mode users should follow the [EKS Auto Mode installation guide](/getting-started/installation/install/eks-auto-mode) for verification and troubleshooting.
 
 ### Not seeing traffic when using a port forward? <a href="#port-forward" id="port-forward"></a>
 

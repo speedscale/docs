@@ -37,6 +37,18 @@ const config = {
       {
         redirects: [
           {
+            from: "/guides/byoc/",
+            to: "/byoc/",
+          },
+          {
+            from: "/guides/byoc-ecs/",
+            to: "/byoc/examples/ecs/",
+          },
+          {
+            from: "/proxymock/guides/byoc-bucket/",
+            to: "/byoc/use-traffic/",
+          },
+          {
             from: "/getting-started/introduction/",
             to: "/",
           },
@@ -1218,6 +1230,14 @@ const config = {
           {
             from: "/transform/transforms/gzip/",
             to: "/guides/transformation/transforms/gzip/",
+          },
+          {
+            from: "/transform/transforms/graphql/",
+            to: "/guides/transformation/transforms/graphql/",
+          },
+          {
+            from: "/transform/transforms/graphql_delete/",
+            to: "/guides/transformation/transforms/graphql_delete/",
           },
           {
             from: "/transform/transforms/json_path/",

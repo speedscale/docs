@@ -9,7 +9,7 @@ sidebar_position: 7
 
 The OpenAPI to RRPair feature in proxymock allows you to instantly generate a complete set of mock API responses from any OpenAPI 3.0+ specification (JSON or YAML). This enables rapid prototyping, testing, and development without needing to manually record or handcraft mock data.
 
-With a single command, you can convert your OpenAPI spec into a directory of RRPair markdown files. From therer you can use the `proxymock mock` server to respond and `proxymock inspect` to modify specific responses.
+With a single command, you can convert your OpenAPI spec into a directory of RRPair markdown files. From therer you can use the `proxymock mock` server to respond and `proxymock web` to modify specific responses.
 
 ## Why Use This Feature?
 
@@ -163,3 +163,16 @@ A: Simply edit the markdown files after generation. You can change any part of t
 The OpenAPI to RRPair feature is fast way to turn your API specification into a working mock server. It's ideal for rapid development, testing, and continuous integration. Try it out today and accelerate your API workflows! proxymock paid tier plans allow running the mock server in Kubernetes or other long lived environments.
 
 If you have questions or feedback, please reach out to the proxymock team in our [community](https://slack.speedscale.com).
+
+## Validate recorded and replayed responses
+
+Use `validate` to check actual traffic against your API contract after generating mocks or running a replay:
+
+```shell
+proxymock validate --spec ./openapi.yaml --in ./proxymock/recorded-example
+proxymock validate --spec ./openapi.yaml --in ./proxymock/results/candidate
+```
+
+The validator matches HTTP methods and route templates, resolves local and component references, and checks response schemas. Findings identify fields with incorrect types, missing required values, invalid enum values, or undocumented fields. Supported specifications include OpenAPI 3.0 and 3.1.
+
+Use the command's nonzero exit in CI. Contract violations and missing routes have distinct results; see the [`validate` reference](/reference/proxymock-cli-reference.md#validate). A route absent from the specification is a coverage gap, not a successful validation. This checks the response contract; [replay verdicts](./replay-verdicts.md) compare observed behavior with the recording.

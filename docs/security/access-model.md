@@ -56,6 +56,7 @@ Admins have full control over the Speedscale platform. They can do everything a 
 | Add / modify DLP rules | DLP rules are consumed by the forwarder and affect live traffic processing |
 | Add / modify traffic filters | Block traffic from ingest at the cluster level |
 | Manage usage thresholds and billing alerts | |
+| Unlock any locked snapshot | Non-admins can only unlock snapshots they locked themselves. See [Locking a Snapshot](/guides/locking-a-snapshot.md) |
 
 ### Maintainer
 
@@ -79,6 +80,7 @@ Developers can perform all day-to-day testing and observation tasks:
 | Create and edit snapshots | |
 | Run replays and view reports | |
 | Manage transforms on snapshots | Snapshot transforms only — creating DLP rules from transforms requires Admin |
+| Lock and unlock snapshots | A locked snapshot is read-only. Any user can lock; only the locking user or an Admin can unlock |
 | Invite other Developers | |
 
 ## Inviting users

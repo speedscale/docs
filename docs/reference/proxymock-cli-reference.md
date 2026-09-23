@@ -36,7 +36,6 @@ proxymock [command]
 - `help` - Help about any command
 - `import` - Import traffic from a snapshot file or a BYOC S3 bucket
 - `init` - Initializes proxymock installation and configuration
-- `inspect` - Inspect Speedscale traffic (test / mock files)
 - `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
@@ -192,6 +191,25 @@ proxymock replay --test-against localhost:9092
 
 - `--app-log-to string` - File path to redirect wrapped application output to
 - `--fail-if strings` - Fail with exit code `1` when a validation condition is true
+- `--baseline string` - Prior replay output directory for comparison against known failures
+- `--fail-on-new-mismatch` - Exit `3` for a new mismatch; requires `--baseline`
+- `--verify-fix` - Interpret recorded errors becoming successful responses as fixes, and check collateral regressions
+- `--expect string` - Regular expression selecting recorded-error endpoints; requires `--verify-fix`
+- `--ignore-body-changes` - Restrict verdict scoring to response status codes
+- `--require-blueprint stringArray` - Require a named blueprint to load and complete at least one transform chain; repeatable
+- `--sessions uint` - Use recorded sessions as the unit of load; overrides `--vus`
+- `--stage stringArray` - Ordered load stages such as `sessions=5,for=30s` and `sessions=50,for=2m,ramp=1m`; cannot be combined with `--vus`, `--sessions`, `--for`, or `--times`
+- `--load-test` - Reduce response collection for high-throughput testing; omits response matching and blueprint activity checks
+- `--semantic` - Score response-body similarity using match/divergent/fail bands
+- `--semantic-pass float` - Match threshold, default `0.92`
+- `--semantic-fail float` - Failure threshold, default `0.70`
+- `--semantic-embedder string` - Text scoring backend: `builtin`, `local`, or `openai`
+- `--semantic-endpoint string` - Embedding endpoint URL
+- `--semantic-model string` - Embedding model
+- `--semantic-judge string` - Optional divergent-pair judge: `managed`, `openai`, or `anthropic`
+- `--semantic-judge-model string` - Judge model
+- `--semantic-judge-endpoint string` - OpenAI-compatible judge endpoint
+- `--semantic-judge-cap int` - Maximum judge calls per run, default `25`
 - `-f, --for duration` - How long to replay in Go duration format; by default each test runs once
 - `--in strings` - Directories to read test files from recursively (default current directory)
 - `--log-to string` - File path to redirect all proxymock output to
@@ -199,7 +217,7 @@ proxymock replay --test-against localhost:9092
 - `--out string` - Directory to write observed replay request/response files to (default `proxymock/results/replayed-<timestamp>`)
 - `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
-- `--performance` - Sample failed or non-matching requests instead of writing all replay traffic to disk
+- `--performance` - Deprecated alias for `--load-test`
 - `--rewrite-host` - Rewrite the HTTP `Host` header to match the target host and port
 - `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
@@ -233,39 +251,7 @@ proxymock replay --test-against localhost:9092
 - `requests.succeeded`
 - `requests.total`
 
-### `inspect`
-
-Inspect Speedscale traffic in a TUI.
-
-**Usage**
-
-```bash
-proxymock inspect [flags]
-```
-
-**Examples**
-
-```bash
-# inspect demo data
-proxymock inspect --demo
-
-# inspect RRPair files from a directory
-proxymock inspect --in ./my-recording
-
-# inspect a snapshot file on disk
-proxymock inspect --snapshot ~/.speedscale/data/snapshots/<uuid>/raw.jsonl
-
-# inspect a snapshot from the local snapshot repository by ID
-proxymock inspect --snapshot fcc58b94-d94e-4280-a12b-a0b140975bc7
-```
-
-**Flags**
-
-- `--demo` - Use demo data to explore the TUI without recording traffic first
-- `--in strings` - Directories to recursively read RRPair files from (default current directory)
-- `--log-to string` - File path to write logs to
-- `--snapshot string` - Snapshot ID to target
-- `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
+Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
 
 ## Utility commands
 
@@ -330,6 +316,7 @@ proxymock import [command]
 **Subcommands**
 
 - `import s3` - Import historical traffic from a BYOC S3 bucket (see below)
+- `import gcs` - Import historical traffic from a BYOC Google Cloud Storage bucket using Google credentials
 - `import har` - Import a HAR document into local RRPair files
 - `import postman` - Import a Postman collection into local RRPair files
 - `import wiremock` - Import a WireMock project into local RRPair files
@@ -354,7 +341,7 @@ proxymock import --file /path/to/snapshot.json --out some/local/path
 
 ### `import s3`
 
-Import historical BYOC traffic from a customer's own S3 bucket into a local proxymock directory. The BYOC OpenTelemetry `awss3` exporter writes objects under the `byoc/` prefix in hive-style `year=/month=/day=/hour=/minute=` partitions; proxymock reads `_speedscale/byoc-layout.json` when present to enumerate workload-specific prefixes directly, and the legacy Fluent Bit layout is also supported. Use `--local-dir` to read from a local directory tree with the same layout, in which case `--bucket` and AWS credentials are not used. See the [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) guide for the full workflow.
+Import historical BYOC traffic from a customer's own S3 bucket into a local proxymock directory. The BYOC OpenTelemetry `awss3` exporter writes objects under the `byoc/` prefix in hive-style `year=/month=/day=/hour=/minute=` partitions; proxymock reads `_speedscale/byoc-layout.json` when present to enumerate workload-specific prefixes directly, and the legacy Fluent Bit layout is also supported. Use `--local-dir` to read from a local directory tree with the same layout, in which case `--bucket` and AWS credentials are not used. See [Use BYOC traffic with proxymock](/byoc/use-traffic.md) for the full workflow.
 
 **Usage**
 
@@ -403,6 +390,27 @@ proxymock import s3 --bucket my-bucket --prefix byoc/ --from now-15m --dlp-confi
 - `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
 - `--timeout duration` - Command timeout, e.g. `10s`, `5m`, `1h` (default `12h`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+### `import gcs`
+
+Import historical BYOC traffic directly from Google Cloud Storage using the native API and Google Application Default Credentials (ADC). The import shares the S3 command's OTLP-JSON parsing, bucket layout handling, filters, DLP, and follow mode.
+
+**Usage**
+
+```shell
+gcloud auth application-default login
+
+proxymock import gcs --bucket my-gcs-bucket --prefix byoc/ \
+  --service checkout --from now-1h
+```
+
+For other environments, set `GOOGLE_APPLICATION_CREDENTIALS` to a credentials file or use workload identity. The identity needs `storage.objects.list` and `storage.objects.get` on the bucket. AWS HMAC keys are not used.
+
+Use the same filter, follow, and output flags as `import s3`. The default output directory is `proxymock/imported-gcs-<timestamp>/`. The S3-specific flags `--region`, `--s3-endpoint-url`, and `--s3-force-path-style` do not apply.
+
+`--bucket` takes only the bucket name. Set `--prefix` to an object-key prefix such as `byoc/`, not a `gs://` URL or a path containing the bucket name. Omit `--prefix` for the legacy Fluent Bit layout with objects at the bucket root.
+
+See [Google Cloud Storage in the BYOC guide](/byoc/use-traffic.md#google-cloud-storage) for credentials and the optional S3 interoperability compatibility path.
 
 ### `send-one`
 
@@ -570,7 +578,9 @@ proxymock filter apply --filter-config my-filter.json --in ./recorded --out ./fi
 
 ### `transform`
 
-Author and validate traffic transforms. The transform engine is identical to the one the cloud snapshot Transforms tab and proxymock web use, so `transform test` previews exactly what the generator and responder would apply at replay.
+Pass a bare transform configuration to `--transform-config`, not the complete blueprint JSON wrapper. A blueprint stores that configuration under `tokenizeConfig`; see [Blueprints](/proxymock/guides/blueprints.md).
+
+Author and validate traffic transforms using the same engine as Cloud snapshot tuning and proxymock web. `transform test` previews changes against the supplied RRPairs. Verify changes that depend on runtime responses or secrets with a replay.
 
 **Subcommands**
 
@@ -1092,14 +1102,15 @@ proxymock mcp install [flags]
 # install the stdio MCP server
 proxymock mcp install
 
-# install the SSE MCP server
-proxymock mcp install --sse
+# install the Streamable HTTP MCP server
+proxymock mcp install --http
 ```
 
 **Flags**
 
-- `--port int` - Port to use when installing the SSE transport (default `8080`)
-- `--sse` - Install the SSE transport instead of stdio
+- `--http` - Install the Streamable HTTP transport (`http://localhost:<port>/mcp`) instead of stdio
+- `--port int` - Port to use when installing the HTTP transport (default `8080`)
+- `--sse` - Deprecated. Install the legacy SSE transport; use `--http` instead
 
 ### `mcp json`
 
@@ -1113,8 +1124,9 @@ proxymock mcp json [flags]
 
 **Flags**
 
-- `--port int` - Port to use when generating SSE configuration (default `8080`)
-- `--sse` - Generate JSON for the SSE transport instead of stdio
+- `--http` - Generate JSON for the Streamable HTTP transport instead of stdio
+- `--port int` - Port to use when generating HTTP configuration (default `8080`)
+- `--sse` - Deprecated. Generate JSON for the legacy SSE transport; use `--http` instead
 
 ### `mcp run`
 
@@ -1132,14 +1144,15 @@ proxymock mcp run [flags]
 # run the MCP server over stdio
 proxymock mcp run
 
-# run the MCP server over SSE
-proxymock mcp run --sse --port 8080
+# run the MCP server over Streamable HTTP (also serves the legacy /sse endpoint)
+proxymock mcp run --http --port 8080
 ```
 
 **Flags**
 
-- `--port int` - Port to use when serving the SSE transport (default `8080`)
-- `--sse` - Serve MCP over SSE instead of stdio
+- `--http` - Serve MCP over Streamable HTTP at `http://localhost:<port>/mcp` instead of stdio. The legacy `/sse` endpoint is served on the same port for older clients
+- `--port int` - Port to use when serving the HTTP transport (default `8080`)
+- `--sse` - Deprecated. Serve the legacy SSE transport; use `--http` instead
 - `--work-dir string` - Working directory to run the MCP server in
 
 ### `completion`
@@ -1173,3 +1186,24 @@ proxymock version [flags]
 
 - `--client` - Show only the local client version
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
+
+### `validate`
+
+Validate recorded or replayed HTTP responses against an OpenAPI specification.
+
+```shell
+proxymock validate --spec ./openapi.yaml --in ./proxymock/recorded-example
+```
+
+- `--spec string` - Required OpenAPI 3.0+ JSON or YAML specification; supports OpenAPI 3.1
+- `--in string` - Required directory containing RRPair files
+
+The validator matches methods and route templates and resolves local and component references. It checks response schemas, including types, required fields, enums, and undocumented fields. It runs locally without a Speedscale account.
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | No contract violations or unmatched routes reported |
+| `2` | At least one contract violation |
+| `3` | At least one unmatched route, with no contract violations |
+
+Check the number of responses validated as well as the exit code. A run with no applicable HTTP responses does not establish contract coverage. See [OpenAPI validation](/proxymock/guides/openapi.md#validate-recorded-and-replayed-responses).

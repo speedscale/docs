@@ -33,7 +33,7 @@ See [Proxy Modes](/getting-started/installation/sidecar/proxy-modes.md) and
 
 ## Demo App
 
-- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`python` directory)
+- Public demo: [speedscale/mock-lab](https://github.com/speedscale/mock-lab) (`languages/python` directory)
 - Stack: standard-library Python (no Flask, no Makefile) that calls one downstream, the CNCF projects API at `https://demo-api.trafficreplay.com`
 - Local run: `python3 app.py`
 - Traffic generator: `./lab/tests/run_tests.sh --recording`
@@ -52,7 +52,7 @@ This is the current public Python demo used for local proxymock examples.
     },
     {
       title: 'Clone the demo and start recording',
-      command: `git clone https://github.com/speedscale/mock-lab\ncd mock-lab/python\nproxymock record -- python3 app.py`,
+      command: `git clone https://github.com/speedscale/mock-lab\ncd mock-lab/languages/python\nproxymock record -- python3 app.py`,
       note: 'proxymock records the app while it starts the Python service as a child process. The app listens on port 8080 and calls the CNCF projects API downstream.',
     },
     {
@@ -62,12 +62,12 @@ This is the current public Python demo used for local proxymock examples.
     },
     {
       title: 'Stop the recording, then run with mocks',
-      command: `cd mock-lab/python\nproxymock mock -- python3 app.py`,
+      command: `cd mock-lab/languages/python\nproxymock mock -- python3 app.py`,
       note: 'The mocked run should no longer need live outbound dependencies.',
     },
     {
       title: 'Replay the same traffic against a change',
-      command: `cd mock-lab/python\nproxymock replay --test-against http://localhost:8080`,
+      command: `cd mock-lab/languages/python\nproxymock replay --test-against http://localhost:8080`,
       note: 'Use replay as the regression check before shipping Python changes.',
     },
   ]}

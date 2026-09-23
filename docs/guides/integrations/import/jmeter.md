@@ -5,9 +5,9 @@ sidebar_position: 6
 
 # Migrating from JMeter
 
-Performance testing is a crucial aspect of the software development lifecycle, ensuring applications can handle expected load and stress. Apache JMeter and Speedscale are two popular tools used for this purpose. Speedscale users commonly seek to migrate JMeter scripts onto the Speedscale platform to modernize their API testing.
+This guide records the requests made by an Apache JMeter test plan and turns them into Speedscale traffic snapshots. Speedscale does not import `.jmx` files directly.
 
-This guide describes how to easily re-direct JMeter to the Speedscale recorder and scale up for various test types of tests. Keep in mind that Speedscale replicates your JMeter script by recording the requests it makes. Once imported into Speedscale it's easy to recombine and otherwise modify the output. The focus within JMeter is to run the simplest and cleanest version of each test suite.
+Run JMeter through the Speedscale recorder with one virtual user, then use Speedscale load patterns to scale the captured requests. Record each logical test section separately so it is easy to recombine later.
 
 :::tip
 Turn your vUser settings down to one and record each test script as a separate snapshot. Speedscale already knows how to scale up traffic, merge test suites, etc. It's best to start with the cleanest run possible and use Speedscale's built-in functionality.
@@ -36,7 +36,7 @@ Turn your vUser settings down to one and record each test script as a separate s
 Review Speedscale's default load [patterns](/guides/load-patterns.md) to see if one already fits your needs. You can skip over this section entirely if so.
 :::
    - Create a new test config using the Speedscale UI. Look for the "Create Test Config" button or you can clone from an existing one like [100replicas](https://app.speedscale.com/config/performance_100replicas).
-   - Modify the `Load Patterrn` section to match the vUser volume and timing of the original JMeter script.
+   - Modify the **Load Pattern** section to match the virtual-user volume and timing of the original JMeter script.
 
 4. **Migrate CSV Data Sets:**
 :::tip
@@ -44,7 +44,7 @@ Manual CSV import is usually not necessary in this type of migration. If JMeter 
 :::
    - If CSV data must be manually migrated (see tip above) then upload the CSV to Speedscale using the `speedctl push userdata my_data_1 <file.csv>` command or using the Speedscale UI.
    - Find the data field that needs replacing in your traffic and replace it using either the [smart_replace_csv](../../transformation/transforms/smart_replace_csv.md) or csv_iterator transforms.
-   - It is possible to run your JMeter script and then retroactively extract data into CSVs. This is not necessary for this workflow but it comes in handy if you're working with CSVs (see the `speedctl extract` man page for more info)
+   - You can also run the JMeter script and extract recorded values into CSVs later. See `speedctl extract --help`.
 
 5. **Assertions:**
 :::tip
@@ -97,8 +97,14 @@ Traffic is immutable and many snapshots can be created from the same recording. 
    - In the replay wizard, make sure you select the test config you created in the previous steps (if necessary) to run the correct load pattern and assertions. JMeter combines all aspects of a test into the test suite. Speedscale breaks up the traffic (what) with the load pattern (how) for more seamless automation.
    - View report and results.
 
-#### Conclusion
+#### Local proxymock alternative
 
-Migrating from JMeter to Speedscale can significantly reduce the labor required to support your performance testing practice. Speedscale's ability to record actual behavior should make migration fairly painless in most cases.
+If you only need local RRPair files, run `proxymock record` and configure JMeter to use the HTTP proxy address printed by the command. Stop the recorder after the single-user JMeter run, then replay the captured inbound requests locally:
+
+```bash
+proxymock replay --in ./proxymock --test-against http://localhost:8080
+```
+
+This records HTTP behavior; it does not convert JMeter thread groups, assertions, timers, or other `.jmx` configuration.
 
 Let us know on the [community Slack](https://slack.speedscale.com) if you need additional help or advice.

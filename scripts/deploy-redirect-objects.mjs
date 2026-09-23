@@ -48,6 +48,16 @@ if (stubs.length === 0) {
   process.exit(1);
 }
 
+// Reject browser URL normalization tricks before publishing any redirects.
+const offsite = stubs.filter(
+  ([, target]) => !target.startsWith("/") || target.startsWith("//") || /[\\\x00-\x20\x7f&]/.test(target),
+);
+if (offsite.length > 0) {
+  console.error("refusing to publish non-relative redirect targets:");
+  for (const [key, target] of offsite) console.error(`  ${key} -> ${target}`);
+  process.exit(1);
+}
+
 console.log(`${stubs.length} redirect stubs -> 301 objects in s3://${bucket}`);
 
 let failed = 0;

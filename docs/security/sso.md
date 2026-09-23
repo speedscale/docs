@@ -1,87 +1,46 @@
 ---
-description: "Integrate Single Sign-On (SSO) with Speedscale for secure access management using Auth0 and major Identity Providers to enhance your enterprise security."
+description: Configure Microsoft Entra ID or Okta SSO with account-specific settings, submit connection credentials, and verify Speedscale sign-in.
 sidebar_position: 7
 ---
 
 # Single Sign-On (SSO) Integration
 
-## Overview
+Use the **SSO** section of your Speedscale account to configure Microsoft Entra ID or Okta Workforce Identity. It shows the callback and sign-in values for your account. SSO requires an eligible license; contact Speedscale support if setup is unavailable.
 
-Speedscale’s enterprise software supports seamless Single Sign-On (SSO) integration, enabling secure, centralized access management for your organization. By utilizing Auth0, a leading third-party authentication platform, Speedscale ensures compatibility with a wide range of Enterprise Identity Providers (IdPs). This integration allows enterprises to enforce consistent security policies and streamline the user authentication process.
+## Set up the identity provider
 
-## Key Features
+Select your provider and follow its **Setup guide** instructions. Copy the callback URL from Speedscale instead of substituting a URL from another environment.
 
-- Enterprise Identity Provider Compatibility
-Speedscale integrates with all major Identity Providers, including but not limited to:
-    - Microsoft Azure AD
-    - Google Workspace
-    - Okta
-    - Ping Identity
-    - Active Directory Federation Services (ADFS)
-A full list of supported Identity Providers can be found [here](https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers).
-- Enhanced Security
-    - By leveraging your organization’s existing IdP, Speedscale reduces the risk of compromised credentials and ensures compliance with security standards like SAML, OAuth, and OpenID Connect.
+### Microsoft Entra ID
 
-## Configuring SSO for Your Speedscale Enterprise Account
+Register an application in the directory your employees use. For employees in that directory only, choose the single-tenant account type. Configure a **Web** redirect URI using the value shown by Speedscale. Microsoft documents the [redirect URI setup](https://learn.microsoft.com/en-us/entra/identity-platform/how-to-add-redirect-uri).
 
-To integrate SSO with Speedscale, follow these steps:
+Collect the application's client ID, directory identifier, and a client secret **value**. The secret ID is not the credential. Record its expiration and arrange replacement before it expires. Follow the account-specific guide for permissions, consent, and test-user assignment.
 
-1. Verify Your Enterprise License
+### Okta Workforce Identity
 
-SSO integration is available for Enterprise-tier customers. If you are unsure about your current license or need to upgrade, contact Speedscale Sales.
+Create an **OIDC Web Application** using Authorization Code and client-secret authentication. Enter the callback shown by Speedscale, assign a test user, and copy the generated client ID and secret. Use your Okta organization domain. See [Okta's OIDC integration instructions](https://help.okta.com/en-us/Content/Topics/Apps/Apps_App_Integration_Wizard_OIDC.htm) for the application settings.
 
-2. Initiate a Support Request
+## Submit connection settings
 
-Email support@speedscale.com with the following information:
+Open **Connection settings** for the selected provider:
 
-- Your Speedscale account email
-- Your Speedscale account name
-- Your Speedscale account ID
-- Your Auth0 domain
-- Your Auth0 client ID
+| Field | Value |
+| --- | --- |
+| Company email domain | A domain registered to your Speedscale account, such as `example.com` |
+| Microsoft directory | The directory's primary domain, such as `example.onmicrosoft.com` |
+| Okta organization domain | Your Okta organization domain |
+| Application/client ID | The ID of the app registered with the provider |
+| Client secret value | The provider's secret value, entered in the settings form |
 
-Speedscale support will then create a new Auth0 application and configure SSO for your account. Speedscale support will provide a connection_id that will be used in the next step.
+The company email domain controls account routing and can differ from the Microsoft directory domain. Do not substitute an Object ID for an Application (client) ID.
 
-3. Configure SSO
+Saving submits settings for Speedscale to review and activate. It replaces a pending submission; it does not immediately switch your active connection. A save confirmation is not proof of a successful login. Active settings can show the domain and client ID, but do not expose the stored secret. Enter a replacement secret when resubmitting.
 
-Your organization will need to create an OIDC application in your Identity Provider. The following is a guide for creating an OIDC application in Okta as an example. If you are not using Okta, please refer to the documentation for your Identity Provider.
+## Test sign-in
 
-Follow this [section](https://auth0.com/docs/connections/oidc/oidc-enterprise-connections) of the Okta guide for creating an OIDC application on the Okta side. Stop at `Enable the Okta Enterprise Connection in Auth0`.
-Stop at `Enable the Okta Enterprise Connection in Auth0`.
+After activation, refresh the page and open **Test sign-in**. Use the account-specific Speedscale login URL and a user assigned to the provider application. Confirm that sign-in returns to the correct Speedscale account.
 
-To summarize the settings for the app created in Okta:
-```
-Sign On Method: OIDC
-Application Type: Web Application
-App integration name: Speedscale
-Sign in redirect URI:
-https://auth.speedscale.com/login/callback
-Initiate Login URI:
-https://app.speedscale.com/authorize?connection=<connection_id>
-```
+If it fails, check the callback URI, user assignment, consent, company email domain, and credentials. A pending connection's login URL works only after activation. Keep an alternate login available until the test succeeds.
 
-* Skip any other optional parameters
-* Make sure to assign users to the newly created app.
-
-Now that the app is created, grab the following parameters and provide them to
-Speedscale. The Okta domain is not app specific and instructions on finding it are
-[here](https://developer.okta.com/docs/guides/find-your-domain/main/).
-
-```
-Client ID
-Client Secret
-Okta Domain
-```
-
-## Next Steps
-
-- Log out and attempt to log in via your Identity Provider.
-- Verify that users can authenticate successfully and are assigned the correct permissions within Speedscale.
-- Check for any errors in the authentication flow and refer to your Identity Provider's Troubleshooting Guide if needed.
-
-## Support
-
-For assistance with SSO setup or troubleshooting, contact Speedscale Support:
-- Email: support@speedscale.com
-
-By integrating Single Sign-On, Speedscale helps your team maintain secure, centralized, and efficient access management, ensuring a smooth user experience while meeting enterprise security standards.
+To rotate a secret, submit its replacement under **Connection settings** and coordinate activation before the old value expires. For providers outside the setup choices, or a missing domain mapping, contact [Speedscale support](mailto:support@speedscale.com).

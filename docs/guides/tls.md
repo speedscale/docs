@@ -55,7 +55,8 @@ Check the collector requirements before changing your application:
 
 - Go applications require Go 1.18 or newer and an unstripped binary built without `-ldflags="-s"`.
 - OpenSSL capture requires OpenSSL 3.x. BoringSSL, LibreSSL, and older OpenSSL releases are not supported by the eBPF TLS probes.
-- Java applications use the Speedscale JVMTI agent, which the Operator manages with the eBPF collector.
+- Rust applications using rustls require `nettap` v0.1.77 or newer and an unstripped Linux ELF binary that retains the rustls probe symbols. Rust applications using OpenSSL follow the OpenSSL 3.x requirement.
+- JVM applications written in Java or Kotlin use the Speedscale JVMTI agent, which the Operator manages with the eBPF collector.
 - Connections established before the probes attach can remain opaque until the application opens a new connection.
 
 See [eBPF limitations](/reference/ebpf-traffic-collection#limitations) for the complete list. Existing sidecar deployments can continue to use the legacy [sidecar TLS configuration](/getting-started/installation/sidecar/tls/).

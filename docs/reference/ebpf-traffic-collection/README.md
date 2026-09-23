@@ -58,9 +58,7 @@ captured traffic with pod name, namespace, labels, and other metadata.
 
 ## TLS Traffic Visibility
 
-Speedscale captures TLS-encrypted traffic in plaintext, without needing certificates, proxies, or application
-changes. There are three primary capture mechanisms: uprobes for applications/runtimes using OpenSSL 3.x
-libraries, uprobes on Go's `crypto/tls`, and a JVMTI agent for the JVM.
+Speedscale captures TLS-encrypted traffic in plaintext, without needing certificates, proxies, or application changes. There are four primary capture mechanisms: uprobes for applications and runtimes using OpenSSL 3.x libraries, uprobes on Go's `crypto/tls`, uprobes on Rust's rustls library, and a Java instrumentation agent for the JVM.
 
 OpenSSL support works for **both** dynamically and statically linked 3.x libraries. Processes that use this
 will have uprobes attached to OpenSSL read/write functions. This allows data to be captured before
@@ -71,9 +69,9 @@ package. The idea is the same as OpenSSL. Support for this requires Go versions 
 binaries to preserve the ELF symbol table, i.e. they must be **unstripped** and built **without** using
 `-ldflags="-s"`.
 
-JVM-based applications require a JVMTI agent, rather than eBPF uprobes, that instruments Java's TLS layer from
-within the JVM. This captures plaintext traffic for any Java application using standard TLS libraries
-(e.g., `javax.net.ssl`).
+Rust applications that use rustls are instrumented at the rustls plaintext read and write boundaries. This requires `nettap` **v0.1.77 or newer** and a Linux ELF binary that retains its symbol table. Do not strip the binary or use link-time optimization that removes or inlines the rustls probe targets. The verified matrix includes rustls 0.23, tokio-rustls 0.26, and Apollo Router 2.17. Rust applications that use OpenSSL 3.x use the OpenSSL capture path instead. See [Rust language support](/reference/languages/rust#ebpf-capture) for build settings and verification steps.
+
+For JVM applications, including Java and Kotlin services, the Java agent captures supported socket and TLS paths inside the JVM. Coverage depends on the transport, TLS provider, and agent version. See [Java agent setup and framework support](/reference/java/agent) for the tested matrix and known gaps, and [Kotlin language support](/reference/languages/kotlin#ebpf-java-agent) for the Kotlin workflow. Loading the agent requires a JVM restart.
 
 Language/runtime support is tied to the TLS capture mechanism mentioned above, but they all share the same
 kernel and architecture baseline (see [System Requirements](#system-requirements)). The following have been
@@ -82,11 +80,13 @@ tested and verified:
 | Language | Capture Method             | TLS Support | Considerations                                                    |
 | -------- | -------------------------- | ----------- | ----------------------------------------------------------------- |
 | Go       | eBPF uprobe (`crypto/tls`) | Native      | See above                                                         |
-| Java     | JVMTI agent                | JSSE hook   | Requires `nettap` Java agent (Handled by the Speedscale Operator) |
-| PHP      | eBPF uprobe (OpenSSL)      | OpenSSL 3.x |                                                                   |
+| Java     | Java instrumentation agent                | JSSE hook   | Requires `nettap` Java agent (Handled by the Speedscale Operator) |
+| [Kotlin](/reference/languages/kotlin#ebpf-java-agent) | Java instrumentation agent | JSSE hook | Same JVM capture path and compatibility matrix as Java |
+| [PHP](/reference/languages/php#ebpf-capture) | eBPF uprobe (OpenSSL) | OpenSSL 3.x | PHP cURL or another OpenSSL-backed client |
 | .NET     | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Linux only; SChannel not supported                                |
 | Python   | eBPF uprobe (OpenSSL)      | OpenSSL 3.x | Python `ssl` module                                               |
 | Node.js  | eBPF uprobe (OpenSSL)      | OpenSSL 3.x |                                                                   |
+| [Rust](/reference/languages/rust#ebpf-capture) | eBPF uprobe (rustls or OpenSSL) | rustls 0.23 or OpenSSL 3.x | rustls requires `nettap` v0.1.77+ and an unstripped ELF binary |
 
 ### What This Means in Practice
 
@@ -97,8 +97,12 @@ tested and verified:
 
 ## Runtime Requirements
 
-Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and a
-privileged deployment mode to load its probes and see host-level traffic.
+Beyond the [System Requirements](#system-requirements), `nettap` needs specific Linux capabilities and
+host-level visibility to load its probes and see traffic. It does not run as root or as a privileged
+container: the capture container runs as a non-root user (UID 2102) and carries only the capabilities
+listed below, granted through file capabilities on the executable. The container sets
+`allowPrivilegeEscalation: true` because Linux `no_new_privs` would otherwise prevent the executable from
+acquiring those capabilities. The container remains non-root with `privileged: false`.
 
 ### Capabilities
 
@@ -122,6 +126,14 @@ the ingest/proxy side only needs raw socket access.
 
 - `hostNetwork: true` - visibility into host-level network traffic to capture traffic for any pod scheduled on the node
 - `hostPID: true` - ability to discover and attach probes to application processes for any pod scheduled on the node
+- a non-root security context: `runAsUser: 2102`, `runAsGroup: 2102`, `fsGroup: 2102`, `privileged: false`, `allowPrivilegeEscalation: true`, all capabilities dropped except the set above
+- read-only hostPath mounts of `/proc`, `/sys`, `/sys/fs/cgroup`, and `/var/run/netns` for process discovery, probe attachment, BTF access, and namespace resolution
+
+On OpenShift, the chart detects the `security.openshift.io/v1` API group and automatically creates a
+`speedscale-nettap` SecurityContextConstraints granting exactly this contract; see the
+[OpenShift installation guide](/getting-started/installation/install/openshift#ebpf) for details.
+
+For operator RBAC, admission webhook, and certificate requirements, see [Kubernetes Security Requirements](/security/kubernetes-permissions).
 
 ## Installation
 
@@ -228,6 +240,7 @@ The logs will indicate which probe type was selected for each process (kprobe, u
 - **OpenSSL version** - TLS capture via uprobes is limited to OpenSSL 3.x. Applications using older
   OpenSSL versions, BoringSSL, or LibreSSL will not have TLS traffic captured, though plaintext TCP
   traffic is still visible.
+- **Rust symbols** - rustls capture requires a Linux ELF binary that retains the rustls function symbols. Stripped binaries and builds whose link-time optimization removes the probe targets fall back to opaque TLS capture. Plaintext TCP traffic remains visible.
 
 ## Overhead
 

@@ -79,6 +79,14 @@ When deleting pages, always add redirects to `docusaurus.config.js` to prevent b
 - Google Tag Manager for analytics
 - Mermaid for diagram rendering
 
+### Public Writing
+
+Public prose follows the rules in this section. Run `yarn check:writing` before pushing. The command checks added lines by default, `--base <sha>` selects a comparison base, and `--all` audits all tracked public-writing files.
+
+The hard gate rejects confidential-customer names, product-capitalization errors, retired terminology, generator signatures, hard-wrapped prose, and em dashes in changed public prose. Style patterns remain warnings. The checker, rule IDs, severity boundary, diagnostics, and shared fixtures must stay compatible with the website checker. Repository-specific changes should be limited to file discovery and Docusaurus Markdown/MDX sanitization until both integrations move to a versioned shared package.
+
+The generated `docs/proxymock/how-it-works/mcp-tools.md` page is temporarily excluded because its prose comes from the proxymock MCP registry in another repository. Keep the exclusion limited to that file and remove it after the source generator passes the shared rules.
+
 ### Technical Stack
 
 - **Framework**: Docusaurus 3.8.1

@@ -1,30 +1,52 @@
 ---
-description: "Export traffic from Speedscale to Grafana K6 in the open-source test case format for seamless API testing and traffic replay with familiar tools"
+description: "Export Speedscale snapshots or local proxymock recordings as Grafana k6 JavaScript tests."
 sidebar_position: 2
 ---
 
-# Export to Grafana K6
+# Export to Grafana k6
 
-Speedscale can export traffic in the open source [Grafana K6](https://github.com/grafana/k6) test case format. This lets you use your familiar tools to send test requests to your app with traffic that was collected by Speedscale. Speedscale will take inbound requests and turn them into a sequence of requests made in a complete K6 script. Note that only the raw traffic is exported. There is no limitation on how many times snapshots can be exported. However, keep in mind transforms and other data manipulation logic are not part of the export due to the difference in paradigms (automated vs script-driven).
+Speedscale can export captured HTTP requests as a [Grafana k6](https://github.com/grafana/k6) JavaScript test. The generated script preserves request methods, URLs, headers, query parameters, and bodies.
 
-### Export
+Only raw traffic is exported. Transform definitions and other Speedscale replay logic are not embedded in the script.
 
-To export your snapshot into a K6 test, simply run:
+## Export a cloud snapshot
 
-```
+```bash
 speedctl export snapshot --type k6 --output script.js {SNAPSHOT_ID}
 ```
 
-### Questions?
+## Export a local proxymock recording
 
-Note: because new features are regularly added, you can check the latest capabilities by running:
+Export RRPair files created by `proxymock record`, a cloud snapshot pull, or a BYOC bucket import:
 
+```bash
+proxymock export k6 --in ./proxymock --out script.js
 ```
-speedctl export snapshot --help
+
+Filter the local recording when needed:
+
+```bash
+proxymock export k6 --in ./proxymock --service api.example.com \
+  --limit 50 --out api-test.js
 ```
 
-Also feel free to ask questions on the [Community](https://slack.speedscale.com).
+Use `--inbound-only=false` to include outbound dependency calls. Use `--scheme http` or `--scheme https` to override recorded URL schemes.
+
+## Run the test
+
+Install k6, then run:
+
+```bash
+k6 run script.js
+```
 
 :::tip
 If you want to capture transformed traffic, enable [eBPF capture](/reference/ebpf-traffic-collection#enabling-via-annotation) on your app while the Speedscale generator is running. This records the transformed traffic as a new snapshot that can be exported to k6. The export contains the resulting requests, not the transform logic.
 :::
+
+Check the current flags with:
+
+```bash
+speedctl export snapshot --help
+proxymock export k6 --help
+```
