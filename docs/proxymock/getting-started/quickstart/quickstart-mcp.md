@@ -6,6 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import MacCLIInstall from '../../index/_cli_macos_minified.mdx'
 import LinuxCLIInstall from '../../index/_cli_linux_minified.mdx'
+import AgentInstall from '../installation/_agent_install.mdx'
 import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@site/src/components/Cards';
 
 # Quickstart (MCP)
@@ -45,6 +46,10 @@ For example, instead of typing:
 | proxymock record | "Please create a traffic recording using proxymock" |
 
 ## Step 1: Install proxymock {#install-proxymock}
+
+<AgentInstall />
+
+Prefer to install manually? Pick your OS:
 
 <Tabs>
   <TabItem value="mac" label="macOS">

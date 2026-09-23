@@ -7,6 +7,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CLIInstall from './getting-started/installation/install/_cli_install.mdx'
 import ApiKey from './getting-started/installation/install/api-key.png'
+import AgentInstall from './getting-started/installation/install/_agent_install.mdx'
 
 # Quick Start
 
@@ -28,7 +29,13 @@ For Kubernetes traffic collection, use the [eBPF collector](/reference/ebpf-traf
 
 Speedscale is tested with apps hosted on the local desktop all the way up to high scale enterprise Kubernetes clusters. If this is your first time working with Speedscale, it's easiest to just run on your local desktop and record traffic from a local process. Keep in mind that it is very common to record traffic in one environment (like a production Kubernetes cluster) and replay it somewhere else (like a local mock server).
 
-This guide will walk you through the following steps:
+## Install with your coding agent (recommended) {#install-with-ai-agent}
+
+<AgentInstall />
+
+## Prefer to install manually? {#install-manually}
+
+The rest of this guide walks through the same install by hand:
 
 1. Retrieve your API Key
 2. Install CLI (recommended)

@@ -19,6 +19,12 @@ Use Speedscale if you need to:
 
 Speedscale is different from static checks and synthetic-only tests because it validates runtime behavior using real request and response data.
 
+## Install
+
+The fastest way to install is to let your coding agent do it. Paste the prompt from [Install with your coding agent](./quick-start.md#install-with-ai-agent) into Claude Code, Cursor, Codex, or any agent that can run commands. It installs the CLIs and, if you want, the Kubernetes operator, and asks before it touches a cluster.
+
+Prefer to install manually? Follow the [Quick Start](./quick-start.md#install-manually). For local development without a cluster, start with [proxymock](/proxymock/).
+
 ## Security and data control options
 
 Choose the operating model that matches your security requirements:

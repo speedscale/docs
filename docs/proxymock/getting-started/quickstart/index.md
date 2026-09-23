@@ -17,6 +17,10 @@ Both workflows will teach you how to:
 4. **View recording results** - Inspect captured traffic
 5. **Run mock server and tests** - Use recorded traffic for testing
 
+:::tip Install with your coding agent
+The fastest way to install proxymock is to let your coding agent do it: paste the prompt from [Install with your coding agent](../installation.md#install-with-ai-agent). Prefer to install manually? Each workflow below covers it in step 1.
+:::
+
 ## Choose Your Workflow
 
 ### 🖥️ Local Recording (Desktop)

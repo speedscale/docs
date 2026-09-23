@@ -7,6 +7,7 @@ import TabItem from '@theme/TabItem';
 import MacCLIInstall from './index/\_cli_macos_minified.mdx'
 import LinuxCLIInstall from './index/\_cli_linux_minified.mdx'
 import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
+import AgentInstall from './getting-started/installation/_agent_install.mdx'
 import { 
   QuickstartCard, 
   FAQCard, 
@@ -20,6 +21,10 @@ import {
 This guide is the proxymock entry point. Start with the install and quickstart flow, or jump straight to the language-specific first-success path that matches your app.
 
 ## [Getting started in 30 seconds](./getting-started/quickstart) {#getting-started}
+
+<AgentInstall />
+
+Prefer to install manually? Pick your OS:
 
 <Tabs>
   <TabItem value="mac" label="macOS">
