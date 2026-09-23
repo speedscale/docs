@@ -1,43 +1,66 @@
 ---
 title: Import from Postman
-description: "Import Postman collections into Speedscale and replay them in a Kubernetes cluster, even without the Speedscale sidecar, using this detailed guide."
+description: "Import Postman v2.1 collections into Speedscale Cloud or local proxymock tests and mocks."
 sidebar_position: 5
 ---
 
 <iframe src="https://www.youtube.com/embed/jS01DK7R70E?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
-In this guide we will walk through importing an existing Postman collection and replaying it in a Kubernetes cluster. This guide is most helpful when you are unable to install the Speedscale sidecar for some reason, such as the service being brand new with no traffic.
+This guide imports an existing Postman collection into Speedscale Cloud or local proxymock files. It is useful when a service is new and has no recorded traffic.
 
 We'll take the following steps:
 
 1. Export your collection from Postman
-2. Import your collection to Speedscale
-3. Replay
+2. Import your collection to Speedscale Cloud or proxymock.
+3. Replay the requests or serve saved example responses as mocks.
 
 ## Export Postman collection
 
-Open your Postman collection and export it to a file on your local desktop. Note that only collections v2.1 are supported.
+Open your Postman collection and export it to a local file. Only collection format v2.1 is supported.
 
 ![Postman Export](./postman/postman-export.png)
 
-## Import to Speedscale
+## Import to Speedscale Cloud
 
-Navigate to the [services](https://app.speedscale.com) in the speedscale UI. Click on `Add service` and select the `Build from Postman Collection` option.
+Open [Services](https://app.speedscale.com) in the Speedscale UI. Click **Add service**, then select **Build from Postman Collection**.
 
 ![Postman Import](./postman/postman-import.png)
 
-A pop up will appear asking you for a snapshot name, a Postman file and a unique Service Name. Note that the Service Name can be whatever you like but to prevent confusion it's better not to pick a real service that you are actually monitoring. Don't worry about picking the perfect service name, you'll put in the real URL of your service during replay. Most users will just leave it as the default.
+The dialog asks for a snapshot name, collection file, and service name. The service name identifies the imported traffic; the replay wizard asks for the real target URL later.
+
+The equivalent CLI command is:
+
+```bash
+speedctl import postman --name {SNAPSHOT_NAME} \
+  --service-name {SERVICE_NAME} --from collection.json
+```
+
+## Import to local proxymock files
+
+The local importer does not require a Speedscale account. Collection variables with values are substituted. Variables exported without values, which commonly include secrets, remain as `{{placeholders}}`.
+
+```bash
+proxymock import postman collection.json --out ./postman-rrpairs
+proxymock replay --in ./postman-rrpairs \
+  --test-against http://localhost:8080
+```
+
+Requests with saved example responses can also be served as dependency mocks:
+
+```bash
+proxymock mock --in ./postman-rrpairs
+```
 
 ## View Snapshot
 
-A traffic snapshot is created from your Postman collection. Snapshots are collections of requests that can be replayed in your cluster or from your local desktop. After import, you will be taken to the Snapshot summary screen for your postman requests.
+A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot summary.
 
 ![Snapshot](../../snapshot.png)
 
-If you click `View Traffic` you'll see your Postman requests ready to replay.
+Click **View Traffic** to inspect the Postman requests before replay.
 
 ## Replay
 
-Postman-generated snapshots can be replayed like any other snapshot using the instructions on the Snapshot Summary page.  Remember that you will need to put in a `Custom URL` to point at the correct service during replay. This is different than replaying a recorded snapshot because Speedscale typically has an automatically discovered default that is reasonable.
+Postman-generated cloud snapshots can be replayed from the snapshot summary. Set **Custom URL** to the service under test because an imported collection does not have a discovered cluster destination.
 
-For more information on initiating replays, check out the full [replay guide](/guides/replay/README.md)
+For the cloud workflow, see the full [replay guide](/guides/replay/README.md). For local commands, run `proxymock import postman --help` and `proxymock replay --help`.

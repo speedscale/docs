@@ -1,59 +1,31 @@
 version: 2
 
-updates:
-  # Keep SHA-pinned action revisions current.
-  - package-ecosystem: "github-actions"
-    directory: "/"
+multi-ecosystem-groups:
+  docs-dependencies:
     schedule:
-      interval: "weekly"
-      day: "monday"
-    commit-message:
-      prefix: "ci"
+      interval: "monthly"
     labels:
       - "dependencies"
+    commit-message:
+      prefix: "deps"
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    patterns: ["*"]
+    multi-ecosystem-group: "docs-dependencies"
+    open-pull-requests-limit: 1
     groups:
-      actions:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+      security-actions:
+        applies-to: "security-updates"
+        patterns: ["*"]
 
   - package-ecosystem: "npm"
     directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "deps"
-      prefix-development: "deps-dev"
-    labels:
-      - "dependencies"
-    # Groups are matched in order, so the specific ones must precede the
-    # catch-all below.
+    patterns: ["*"]
+    multi-ecosystem-group: "docs-dependencies"
+    open-pull-requests-limit: 1
     groups:
-      # The @docusaurus/* packages are version-locked to each other. Splitting
-      # them across separate PRs produces combinations that will not install.
-      docusaurus:
-        patterns:
-          - "@docusaurus/*"
-          - "@mdx-js/*"
-          - "prism-react-renderer"
-      algolia:
-        update-types: ["minor", "patch"]
-        patterns:
-          - "@docsearch/*"
-          - "algoliasearch"
-      babel:
-        update-types: ["minor", "patch"]
-        patterns:
-          - "@babel/*"
-      # Everything else: routine minor/patch churn arrives as one PR a week.
-      # Docusaurus majors stay together; other majors receive separate PRs.
-      minor-and-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
+      security-npm:
+        applies-to: "security-updates"
+        patterns: ["*"]

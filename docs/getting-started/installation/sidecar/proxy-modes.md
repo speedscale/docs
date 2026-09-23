@@ -103,10 +103,13 @@ If you changed `sidecar.speedscale.com/proxy-out-port`, use that port in the run
 Language-specific notes:
 
 - Java: [Java reference](/reference/languages/java.md)
+- Kotlin: [Kotlin reference](/reference/languages/kotlin.md)
 - Node.js: [Node.js reference](/reference/languages/nodejs.md)
 - Python: [Python reference](/reference/languages/python.md)
 - Go: [Go reference](/reference/languages/golang.md)
 - .NET: [.NET reference](/reference/languages/dotnet.md)
+- PHP: [PHP reference](/reference/languages/php.md)
+- Rust: [Rust reference](/reference/languages/rust.md)
 
 ### Examples
 

@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 :::tip Security-first setup options
 - **Local-first recording:** use `proxymock` for desktop workflows when you want captured traffic to stay local by default.
-- **Enterprise boundary control:** use [Bring Your Own Cloud (BYOC)](/guides/byoc/) when you need customer-controlled cloud isolation.
+- **Enterprise boundary control:** use [Bring Your Own Cloud (BYOC)](/byoc/) when you need customer-controlled cloud isolation.
 - **Sensitive data controls:** enable [DLP](/guides/dlp/) so sensitive fields are redacted before data leaves your network.
 :::
 
@@ -129,10 +129,10 @@ make local-capture
 make client-capture
 ```
 
-5. This will generate traffic, and you can view the traffic with this command:
+5. This will generate traffic, and you can browse the traffic in your browser with this command:
 
 ```bash
-proxymock inspect --in proxymock/recorded-YOUR_TIMESTAMP
+proxymock web --in proxymock/recorded-YOUR_TIMESTAMP
 ```
 
 6. If you want to push this data to Speedscale cloud you can with the command:

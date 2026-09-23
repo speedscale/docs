@@ -16,7 +16,7 @@ For local development and testing without a cloud cluster, use **proxymock** to 
 
 :::tip Security options
 - **Local-first:** proxymock keeps recording local by default for desktop workflows. See [Data and Privacy](/proxymock/how-it-works/data_and_privacy/).
-- **Enterprise isolation:** use [Bring Your Own Cloud (BYOC)](/guides/byoc/) when data residency and cloud boundary control are required.
+- **Enterprise isolation:** use [Bring Your Own Cloud (BYOC)](/byoc/) when data residency and cloud boundary control are required.
 - **Sensitive data controls:** enable [DLP](/guides/dlp/) so sensitive fields are redacted before data leaves your network.
 :::
 

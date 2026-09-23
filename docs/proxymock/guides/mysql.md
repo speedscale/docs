@@ -59,13 +59,11 @@ Normally *MYSQL_PORT* and *MYSQL_HOST* will point at an external system or at yo
 
 ### What Gets Recorded
 
-You can inspect the recording using the inspect command:
+You can browse the recording in your browser with proxymock web:
 
 ```bash
-proxymock inspect
+proxymock web
 ```
-
-![example RRPairs](./mysql/mysql-rrpairs-list.png)
 
 proxymock captures MySQL traffic as RRPair files containing:
 

@@ -32,7 +32,20 @@ import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks'
 </Tabs>
 
 :::info Coding with AI Tools?
-Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp install`.
+Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp install`
+(`--yes` skips the per-client prompts). That command also drops the
+[install-speedscale](https://github.com/speedscale/skills) skill into Claude
+Code, so `/install-speedscale` can upgrade or repair everything later.
+
+Do not have proxymock yet? Paste this into your agent and it will do the install for you:
+
+```text
+Install Speedscale for me. First fetch the agent skill at
+https://raw.githubusercontent.com/speedscale/skills/main/skills/install-speedscale/SKILL.md
+and the references/ and scripts/ files it links to (same base URL), save them
+under your skills directory, then follow the skill. Ask me before touching a
+Kubernetes cluster.
+```
 :::
 
 ## After installing

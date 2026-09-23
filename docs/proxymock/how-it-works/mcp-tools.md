@@ -350,6 +350,7 @@ Convert local RRPair files into a third-party format. This is the OUTBOUND direc
 Choose the target format:
 - postman: a Postman collection JSON file, for driving requests from Postman.
 - k6: a k6 load-test JavaScript file.
+- locust: a Python locustfile for HTTP load testing. Run with --host to target the test deployment.
 - gatling: a Gatling simulation Java file.
 - datadog-synthetics: a Datadog Synthetics test bundle written to disk (local files only; this tool never publishes to Datadog).
 
@@ -357,9 +358,9 @@ Reads RRPair files from one input directory and writes a single output artifact.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | string | **yes** | Format to export to: 'postman', 'k6', 'gatling', or 'datadog-synthetics'. |
+| `format` | string | **yes** | Format to export to: 'postman', 'k6', 'gatling', 'locust', or 'datadog-synthetics'. |
 | `in-directory` | string | **yes** | Directory of recorded RRPair files to export, relative to the working directory (read recursively). |
-| `out` | string | no | Output file (or bundle directory for datadog-synthetics). Defaults per format: collection.json, k6.js, LoadSimulation.java, or a datadog-synthetics-&lt;dir&gt; bundle. |
+| `out` | string | no | Output file (or bundle directory for datadog-synthetics). Defaults per format: collection.json, k6.js, LoadSimulation.java, locustfile.py, or a datadog-synthetics-&lt;dir&gt; bundle. |
 
 ### Cloud
 

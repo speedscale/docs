@@ -15,7 +15,7 @@ This guide provides a step-by-step approach to creating a [mock server](/referen
 :::tip Security model
 - **Local-first:** proxymock recordings stay local unless you explicitly push them.
 - **Sensitive data controls:** use [DLP](/guides/dlp/) in platform ingest/replay workflows before data egress.
-- **Cloud boundary control:** for enterprise isolation requirements, use [BYOC](/guides/byoc/).
+- **Cloud boundary control:** for enterprise isolation requirements, use [BYOC](/byoc/).
 :::
 
 ## Before you begin
