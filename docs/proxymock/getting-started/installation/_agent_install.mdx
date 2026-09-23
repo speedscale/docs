@@ -1,0 +1,11 @@
+Let your coding agent (Claude Code, Cursor, Codex, Gemini CLI, Kiro, or any assistant that can read a URL and run commands) install proxymock for you. Paste this into the chat:
+
+```text
+Install proxymock for me on this machine. First fetch the agent skill at
+https://raw.githubusercontent.com/speedscale/skills/main/skills/install-speedscale/SKILL.md
+and the references/ and scripts/ files it links to (same base URL), save them
+under your skills directory, then follow the skill in local mode: proxymock and
+its MCP server only, no Kubernetes operator.
+```
+
+The [install-speedscale skill](https://github.com/speedscale/skills) installs proxymock for your OS and walks you through `proxymock init`. Your recordings stay on your machine. It also connects the proxymock MCP server to your agent, so you can ask it to record, mock, and replay traffic. The agent stops for you at browser sign-in and asks before it changes anything outside your machine.

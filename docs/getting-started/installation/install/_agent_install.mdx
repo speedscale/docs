@@ -1,0 +1,13 @@
+Let your coding agent (Claude Code, Cursor, Codex, Gemini CLI, Kiro, or any assistant that can read a URL and run commands) do the whole install. Paste this into the chat:
+
+```text
+Install Speedscale for me. First fetch the agent skill at
+https://raw.githubusercontent.com/speedscale/skills/main/skills/install-speedscale/SKILL.md
+and the references/ and scripts/ files it links to (same base URL), save them
+under your skills directory, then follow the skill. Ask me before touching a
+Kubernetes cluster.
+```
+
+The [install-speedscale skill](https://github.com/speedscale/skills) follows the same steps as the manual install below. It installs `speedctl` and `proxymock`, adds Helm and kubectl if they are missing, sets up your API key without ever printing it, and picks Helm values for your platform (EKS, GKE, AKS, minikube, kind, OpenShift). Then it verifies the operator and wires the proxymock MCP server into your agent. The agent announces every step that changes something before running it. It stops for you at browser sign-in and before touching a cluster whose name looks like production. With no cluster available, it installs just the CLIs.
+
+Already have proxymock? `proxymock mcp install --yes` installs the same skill for Claude Code. You can also add it as a Claude Code plugin with `/plugin marketplace add speedscale/skills`, or add it to other agents with `npx skills add speedscale/skills`.

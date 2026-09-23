@@ -9,12 +9,19 @@ import LinuxCLIInstall from './installation/\_cli_linux.mdx'
 import WindowsCLIInstall from './installation/\_cli_windows.mdx'
 import BinaryCLIInstall from './installation/\_cli_binary.mdx'
 import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
+import AgentInstall from './installation/_agent_install.mdx'
 
 # Installation
 
 **proxymock** does some pretty heavy duty work all from the command line.  Using the cli, you can automate the creation of simulation environments, record new traffic, modify transactions and replay.
 
-## Install proxymock via Command Line {#install-cli}
+## Install with your coding agent (recommended) {#install-with-ai-agent}
+
+<AgentInstall />
+
+## Install proxymock manually {#install-cli}
+
+Prefer to install it yourself? Pick your OS:
 
 <Tabs>
   <TabItem value="mac" label="macOS">
@@ -37,15 +44,6 @@ Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `pr
 [install-speedscale](https://github.com/speedscale/skills) skill into Claude
 Code, so `/install-speedscale` can upgrade or repair everything later.
 
-Do not have proxymock yet? Paste this into your agent and it will do the install for you:
-
-```text
-Install Speedscale for me. First fetch the agent skill at
-https://raw.githubusercontent.com/speedscale/skills/main/skills/install-speedscale/SKILL.md
-and the references/ and scripts/ files it links to (same base URL), save them
-under your skills directory, then follow the skill. Ask me before touching a
-Kubernetes cluster.
-```
 :::
 
 ## After installing
