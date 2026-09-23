@@ -113,7 +113,7 @@ proxymock import gcs --bucket '<GCS_BUCKET>' --prefix byoc/ \
   --service '<SERVICE_NAME>' --from now-1h --out ./newrelic-capture
 ```
 
-See [Pull traffic from a BYOC bucket](/proxymock/guides/byoc-bucket.md) for authentication, filtering, and cluster discovery.
+See [Use BYOC traffic with proxymock](/byoc/use-traffic.md) for authentication, filtering, and cluster discovery.
 
 ## Evidence
 

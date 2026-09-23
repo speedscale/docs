@@ -73,10 +73,10 @@ The key ingredient is redirecting your application's MongoDB connection to `loca
 
 ### What Gets Recorded
 
-You can inspect the recording using the inspect command:
+You can browse the recording in your browser with proxymock web:
 
 ```bash
-proxymock inspect
+proxymock web
 ```
 
 ![MongoDB RRPairs](./mongodb/mongodb-rrpairs.png)

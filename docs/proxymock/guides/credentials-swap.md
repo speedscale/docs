@@ -225,7 +225,7 @@ grep -q "^Authorization: $expected" "$latest"/*/*.md
 | 5. Generate swap dataframe + blueprint | `proxymock automation credentials-basic --in ./proxymock [--replay-user recorded=replay …] [--replay-pass recorded=replay …]` |
 | 6. Edit `replay_user` / `replay_pass` | Pre-fill via the `--replay-user` / `--replay-pass` flags on step 5, **or** edit `proxymock/dataframes/credentials-basic-<id>/payload.csv` with your editor of choice between steps 5 and 7 |
 | 7. Run replay | `proxymock replay --in ./proxymock --test-against <host:port>` |
-| 8. Verify | `grep "^Authorization:" ./proxymock/results/replayed-*/<host>/*.md` (or `proxymock inspect <results-dir>` for the TUI) |
+| 8. Verify | `grep "^Authorization:" ./proxymock/results/replayed-*/<host>/*.md` (or `proxymock web --in <results-dir>` to browse it) |
 
 ## What got persisted
 
