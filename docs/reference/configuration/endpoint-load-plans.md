@@ -6,10 +6,7 @@ sidebar_position: 3
 
 # Endpoint and session load-plan reference
 
-A proxymock `--load-plan` file is a JSON `GeneratorConfig`. In a cloud version 3
-test config, the same fields live under `generator`. Follow the
-[how-to](../../guides/replay/endpoint-load-how-to.md) for a runnable example and the
-[feature guide](../../guides/replay/endpoint-session-load-plans.md) for scheduling choices.
+A proxymock `--load-plan` file is a JSON `GeneratorConfig`. In a cloud version 3 test config, the same fields live under `generator`. Follow the [how-to](../../guides/replay/endpoint-load-how-to.md) for a runnable example and the [feature guide](../../guides/replay/endpoint-session-load-plans.md) for scheduling choices.
 
 ## Plan and group fields
 
@@ -29,11 +26,7 @@ test config, the same fields live under `generator`. Follow the
 | `startBudget` | Maximum primary starts across the entire arrival group, encoded as a uint64 string. Counts attempts, not successful responses. |
 | `recordedBaseline` | Explicit UTC `start` and `end` used to measure source rates for recorded multiples. Does not truncate selected journeys. |
 
-Session groups claim complete journeys first, in configured order. Request groups
-claim remaining records in configured order. A broad earlier filter can leave a
-later group empty. Positive load with no eligible data fails preparation.
-Grouped schedules cannot be combined with legacy top-level stages or conflicting
-CLI scheduling overrides such as `--vus`.
+Session groups claim complete journeys first, in configured order. Request groups claim remaining records in configured order. A broad earlier filter can leave a later group empty. Positive load with no eligible data fails preparation. Grouped schedules cannot be combined with legacy top-level stages or conflicting CLI scheduling overrides such as `--vus`.
 
 ## Arrivals, pools and population
 
@@ -52,32 +45,17 @@ CLI scheduling overrides such as `--vus`.
 | `population.allowClones` | Explicit opt-in to more slots than sources, requiring a size and expected-identity verification. Does not provision accounts. |
 | `identityVerification` | JWT claim check (`jwtClaim`, default `sub`) and optional synthesized `expectedField`; cloning requires the expected field. |
 
-A pool defines `id`, `selection`, `stages`, optional `startAfter` and `spacing`.
-Members inherit its timing instead of carrying independent stages or offsets.
-Request starts and session starts cannot share a pool. Once-only populations do
-not use shared arrivals. Each group retains its own admission bounds and budget.
-An active actor slot cannot run two journeys at once.
+A pool defines `id`, `selection`, `stages`, optional `startAfter` and `spacing`. Members inherit its timing instead of carrying independent stages or offsets. Request starts and session starts cannot share a pool. Once-only populations do not use shared arrivals. Each group retains its own admission bounds and budget. An active actor slot cannot run two journeys at once.
 
 ## Goals and results
 
-`goals[]` contains `id`, optional source-request `scope`, `startAfter`, `endAfter`,
-`minSamples`, and a `rule`. Rules use supported latency metrics in milliseconds
-or `totalTransactionCount`; `TOO_HIGH`/`TOO_LOW` define threshold direction.
-Put selection filters on the goal's `scope`, not nested rule location fields.
+`goals[]` contains `id`, optional source-request `scope`, `startAfter`, `endAfter`, `minSamples`, and a `rule`. Rules use supported latency metrics in milliseconds or `totalTransactionCount`; `TOO_HIGH`/`TOO_LOW` define threshold direction. Put selection filters on the goal's `scope`, not nested rule location fields.
 
-Windows are relative to run start and include attempts started at the beginning
-but exclude those started at the end. Omitted end includes drain. Minimum samples
-defaults to one; insufficient samples fail. A session group's goal can select just
-one endpoint inside the complete journey.
+Windows are relative to run start and include attempts started at the beginning but exclude those started at the end. Omitted end includes drain. Minimum samples defaults to one; insufficient samples fail. A session group's goal can select just one endpoint inside the complete journey.
 
-Adaptive TPS stages allow 5% request-count deviation, with a minimum allowance of
-one request per stage. Both excess and insufficient traffic fail. An HTTP success
-does not satisfy an unmet delivery or TPS target. Missed-start allowances do not
-suppress HTTP, identity, cancellation or scoped-goal failures.
+Adaptive TPS stages allow 5% request-count deviation, with a minimum allowance of one request per stage. Both excess and insufficient traffic fail. An HTTP success does not satisfy an unmet delivery or TPS target. Missed-start allowances do not suppress HTTP, identity, cancellation or scoped-goal failures.
 
-Inspect `load-groups.json` for group, stage, timeline and source evidence. Session
-starts and HTTP attempts have different units. Keep the drain row separate from
-scheduled stages. Missing report evidence must not be interpreted as PASS.
+Inspect `load-groups.json` for group, stage, timeline and source evidence. Session starts and HTTP attempts have different units. Keep the drain row separate from scheduled stages. Missing report evidence must not be interpreted as PASS.
 
 ## Compatibility and limits
 
