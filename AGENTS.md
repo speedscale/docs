@@ -136,4 +136,4 @@ When working on these improvements:
 5. Cross-reference related documentation sections
 
 ### Generated pages (do not hand-edit)
-- `docs/proxymock/how-it-works/mcp-tools.md` is **generated** from the proxymock MCP server's live tool registry. Do not edit it by hand — regenerate it with `yarn gen:mcp-docs` (or `scripts/gen-mcp-docs.sh`), which runs `proxymock mcp docs`. Regenerate whenever the proxymock MCP tools/prompts change. The prose intro and setup live in the sibling `mcp.md`, which is hand-maintained.
+- `docs/proxymock/how-it-works/mcp-tools.md` is **generated** from the proxymock MCP server's live tool registry. Do not edit it by hand. The nightly `MCP docs sync` workflow (`.github/workflows/mcp-docs-sync.yaml`) regenerates it from each new proxymock release and opens a `bot/mcp-docs-sync` PR when it changes. To regenerate it yourself, run `yarn gen:mcp-docs` (or `scripts/gen-mcp-docs.sh`), which runs `proxymock mcp docs` and records the generating version in `scripts/mcp-docs-version.txt`; commit both files. The nightly job only uses a release newer than that version. The prose intro and setup live in the sibling `mcp.md`, which is hand-maintained.
