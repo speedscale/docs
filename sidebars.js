@@ -64,7 +64,7 @@ const sidebars = {
           type: "category",
           label: "Examples",
           link: { type: "doc", id: "byoc/examples/index" },
-          items: ["byoc/examples/ecs"],
+          items: ["byoc/examples/aws-eks-quality-factory", "byoc/examples/ecs"],
           collapsed: true,
         },
         "byoc/troubleshooting",
