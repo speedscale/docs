@@ -107,6 +107,10 @@ proxymock cloud pull snapshot <id>
 
 You will notice a new `.metadata` directory containing your transform definitions. When you run `proxymock mock` again the transforms will be applied to your mock.
 
+## Load and Regression Testing {#load-testing}
+
+The queries you recorded can also be replayed against a real PostgreSQL database, to load test it or to catch regressions after a schema change or version upgrade. See [PostgreSQL Load and Regression Testing](./postgres-load-testing.md).
+
 ## Kubernetes and eBPF {#kubernetes}
 
 In Kubernetes environments, Speedscale's eBPF collector (`nettap`) captures PostgreSQL traffic automatically at the kernel level — no `--map` configuration, SOCKS proxying, or application changes required. The collector uses kprobes and uprobes to observe TCP and TLS traffic directly, including the PostgreSQL wire protocol.

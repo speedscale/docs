@@ -221,6 +221,7 @@ proxymock replay --test-against localhost:9092
 - `--performance` - Deprecated alias for `--load-test`
 - `--rewrite-host` - Rewrite the HTTP `Host` header to match the target host and port
 - `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
+- `--tests-filter string` - Filter that chooses which recorded RRPairs to replay as tests. Everything else is mocked. By default proxymock replays inbound traffic. Use `'(direction IS OUT) AND (tech IS Postgres)'` to send an app's recorded database calls to the database instead. An RRPair tagged `replayRole=test` or `replayRole=mock` keeps that role.
 - `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 - `-n, --times uint` - Number of times to replay the traffic (default `1`)
