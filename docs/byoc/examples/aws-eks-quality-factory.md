@@ -7,7 +7,7 @@ description: Capture redacted service traffic on Amazon EKS, store it in Amazon 
 
 An agent can change a service quickly. The harder question is whether that change still honors the behavior clients saw before it. In this reference architecture, Speedscale's eBPF collector captures application traffic on Amazon EKS, a BYOC exporter applies its filter and DLP rule inside the cluster, and replayable request/response pairs are stored in an Amazon S3 bucket you control. A developer imports a bounded capture into `proxymock`, lets Kiro change a local copy of the service, and replays the same requests to check the result.
 
-We validated the S3-to-replay gate with a synthetic banking service. One captured deposit expected HTTP 201. A deliberate response-contract change returned HTTP 200 and failed the replay gate. Kiro changed the controller to return 201 while preserving its new response envelope; the same request then passed. This was a one-request status-code check in an isolated local copy, not a semantic body assertion or a change deployed to EKS.
+We validated the eBPF-to-S3-to-replay path with a synthetic banking service. One eBPF-captured deposit expected HTTP 201. A deliberate response-contract change returned HTTP 200 and failed the replay gate. Kiro changed the controller to return 201 while preserving its new response envelope; the same request then passed. This was a one-request status-code check in an isolated local copy, not a semantic body assertion or a change deployed to EKS.
 
 ## Architecture
 
@@ -34,7 +34,7 @@ flowchart LR
 
 The capture and replay paths have different owners. The EKS workload produces traffic. Speedscale's [eBPF collector](/reference/ebpf-traffic-collection) observes the selected workloads without application sidecars. The Forwarder applies the named exporter's filter and DLP configuration before sending records to the in-cluster collector. The collector writes OTLP JSON objects under `byoc/` in S3. The developer or CI job reads a bounded time window from S3 and runs replay against a test deployment. See [How BYOC works](/byoc/how-it-works.md) and [Use BYOC traffic with proxymock](/byoc/use-traffic.md).
 
-The current AWS demo used sidecar capture for the banking workloads and the separate Bedrock pod. Its S3, DLP, and replay results do not yet validate the eBPF capture path shown above. Switch the demo workloads to eBPF capture and verify fresh S3 records before presenting the full diagram as a live proof.
+The validated EKS demo has no capture proxy sidecars on its transactions, AI, or Bedrock workloads. The transactions service uses the Speedscale Java agent with nettap because it runs on the JVM. The Python AI service and the separate Bedrock probe use nettap without a Java agent. Each workload produced eBPF-tagged records in S3.
 
 The diagrams show the BYOC path. Enabling BYOC does not automatically turn off the separate Speedscale Cloud exporter. Review both exporters when defining where captured data may go.
 
@@ -42,7 +42,7 @@ The diagrams show the BYOC path. Enabling BYOC does not automatically turn off t
 
 - Keep the bucket private, enable encryption, and set retention for captured traffic. Give the collector only the S3 write permissions it needs and give the replay client only read access to the intended prefix.
 - Use a dedicated Kubernetes service account and scoped IAM role for each AWS-calling workload. The Bedrock smoke test used [EKS Pod Identity](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html) and a role limited to Amazon Nova Micro inference. It did not use static AWS keys.
-- Apply DLP before S3 export, then inspect an exported record. For signed AWS requests, verify that both `Authorization` and `X-Amz-Security-Token` are redacted. Check query strings separately; an API key in a URL can survive a header-only rule.
+- Apply DLP before S3 export, then inspect an exported record. eBPF can also capture the Pod Identity credential response: redact `AccessKeyId`, `SecretAccessKey`, and `Token` in its response body, as well as `Authorization` and `X-Amz-Security-Token` on signed AWS requests. Verify those fields with fake credentials before invoking Bedrock. Check query strings separately; an API key in a URL can survive a header-only rule.
 - Keep raw imports and replay results out of public repositories until their contents have been reviewed. Normalize account IDs, tokens, timestamps, and other variable fields before treating a capture as a repeatable test corpus.
 
 For the collector and Forwarder configuration, follow [Configure BYOC on Kubernetes](/byoc/configure-kubernetes.md). For backend choices and the collector support boundary, see [Storage and observability backends](/byoc/backends.md).
@@ -58,6 +58,6 @@ In our validation, the deposit replay recorded 201 and observed 200 before the f
 
 ## Bedrock extension
 
-A separate EKS pod used Pod Identity to invoke the [Amazon Bedrock Converse API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html). Speedscale captured the outbound HTTP 200 exchange, and the BYOC record in S3 showed both AWS signing headers redacted. This verifies the scoped IAM, capture, and DLP path. The banking AI service did not call Bedrock, and we did not replay model-generated answers. Put Bedrock in the application path and choose a deterministic assertion before presenting it as an application-level quality gate.
+A separate, sidecar-free EKS pod used Pod Identity to invoke the [Amazon Bedrock Converse API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html). The eBPF-tagged BYOC record in S3 contained the outbound HTTP 200 exchange with both AWS signing headers redacted; a separate captured Pod Identity response had all three temporary credential fields redacted. This verifies the scoped IAM, eBPF capture, and DLP path. The banking AI service did not call Bedrock, and we did not replay model-generated answers. Put Bedrock in the application path and choose a deterministic assertion before presenting it as an application-level quality gate.
 
 This example validates a small path through EKS, BYOC, S3, Kiro, and `proxymock`. It is not a capacity benchmark or a turnkey cluster deployment. The [ECS/Fargate example](/byoc/examples/ecs.md) covers a different AWS runtime.

@@ -9,7 +9,7 @@ Use these examples after reviewing [How BYOC works](../how-it-works.md) and the 
 
 ## Reference architectures
 
-- [AWS EKS quality factory](./aws-eks-quality-factory.md) shows how redacted S3 traffic can check a Kiro code change with an independent local replay gate. The Bedrock path is a separate capture proof.
+- [AWS EKS quality factory](./aws-eks-quality-factory.md) shows how eBPF-captured, redacted S3 traffic can check a Kiro code change with an independent local replay gate. The Bedrock path is a separate capture proof.
 
 ## Deployment examples
 
