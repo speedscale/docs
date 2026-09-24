@@ -463,7 +463,7 @@ See [Replay Verdicts](./replay-verdicts.md) for how each gate decides.
 | `1` | Missed Goals: the replay ran and failed its goals |
 | `2` | Usage error: bad flags or arguments |
 | `4` | The replay ended in Error or was Canceled, so there is no verdict |
-| `5` | The report could not be read: not signed in, a network failure, or an unknown report ID |
+| `5` | The report could not be read: not signed in, a network failure, an unknown report ID, or proxymock could not start because its config could not be loaded or it could not connect to Speedscale cloud |
 | `124` | `--wait` stopped at `--timeout` while the replay was still running |
 
 Code `3` is not used here. It stays reserved for the replay gates above, so a script that checks for `3` never mistakes a cloud replay result for a new mismatch.

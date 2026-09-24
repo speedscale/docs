@@ -791,7 +791,7 @@ proxymock cloud replay status <report-id> [flags]
 - `--timeout duration` - How long `--wait` waits before giving up (default `1h`)
 - `-o, --output string` - Output format: pretty or json. JSON prints one document on stdout and the live progress on stderr
 
-The exit code is the result: `0` passed, `1` missed goals, `2` usage error, `4` the replay ended in Error or Canceled, `5` the report could not be read, `124` the wait timed out. See [CI/CD exit codes](/proxymock/guides/cicd.md#exit-codes).
+The exit code is the result: `0` passed, `1` missed goals, `2` usage error, `4` the replay ended in Error or Canceled, `5` the report could not be read (including a config or connection failure at startup), `124` the wait timed out. See [CI/CD exit codes](/proxymock/guides/cicd.md#exit-codes).
 
 ### `cloud pull`
 
