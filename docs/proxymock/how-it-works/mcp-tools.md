@@ -44,6 +44,7 @@ Start the mock server with RRPairs from the mock files in the directory.
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `in-directory` | array | **yes** | Directories containing the mock RRPair files. Directories are read recursively. Usually these directories end with 'proxymock' and are contained in the current repository. |
+| `chaos` | array | no | Repeatable '&lt;filter query&gt;:&lt;effect&gt;=&lt;value&gt;[,...]' specs, for example '(location REGEX "^/api/checkout"): latency=2s,percent=25'. The scope is the same filter query language as the search_traffic filter-query param ('*' matches everything). Effects are latency=2s\|3x\|100ms-2s, status=500\|503, connection=refuse\|reset\|stall\|drop, body=corrupt\|truncate[:&lt;bytes&gt;], header=Name:Value, no-response, plus the knobs percent=, seed=, sticky, max-latency=. Suffix an effect with '@&lt;percent&gt;' to give it its own probability. Prefer this over 'fault' for scoped, reproducible chaos. |
 | `fault` | array | no | Repeatable '&lt;regexp&gt;:action=value[,action=value...]' specs. Rate alone injects intermittent 503s; body=corrupt\|truncate\|truncate:&lt;bytes&gt; returns a well-formed shorter body; connection=refuse\|reset\|stall\|drop faults the socket (drop cuts the stream mid-response). |
 | `log-to` | string | no | File path to redirect all proxymock output to |
 | `mock-reload-interval` | string | no | Hot-reload check interval such as '1s'. Omit to disable. |
@@ -61,23 +62,43 @@ _No parameters._
 
 #### `replay_traffic`
 
-Replay recorded RRPairs from test files against an HTTP server URL.
+Replay recorded RRPairs from test files against an HTTP server URL, on this machine. This is 'proxymock replay'; every parameter maps onto its flag of the same name.
 
-By default each request is replayed once, which acts as a regression test. To run a performance / load test instead, set 'vus' (concurrency) together with 'for' (run for a duration) or 'times' (run a number of iterations), and optionally 'load-test' mode for high-throughput runs. Use 'fail-if' to encode a pass/fail condition such as a latency budget.
+By default each request is replayed once, which acts as a regression test. Shape load with 'vus' (concurrency) and 'for' or 'times', with 'sessions' (replay recorded actors' sessions), with 'stages' (a multi-stage ramp), or with 'load-plan' (independent load groups); add 'load-test' for high-throughput runs. Use 'fail-if' to encode pass/fail conditions such as a latency budget.
 
-The replay runs in the background: use the list_running tool to see when it finishes and the read_process_logs tool to inspect results, including whether any 'fail-if' condition triggered. After completion, run the generate_report tool on the output directory for latency percentiles and quality scores.
+Regression checks for a code change: pass 'baseline' with an earlier replay's output directory and 'fail-on-new-mismatch' to fail only on mismatches that are new since then; 'verify-fix' (with 'expect') to confirm that recorded errors now succeed; 'ignore-body-changes' to score status codes only; 'semantic' to score response bodies by similarity instead of failing on any field change; 'require-blueprint' to fail unless a blueprint's transforms ran.
+
+The replay is held to a test config's goals, as a cloud replay is: the built-in regression config by default (assertions must all pass, and no virtual user may fail), or the workspace config named by 'test_config'. Goals with a local source (match rate, response rate, request counts, throughput, latency, failed virtual users, and assertion percentages, computed by running the config's assertion groups) are evaluated; goals on mock match statistics or container CPU and memory are reported by name as not evaluated locally. A missed goal fails the replay with exit code 1, the same code a triggered 'fail-if' condition uses; either one fails the run.
+
+The replay runs in the background: use the list_running tool to see when it finishes and the read_process_logs tool to inspect results, which include the exit code, a TEST CONFIG GOALS section naming each goal as PASS, FAIL or NOT EVALUATED, and whether any 'fail-if' condition triggered. The verdict, including the goal verdict under "goals", is written to replay-verdict.json in the output directory. After completion, run the generate_report tool on the output directory for latency percentiles and quality scores.
+
+Set 'test_config' to run a test config authored in this workspace as the base config for the replay (author one with the test_config tool); the parameters above still override its load settings, and its goals still apply.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `in-directory` | array | **yes** | Directories containing the test RRPair files. Directories are read recursively. Usually these directories end with 'proxymock' and are contained in the current repository. |
-| `out-directory` | array | **yes** | Directories to write observed replay request/response files to. Unless otherwise instructed use 'proxymock/replayed-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
-| `fail-if` | string | no | Condition expression that marks the replay as failed (exit code 1) when true, e.g. 'latency.p99 &gt; 100' or 'requests.result-match-pct &lt; 95.5'. Check the process logs to see whether the condition triggered. |
+| `baseline` | string | no | Output directory of an earlier replay of the same recording. Pairs are matched by refUuid, so the verdict can tell a mismatch that already existed there from a new one. |
+| `expect` | string | no | Regular expression selecting the recorded-error endpoints 'verify-fix' expects to be fixed. Requires 'verify-fix'. |
+| `fail-if` | array | no | Condition expressions that mark the replay as failed (exit code 1) when any is true, e.g. ["latency.p99 &gt; 100", "requests.result-match-pct &lt; 95.5"]. A single string is still accepted. Applies in addition to the test config's goals. Check the process logs to see whether a condition triggered. |
+| `fail-on-new-mismatch` | boolean | no | Exit 3 when a pair fails differently than it failed in 'baseline' (a pair that already failed there is exempt only from that same failure). Requires 'baseline'; cannot be combined with 'verify-fix'. |
 | `for` | string | no | How long to run the replay, as a Go duration string (e.g. '30s', '5m'). Traffic is replayed continuously, on a loop, until the duration expires. Mutually exclusive with 'times'. Omit both to replay each request exactly once. |
-| `load-test` | boolean | no | Load test mode only writes a sample of failed or non-matching requests to disk, trading granular data collection for replay speed. Recommended for high-throughput load tests (many vus or long durations). Responses are not scored, so 'requests.result-match-pct' is not reported and cannot be used in 'fail-if'. When the app runs behind 'proxymock mock', start the mock without an output directory. |
+| `ignore-body-changes` | boolean | no | Score only response status codes, not response bodies, when building the verdict. Cannot be combined with 'semantic'. |
+| `load-plan` | string | no | Path to an experimental JSON load plan (a generator config of independent HTTP load groups), the file 'proxymock replay --load-plan' reads. Cannot be combined with 'vus', 'sessions', 'stages', 'for', 'times' or 'no-out'. |
+| `load-test` | boolean | no | Load test mode only writes a sample of failed or non-matching requests to disk, trading granular data collection for replay speed. Recommended for high-throughput load tests (many vus or long durations). Responses are not scored, so 'requests.result-match-pct' is not reported and cannot be used in 'fail-if', and the verdict checks and 'require-blueprint' are refused with it. When the app runs behind 'proxymock mock', start the mock without an output directory. |
 | `log-to` | string | no | File path to redirect all proxymock output to |
+| `no-out` | boolean | no | Do not write observed requests/responses to disk. Mutually exclusive with 'out-directory'. Verdict checks ('baseline', 'verify-fix', 'semantic', 'fail-on-new-mismatch') and 'load-plan' need the output, so they are refused with it. |
+| `out-directory` | array | no | The one directory to write observed replay request/response files to, as a single-element array (a replay writes to exactly one output directory; more than one is refused). Required unless 'no-out' is set. Unless otherwise instructed use 'proxymock/replayed-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
+| `require-blueprint` | array | no | Fail if a named blueprint is not loaded, or if none of its transform chains run during the replay. Cannot be combined with 'load-test'. |
 | `rewrite-host` | boolean | no | Rewrite the HTTP Host header to match the target hostname:port. Set this when the target server routes requests by Host header (e.g. virtual hosts, ingress controllers). |
-| `test-against` | string | no | A partial or full URL which will override some or all of the captured URL during replay. If not provided, the target depends on the traffic. The test-against address may be a full or partial URL which will override the base URL of requests during replay. - If a scheme is provided the scheme of the request will be replaced - If a hostname is provided the hostname of the request will be replaced - If a port is provided the port of the request will be replaced Example test-against addresses: \| Captured URL \| Test Against \| Replay URL \|-----------------------------\|---------------------\|----------- \|https://original.com:443/foo \| http://new.com:8080 \| http://new.com:8080/foo \|https://original.com:443/foo \| http:// \| http://original.com:443/foo \|https://original.com:443/foo \| http://new.com \| http://new.com:443/foo \|https://original.com:443/foo \| new.com \| https://new.com:443/foo \|https://original.com:443/foo \| new.com:8080 \| https://new.com:8080/foo \|https://original.com:443/foo \| :8080 \| https://original.com:8080/foo \|https://original.com:443/foo \| http://:8080 \| http://original.com:8080/foo |
+| `semantic` | boolean | no | Score response-body similarity (0..1) instead of failing on any stable-field change: at or above 'semantic-pass' a pair matches, below 'semantic-fail' it fails, and between the two it is reported as divergent without failing the run. Uses the built-in offline scorer unless the user's proxymock config chooses another. |
+| `semantic-fail` | number | no | Similarity score (0..1) below which a pair fails. Requires 'semantic'. |
+| `semantic-pass` | number | no | Similarity score (0..1) at or above which a pair matches. Requires 'semantic'. |
+| `sessions` | number | no | Replay recorded sessions as the unit of load instead of virtual users: each slot replays one recorded actor's requests in order, preserving recorded think-time. Overrides 'vus'. |
+| `stages` | array | no | A multi-stage load ramp, one entry per stage run in order, each as comma-separated key=value: vus=N, sessions=N (wins over vus), for=D (hold the stage for D; default runs the traffic once), ramp=D (spend the first D of 'for' climbing to the target; min 5s). E.g. ["sessions=5,for=30s", "sessions=50,for=2m,ramp=1m"]. Cannot be combined with 'vus', 'sessions', 'for', 'times' or 'load-plan'. |
+| `test-against` | array | no | Where to send the replayed requests. Each entry is a partial or full URL that overrides some or all of the captured URL, and may be scoped to one service as SERVICE=ADDRESS; several entries route several services, the same as repeating 'proxymock replay --test-against'. If not provided, the target depends on the traffic. A single string is still accepted. - If a scheme is provided the scheme of the request will be replaced - If a hostname is provided the hostname of the request will be replaced - If a port is provided the port of the request will be replaced Example test-against addresses: \| Captured URL \| Test Against \| Replay URL \|-----------------------------\|---------------------\|----------- \|https://original.com:443/foo \| http://new.com:8080 \| http://new.com:8080/foo \|https://original.com:443/foo \| http:// \| http://original.com:443/foo \|https://original.com:443/foo \| http://new.com \| http://new.com:443/foo \|https://original.com:443/foo \| new.com \| https://new.com:443/foo \|https://original.com:443/foo \| new.com:8080 \| https://new.com:8080/foo \|https://original.com:443/foo \| :8080 \| https://original.com:8080/foo \|https://original.com:443/foo \| http://:8080 \| http://original.com:8080/foo |
+| `test_config` | string | no | A test config authored in this workspace (proxymock/testconfigs/&lt;name&gt;.json; create and edit one with the test_config tool), or a path to a config JSON file. It is the base config this replay runs: load shape, chaos and generator behaviour come from it, and the replay is held to its goals and assertion groups. Precedence: the parameters on this tool win over the named config, which wins over the built-in regression config used when this is omitted. Fields a local replay does not honour are reported rather than silently dropped. |
 | `times` | number | no | Number of times to replay the full traffic set (default 1). Mutually exclusive with 'for'. |
+| `verify-fix` | boolean | no | Read recorded-error to observed-success mismatches as a confirmed fix rather than a regression. Narrow which endpoints count with 'expect'. |
 | `vus` | number | no | Number of concurrent virtual users generating load (default 1). Set higher (e.g. 10) together with 'for' or 'times' to run a load test. Each virtual user replays the full traffic set independently. |
 
 #### `send_one`
@@ -90,6 +111,46 @@ Use this to spot-check one endpoint after a code or RRPair change without runnin
 | --- | --- | --- | --- |
 | `file` | string | **yes** | Path to the RRPair file (.json or .md) to send, relative to the working directory. Use a test (inbound) RRPair rather than a mock. |
 | `url` | string | **yes** | URL to send the request to, e.g. 'http://localhost:8080'. |
+
+#### `cloud_replay`
+
+Replay recorded traffic in a Kubernetes cluster THROUGH Speedscale cloud: the same request the Speedscale dashboard's replay wizard, 'speedctl infra replay' and 'proxymock cloud replay' send. The recordings are pushed to Speedscale cloud as a snapshot, then Speedscale cloud tells the inspector registered for the chosen cluster to run the replay there, and the report lands in Speedscale cloud with a dashboard link. Select the operation with 'action'.
+
+proxymock has three independent replay paths and this tool is the third. Choose by what the user has access to:
+1. On this machine: replay_traffic against a URL, with mock_server_start for the dependencies. No cluster and no login.
+2. In a cluster straight from the kubeconfig: the cluster tool's action='replay-start'. It stages the snapshot in the in-cluster forwarder with no Speedscale cloud round-trip (its 'snapshot_source' parameter decides whether it may fall back to a cloud push). Needs a kubeconfig, not a login.
+3. In a registered cluster via Speedscale cloud: this tool. Needs a Speedscale cloud login ('proxymock init') and a cluster whose Speedscale inspector is registered with the tenant. It never uses the kubeconfig, so it also reaches clusters the user cannot reach directly.
+
+Discover a target (read-only; answered by Speedscale cloud from what each registered inspector reports, not from the kubeconfig):
+- 'clusters': the clusters registered with the tenant, with inspector id and version. Their names are what 'cluster' takes.
+- 'namespaces': the namespaces one cluster reports. Needs 'cluster' or 'inspector_id'.
+- 'workloads': the workloads and Services in one namespace of that cluster. Needs 'cluster' or 'inspector_id', and 'namespace'. The workload names are what 'workload' and 'routes' take.
+
+Run:
+- 'start' (mutates): push the recordings in 'in_directories' (or reuse 'snapshot_id'), then start the replay in 'cluster' and 'namespace'. Give it a destination: 'workload' (every inbound slice goes to that workload), 'routes' (send individual slices to their own workload, in any namespace, or address; combine with 'workload' for the rest), or 'target' (replay against an address; nothing in the cluster is modified and nothing is mocked). Set 'dry_run' to resolve the cluster, routes, mocks and test config and report them without pushing or starting anything, like 'proxymock cloud replay --dry-run'. Omitting both 'mocks' and 'mock_enabled' mocks nothing, so the workload reaches its real dependencies: the same default as the cluster tool and the proxymock web Replay tab. Set 'mock_enabled' to mock every recorded outbound dependency, which is what makes a replay repeatable, or list keys in 'mocks' (from the cluster tool's action='replay-prepare') to mock only those. A parameter that does not apply to the replay shape you picked (for example 'snapshot_name' with 'snapshot_id') is refused rather than ignored. Returns as soon as Speedscale cloud accepts the replay, with the report id and dashboard URL. It does NOT wait for the replay to finish.
+- 'cancel' (mutates, destructive): stop the replay behind 'report_id', the call 'speedctl infra replay cancel' makes. The inspector tears the replay down and the report ends Canceled.
+- 'status' (read-only): one report's status as Speedscale cloud sees it (Initializing, Testing, Analyzing, then a terminal verdict such as Passed, Missed Goals or Error), whether it is done, and its success rate. Poll it with the 'report_id' that 'start' returned, a few seconds apart, until done is true; then pull_report downloads the report and its snapshot for analysis.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | Which operation to run. Read-only: 'clusters', 'namespaces', 'workloads', 'status'. Mutating: 'start', 'cancel'. |
+| `build_tag` | string | no | action=start: build tag recorded on the report. |
+| `cluster` | string | no | action=namespaces, workloads and start: the cluster to use, by the name action='clusters' lists. Pass this or 'inspector_id'. |
+| `dry_run` | boolean | no | action=start: resolve and report the cluster, namespace, routes, mocks, snapshot source and test config without pushing a snapshot or a test config, or starting anything. The same check as 'proxymock cloud replay --dry-run'. |
+| `in_directories` | array | no | action=start: directories holding the RRPair files to push as the snapshot. Defaults to the working directory. With 'snapshot_id' nothing is pushed, so it is refused there unless it locates the workspace a 'test_config' name is read from. |
+| `inspector_id` | string | no | action=namespaces, workloads and start: the cluster to use, by its inspector id. Pass this or 'cluster'. |
+| `mock_enabled` | boolean | no | action=start: true mocks every recorded outbound dependency of the workload (narrow it with 'mocks'); false or omitted mocks nothing unless 'mocks' lists keys. The same switch as the proxymock web Replay tab's 'Mock dependencies' checkbox and the cluster tool's 'mock_enabled'. |
+| `mocks` | array | no | action=start: outbound dependency keys to mock, taken verbatim from the cluster tool's action='replay-prepare'. Only applies to a workload replay. Omitting both 'mocks' and 'mock_enabled' mocks nothing, so the workload reaches its real dependencies - the default of the proxymock web Replay tab on both paths and of 'proxymock cluster replay start'. Set 'mock_enabled' to mock every recorded outbound dependency, or list keys in 'mocks' to mock only those. Mocking needs a workload to attach a responder to, so neither applies to a 'target' replay. |
+| `namespace` | string | no | action=workloads and start: the Kubernetes namespace of the workload in that cluster. Required for both. |
+| `no_mocks` | boolean | no | action=start: mock nothing. This is now the default, so it only remains for existing callers; it is refused together with 'mocks' or mock_enabled=true. |
+| `report_id` | string | no | action=status and cancel: the report id action='start' returned. |
+| `routes` | array | no | action=start: send one inbound slice to its own destination, each entry as SLICE=WORKLOAD, SLICE=NAMESPACE/WORKLOAD, SLICE=NAMESPACE/KIND/WORKLOAD or SLICE=scheme://host:port (an address). Slice keys come from the cluster tool's action='replay-prepare'; each slice may be routed once. Combine with 'workload', which takes every slice not routed here; mutually exclusive with 'target'. The same vocabulary as the cluster tool's 'routes' and the proxymock web Replay tab. Speedscale cloud attaches mocks to the first workload route only. |
+| `snapshot_id` | string | no | action=start: replay a snapshot already in Speedscale cloud instead of pushing the local recordings. |
+| `snapshot_name` | string | no | action=start: display name for the pushed snapshot. Omit for a timestamp. Refused with 'snapshot_id', which pushes nothing. |
+| `target` | string | no | action=start: replay against this address instead of a workload. Nothing in the cluster is modified and nothing can be mocked. Mutually exclusive with 'workload' and 'routes'. |
+| `test_config` | string | no | action=start: a test config authored in this workspace (proxymock/testconfigs/&lt;name&gt;.json; create and edit one with the test_config tool), or a path to a config JSON file. It is pushed to Speedscale cloud under the same name, then named by id on the replay — so there is no separate push step. Omit for the built-in regression config, which Speedscale cloud already has, so nothing is pushed. |
+| `workload` | string | no | action=start: replay every inbound slice against this workload (the system under test). Mutually exclusive with 'target'. List the options with action='workloads'. |
+| `workload_type` | string | no | action=start: kind of 'workload' and of every 'routes' workload: deployment (default), statefulset, daemonset, replicaset, rollout or service. There is no job: the cloud resolves a system under test to a long-running workload or a Service (the cluster tool, which references the object itself, takes job and not service). An unknown kind is refused rather than treated as a deployment, and so is a kind with only a 'target', which has no workload. |
 
 ### Analyze
 
@@ -172,6 +233,7 @@ Findings are classified (value change, magnitude/sign shift, null flip, type cha
 | --- | --- | --- | --- |
 | `in-directory` | array | **yes** | Directories of RRPair files for the candidate (newer) run. Read recursively. Usually end with 'proxymock' and live in the current repository. |
 | `baseline-directory` | array | **yes** | Directories of RRPair files for the baseline (older/expected) run to compare the candidate against. |
+| `semantic` | boolean | no | Additionally score each compared response pair's semantic similarity (0..1) over its stable fields and report per-endpoint scores plus an overall divergence rate. Use for prose or LLM-generated responses, where field-level findings can't say whether a change altered meaning. |
 
 #### `detect_drift`
 
@@ -247,9 +309,36 @@ The 'config' is the same JSON document 'proxymock cloud pull/push filter|transfo
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `action` | string | **yes** | Which config operation to run: 'filter-test' and 'transform-test' are read-only previews; 'transform-apply' writes transformed copies to out-directory. |
-| `config` | string | **yes** | Path to a filter/transform config JSON file, or the id of a config downloaded with 'proxymock cloud pull filter\|transform'. |
+| `config` | string | **yes** | Path to a filter/transform config JSON file, or the id of a config pulled with 'proxymock cloud pull filter\|transform'. A filter id resolves against the workspace's proxymock/filters/ directory (from the first in-directory), where the proxymock web filter editor also saves rules. |
 | `in-directory` | array | **yes** | Directories or RRPair files to read, relative to the working directory. Directories are read recursively. |
 | `out-directory` | array | no | Required for 'transform-apply': directory to write transformed copies to (must be outside the input directories). Only the first entry is used. Ignored by the read-only actions. Unless otherwise instructed use 'proxymock/transform-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
+
+#### `test_config`
+
+Author, inspect, validate and delete the test configs of a proxymock workspace (files in &lt;workspace&gt;/proxymock/testconfigs/&lt;id&gt;.json, each one complete TestConfig as Speedscale cloud stores it). Works offline with no Speedscale account. The same rules as the proxymock web test config editor apply, and files written here open unchanged in it.
+
+A test config controls how a replay runs: load stages, responder replicas and resources, chaos, goals and assertions. Workflow:
+1. action='meta' with a 'section' or 'path_prefix' to find the field paths you need, their types and defaults, and which run paths (local/cluster/cloud) honour them.
+2. action='create' with a new 'id': copies the built-in 'regression' config unless 'from' names another config or 'config' supplies a whole document.
+3. action='set' with 'fields', a map of field path to value, e.g. &#123;"responder.numReplicas": 3, "cluster.responderResources.limits.cpu": "2"&#125;. Unknown and deprecated paths are refused with the path named; a null value removes a field.
+4. Pass the id as 'test_config' to replay_traffic (a replay on this machine), to the cluster tool (action='replay-start') or to the cloud_replay tool (action='start'). Fields the chosen run path does not honour are reported rather than silently dropped.
+
+Other actions: 'list' (workspace configs plus the read-only built-in 'regression'), 'show' (one config with warnings and validation problems), 'validate' (check a saved config by 'id' or an unsaved 'config' document without writing), 'delete' (remove a workspace config; requires confirm=true).
+
+The built-in 'regression' and the other Speedscale default names are reserved (case-sensitive): they can be shown and copied, never created, changed or deleted. 'protected' can never be set. create and set refuse to write a config with validation problems (for example a resource quantity Kubernetes would reject) and name each problem.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | list, show, meta and validate are read-only; create and set write a workspace file; delete removes one. |
+| `config` | object | no | create, validate: a complete TestConfig JSON document. Parsed strictly: an unknown field is an error naming the field. |
+| `confirm` | boolean | no | delete: must be true; delete refuses without it. |
+| `fields` | object | no | set: map of dotted field path to new value, e.g. &#123;"responder.numReplicas": 3, "generator.stages": [...]&#125;. List entries are not addressable; set the whole list. null removes the field. |
+| `force` | boolean | no | create: replace an existing workspace config with the same id instead of refusing. |
+| `from` | string | no | create: the config to copy, a workspace config id or the built-in 'regression' (the default). Cannot be combined with 'config'. |
+| `id` | string | no | show, create, set, delete: the config id (its file name without .json; letters, digits, '.', '_' or '-'). validate: the saved config to check, or the id to check an unsaved 'config' under. |
+| `in_directory` | string | no | The proxymock workspace: the repo directory holding proxymock/, the proxymock directory itself, or a recording inside it. Defaults to the working directory. Pass the same directory as 'in_directories' on the replay that uses the config. |
+| `path_prefix` | string | no | meta: only fields whose path starts with this, e.g. 'responder.' or 'cluster.responder'. |
+| `section` | string | no | meta: only fields in this editor section ('none' is the identity fields). |
 
 #### `dlp`
 
@@ -263,7 +352,7 @@ The 'config' is the same JSON document 'proxymock cloud pull/push dlp' read and 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `action` | string | **yes** | Which DLP operation to run: 'test' is a read-only report; 'apply' writes redacted copies to out-directory. |
-| `config` | string | **yes** | Path to a DLP config JSON file, or the id of a rule downloaded with 'proxymock cloud pull dlp'. |
+| `config` | string | **yes** | Path to a DLP config JSON file, or the id of a rule in the workspace's proxymock/dlprules/ directory (resolved from the first in-directory), where the proxymock web DLP editor and 'proxymock cloud pull dlp' save rules. |
 | `in-directory` | array | **yes** | Directories or RRPair files to read, relative to the working directory. Directories are read recursively. |
 | `out-directory` | array | no | Required for 'apply': directory to write redacted copies to (must be outside the input directories). Only the first entry is used. Ignored by 'test'. Unless otherwise instructed use 'proxymock/redacted-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
 | `show-redacted` | string | no | For 'test' only: path to a single RRPair file to print its full before/after redaction instead of the summary. |
@@ -381,7 +470,7 @@ Pull traffic from a remote service, including backend dependencies. Can accept e
 
 Pull a Speedscale cloud replay report AND the snapshot it was generated from into a local workspace — the equivalent of 'proxymock cloud pull report &lt;id&gt;'.
 
-The report's RRPairs (carrying the HIT/MISS mock-match verdicts) land in &lt;out-directory&gt;/report-&lt;id&gt;/ and the source snapshot's recorded traffic in a sibling snapshot-&lt;id&gt;/ — exactly the two sides the mocks tool needs, so this tool is step one of the mock match-rate tuning loop: pull_report -&gt; mocks action=analyze -&gt; mocks action=accept -&gt; repeat.
+The report's artifacts land in the workspace reports/&lt;id&gt;/ directory, its RRPairs (carrying the HIT/MISS mock-match verdicts) in &lt;out-directory&gt;/report-&lt;id&gt;/ and the source snapshot's recorded traffic in a sibling snapshot-&lt;id&gt;/ — exactly the two sides the mocks tool needs, so this tool is step one of the mock match-rate tuning loop: pull_report -&gt; mocks action=analyze -&gt; mocks action=accept -&gt; repeat.
 
 Report ids come from the Speedscale dashboard's report URL, or from the user. Requires Speedscale cloud credentials (run 'proxymock init' once to register). Distinct from pull_remote_recording, which records fresh traffic by service and time range rather than fetching an existing replay report.
 
@@ -414,28 +503,48 @@ You should:
 
 #### `snapshot`
 
-Work traffic snapshots stored in Speedscale cloud. Requires Speedscale cloud credentials (run 'proxymock init' once to register). Select the operation with 'action':
+Work traffic snapshots stored in Speedscale cloud, or in the customer's own object-store bucket. Select the operation with 'action':
 
-- 'push' (uploads): publish local RRPair (request/response pair) directories as one named snapshot. Every RRPair under the given directories is consolidated, uploaded, and analyzed by the cloud, making the traffic available to teammates, CI replays, and the dashboard. Curate the directories first; optionally pass 'sample' to keep only a deterministic fraction (whole sessions) so a large recording fits under the snapshot limit. Active tuning blueprints in the workspace are uploaded with the snapshot, so recommendations accepted via recommendations travel with the traffic. Returns the new snapshot id and dashboard URL.
+- 'push' (uploads): publish local RRPair (request/response pair) directories as one named snapshot. Every RRPair under the given directories is consolidated and uploaded, making the traffic available to teammates, CI replays, and (in cloud) the dashboard. Curate the directories first; optionally pass 'sample' to keep only a deterministic fraction (whole sessions) so a large recording fits under the snapshot limit. Active tuning blueprints in the workspace are uploaded with the snapshot, so recommendations accepted via recommendations travel with the traffic. Returns the new snapshot id and its location.
 - 'list' (read-only): list snapshots, newest first, optionally narrowed by 'search', 'service', and 'tag'. Use it to find a snapshot id for pull_remote_recording, or to confirm a push landed.
+- 'pull' (downloads): fetch a stored snapshot back into local RRPair files that proxymock can search, mock, and replay. Requires 'snapshot_id'.
+- 'delete' (destructive): remove a stored snapshot. Requires 'snapshot_id' and 'confirm'=true. This is the only operation that deletes stored traffic; push, pull, and list never do.
+
+Destination: by default every action targets Speedscale cloud and needs Speedscale credentials (run 'proxymock init' once to register). Set 'bucket' to target the customer's own object store instead — that path never contacts Speedscale, takes credentials from the standard AWS environment chain, and works without a Speedscale account. Bucket snapshots are not analyzed by the cloud, so replay them locally rather than in-cluster.
+
+Retention in a bucket is the customer's: objects are written only under 'bucket_prefix', nothing is deleted except by an explicit 'delete', and a lifecycle policy they set is the only thing that expires a snapshot. A pull whose objects are no longer complete fails before downloading anything rather than producing a partial snapshot.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `action` | string | **yes** | Which snapshot operation to run: 'push' uploads local RRPairs; 'list' is read-only. |
+| `action` | string | **yes** | Which snapshot operation to run: 'push' uploads local RRPairs; 'pull' downloads a stored snapshot; 'list' is read-only; 'delete' removes a stored snapshot. |
+| `bucket` | string | no | Store snapshots in this named bucket instead of Speedscale cloud. For bucket_provider=gcs, use Google Application Default Credentials; bucket_from_cluster can discover the bucket. S3 uses the AWS credential chain or bucket_from_cluster. No Speedscale account is needed. |
+| `bucket_from_cluster` | boolean | no | Discover a bucket through kubeconfig. Native GCS reads only ConfigMaps and uses local Google Application Default Credentials with separate snapshot permissions. The cluster traffic reader is read-only. Omit this and bucket to use Speedscale cloud. |
+| `bucket_namespace` | string | no | Namespace to search for native GCS collectors. |
+| `bucket_prefix` | string | no | Base key prefix for snapshots in the bucket. Defaults to "speedscale/". Everything proxymock writes or deletes stays under this prefix. |
+| `bucket_provider` | string | no | Storage provider: s3 or native gcs using Google Application Default Credentials |
+| `confirm` | boolean | no | action=delete only (required there): must be true. Deleting a snapshot cannot be undone, so it is never inferred. |
+| `destination` | string | no | Native GCS destination ID; required when discovery finds multiple exporters. |
+| `force` | boolean | no | action=pull only. The snapshot carries test configs; when one already exists in the workspace and differs, it is overwritten only with force=true. Without it nothing is written for that config and the call returns an error naming the file. |
 | `in-directory` | array | no | action=push only (required there): directories containing the RRPair files to publish. Read recursively; all RRPairs are consolidated into a single snapshot. |
+| `kube_context` | string | no | Which cluster to discover the bucket from. Defaults to your current kubeconfig context. Only used with bucket_from_cluster. |
 | `limit` | number | no | action=list only. Maximum snapshots to return (default 20, max 100). |
 | `max_rrpairs` | number | no | action=push only. Optional: if the traffic exceeds this many RRPairs, narrow the push to a representative contiguous time window that fits (keeping the operation mix), instead of sampling. Composes with 'sample' (window crops time, sample thins within). Omit for no limit. |
 | `name` | string | no | action=push only. Optional display name for the snapshot in the dashboard. |
+| `out-directory` | string | no | action=pull only. Workspace directory to expand the snapshot into. Defaults to ./proxymock. |
+| `region` | string | no | Region of the bucket. Defaults to the AWS SDK configuration (AWS_REGION). |
+| `s3_endpoint_url` | string | no | Custom endpoint URL for an S3-compatible store (MinIO, DigitalOcean Spaces, GCS S3-interop). Leave empty for AWS S3. |
+| `s3_force_path_style` | boolean | no | Use path-style addressing (bucket in the path, not the host). Often required for MinIO and other S3-compatible stores. |
 | `sample` | string | no | action=push only. Optional: keep only a deterministic fraction of the traffic so a large recording fits under the snapshot limit. Whole sessions are kept or dropped together (sessionless RRPairs fall back to per-pair). Accepts a percentage ("20%"), a fraction ("1/5"), or "1 in 5". Omit to push everything. |
 | `search` | string | no | action=list only. Optional search term matched against snapshot names. |
 | `service` | string | no | action=list only. Optional filter: only snapshots containing traffic for this service. |
+| `snapshot_id` | string | no | action=pull and action=delete only (required there): the id of the stored snapshot, as returned by action=list. |
 | `tag` | string | no | action=list only. Optional filter: only snapshots with this build tag. |
 
 ### BYOC bucket
 
 #### `pull_byoc_bucket`
 
-Pull historical traffic from the customer's OWN BYOC object-store bucket (S3, S3-compatible, or native Google Cloud Storage) into local RRPair files that proxymock can search, mock, and replay. Runs locally with no Speedscale account. storage-provider=s3 uses the AWS credential chain (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_PROFILE). storage-provider=gcs uses the native GCS API with Google Application Default Credentials (GOOGLE_APPLICATION_CREDENTIALS, gcloud auth application-default login, or an attached identity); HMAC keys are not needed.
+Pull historical traffic from the customer's OWN BYOC object-store bucket (S3, S3-compatible, or native Google Cloud Storage) into local RRPair files that proxymock can search, mock, and replay. Runs locally with no Speedscale account. storage-provider=s3 uses the AWS credential chain (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_PROFILE). storage-provider=gcs uses the native GCS API with Google Application Default Credentials (GOOGLE_APPLICATION_CREDENTIALS, gcloud auth application-default login, or an attached identity); HMAC keys are not needed. With bucket-from-cluster=true, the dedicated reader uses its own Google identity; credentials remain in the cluster. Use list-buckets=true to discover destinations and select destination when multiple exporters exist.
 
 This is distinct from pull_remote_recording, which pulls from Speedscale-managed cloud. Use this tool when the traffic lives in the customer's own bucket — for example a BYOC deployment where the in-cluster OTel collector's awss3 exporter writes OTLP-JSON objects under the "byoc/" prefix.
 
@@ -443,10 +552,16 @@ Narrow the pull with a time window (from/to) and filters (service, namespace, st
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `bucket` | string | **yes** | Name of the object-storage bucket that holds the BYOC traffic. |
+| `access-mode` | string | no | Native GCS: adc uses local Google credentials; cluster reads through the dedicated reader without exporting credentials. |
+| `bucket` | string | no | Name of the object-storage bucket that holds the BYOC traffic. |
+| `bucket-from-cluster` | boolean | no | Native GCS: discover the collector destination and use its dedicated cluster reader by default. |
+| `bucket-namespace` | string | no | Namespace containing the collector; limits discovery to namespaced RBAC. |
+| `destination` | string | no | Exact destination ID returned by list-buckets; required when multiple destinations exist. |
 | `filter` | string | no | Speedscale traffic filter string, for example '(service IS "checkout") AND (status IS "500")'. Overlapping criteria override the convenience filters below. |
 | `from` | string | no | Start of the time window when the filter has no timerange, for example now-15m or 2026-06-12T18:00:00Z. Defaults to now-1h. |
+| `kube-context` | string | no | Kubernetes context for native GCS discovery and reader access. |
 | `limit` | number | no | Maximum number of matched RRPairs to write. 0 (default) means unlimited. |
+| `list-buckets` | boolean | no | Native GCS: list active collector destinations without importing traffic. |
 | `namespace` | string | no | Kubernetes namespace to match when the filter has no namespace predicate. |
 | `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-&lt;provider&gt;-&lt;timestamp&gt;. |
 | `prefix` | string | no | Object key prefix to search. Use 'byoc/' for the current OTel awss3 layout. Defaults to the whole bucket. |
@@ -470,12 +585,19 @@ Capture — record real traffic off a running workload:
 - 'uninject' (mutates): turn capture off by clearing those annotations. Idempotent; already-recorded traffic is untouched.
 - 'capture-status' (read-only): report whether capture is on, whether the java agent is enabled, which ports are excluded, and whether the workload looks like it runs a JVM.
 
-Replay — run recorded traffic against a workload in the cluster:
+There are two capture mechanisms and these three actions cover both. By default they record intent in annotations, which the in-cluster operator and nettap daemon act on. On a NAMESPACED install — one where the Speedscale data plane lives in a single application namespace instead of the shared "speedscale" one — there is no cluster-wide operator or nettap to act on them, so annotations are inert there and the goproxy SIDECAR is the only mechanism that captures anything: proxymock computes the sidecar mutation itself and applies it with your own credentials, the same mutation an admission webhook would perform. You MUST set 'sidecar' to choose it. It is never inferred — not from $SPEEDSCALE_NAMESPACE, not from anything else — so on a namespaced install, omitting it writes annotations that nothing will ever act on and the workload captures nothing. It also works on a classic install. Sidecar capture restarts the workload (a sidecar only joins a pod at creation), records every field it changed in an inventory ConfigMap so 'uninject' can put the workload back exactly as it was, and refuses to revert rather than guessing if anything has drifted since. Deployments and StatefulSets only. Call action='status' first if you are unsure which install this is: it reports namespacedMode, and namespacedMode=true means pass sidecar=true.
+
+Replay — run recorded traffic against a workload in the cluster, straight from the kubeconfig. This is the second of proxymock's three independent replay paths: replay_traffic replays on this machine; these actions replay in the cluster your kubeconfig reaches; the cloud_replay tool replays in a cluster registered with Speedscale cloud, needing a cloud login instead of a kubeconfig, the way a dashboard replay does. When the user wants the replay to run through Speedscale cloud, use cloud_replay rather than these actions.
 - 'replay-prepare' (read-only, local): analyze recordings on this machine and return the inbound slices a replay can be routed at and the outbound dependencies it can mock. Runs the same analyzer the cloud runs, with no push and no login, so the keys it returns are exactly the keys 'replay-start' accepts. Call this before 'replay-start' rather than guessing dependency keys.
-- 'replay-start' (mutates, needs a Speedscale cloud login): push the recordings as a snapshot, wait for the cloud to analyze it, and create the replay. Give it either 'workload' (replay against a cluster workload — the only shape that can mock dependencies) or 'target' (replay against a plain address, touching nothing in the cluster). 'mocks' takes the outbound keys from 'replay-prepare'; mocking a dependency makes the responder answer it from the recording instead of letting the workload reach the real thing, which is what makes the replay repeatable. Returns immediately with the replay name and report id — it does not block.
+- 'replay-start' (mutates): analyze the recordings on this machine, stage the snapshot in the in-cluster forwarder over a port-forward, and create the replay — no Speedscale cloud login is needed for that, the replay is annotated snapshot-source=local, and its report stays in the cluster (so there is no dashboard link). By default ('snapshot_source' auto) the recordings are pushed to Speedscale cloud instead only if staging in the cluster fails, which does need a login. Set 'snapshot_source' to local to forbid that fallback, so the call fails rather than touching the cloud, or to cloud to skip staging and push to the cloud directly. The result says which happened as 'snapshotSource' (local or cloud). Pass 'snapshot_id' to reuse a snapshot already in the cloud and skip both. Give it either 'workload' (replay every inbound slice against a cluster workload — the only shape that can mock dependencies), 'routes' (send individual slices to their own workload, in any namespace, or address; combine with 'workload' for the rest), or 'target' (replay against a plain address, touching nothing in the cluster). 'replay_mode' picks full-replay (default), responder-only or generator-only, and 'build_tag' is recorded on the report, on both install mechanisms. 'mocks' takes the outbound keys from 'replay-prepare'; mocking a dependency makes the responder answer it from the recording instead of letting the workload reach the real thing, which is what makes the replay repeatable. Omitting both 'mocks' and 'mock_enabled' mocks nothing (the same default as 'proxymock cluster replay start', the proxymock web Replay tab and the cloud_replay tool); set 'mock_enabled' to mock every recorded dependency. A parameter that does not apply to the replay shape you picked (for example 'workload_type' with 'target', or 'in_directories' with 'snapshot_id') is refused rather than ignored. Returns immediately with the replay name and report id — it does not block.
 - 'replay-status' (read-only): with 'replay_name', the full stage breakdown of one replay including the operator's own explanation of a failure; without it, the replays currently running in the cluster (pass 'all' to include finished ones still present). A replay is garbage-collected after it finishes, so a long-completed replay will not be found — read its report in Speedscale cloud.
 - 'replay-logs' (read-only): the generator, responder and system-under-test log lines for a running replay. This is a LIVE tap with no history and is lossy under load, so it returns lines emitted while it is subscribed and nothing from before; it returns nothing for a replay that is not currently running. The complete log is the cloud report.
 - 'replay-cancel' (mutates, destructive): stop a running replay by deleting it. This reverts the workload under test and tears down the generator and responder, and produces no report. Refused once the generator has finished, so it cannot discard results that are still being analyzed.
+
+On a NAMESPACED install the replay actions drive a replay REQUEST — a labeled ConfigMap the in-cluster replay coordinator reads — instead of a TrafficReplay, because such an install cannot have the TrafficReplay CRD. A namespaced install is an install mode, not another replay path: the replay still runs from the kubeconfig, through a different in-cluster mechanism. Set 'namespaced' to select that mechanism - it is never inferred (a namespaced install is recognized by what is deployed, not by its namespace name; action='status' reports which mechanisms an install supports). Three things differ with it. There is no push to Speedscale cloud and no login, so the traffic must already be in the cluster: pass 'snapshot_id' for a snapshot already staged there, or 'snapshot_file' to stage a snapshot document alongside the request. It drives exactly one workload, so 'target' is refused. And 'replay-cancel' writes a cancellation the coordinator acts on — it restores the workload as it tears the replay down — instead of deleting anything, and is accepted from every non-terminal state. A replay request also has no TTL, so 'replay-status' still answers for a replay that finished long ago.
+
+Install — read-only:
+- 'status': report whether the Speedscale data plane is present, reachable and permitted in the resolved namespace: which components are deployed and ready, whether the forwarder and inspector actually answer over a port-forward (naming the failing hop when they do not), what this kubeconfig is allowed to do there, and which capture and replay mechanism the actions above will therefore drive. It never fails outright — a completely unreachable cluster still produces a full report with each check marked failed — so this is the first action to call when anything else here behaves unexpectedly.
 
 Inspect — read-only, and the fastest way to answer "what is actually in this cluster":
 - 'namespaces': the namespaces the forwarder has observed. Start here when you do not know what is in the cluster — but note it lists only namespaces nettap has seen traffic in, so it is not the same as 'kubectl get ns'.
@@ -492,25 +614,41 @@ Everything here needs only a kubeconfig. The inspect and replay actions are serv
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `action` | string | **yes** | Which cluster operation to run. Read-only: 'capture-status', 'replay-prepare', 'replay-status', 'replay-logs', 'topology', 'namespaces', 'nodes', 'workloads', 'pods', 'services', 'dependencies', 'logs', 'events'. Mutating: 'inject', 'uninject', 'replay-start', 'replay-cancel'. |
+| `action` | string | **yes** | Which cluster operation to run. Read-only: 'capture-status', 'replay-prepare', 'replay-status', 'replay-logs', 'status', 'topology', 'namespaces', 'nodes', 'workloads', 'pods', 'services', 'dependencies', 'logs', 'events'. Mutating: 'inject', 'uninject', 'replay-start', 'replay-cancel'. |
 | `all` | boolean | no | action=replay-status listing: include replays that are no longer running but are still in the cluster. |
+| `build_tag` | string | no | action=replay-start: build tag recorded on the report (the TrafficReplay spec field the operator copies into the test config's cluster.buildTag, so it wins over a test config's own value). Same as cloud_replay 'build_tag'. |
 | `container` | string | no | action=logs: container to read within each pod. Omit for the pod's first container. |
+| `force` | boolean | no | Sidecar inject/uninject only: proceed even though a GitOps controller (Argo CD, Flux) manages this workload and will revert the change on its next sync. Only set this when the user has said they accept that. |
+| `ignore_inbound_ports` | string | no | Sidecar inject only: comma-separated inbound ports to leave uncaptured. |
+| `ignore_outbound_ports` | string | no | Sidecar inject only: comma-separated outbound ports to leave uncaptured. |
 | `ignore_ports` | string | no | action=inject only: comma-separated ports to exclude from capture (e.g. '8080,9090'). |
-| `in_directories` | array | no | action=replay-prepare and replay-start: directories holding the RRPair files to replay. Defaults to the working directory. |
+| `in_directories` | array | no | action=replay-prepare and replay-start: directories holding the RRPair files to replay. Defaults to the working directory. Refused with 'snapshot_id' (nothing is staged) and on a namespaced replay (it never reads local recordings). |
 | `java_agent` | boolean | no | action=inject only: also inject the Java agent. Restarts the workload, and is only useful when 'capture-status' reports javaDetected. |
 | `kube_context` | string | no | Kubeconfig context to target. Omit to use the current-context. |
 | `limit` | number | no | action=events: keep only the most recent N events (default 50). action=replay-logs: stop after N lines (default 200). |
-| `mocks` | array | no | action=replay-start: outbound dependency keys to mock, taken verbatim from 'replay-prepare'. Only applies to a workload replay, because mocking needs a responder. |
-| `namespace` | string | no | Kubernetes namespace. Required for every action except 'replay-prepare', 'namespaces', 'nodes' and the cluster-wide listings ('workloads', 'replay-status'), where omitting it spans the cluster. |
+| `mock_enabled` | boolean | no | action=replay-start: true mocks every recorded outbound dependency of the workload (narrow it with 'mocks'); false or omitted mocks nothing unless 'mocks' lists keys. The same switch as the proxymock web Replay tab's 'Mock dependencies' checkbox and the cloud_replay tool's 'mock_enabled'. |
+| `mocks` | array | no | action=replay-start: outbound dependency keys to mock, taken verbatim from 'replay-prepare'. Only applies to a workload replay, because mocking needs a responder. Omitting both 'mocks' and 'mock_enabled' mocks nothing, so the workload reaches its real dependencies - the default of the proxymock web Replay tab on both paths and of 'proxymock cluster replay start'. Set 'mock_enabled' to mock every recorded outbound dependency, or list keys in 'mocks' to mock only those. Mocking needs a workload to attach a responder to, so neither applies to a 'target' replay. |
+| `namespace` | string | no | Kubernetes namespace. Required for every action except 'replay-prepare', 'status', 'namespaces', 'nodes' and the cluster-wide listings ('workloads', 'replay-status'), where omitting it spans the cluster. This always names the WORKLOAD's namespace, never the Speedscale install's — that one comes from $SPEEDSCALE_NAMESPACE. |
+| `namespaced` | boolean | no | Replay actions: drive a replay request read by the in-cluster replay coordinator instead of creating a TrafficReplay, for an install without the TrafficReplay CRD. Set this for a namespaced install; it is never inferred from the namespace, exactly like --namespaced on the CLI. That mechanism never touches Speedscale cloud, so it needs 'snapshot_id' or 'snapshot_file' rather than pushing local recordings. |
 | `pod` | string | no | action=logs: read only this pod instead of every pod of the workload. |
 | `previous` | boolean | no | action=logs: read the last terminated container instead of the running one. This is how you find out why a CrashLoopBackOff pod died. |
+| `replay_mode` | string | no | action=replay-start, on both install mechanisms: full-replay (default), responder-only or generator-only. The cloud_replay tool has no equivalent: Speedscale cloud's replay request carries no mode. |
 | `replay_name` | string | no | action=replay-status and replay-cancel: the replay's name as returned by 'replay-start' or listed by 'replay-status'. Omit on 'replay-status' to list instead. |
 | `report_id` | string | no | action=replay-logs: the report id 'replay-start' returned, which scopes the log tap to that replay. |
-| `snapshot_id` | string | no | action=replay-start: replay a snapshot already in Speedscale cloud instead of pushing the local recordings. |
+| `request_name` | string | no | Namespaced replay-start only (refused without namespaced=true): name for the replay request object. Omit to generate one. |
+| `routes` | array | no | action=replay-start: send one inbound slice to its own destination, each entry as SLICE=WORKLOAD, SLICE=NAMESPACE/WORKLOAD, SLICE=NAMESPACE/KIND/WORKLOAD or SLICE=scheme://host:port (an address). Slice keys come from 'replay-prepare'; each slice may be routed once. Combine with 'workload', which takes every slice not routed here; mutually exclusive with 'target'. The same vocabulary as cloud_replay 'routes', 'proxymock cluster replay start --route' and the proxymock web Replay tab. Mocks attach to every workload route. |
+| `sidecar` | boolean | no | Capture actions: drive the goproxy sidecar, which proxymock computes and applies itself, instead of the eBPF capture annotations. Set this for a namespaced install - nothing there acts on the annotations, so the sidecar is the only mechanism that captures anything; it also works on a classic install. Never inferred from the namespace: without it, capture actions drive the annotations. Deployments and StatefulSets only, and injecting restarts the workload. |
+| `snapshot_file` | string | no | Namespaced replay-start only (refused without namespaced=true): path to a snapshot document to stage in the cluster as a ConfigMap for the coordinator to read. Use this when the snapshot is on this machine; use 'snapshot_id' alone when it is already staged. |
+| `snapshot_id` | string | no | action=replay-start: replay a snapshot already in Speedscale cloud instead of staging or pushing the local recordings. |
+| `snapshot_name` | string | no | action=replay-start: display name for the snapshot when the recordings are pushed to Speedscale cloud (snapshot_source=cloud, or the auto fallback). A snapshot staged in the cluster has no name, so it is refused with snapshot_source=local and with 'snapshot_id'. Same as cloud_replay 'snapshot_name' and 'proxymock cluster replay start --name'. |
+| `snapshot_source` | string | no | action=replay-start: where the replay's snapshot comes from. 'auto' (default) stages the recordings in the in-cluster forwarder and pushes them to Speedscale cloud only if staging fails. 'local' stages them in the forwarder and fails instead of falling back, so the replay never touches Speedscale cloud. 'cloud' skips staging and pushes the recordings to Speedscale cloud, which needs a login. 'local' cannot be combined with 'snapshot_id', which names a snapshot already in the cloud. This only chooses where the snapshot lives; to run the whole replay through Speedscale cloud with no kubeconfig, use the cloud_replay tool. |
 | `tail_lines` | number | no | action=logs: read only the last N lines of each pod log. |
 | `target` | string | no | action=replay-start: replay against this address instead of a cluster workload. Nothing in the cluster is modified and nothing can be mocked. Mutually exclusive with 'workload'. |
+| `test_config` | string | no | action=replay-start: a test config authored in this workspace (proxymock/testconfigs/&lt;name&gt;.json; create and edit one with the test_config tool), or a path to a config JSON file. It is compiled and staged in the in-cluster forwarder alongside the snapshot, so the replay runs it without any Speedscale cloud round-trip — this is how responder replicas and resources get set on a cloud-free replay. Fields the in-cluster path does not honour are reported rather than silently dropped. Omit for the built-in regression config (maintained by Speedscale, read-only), which is staged the same way. A workspace config cannot be combined with 'snapshot_id', which skips the staging this rides on. |
+| `tls_out` | boolean | no | Sidecar inject only: unwrap outbound TLS so encrypted upstream calls are captured. Leave unset to keep whatever the workload's own annotations say — passing false turns it off. |
+| `wait` | boolean | no | Sidecar inject/uninject only: wait for the rollout to finish, and on inject verify the sidecar came up, before returning. Defaults to true — a sidecar only joins a pod at creation, so returning early would report success for a workload that is not capturing yet. Pass false for a fire-and-forget change. |
 | `workload` | string | no | Name of the workload to target. Required for the capture actions, 'logs', 'events' and 'dependencies'; on 'replay-start' it selects the system under test; on 'pods' it narrows the listing. List the options with action='workloads'. |
-| `workload_type` | string | no | Workload kind: deployment (default), statefulset, daemonset, replicaset, job or rollout. |
+| `workload_type` | string | no | Workload kind: deployment (default), statefulset, daemonset, replicaset, job or rollout. On replay-start it is also the default kind of every 'routes' workload, and it is refused with 'target', which has no workload. This path takes 'job' and not 'service' because a TrafficReplay references the workload object itself (a Job is one, a Service is not); the cloud_replay tool is the reverse, because the cloud resolves a system under test to a long-running workload or a Service. |
 
 ### Process control
 
