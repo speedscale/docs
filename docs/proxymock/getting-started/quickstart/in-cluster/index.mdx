@@ -123,7 +123,7 @@ Steps (Replay tab):
 2) Pick one or more recordings
 3) Choose the **Cluster context** and the **Namespace** your workload runs in
 4) Set **Send all to** to a **Workload** or **Service**. A plain URL is resolved inside the generator pod, not on your machine
-5) Optional: open **Options** to mock outbound dependencies, so the workload answers from the recording instead of reaching the real thing
+5) Every recorded outbound dependency is mocked by default, so the workload answers from the recording instead of reaching the real thing. Open **Options** to mock only some, or none
 6) Click **Run in cluster**
 
 While running:

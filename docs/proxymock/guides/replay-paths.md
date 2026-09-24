@@ -53,7 +53,7 @@ Prerequisites: a kubeconfig context for the cluster and the Speedscale operator 
 1. Start proxymock web with the context you want, for example `proxymock web --kube-context minikube`.
 2. Pick **In your cluster**, then the cluster context and the namespace your workload runs in.
 3. Set the destination to a **Workload** or **Service**. A plain URL is resolved inside the generator pod, where your laptop's `localhost` does not exist.
-4. Optionally open **Options** and choose dependencies to mock, so the workload answers from the recording instead of reaching the real thing.
+4. Every recorded dependency is mocked by default, so the workload answers from the recording instead of reaching the real thing. To mock only some, or to let the workload reach its real dependencies, open **Options** and change **Mock dependencies**.
 5. Press **Run in cluster**.
 
 The same run from the CLI:
@@ -83,7 +83,7 @@ The same run from the CLI:
 proxymock cloud replay --in ./proxymock --cluster my-cluster -n my-namespace --workload my-service --wait
 ```
 
-Add `--dry-run` to print what would be pushed and started without doing either. `--wait` polls until the report reaches a terminal status and prints its dashboard link. This is the proxymock equivalent of [replaying with speedctl](/guides/replay/via-speedctl).
+Add `--dry-run` to print what would be pushed and started without doing either. `--wait` polls until the report reaches a terminal status and prints its dashboard link. Like the in-cluster path, a workload replay mocks every recorded dependency unless you narrow it with `--mock` or turn it off with `--no-mocks`. This is the proxymock equivalent of [replaying with speedctl](/guides/replay/via-speedctl).
 
 ## From an AI agent
 

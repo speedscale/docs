@@ -953,7 +953,8 @@ proxymock cluster replay [command]
 - `--in strings` - directories holding the RRPair files to replay (prepare, start)
 - `--target string` - start: replay against this address instead of a cluster workload (no mocking)
 - `--route strings` - start: send one inbound slice to its own workload as `SLICE=WORKLOAD`; repeatable
-- `--mock strings` - start: outbound dependency key to mock, from `replay prepare`; repeatable
+- `--mock strings` - start: outbound dependency key to mock, from `replay prepare`; repeatable (default: every recorded dependency)
+- `--no-mocks` - start: mock nothing, so the workload reaches its real dependencies
 - `--snapshot-id string` - start: replay a snapshot already in Speedscale Cloud instead of pushing these recordings
 - `--test-config string` - start: workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to stage in the cluster and run this replay with (default `regression`)
 - `--wait` - start: block until the replay reaches a terminal state, reporting each stage
@@ -968,7 +969,7 @@ proxymock cluster replay [command]
 # find out what can be routed and what can be mocked, locally and without a login
 proxymock cluster replay prepare --in proxymock
 
-# replay against a workload, mocking its database, and block until it finishes
+# replay against a workload, mocking only its database, and block until it finishes
 proxymock cluster replay start -n banking-app --workload banking-user \
   --mock 'postgres:banking-postgres:5432' --wait
 
