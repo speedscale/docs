@@ -410,3 +410,64 @@ instructions for your deploy system are not included here.
 Use [replay verdicts](./replay-verdicts.md) to distinguish request completion from correct application behavior. Save a baseline replay, then use `--baseline <directory> --fail-on-new-mismatch` to fail on new per-request regressions. For incident recordings, `--verify-fix` checks that recorded failures are fixed without collateral regressions.
 
 Preserve the replay output directory as a CI artifact, including `replay-verdict.json`. These modes need response output and cannot be combined with `--no-out` or `--load-test`. Require essential [blueprints](./blueprints.md) with `--require-blueprint <name>`.
+
+## Gate on a cloud replay
+
+To run the replay in a Kubernetes cluster through Speedscale cloud instead of on the CI runner, start it and then wait on its report. The status command's exit code is the result:
+
+```bash
+REPORT_ID=$(proxymock cloud replay \
+  --cluster "$CLUSTER" \
+  --namespace "$NAMESPACE" \
+  --workload "$WORKLOAD" \
+  --snapshot-id "$SNAPSHOT_ID" \
+  --output json | jq -r '.reportID')
+
+proxymock cloud replay status "$REPORT_ID" --wait --timeout 30m
+```
+
+While it waits, the status command prints each status change and each replay event as it appears, including the operator's suggested fixes, then the goals with expected and actual values. Add `--output json` to get one JSON document on stdout instead.
+
+Decide what each code means for your pipeline. A missed goal is a test result and should fail the build. A replay that could not produce a verdict is an environment problem you may want to retry or alert on instead:
+
+```bash
+proxymock cloud replay status "$REPORT_ID" --wait --timeout 30m
+case $? in
+  0) echo "replay passed" ;;
+  1) echo "replay missed its goals"; exit 1 ;;
+  4 | 5 | 124) echo "replay produced no verdict, see the report"; exit 1 ;;
+  *) echo "proxymock failed"; exit 1 ;;
+esac
+```
+
+## Exit codes
+
+Exit codes are defined per command, so the same number can mean different things in different commands. Any code not listed for a command means a configuration or operational failure.
+
+### `proxymock replay`
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | The replay ran and every gate passed |
+| `1` | A test config goal missed, or a `--fail-if` condition was true |
+| `2` | With `--verify-fix`: the fix was not confirmed |
+| `3` | With `--fail-on-new-mismatch`: a pair failed differently than in `--baseline`. With `--verify-fix`: a collateral regression |
+
+See [Replay Verdicts](./replay-verdicts.md) for how each gate decides.
+
+### `proxymock cloud replay status`
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | The replay passed. Without `--wait`, also a replay that is still running |
+| `1` | Missed Goals: the replay ran and failed its goals |
+| `2` | Usage error: bad flags or arguments |
+| `4` | The replay ended in Error or was Canceled, so there is no verdict |
+| `5` | The report could not be read: not signed in, a network failure, or an unknown report ID |
+| `124` | `--wait` stopped at `--timeout` while the replay was still running |
+
+Code `3` is not used here. It stays reserved for the replay gates above, so a script that checks for `3` never mistakes a cloud replay result for a new mismatch.
+
+### Always exit zero
+
+The global `--exit-zero` flag makes any proxymock command exit `0`. Use it for informational steps only, never in a job that gates on the exit code.

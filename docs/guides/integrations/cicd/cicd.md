@@ -330,6 +330,8 @@ speedctl wait report "$REPORT_ID" \
 exit $?
 ```
 
+`speedctl wait report` exits `0` when the replay passes and `1` when it misses its goals. If Speedscale itself has a problem it logs the error and exits `0`, so it never blocks the pipeline. To fail the job on those instead, use `proxymock cloud replay status --wait`, which gives an environment failure its own exit code. See [proxymock CI/CD exit codes](/proxymock/guides/cicd.md#exit-codes).
+
 </TabItem>
 
 <TabItem value="kubectl" label="With Cluster Access">
