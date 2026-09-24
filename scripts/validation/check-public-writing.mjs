@@ -67,14 +67,7 @@ const WARNING_RULES = [
   },
 ];
 
-const GENERATED_WRITING_EXCLUSIONS = new Set([
-  // Generated from speedscale/speedctl/mcp. Remove this after the generator
-  // and its source descriptions pass the shared public-writing rules.
-  "docs/proxymock/how-it-works/mcp-tools.md",
-]);
-
 function isPublicWritingFile(file) {
-  if (GENERATED_WRITING_EXCLUSIONS.has(file)) return false;
   return (
     /^(?:docs|src)\/.+\.(?:md|mdx)$/.test(file) ||
     file === "README.md" ||
