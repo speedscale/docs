@@ -200,7 +200,7 @@ test("parses only added lines from zero-context diffs", () => {
   );
 });
 
-test("discovers docs surfaces and excludes the generated MCP reference", () => {
+test("discovers docs surfaces, including the generated MCP reference", () => {
   const diff = [
     "+++ b/docs/example.md",
     "@@ -0,0 +1 @@",
@@ -227,6 +227,7 @@ test("discovers docs surfaces and excludes the generated MCP reference", () => {
     "src/partials/example.mdx",
     "README.md",
     ".github/pull_request_template.md",
+    "docs/proxymock/how-it-works/mcp-tools.md",
   ]);
 });
 
