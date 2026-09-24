@@ -48,7 +48,7 @@ Start the mock server with RRPairs from the mock files in the directory.
 | `log-to` | string | no | File path to redirect all proxymock output to |
 | `mock-reload-interval` | string | no | Hot-reload check interval such as '1s'. Omit to disable. |
 | `mock-timing` | string | no | Response timing: 'none', 'recorded', or a multiplier such as '5x'. |
-| `out-directory` | array | no | Directories to write new mock request/response files to. MATCH, NO_MATCH, AND PASSTHROUGH seen by mock server. If not provided, defaults to a timestamped directory. Unless otherwise instructed use 'proxymock/mocked-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
+| `out-directory` | array | no | Directories to write new mock request/response files to. MATCH, NO_MATCH, AND PASSTHROUGH seen by mock server. If not provided, defaults to a timestamped directory. Unless otherwise instructed use 'proxymock/results/mocked-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. Keep it under 'results/': output written next to the recordings is read back as input on the next run. |
 | `response-selection` | string | no | Duplicate-signature response selection: 'round-robin' (default) or weighted-by-copy-count 'random'. |
 
 #### `mock_server_stop`
@@ -70,7 +70,7 @@ The replay runs in the background: use the list_running tool to see when it fini
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `in-directory` | array | **yes** | Directories containing the test RRPair files. Directories are read recursively. Usually these directories end with 'proxymock' and are contained in the current repository. |
-| `out-directory` | array | **yes** | Directories to write observed replay request/response files to. Unless otherwise instructed use 'proxymock/replayed-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
+| `out-directory` | array | no | The one directory to write observed replay request/response files to, as a single-element array (a replay writes to exactly one output directory; more than one is refused). Required unless 'no-out' is set. Unless otherwise instructed use 'proxymock/results/replayed-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. Keep it under 'results/': output written next to the recordings is read back as input on the next run. |
 | `fail-if` | string | no | Condition expression that marks the replay as failed (exit code 1) when true, e.g. 'latency.p99 &gt; 100' or 'requests.result-match-pct &lt; 95.5'. Check the process logs to see whether the condition triggered. |
 | `for` | string | no | How long to run the replay, as a Go duration string (e.g. '30s', '5m'). Traffic is replayed continuously, on a loop, until the duration expires. Mutually exclusive with 'times'. Omit both to replay each request exactly once. |
 | `load-test` | boolean | no | Load test mode only writes a sample of failed or non-matching requests to disk, trading granular data collection for replay speed. Recommended for high-throughput load tests (many vus or long durations). Responses are not scored, so 'requests.result-match-pct' is not reported and cannot be used in 'fail-if'. When the app runs behind 'proxymock mock', start the mock without an output directory. |

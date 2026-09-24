@@ -94,7 +94,7 @@ If every request matches, your app works end to end with no database at all. If 
 
 Every recorded RRPair has a direction. Inbound traffic is what your app received, and outbound traffic is what your app sent, including every PostgreSQL query. By default a replay sends the inbound traffic to your app as tests and serves the outbound traffic as mocks.
 
-To load or regression test the database itself, you flip that for the PostgreSQL traffic: the recorded queries become the tests, and the database is the system under test. You do this with a **tests filter**, a filter that chooses which recorded traffic is replayed as tests. Everything the filter does not match is mocked. The recorded direction never changes; the filter only decides the role each RRPair plays in this replay.
+To load or regression test the database itself, flip that for the PostgreSQL traffic with a **tests filter**: the recorded queries become the tests, and the database is the system under test. Everything the filter does not match is mocked, and the recorded direction never changes.
 
 | Where you replay | How to choose the tests |
 |---|---|
@@ -103,15 +103,7 @@ To load or regression test the database itself, you flip that for the PostgreSQL
 | proxymock web | The **Tests filter** field on the Replay tab |
 | Speedscale dashboard | **Choose replay tests** in the snapshot's actions menu, then pick the database under **Outbound dependencies** |
 
-A few details about the filter:
-
-- Each parenthesised group holds one kind of filter. Write `(direction IS OUT) AND (tech IS Postgres)`, not `(direction IS OUT AND tech IS Postgres)`.
-- The filter chooses the whole test set. To keep your app's inbound tests too, use `(direction IS IN) OR (tech IS Postgres)`.
-- To promote a single recorded file by hand, add `replayRole=test` to its tags. A file tagged `replayRole=mock` stays a mock whatever the filter says.
-
-:::note Snapshots that used reverse services
-Earlier versions of Speedscale had a **reverse services** snapshot setting that flipped every recorded RRPair from inbound to outbound and back. It has been removed. Use a tests filter instead: it can promote just the database traffic, it can keep your inbound tests at the same time, and it never rewrites the recorded direction. A snapshot that had reverse services turned on returns to its recorded orientation the next time it is reanalyzed.
-:::
+To keep your app's inbound tests too, use `(direction IS IN) OR (tech IS Postgres)`. [Choose What a Replay Tests](./choose-replay-tests.md) covers the filter syntax, saving a filter with the workspace, promoting a single file, and the removed **reverse services** setting that tests filters replace.
 
 ## Connect to the database {#credentials}
 
@@ -185,7 +177,7 @@ PGUSER=<user> PGPASSWORD=<password> proxymock replay \
 </TabItem>
 </Tabs>
 
-Each virtual user opens its own database session and replays the recorded statements in order, so prepared statements carry over from one statement to the next. `--load-test` skips response scoring, which keeps the replay itself light so the database is the bottleneck. The results table shows latency percentiles and throughput for every query, and the **FAILED** column shows how many statements failed, with their share of the total.
+Each virtual user opens one database session, keeps it for the whole run, and replays the recorded statements in order, so prepared statements carry over from one statement to the next. When a pass through the recording ends inside a transaction, that transaction is rolled back so the next pass starts clean. `--load-test` skips response scoring, which keeps the replay itself light so the database is the bottleneck. The results table shows latency percentiles and throughput for every query, and the **FAILED** column shows how many statements failed, with their share of the total.
 
 While the test runs, the replay's sessions appear in `pg_stat_activity` with `application_name` set to `speedscale-generator`:
 
@@ -225,6 +217,7 @@ Secrets referenced from `generator.postgres` are not mounted into the replay aut
 
 ## Related {#related}
 
+- [Choose What a Replay Tests](./choose-replay-tests.md)
 - [PostgreSQL Mocking](./postgres.md)
 - [Compare SQL between recordings](./sql-compare.md)
 - [proxymock CLI reference](/reference/proxymock-cli-reference)
