@@ -5,19 +5,19 @@ description: Capture redacted service traffic on Amazon EKS, store it in Amazon 
 
 # AWS EKS quality factory with BYOC
 
-An agent can change a service quickly. The harder question is whether that change still honors the behavior clients saw before it. In this reference architecture, Speedscale captures application traffic on Amazon EKS, applies a BYOC exporter's filter and DLP rule inside the cluster, and stores replayable request/response pairs in an Amazon S3 bucket you control. A developer imports a bounded capture into `proxymock`, lets Kiro change a local copy of the service, and replays the same requests to check the result.
+An agent can change a service quickly. The harder question is whether that change still honors the behavior clients saw before it. In this reference architecture, Speedscale's eBPF collector captures application traffic on Amazon EKS, a BYOC exporter applies its filter and DLP rule inside the cluster, and replayable request/response pairs are stored in an Amazon S3 bucket you control. A developer imports a bounded capture into `proxymock`, lets Kiro change a local copy of the service, and replays the same requests to check the result.
 
-We validated this path with a synthetic banking service. One captured deposit expected HTTP 201. A deliberate response-contract change returned HTTP 200 and failed the replay gate. Kiro changed the controller to return 201 while preserving its new response envelope; the same request then passed. This was a one-request status-code check in an isolated local copy, not a semantic body assertion or a change deployed to EKS.
+We validated the S3-to-replay gate with a synthetic banking service. One captured deposit expected HTTP 201. A deliberate response-contract change returned HTTP 200 and failed the replay gate. Kiro changed the controller to return 201 while preserving its new response envelope; the same request then passed. This was a one-request status-code check in an isolated local copy, not a semantic body assertion or a change deployed to EKS.
 
 ## Architecture
 
-The BYOC data path runs inside your AWS account:
+The reference BYOC data path runs inside your AWS account:
 
 ```mermaid
 flowchart LR
-    app[EKS application] --> sidecar[Speedscale sidecars]
-    bedrock[Optional Bedrock pod] -.-> sidecar
-    sidecar --> forwarder[Forwarder DLP]
+    app[EKS application] --> nettap[eBPF capture]
+    bedrock[Optional Bedrock pod] -.-> nettap
+    nettap --> forwarder[Forwarder DLP]
     forwarder --> collector[BYOC collector]
     collector --> bucket[(Amazon S3)]
 ```
@@ -32,7 +32,9 @@ flowchart LR
     replay --> target
 ```
 
-The capture and replay paths have different owners. The EKS workload produces traffic. The Forwarder applies the named exporter's filter and DLP configuration before sending records to the in-cluster collector. The collector writes OTLP JSON objects under `byoc/` in S3. The developer or CI job reads a bounded time window from S3 and runs replay against a test deployment. See [How BYOC works](/byoc/how-it-works.md) and [Use BYOC traffic with proxymock](/byoc/use-traffic.md).
+The capture and replay paths have different owners. The EKS workload produces traffic. Speedscale's [eBPF collector](/reference/ebpf-traffic-collection) observes the selected workloads without application sidecars. The Forwarder applies the named exporter's filter and DLP configuration before sending records to the in-cluster collector. The collector writes OTLP JSON objects under `byoc/` in S3. The developer or CI job reads a bounded time window from S3 and runs replay against a test deployment. See [How BYOC works](/byoc/how-it-works.md) and [Use BYOC traffic with proxymock](/byoc/use-traffic.md).
+
+The current AWS demo used sidecar capture for the banking workloads and the separate Bedrock pod. Its S3, DLP, and replay results do not yet validate the eBPF capture path shown above. Switch the demo workloads to eBPF capture and verify fresh S3 records before presenting the full diagram as a live proof.
 
 The diagrams show the BYOC path. Enabling BYOC does not automatically turn off the separate Speedscale Cloud exporter. Review both exporters when defining where captured data may go.
 
