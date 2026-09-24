@@ -57,7 +57,6 @@ To make a workspace always replay the same tests without passing the flag, add a
 
 ```json
 {
-  "id": "local-workspace",
   "replaySelection": {
     "tests": {
       "conditions": [
@@ -70,7 +69,7 @@ To make a workspace always replay the same tests without passing the flag, add a
 }
 ```
 
-The file needs an `id`. A `.metadata/snapshot.json` without one is ignored. Snapshots pulled from Speedscale already have one; add the `replaySelection` next to the fields already there.
+If the workspace already has a `.metadata/snapshot.json`, for example from a snapshot pulled from Speedscale, add `replaySelection` next to the fields already there. If a metadata file cannot be parsed, proxymock names it in a warning and ignores its settings.
 
 ### Promote a single RRPair {#promote-one}
 
