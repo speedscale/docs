@@ -232,6 +232,8 @@ tags: key1=value1, key2=value2
 - **duration**: Request duration in milliseconds
 - **tags**: Comma-separated key=value pairs for categorization
 
+The `direction` records how the RRPair was captured and does not change. What a replay does with it, send it as a test or serve it as a mock, is its replay role. Inbound RRPairs are tests and outbound RRPairs are mocks unless a tests filter or a `replayRole` tag says otherwise. Add `replayRole=test` or `replayRole=mock` to `tags` to fix the role of one file. See [Choose What a Replay Tests](../guides/choose-replay-tests.md).
+
 #### Example
 ````markdown
 ### METADATA ###
