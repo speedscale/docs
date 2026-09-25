@@ -85,7 +85,7 @@ Public prose follows the rules in this section. Run `yarn check:writing` before 
 
 The hard gate rejects confidential-customer names, product-capitalization errors, retired terminology, generator signatures, hard-wrapped prose, and em dashes in changed public prose. Style patterns remain warnings. The checker, rule IDs, severity boundary, diagnostics, and shared fixtures must stay compatible with the website checker. Repository-specific changes should be limited to file discovery and Docusaurus Markdown/MDX sanitization until both integrations move to a versioned shared package.
 
-The generated `docs/proxymock/how-it-works/mcp-tools.md` page is temporarily excluded because its prose comes from the proxymock MCP registry in another repository. Keep the exclusion limited to that file and remove it after the source generator passes the shared rules.
+The generated `docs/proxymock/how-it-works/mcp-tools.md` page is checked like any other page. Its prose comes from the proxymock MCP registry in the speedscale repository, so fix a finding there (`speedctl/mcp`) and regenerate; do not edit the page by hand.
 
 ### Technical Stack
 
@@ -136,4 +136,4 @@ When working on these improvements:
 5. Cross-reference related documentation sections
 
 ### Generated pages (do not hand-edit)
-- `docs/proxymock/how-it-works/mcp-tools.md` is **generated** from the proxymock MCP server's live tool registry. Do not edit it by hand — regenerate it with `yarn gen:mcp-docs` (or `scripts/gen-mcp-docs.sh`), which runs `proxymock mcp docs`. Regenerate whenever the proxymock MCP tools/prompts change. The prose intro and setup live in the sibling `mcp.md`, which is hand-maintained.
+- `docs/proxymock/how-it-works/mcp-tools.md` is **generated** from the proxymock MCP server's live tool registry. Do not edit it by hand. The nightly `MCP docs sync` workflow (`.github/workflows/mcp-docs-sync.yaml`) regenerates it from each new proxymock release and opens a `bot/mcp-docs-sync` PR when it changes. To regenerate it yourself, run `yarn gen:mcp-docs` (or `scripts/gen-mcp-docs.sh`), which runs `proxymock mcp docs` and records the generating version in `scripts/mcp-docs-version.txt`; commit both files. The nightly job only uses a release newer than that version. The prose intro and setup live in the sibling `mcp.md`, which is hand-maintained.
