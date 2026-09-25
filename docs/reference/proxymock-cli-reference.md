@@ -776,6 +776,24 @@ proxymock cloud [command]
 - `replay` - Run the recordings in a registered cluster via Speedscale Cloud; takes `--test-config` (see [Choose Where a Replay Runs](/proxymock/guides/replay-paths.md#via-speedscale-cloud))
 - `search` - Search remote traffic for a service
 
+### `cloud replay status`
+
+Report where a cloud replay is, with its replay events and goals, and optionally wait for it to finish.
+
+**Usage**
+
+```bash
+proxymock cloud replay status <report-id> [flags]
+```
+
+**Flags**
+
+- `--wait` - Keep polling until the replay reaches Passed, Missed Goals, Error or Canceled, printing each status change and new event
+- `--timeout duration` - How long `--wait` waits before giving up (default `1h`)
+- `-o, --output string` - Output format: pretty or json. JSON prints one document on stdout and the live progress on stderr
+
+The exit code is the result: `0` passed, `1` missed goals, `2` usage error, `4` the replay ended in Error or Canceled, `5` the report could not be read (including a config or connection failure at startup), `124` the wait timed out. See [CI/CD exit codes](/proxymock/guides/cicd.md#exit-codes).
+
 ### `cloud pull`
 
 Pull artifacts from Speedscale Cloud.
@@ -936,7 +954,8 @@ proxymock cluster replay [command]
 - `--in strings` - directories holding the RRPair files to replay (prepare, start)
 - `--target string` - start: replay against this address instead of a cluster workload (no mocking)
 - `--route strings` - start: send one inbound slice to its own workload as `SLICE=WORKLOAD`; repeatable
-- `--mock strings` - start: outbound dependency key to mock, from `replay prepare`; repeatable
+- `--mock strings` - start: outbound dependency key to mock, from `replay prepare`; repeatable (default: every recorded dependency)
+- `--no-mocks` - start: mock nothing, so the workload reaches its real dependencies
 - `--snapshot-id string` - start: replay a snapshot already in Speedscale Cloud instead of pushing these recordings
 - `--test-config string` - start: workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to stage in the cluster and run this replay with (default `regression`)
 - `--wait` - start: block until the replay reaches a terminal state, reporting each stage
@@ -951,7 +970,7 @@ proxymock cluster replay [command]
 # find out what can be routed and what can be mocked, locally and without a login
 proxymock cluster replay prepare --in proxymock
 
-# replay against a workload, mocking its database, and block until it finishes
+# replay against a workload, mocking only its database, and block until it finishes
 proxymock cluster replay start -n banking-app --workload banking-user \
   --mock 'postgres:banking-postgres:5432' --wait
 

@@ -71,7 +71,10 @@ The keys it prints are exactly the keys `start` accepts, so run `prepare` first 
 Pick exactly one destination shape:
 
 ```shell
-# replay against a workload, mocking its database
+# replay against a workload, mocking every recorded dependency
+proxymock cluster replay start -n banking-app --workload banking-user
+
+# mock only its database; everything else reaches the real service
 proxymock cluster replay start -n banking-app --workload banking-user \
   --mock 'postgres:banking-postgres:5432'
 
@@ -82,7 +85,7 @@ proxymock cluster replay start --target http://banking-frontend.banking-app:80 -
 - `--workload NAME` replays against a workload in the cluster. Only this shape can mock dependencies, and only this shape reports on the workload's own behavior.
 - `--target URL` replays against a single address. Nothing in the cluster is modified and nothing is mocked.
 
-`--mock` takes an outbound dependency key from `prepare`; repeat it to mock more than one. Mocking a dependency makes the responder answer it from the recording instead of letting the workload reach the real thing, which is what makes a replay repeatable. `--route SLICE=WORKLOAD` splits the recording so one inbound slice goes to its own workload; every slice goes to exactly one destination. To replay a snapshot that is already in Speedscale cloud, pass `--snapshot-id` instead; nothing is staged or pushed.
+A workload replay mocks every recorded outbound dependency by default: the responder answers them from the recording instead of letting the workload reach the real thing, which is what makes a replay repeatable. `--mock` narrows that to the outbound dependency keys you name from `prepare`; repeat it to mock more than one. `--no-mocks` turns mocking off so the workload reaches its real dependencies. `--route SLICE=WORKLOAD` splits the recording so one inbound slice goes to its own workload; every slice goes to exactly one destination. To replay a snapshot that is already in Speedscale cloud, pass `--snapshot-id` instead; nothing is staged or pushed.
 
 Watch and tear down a running replay with the remaining verbs:
 
