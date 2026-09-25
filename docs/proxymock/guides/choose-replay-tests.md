@@ -22,7 +22,7 @@ proxymock and Speedscale apply the same three rules, in this order:
 
 The recorded direction itself never changes. A database query recorded as outbound stays outbound in every file, report and view; the filter only decides what the replay does with it.
 
-Technology is detected automatically, so a filter such as `(tech IS Postgres)` works on a fresh `proxymock record` recording as well as on a snapshot.
+Technology is detected automatically, so a filter such as `(tech IS Postgres)` or `(tech IS MySQL)` works on a fresh `proxymock record` recording as well as on a snapshot.
 
 ## Write a tests filter {#syntax}
 
@@ -36,6 +36,7 @@ Two rules trip people up:
 | Goal | Tests filter |
 |---|---|
 | Replay a database your app called | `(direction IS OUT) AND (tech IS Postgres)` |
+| Replay a MySQL database your app called | `(direction IS OUT) AND (tech IS MySQL)` |
 | Replay every call your app made | `(direction IS OUT)` |
 | Replay one dependency | `(networkaddr IS "rates.internal:443")` |
 | Keep your app's inbound tests as well | `(direction IS IN) OR (tech IS Postgres)` |
@@ -49,7 +50,7 @@ Two rules trip people up:
 | proxymock web | The **Tests filter** field on the Replay tab |
 | Speedscale dashboard | **Choose replay tests** in the snapshot's actions menu. Pick the dependencies under **Outbound dependencies**, optionally check **Also keep inbound tests**, and save. The snapshot is reanalyzed and the page shows the active selection as **Replay tests:** followed by the filter. |
 
-Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database` address; see [PostgreSQL Load and Regression Testing](./postgres-load-testing.md#credentials) for credentials.
+Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database` or `mysql://host:port/database` address; see [PostgreSQL Load and Regression Testing](./postgres-load-testing.md#credentials) or [MySQL Load and Regression Testing](./mysql-load-testing.md#credentials) for credentials.
 
 ### Save the filter with a workspace {#save}
 
@@ -109,5 +110,6 @@ Use a tests filter instead. `(direction IS OUT)` replaces reverse services for m
 ## Related {#related}
 
 - [PostgreSQL Load and Regression Testing](./postgres-load-testing.md)
+- [MySQL Load and Regression Testing](./mysql-load-testing.md)
 - [RRPair markdown format](../how-it-works/rrpair-format.md)
 - [proxymock CLI reference](/reference/proxymock-cli-reference)
