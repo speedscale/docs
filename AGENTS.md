@@ -11,7 +11,7 @@ This document orients any AI coding agent working in this repository. Follow the
 - Run relevant tests or linters when feasible; mention any steps you could not perform.
 
 ## Project Overview
-This is Speedscale's documentation website built with Docusaurus 3 (currently 3.8.1). Speedscale is an API testing platform that uses traffic capture and replay for stress testing APIs with real-world scenarios. The documentation covers two main products:
+This is Speedscale's documentation website built with Docusaurus 3 (currently 3.10.2). Speedscale is an API testing platform that uses traffic capture and replay for stress testing APIs with real-world scenarios. The documentation covers two main products:
 - **Speedscale Platform**: Full enterprise API testing platform  
 - **proxymock**: Local development tool for mocking APIs
 
@@ -89,7 +89,7 @@ The generated `docs/proxymock/how-it-works/mcp-tools.md` page is checked like an
 
 ### Technical Stack
 
-- **Framework**: Docusaurus 3.8.1
+- **Framework**: Docusaurus 3.10.2
 - **React**: 19.0.0  
 - **Node**: >=18.0 required
 - **Search**: Algolia DocSearch
