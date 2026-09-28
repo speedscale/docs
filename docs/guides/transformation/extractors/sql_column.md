@@ -33,6 +33,7 @@ It applies to responses only. NULL extracts as an empty value and stays NULL whe
 
 - Only text-format cells can be read and changed. Postgres drivers such as pgx often ask for binary results on prepared statements, and the extractor skips those cells.
 - Column names are only available where the response carries them: a Postgres simple query or any MySQL result. A Postgres prepared statement describes its columns in a separate message, so select its columns by position.
+- A name selects the first column with that name. When a join returns two columns with the same name, select the later ones by position.
 
 ### Example
 
