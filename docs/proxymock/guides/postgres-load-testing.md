@@ -188,6 +188,33 @@ WHERE application_name = 'speedscale-generator' GROUP BY state;
 
 A handful of failures right at the end of a timed run are statements that were still running when the time ran out.
 
+### Regenerate unique values {#regenerate}
+
+To stop recorded unique keys from colliding, add a blueprint that regenerates them. The `postgres_param` extractor picks one parameter of a prepared statement by its placeholder number, so `3` selects `$3`, and a transform such as `rand_string` replaces it on every replay. Save this as `proxymock/blueprints/unique-users.json` in the workspace:
+
+```json
+{
+  "id": "unique-users",
+  "name": "Unique users",
+  "tokenizeConfig": {
+    "generator": [
+      {
+        "filters": {"filters": [{"include": true, "detectedLocation": "INSERT INTO users", "operator": "CONTAINS"}]},
+        "extractor": {"type": "postgres_param", "config": {"index": "3"}},
+        "transforms": [{"type": "rand_string", "config": {"pattern": "[a-z0-9]{12}@load\\.test"}}]
+      },
+      {
+        "filters": {"filters": [{"include": true, "detectedLocation": "INSERT INTO users", "operator": "CONTAINS"}]},
+        "extractor": {"type": "postgres_param", "config": {"index": "4"}},
+        "transforms": [{"type": "rand_string", "config": {"pattern": "user-[a-z0-9]{12}"}}]
+      }
+    ]
+  }
+}
+```
+
+With it, the go-postgres demo's user `INSERT` went from every replayed statement failing with `23505 duplicate key value violates unique constraint` to no mismatches, and each pass wrote new users. You can build the same blueprint in the **Blueprints** editor of `proxymock web`, where the extractor is listed as **Postgres Statement Parameter**. See [postgres_param](/guides/transformation/extractors/postgres_param).
+
 ## Replay from the Speedscale dashboard {#dashboard}
 
 For traffic recorded in Kubernetes, you can run the same regression and load tests from the dashboard. You can also upload a local recording with `proxymock cloud push snapshot`.
@@ -211,7 +238,7 @@ Secrets referenced from `generator.postgres` are not mounted into the replay aut
 ## Tips and limits {#limits}
 
 - **Use a disposable database.** Replays change data. Reset it between runs, for example with `TRUNCATE ... RESTART IDENTITY` or by restoring a snapshot.
-- **Row ids come from the recording.** Recorded updates and deletes use the row ids from the original database, so on a fresh copy they may match no rows. Repeated inserts can hit unique constraints. These show up as SQL results, not replay failures.
+- **Row ids come from the recording.** Recorded updates and deletes use the row ids from the original database, so on a fresh copy they may match no rows. Repeated inserts can hit unique constraints. These show up as SQL results, not replay failures, and a blueprint can [regenerate the unique values](#regenerate).
 - **Transactions across connections.** Recorded traffic mixes statements from many app connections, and a replay does not yet regroup them by connection. A replay can therefore send a `COMMIT` without its `BEGIN`, and proxymock logs a warning when that happens. Workloads that depend on multi-statement transactions are not reproduced faithfully yet.
 - **Queries that return a whole table** get slower as a load test inserts more rows. That is real behaviour of your query mix, but reset the data between runs you want to compare.
 
