@@ -35,7 +35,7 @@ can be used to run the same replay later.
 
 ## Replay traffic your service sent {#replay-outbound}
 
-By default a replay sends your service's inbound traffic to it and mocks everything it calls. To test a dependency instead, such as the database your service uses, open the snapshot and choose **Choose replay tests** from its actions menu. Pick the dependency under **Outbound dependencies** and save. The snapshot is reanalyzed and the dependency becomes a service you can replay against. See [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md) and [PostgreSQL Load and Regression Testing](../../proxymock/guides/postgres-load-testing.md).
+By default a replay sends your service's inbound traffic to it and mocks everything it calls. To test a dependency instead, such as the database your service uses, open the snapshot and choose **Choose replay tests** from its actions menu. Pick the dependency under **Outbound dependencies** and save. The snapshot is reanalyzed and the dependency becomes a service you can replay against. See [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md), [PostgreSQL Load and Regression Testing](../../proxymock/guides/postgres-load-testing.md) and [MySQL Load and Regression Testing](../../proxymock/guides/mysql-load-testing.md).
 
 ## View Report
 
