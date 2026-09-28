@@ -24,7 +24,7 @@ sidebar_position: 22
 |---|---|---|
 | `index` | Yes | The literal's position in the statement, counting from 1. |
 
-String literals are extracted without their quotes, and a doubled quote comes back as one. Bind placeholders such as `$1` and `?`, booleans, and NULL are not counted. MySQL strings in double quotes are read as identifiers and are not counted either.
+String literals are extracted without their quotes, and a doubled quote comes back as one. In MySQL, backslash escapes such as `\'` are undone too, and backslashes in a new value are escaped when it is written. Bind placeholders such as `$1` and `?`, booleans, and NULL are not counted. MySQL strings in double quotes are read as identifiers and are not counted either.
 
 When a new value is inserted, a number literal stays a number if the new value is numeric. Anything else is written as a quoted string.
 
