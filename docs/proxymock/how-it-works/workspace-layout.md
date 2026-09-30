@@ -29,7 +29,7 @@ proxymock/
 ├── blueprints/                  # saved transform rules
 ├── testconfigs/                 # test configs, one <id>.json each
 ├── applications/                # contracts for recorded application workloads
-│   └── <workload>/openapi.yaml   #   OpenAPI 3 contract for one workload
+│   └── <workload>.openapi.yaml   #   OpenAPI 3 contract for one workload
 ├── dlprules/                    # DLP redaction rules, one <id>.json each
 ├── filters/                     # filter rules, one <id>.json each
 ├── reports/                     # pulled report metadata and artifacts
@@ -87,7 +87,7 @@ A blueprint that ran none is called out as a warning. Pass `--require-blueprint 
 [Test configs](/proxymock/guides/test-configs.md) that set how a replay runs: load stages, responder replicas and resources, chaos, goals and assertions. Each file is one complete `TestConfig` as JSON, named `<id>.json`, and its `id` field (when present) must match the file name. The proxymock web editor, `proxymock test-config`, `--test-config` on every replay command, and the MCP server all read this directory. A snapshot push uploads every config in it, and a snapshot pull or `proxymock cloud pull test-config <id>` writes back into it. The built-in `regression` config has no file here.
 
 ### `applications/`
-Application contracts are grouped by the workload name recorded in inbound RRPairs. Put an OpenAPI 3 contract at `applications/<workload>/openapi.yaml`, where `<workload>` matches the RRPair resource or service. `proxymock coverage --in <recording>` discovers the contract when the recording contains one inbound workload; pass `--workload <name>` when it contains several. A snapshot push uploads these contracts as application artifacts to Speedscale Cloud or a BYOC bucket under the same relative paths. A pull restores them without overwriting a differing local contract. To add a contract to an existing snapshot, run `proxymock cloud push spec <snapshot-id> --workload <name> --spec <path>`.
+Application contracts are named for the workload recorded in inbound RRPairs. Put an OpenAPI 3 contract at `applications/<workload>.openapi.yaml`, where `<workload>` matches the RRPair resource or service. `proxymock coverage --in <recording>` discovers the contract when the recording contains one inbound workload; pass `--workload <name>` when it contains several. A snapshot push uploads these contracts as application artifacts to Speedscale Cloud or a BYOC bucket under the same relative paths. A pull restores them without overwriting a differing local contract. To add a contract to an existing snapshot, run `proxymock cloud push spec <snapshot-id> --workload <name> --spec <path>`.
 
 ### `dlprules/` and `filters/`
 [DLP and filter rules](/proxymock/guides/local-rules.md), one `<id>.json` per rule. The DLP Rules and Filter Rules editors in proxymock web save here, `proxymock cloud pull dlp <id>` and `proxymock cloud pull filter <id>` write here, `proxymock cloud push dlp|filter` reads from here, and a bare rule id passed to `--dlp-config` or `--filter-config` is looked up here.
