@@ -1279,3 +1279,19 @@ The validator matches methods and route templates and resolves local and compone
 | `3` | At least one unmatched route, with no contract violations |
 
 Check the number of responses validated as well as the exit code. A run with no applicable HTTP responses does not establish contract coverage. See [OpenAPI validation](/proxymock/guides/openapi.md#validate-recorded-and-replayed-responses).
+
+### `coverage`
+
+Report which documented OpenAPI operations, response statuses, and JSON response fields appear in a recording.
+
+```shell
+proxymock coverage --in ./proxymock/recorded-example
+proxymock coverage --in ./proxymock/recorded-example --workload orders --json
+```
+
+- `--in string` - Required directory containing RRPair files
+- `--spec string` - OpenAPI 3.0+ JSON or YAML contract; defaults to `proxymock/applications/<workload>.openapi.yaml`
+- `--workload string` - Inbound workload to measure; required when the recording has several
+- `--json` - Print deterministic JSON, including counts and gaps
+
+Coverage measures observed recording traffic. It does not validate that a response conforms to the schema; use `validate` for that check. See [recording coverage](/proxymock/guides/openapi.md#measure-recording-coverage).

@@ -176,3 +176,18 @@ proxymock validate --spec ./openapi.yaml --in ./proxymock/results/candidate
 The validator matches HTTP methods and route templates, resolves local and component references, and checks response schemas. Findings identify fields with incorrect types, missing required values, invalid enum values, or undocumented fields. Supported specifications include OpenAPI 3.0 and 3.1.
 
 Use the command's nonzero exit in CI. Contract violations and missing routes have distinct results; see the [`validate` reference](/reference/proxymock-cli-reference.md#validate). A route absent from the specification is a coverage gap, not a successful validation. This checks the response contract; [replay verdicts](./replay-verdicts.md) compare observed behavior with the recording.
+
+## Measure recording coverage
+
+Store the contract at `proxymock/applications/<workload>.openapi.yaml`, with the file name matching the inbound RRPair resource or service. Then run:
+
+```shell
+proxymock coverage --in ./proxymock/recorded-example
+proxymock coverage --in ./proxymock/recorded-example --json
+```
+
+For a recording with multiple inbound workloads, add `--workload <name>`. You can use `--spec <path>` to compare against a contract outside the workspace. The report counts documented operations, response statuses, and JSON response fields seen in inbound HTTP traffic, then lists missing cases and unmatched routes. A contract with no documented cases for one metric has no meaningful percentage for that metric.
+
+Push the recording to Cloud or a BYOC bucket to store the contract in that service's shared workspace. Each snapshot pins the contract version used for coverage, so a later upload does not change an older report. In Speedscale Cloud, open **Services**, select the service, and upload or download its contract. The same page groups the service's scenarios. A Cloud snapshot created after the upload pins the current contract during analysis.
+
+To gate Cloud replay reports, add a goal in the test config's **Verdict** section using `recordingSchemaOperationPct`, `recordingSchemaStatusPct`, or `recordingSchemaFieldPct`. For example, require operation coverage `>= 90`. These metrics use the normal goal and assertion framework. The report evaluates coverage against the snapshot's pinned contract and original recording. If a configured coverage goal has no contract, its observed value is zero.
