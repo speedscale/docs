@@ -179,15 +179,15 @@ Use the command's nonzero exit in CI. Contract violations and missing routes hav
 
 ## Measure recording coverage
 
-Store the contract at `proxymock/applications/<workload>.openapi.yaml`, with the file name matching the inbound RRPair resource or service. Then run:
+Store the contract at `proxymock/applications/<workload>.openapi.yaml`, with the file name matching the inbound RRPair service (or resource when service is absent). Then run:
 
 ```shell
 proxymock coverage --in ./proxymock/recorded-example
 proxymock coverage --in ./proxymock/recorded-example --json
 ```
 
-For a recording with multiple inbound workloads, add `--workload <name>`. You can use `--spec <path>` to compare against a contract outside the workspace. The report counts documented operations, response statuses, and JSON response fields seen in inbound HTTP traffic, then lists missing cases and unmatched routes. A contract with no documented cases for one metric has no meaningful percentage for that metric.
+For a recording with multiple inbound workloads, add `--workload <name>`. You can use `--spec <path>` to compare against a contract outside the workspace. The report counts documented operations, response statuses, and JSON response fields seen in inbound HTTP traffic, then lists missing cases and unmatched routes. The report shows counts even when the spec has no cases for a metric. `coverage` exits `0` after producing a report, even when coverage is incomplete; invalid input or an unreadable contract returns a nonzero error.
 
 Push the recording to Cloud or a BYOC bucket to store the contract in that service's shared workspace. Each snapshot pins the contract version used for coverage, so a later upload does not change an older report. In Speedscale Cloud, open **Services**, select the service, and upload or download its contract. The same page groups the service's scenarios. A Cloud snapshot created after the upload pins the current contract during analysis.
 
-To gate Cloud replay reports, add a goal in the test config's **Verdict** section using `recordingSchemaOperationPct`, `recordingSchemaStatusPct`, or `recordingSchemaFieldPct`. For example, require operation coverage `>= 90`. These metrics use the normal goal and assertion framework. The report evaluates coverage against the snapshot's pinned contract and original recording. If a configured coverage goal has no contract, its observed value is zero.
+To gate local or Cloud replays, add a goal in the test config's **Verdict** section using `recordingSchemaOperationPct`, `recordingSchemaStatusPct`, or `recordingSchemaFieldPct`. For example, require operation coverage `>= 90`. Local replay discovers the workspace contract or accepts `--spec <path>`; add `--workload <name>` when the recording contains multiple inbound workloads. Cloud evaluates coverage against the snapshot's pinned contract and original recording. A missing contract or a metric with no documented cases has an observed value of zero, so a positive threshold fails the goal.
