@@ -227,6 +227,8 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
 - `--tests-filter string` - Filter that chooses which recorded RRPairs to replay as tests. Everything else is mocked. By default proxymock replays inbound traffic. Use `'(direction IS OUT) AND (tech IS Postgres)'` to send an app's recorded database calls to the database instead. An RRPair tagged `replayRole=test` or `replayRole=mock` keeps that role.
 - `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
+- `--spec string` - OpenAPI 3 contract for local recording coverage goals; defaults to the selected workload's workspace contract
+- `--workload string` - Inbound workload for local recording coverage goals when the recording contains several workloads
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 - `-n, --times uint` - Number of times to replay the traffic (default `1`)
 - `-u, --vus uint` - Number of virtual users to run in parallel (default `1`)
@@ -842,9 +844,12 @@ proxymock cloud push [command]
 - `filter` - Push a filter to Speedscale Cloud
 - `report` - Push a report and its artifacts
 - `snapshot` - Create and push a snapshot from RRPair files
+- `spec` - Attach an OpenAPI contract to an existing snapshot
 - `test-config` - Push a test config to Speedscale Cloud
 - `transform` - Push a transform set to Speedscale Cloud
 - `user-data` - Push user-defined documents
+
+`cloud push snapshot --spec <path> --workload <name>` attaches a contract while creating a snapshot. Without `--spec`, contracts in the workspace's `applications/` directory are attached automatically. `cloud push spec <snapshot-id> --workload <name> --spec <path>` attaches a contract to an existing snapshot. Both commands accept the same bucket flags as other snapshot operations.
 
 ## Kubernetes cluster commands
 
@@ -1267,8 +1272,9 @@ Validate recorded or replayed HTTP responses against an OpenAPI specification.
 proxymock validate --spec ./openapi.yaml --in ./proxymock/recorded-example
 ```
 
-- `--spec string` - Required OpenAPI 3.0+ JSON or YAML specification; supports OpenAPI 3.1
+- `--spec string` - OpenAPI 3.0+ JSON or YAML specification; defaults to the selected workload's workspace contract and supports OpenAPI 3.1
 - `--in string` - Required directory containing RRPair files
+- `--workload string` - Inbound workload to validate; required when the recording has several
 
 The validator matches methods and route templates and resolves local and component references. It checks response schemas, including types, required fields, enums, and undocumented fields. It runs locally without a Speedscale account.
 
@@ -1279,3 +1285,21 @@ The validator matches methods and route templates and resolves local and compone
 | `3` | At least one unmatched route, with no contract violations |
 
 Check the number of responses validated as well as the exit code. A run with no applicable HTTP responses does not establish contract coverage. See [OpenAPI validation](/proxymock/guides/openapi.md#validate-recorded-and-replayed-responses).
+
+### `coverage`
+
+Report which documented OpenAPI operations, response statuses, and JSON response fields appear in a recording.
+
+```shell
+proxymock coverage --in ./proxymock/recorded-example
+proxymock coverage --in ./proxymock/recorded-example --workload orders --json
+```
+
+- `--in string` - Required directory containing RRPair files
+- `--spec string` - OpenAPI 3.0+ JSON or YAML contract; defaults to `proxymock/applications/<workload>.openapi.yaml`
+- `--workload string` - Inbound workload to measure; required when the recording has several
+- `--json` - Print deterministic JSON, including counts and gaps
+
+Coverage measures observed recording traffic. It does not validate that a response conforms to the schema; use `validate` for that check. See [recording coverage](/proxymock/guides/openapi.md#measure-recording-coverage).
+
+The command exits `0` after a successful report, even when cases are missing. Invalid input or a contract that cannot be loaded returns a nonzero error. Use a replay coverage goal to gate CI.
