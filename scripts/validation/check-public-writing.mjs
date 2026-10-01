@@ -102,9 +102,31 @@ function markupTagEnd(text) {
   return -1;
 }
 
+// Follows CommonMark: a fence closes only on a run of the same character at
+// least as long as the one that opened it, so a ```` block can show ``` fences
+// inside it. Returns true for lines that are fences or inside one.
+function createFenceTracker() {
+  let open = null;
+  return (line) => {
+    const fence = line.match(/^\s*(`{3,}|~{3,})(.*)$/);
+    if (!fence) return open !== null;
+    const [, run, rest] = fence;
+    if (open === null) {
+      open = { char: run[0], length: run.length };
+    } else if (
+      run[0] === open.char &&
+      run.length >= open.length &&
+      rest.trim() === ""
+    ) {
+      open = null;
+    }
+    return true;
+  };
+}
+
 function markdownVisibleLines(lines) {
   let inFrontmatter = false;
-  let inFence = false;
+  const isFenced = createFenceTracker();
   let inComment = false;
   let inJsxTag = false;
   let listContentIndent = null;
@@ -124,11 +146,7 @@ function markdownVisibleLines(lines) {
       );
       return field ? field[1] : "";
     }
-    if (/^\s*(?:```|~~~)/.test(line)) {
-      inFence = !inFence;
-      return "";
-    }
-    if (inFence || /^\s*(?:import|export)\b/.test(line)) return "";
+    if (isFenced(line) || /^\s*(?:import|export)\b/.test(line)) return "";
 
     let text = line;
     if (inComment) {
@@ -313,7 +331,7 @@ export function analyzeFile(file, content, selectedLines) {
 
   if (/\.(?:md|mdx)$/.test(file)) {
     let inFrontmatter = false;
-    let inFence = false;
+    const isFenced = createFenceTracker();
     for (let index = 0; index < lines.length; index += 1) {
       const line = lines[index];
       if (index === 0 && line.trim() === "---") {
@@ -325,12 +343,8 @@ export function analyzeFile(file, content, selectedLines) {
         continue;
       }
       if (inFrontmatter) continue;
-      if (/^\s*(?:```|~~~)/.test(line)) {
-        inFence = !inFence;
-        continue;
-      }
       if (
-        inFence ||
+        isFenced(line) ||
         !selectedLines.has(index + 1) ||
         !isMarkdownProseLine(line, visible[index])
       )

@@ -68,6 +68,23 @@ test("ignores fenced and inline code", () => {
   );
 });
 
+test("ignores fences nested inside a longer fence", () => {
+  const content = [
+    "````markdown",
+    "### METADATA ###",
+    "```",
+    "duration: 150ms",
+    "elapsed: 150.2345ms",
+    "```",
+    "````",
+    "",
+  ].join("\n");
+  assert.equal(
+    analyzeFile("docs/example.md", content, allLines(content)).length,
+    0,
+  );
+});
+
 test("blocks an em dash anywhere in public prose", () => {
   const opening = "Opening sentence — with a dash.\n";
   const later = `${Array.from({ length: 10 }, (_, index) => `Sentence ${index + 1}.`).join(" ")} Later sentence — blocked here too.\n`;
