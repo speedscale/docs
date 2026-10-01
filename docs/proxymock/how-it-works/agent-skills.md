@@ -8,7 +8,7 @@ sidebar_position: 6.5
 
 Speedscale publishes agent skills that teach an AI coding agent (Claude Code, Cursor, Codex, Gemini CLI, OpenCode, Kiro, or any agent that can read a URL) how to install, run, tune, and test with Speedscale and proxymock.
 
-The skills live in the [speedscale/skills](https://github.com/speedscale/skills) repository. This page lists what each one is for. Follow a skill's link for its full instructions.
+Every skill ships inside proxymock and is mirrored to the [speedscale/skills](https://github.com/speedscale/skills) repository on each proxymock release, so both always match. This page lists what each one is for. Follow a skill's link for its full instructions.
 
 The local skills need [proxymock](../getting-started/installation.md) installed. Cloud replays also need a Speedscale account.
 
@@ -20,7 +20,7 @@ Paste this prompt into your coding agent:
 Install the Speedscale agent skills from https://github.com/speedscale/skills. If you are Claude Code, run `/plugin marketplace add speedscale/skills` and then `/plugin install speedscale@speedscale-skills`. Otherwise run `npx skills add speedscale/skills`. If neither works, download every folder under skills/ in that repo into your skills directory. Then list the skills you installed and what each is for.
 ```
 
-If you already have proxymock, `proxymock mcp install --yes` installs `install-speedscale` and `improve-mock-match-rate` for Claude Code.
+If you already have proxymock, `proxymock mcp install --yes` installs every skill for Claude Code, and `proxymock mcp skills export --dir <your agent's skills directory>` installs them for any other agent. `proxymock mcp skills list` shows which are installed and whether they are current.
 
 If you use the ChatGPT desktop app with Codex, follow the [ChatGPT section of the skills README](https://github.com/speedscale/skills#chatgpt-desktop-app).
 
@@ -37,7 +37,7 @@ These skills work with Speedscale cloud snapshots and with local proxymock recor
 | Skill | Use it to |
 | --- | --- |
 | [run-snapshot-replay](https://github.com/speedscale/skills/tree/main/skills/run-snapshot-replay) | Run a snapshot or recording as a replay where it was recorded, in a cluster or on your machine, and follow it to a result. |
-| [tune-snapshot-replay](https://github.com/speedscale/skills/tree/main/skills/tune-snapshot-replay) | Loop on a replay until it is accurate: re-run, measure, change one thing, then keep or revert the change. |
+| [tune-snapshot-replay](https://github.com/speedscale/skills/tree/main/skills/tune-snapshot-replay) | Tune the tests: loop on a replay until its responses are accurate, changing one thing per run (test config assertions, volatile fields, ids created during the session) and keeping or reverting it. Mock problems go to `improve-mock-match-rate`. |
 | [analyze-replay-report](https://github.com/speedscale/skills/tree/main/skills/analyze-replay-report) | Explain a cloud report or a local replay run: why it passed or failed, the first failing response, and what to do next. |
 | [improve-mock-match-rate](https://github.com/speedscale/skills/tree/main/skills/improve-mock-match-rate) | Tune the mocks for any technology (HTTP, SQL, Redis, Kafka, gRPC, and so on). It applies match-rate fixes offline, can re-run the snapshot against the same workload, compares recorded with mocked traffic, and fixes each discrepancy by its kind. |
 
@@ -47,7 +47,8 @@ These skills form the proxymock quality loop. They run locally and need no Speed
 
 | Skill | Use it to |
 | --- | --- |
-| [quality-loop](https://github.com/speedscale/skills/tree/main/skills/quality-loop) | Pick the right skill or proxymock command for a task, set up a repo with its first recording, and check that your environment is ready. |
+| [quality-loop](https://github.com/speedscale/skills/tree/main/skills/quality-loop) | Pick the right skill or proxymock command for a task, take a service from no recording to a first regression gate, and check that your environment is ready. |
+| [record-traffic](https://github.com/speedscale/skills/tree/main/skills/record-traffic) | Record a service's inbound and outbound traffic, including its databases, by wrapping it with `proxymock record`, then confirm every dependency was captured. |
 | [proxymock-regression-test](https://github.com/speedscale/skills/tree/main/skills/proxymock-regression-test) | Replay a recording at your service and fail on status or body changes against a known-good baseline. |
 | [proxymock-verify-fix](https://github.com/speedscale/skills/tree/main/skills/proxymock-verify-fix) | Prove a bug fix by replaying the incident traffic at the fixed build. |
 | [proxymock-contract-test](https://github.com/speedscale/skills/tree/main/skills/proxymock-contract-test) | Check traffic against an OpenAPI spec, or mock a dependency from its spec before you have a recording. |
@@ -56,7 +57,6 @@ These skills form the proxymock quality loop. They run locally and need no Speed
 | [proxymock-perf-container](https://github.com/speedscale/skills/tree/main/skills/proxymock-perf-container) | Load-test one service with its dependencies mocked, and tell an app limit from a test harness limit. |
 | [proxymock-compare-results](https://github.com/speedscale/skills/tree/main/skills/proxymock-compare-results) | Compare two replays or recordings and show what regressed, improved, or stayed the same. |
 | [proxymock-summarize-recording](https://github.com/speedscale/skills/tree/main/skills/proxymock-summarize-recording) | Summarize a recording: hosts, endpoints, methods, status codes, and volume. |
-| [proxymock-replay-tuning](https://github.com/speedscale/skills/tree/main/skills/proxymock-replay-tuning) | Replay outbound requests against a local mock, report hits and misses, and find the mock signatures to adjust. |
 
 ## Related
 
