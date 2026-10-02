@@ -2,7 +2,7 @@
 title: "Agent tutorial 4: tune the mocks"
 description: "Your coding agent uses the improve-mock-match-rate skill to replay the baseline recording with the app's dependencies mocked, mask a cache-busting query parameter, and key SQL reads so each one gets its own row."
 sidebar_position: 5
-unlisted: true
+sidebar_label: "4. Tune the mocks"
 ---
 
 # Chapter 4: Tune the mocks

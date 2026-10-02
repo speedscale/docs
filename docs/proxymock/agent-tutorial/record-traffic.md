@@ -2,7 +2,7 @@
 title: "Agent tutorial 3: record traffic"
 description: "Your coding agent uses the record-traffic skill to record the tutorial app's inbound requests, its CNCF API calls and its Postgres queries into a recording named baseline."
 sidebar_position: 4
-unlisted: true
+sidebar_label: "3. Record traffic"
 ---
 
 import Tabs from '@theme/Tabs';

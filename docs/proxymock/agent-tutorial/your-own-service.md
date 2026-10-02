@@ -2,7 +2,7 @@
 title: "Agent tutorial 8: do it to your own service"
 description: "Your coding agent uses the quality-loop skill to record a service it has not seen before, tune the replay and the mocks, and leave a regression test script you run before every change."
 sidebar_position: 9
-unlisted: true
+sidebar_label: "8. Your own service"
 ---
 
 # Chapter 8: Do it to your own service

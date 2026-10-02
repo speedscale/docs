@@ -2,7 +2,7 @@
 title: "Agent tutorial 7: run a performance test"
 description: "Your coding agent uses the proxymock-load-test skill to load-test the tutorial app with APP_SLOW=0 and APP_SLOW=1, with the CNCF API mocked and the real database, and finds the endpoint that got slower and why."
 sidebar_position: 8
-unlisted: true
+sidebar_label: "7. Performance test"
 ---
 
 # Chapter 7: Run a performance test

@@ -2,7 +2,7 @@
 title: "Agent tutorial: start here"
 description: "A hands-on tutorial where your coding agent records a demo service with proxymock, tunes its mocks and tests, and runs a regression test and a performance test, one pasted prompt per chapter."
 sidebar_position: 1
-unlisted: true
+sidebar_label: "Start here"
 ---
 
 # Agent tutorial: start here

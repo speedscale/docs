@@ -2,7 +2,7 @@
 title: "Agent tutorial 2: run the demo app"
 description: "Your coding agent clones mock-lab, starts the tutorial app's Postgres with Docker Compose, runs the app, and sends it the tutorial traffic once."
 sidebar_position: 3
-unlisted: true
+sidebar_label: "2. Run the demo app"
 ---
 
 import Tabs from '@theme/Tabs';

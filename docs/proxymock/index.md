@@ -18,7 +18,15 @@ import {
 
 # Overview
 
-This guide is the proxymock entry point. Start with the install and quickstart flow, or jump straight to the language-specific first-success path that matches your app.
+This guide is the proxymock entry point. Start with the agent tutorial, the install and quickstart flow, or the language-specific first-success path that matches your app.
+
+## [Let your coding agent do it](./agent-tutorial/index.md) {#agent-tutorial}
+
+In the [agent tutorial](./agent-tutorial/index.md), your coding agent does every step while you paste one prompt per chapter into Claude Code or Cursor.
+
+It installs proxymock, records a demo orders service in Go, Java, Python or Node.js, tunes its mocks and tests, runs a regression test and a performance test, then repeats the loop on a second service standing in for your own. All nine chapters take about 25 minutes of agent work.
+
+[Start the agent tutorial](./agent-tutorial/index.md)
 
 ## [Getting started in 30 seconds](./getting-started/quickstart) {#getting-started}
 

@@ -2,7 +2,7 @@
 title: "Agent tutorial 6: run a regression test"
 description: "Your coding agent uses the proxymock-regression-test skill to replay the baseline recording at a changed build of the tutorial app, explain what broke, and confirm the original build passes."
 sidebar_position: 7
-unlisted: true
+sidebar_label: "6. Regression test"
 ---
 
 # Chapter 6: Run a regression test

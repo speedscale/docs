@@ -2,7 +2,7 @@
 title: "Agent tutorial 1: install proxymock"
 description: "Your coding agent installs proxymock with the install-speedscale skill, connects the proxymock MCP server, and proves that record and mock work."
 sidebar_position: 2
-unlisted: true
+sidebar_label: "1. Install proxymock"
 ---
 
 # Chapter 1: Install proxymock

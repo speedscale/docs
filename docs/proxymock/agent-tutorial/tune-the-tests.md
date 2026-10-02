@@ -2,7 +2,7 @@
 title: "Agent tutorial 5: tune the tests"
 description: "Your coding agent uses the tune-snapshot-replay skill to create a strict test config named tutorial, find the response fields that change on every run with proxymock drift, and ignore them until the replay passes."
 sidebar_position: 6
-unlisted: true
+sidebar_label: "5. Tune the tests"
 ---
 
 # Chapter 5: Tune the tests
