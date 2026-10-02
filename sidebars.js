@@ -170,6 +170,22 @@ const sidebars = {
         "proxymock/index",
         {
           type: "category",
+          label: "Agent Tutorial",
+          link: { type: "doc", id: "proxymock/agent-tutorial/index" },
+          items: [
+            "proxymock/agent-tutorial/install-proxymock",
+            "proxymock/agent-tutorial/run-the-demo-app",
+            "proxymock/agent-tutorial/record-traffic",
+            "proxymock/agent-tutorial/tune-the-mocks",
+            "proxymock/agent-tutorial/tune-the-tests",
+            "proxymock/agent-tutorial/regression-test",
+            "proxymock/agent-tutorial/performance-test",
+            "proxymock/agent-tutorial/your-own-service",
+          ],
+          collapsed: false,
+        },
+        {
+          type: "category",
           label: "Getting Started",
           items: [
             "proxymock/getting-started/installation",
