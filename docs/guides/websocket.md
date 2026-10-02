@@ -6,26 +6,26 @@ description: Capture, replay, and mock WebSocket connections with Speedscale.
 
 # WebSocket Testing
 
-Speedscale supports capturing, replaying, and mocking WebSocket connections alongside standard HTTP traffic. If your services use WebSockets for real-time communication — chat, live updates, streaming data — you can include those interactions in your test workflows.
+Speedscale supports capturing, replaying, and mocking WebSocket connections alongside standard HTTP traffic. If your services use WebSockets for real-time communication, such as chat, live updates, or streaming data, you can include those interactions in your test workflows.
 
-## How Speedscale Captures WebSocket Traffic
+## How Speedscale captures WebSocket traffic
 
 WebSocket connections start as an HTTP upgrade request. Speedscale captures:
 
-1. **The upgrade handshake** — the initial HTTP request with `Upgrade: websocket` and the server's `101 Switching Protocols` response
-2. **Message frames** — individual messages sent in both directions after the connection is established
-3. **Connection close** — the close frame and status code when the connection terminates
+1. **The upgrade handshake:** the initial HTTP request with `Upgrade: websocket` and the server's `101 Switching Protocols` response
+2. **Message frames:** individual messages sent in both directions after the connection is established
+3. **Connection close:** the close frame and status code when the connection terminates
 
 Each WebSocket session is stored as a series of RRPairs: one for the upgrade handshake, and one for each message exchange. This means you can inspect, filter, and transform WebSocket traffic using the same tools you use for HTTP.
 
-### Capture Methods
+### Capture methods
 
 WebSocket capture works with both capture methods:
 
-- **Sidecar** — the proxy intercepts the upgrade request and maintains the WebSocket connection, capturing frames as they pass through
-- **eBPF** — nettap observes WebSocket frames at the kernel/TLS level without proxying
+- **Sidecar:** the proxy intercepts the upgrade request and maintains the WebSocket connection, capturing frames as they pass through
+- **eBPF:** nettap observes WebSocket frames at the kernel/TLS level without proxying
 
-### Viewing WebSocket Traffic
+### Viewing WebSocket traffic
 
 WebSocket traffic appears in the [Traffic Viewer](./capture/filter.md) like any other traffic. You can identify WebSocket connections by:
 
@@ -33,7 +33,7 @@ WebSocket traffic appears in the [Traffic Viewer](./capture/filter.md) like any 
 - The `101` status code on the handshake response
 - Subsequent message frames grouped under the same connection
 
-## Replaying WebSocket Sessions
+## Replaying WebSocket sessions
 
 When you replay a snapshot that contains WebSocket traffic, Speedscale:
 
@@ -42,9 +42,9 @@ When you replay a snapshot that contains WebSocket traffic, Speedscale:
 3. Compares the service's responses against the captured responses
 4. Reports accuracy and latency for each message exchange
 
-### Timing and Ordering
+### Timing and ordering
 
-WebSocket messages are replayed in the order they were captured. The replay engine preserves the relative timing between messages — if the original client waited 500ms between messages, the replay will do the same. This is important for services that depend on message ordering or rate-based logic.
+WebSocket messages are replayed in the order they were captured. The replay engine preserves the relative timing between messages. If the original client waited 500ms between messages, the replay will do the same. This is important for services that depend on message ordering or rate-based logic.
 
 ### Assertions
 
@@ -54,7 +54,7 @@ Response assertions work the same as HTTP traffic. Each message frame response i
 - Compare specific JSON fields in the message payload
 - Assert on message count (expect a certain number of messages per session)
 
-## Mocking WebSocket Endpoints
+## Mocking WebSocket endpoints
 
 When your service calls a downstream WebSocket endpoint, Speedscale's responder can mock that connection:
 
@@ -62,21 +62,29 @@ When your service calls a downstream WebSocket endpoint, Speedscale's responder 
 2. When your service sends a message, the responder matches it against captured traffic and returns the appropriate response
 3. The responder can also push server-initiated messages at the correct timing intervals
 
-This means your service's WebSocket dependencies are mocked just like HTTP dependencies — using real captured traffic patterns.
+This means your service's WebSocket dependencies are mocked just like HTTP dependencies, using real captured traffic patterns.
 
 ### Mocking with proxymock
 
-For local development, proxymock can mock WebSocket endpoints:
+For local development, record a WebSocket session through proxymock:
 
 ```bash
-proxymock mock \
-  --in ./captured-traffic \
-  --proxy-out-port 8080
+proxymock record --out ./ws-recording --out-format json
 ```
 
-Configure your service to use proxymock as its HTTP(S) proxy on port 8080. When it upgrades to a WebSocket connection, proxymock responds with the captured message sequence.
+Configure the client to send its HTTP and WebSocket traffic through proxymock, then exercise the connection. Include a server message sent immediately after connection, a text message, and a binary message if your app uses both. Stop the recording after the WebSocket connection closes.
 
-## Supported Frame Types
+Replay the session with passthrough disabled:
+
+```bash
+proxymock mock --in ./ws-recording --out ./ws-results --no-passthrough
+```
+
+Point the client at the mock proxy and repeat the same interaction. Disabling passthrough makes the test fail if a request is not served from the recording.
+
+Each replayed WebSocket connection performs a fresh upgrade handshake. proxymock calculates `Sec-WebSocket-Accept` from the `Sec-WebSocket-Key` sent by the current client, so a new client can connect without reusing the handshake value from the recording. Verify that the client receives a `101 Switching Protocols` response, then receives the captured server message and responses to its text or binary messages.
+
+## Supported frame types
 
 | Frame Type | Capture | Replay | Mock |
 |---|---|---|---|
@@ -89,9 +97,9 @@ Configure your service to use proxymock as its HTTP(S) proxy on port 8080. When 
 Compression extensions (`permessage-deflate`) are supported for capture but may affect frame-level matching during replay. If you see unexpected mismatches, check whether compression settings differ between the original and replay environments.
 :::
 
-## Known Limitations
+## Known limitations
 
-- **Long-lived connections** — WebSocket connections that stay open for hours or days will produce very large RRPair sets. Use time-bounded captures to keep snapshot sizes manageable
-- **Binary protocol payloads** — binary frames are captured and replayed faithfully, but the Traffic Viewer's diff and inspection tools work best with text/JSON payloads
-- **Server-initiated messages** — the mock responder supports server pushes based on captured timing, but dynamic server-push logic (e.g., push when a database row changes) cannot be simulated from captured traffic alone
-- **Connection multiplexing** — if your application multiplexes multiple logical channels over a single WebSocket connection, each message is still captured individually, but Speedscale does not interpret the multiplexing protocol
+- **Long-lived connections:** WebSocket connections that stay open for hours or days will produce very large RRPair sets. Use time-bounded captures to keep snapshot sizes manageable
+- **Binary protocol payloads:** binary frames are captured and replayed faithfully, but the Traffic Viewer's diff and inspection tools work best with text/JSON payloads
+- **Server-initiated messages:** the mock responder supports server pushes based on captured timing, but dynamic server-push logic (e.g., push when a database row changes) cannot be simulated from captured traffic alone
+- **Connection multiplexing:** if your application multiplexes multiple logical channels over a single WebSocket connection, each message is still captured individually, but Speedscale does not interpret the multiplexing protocol
