@@ -51,7 +51,7 @@ Use the record-traffic skill to record the tutorial app in mock-lab/tutorial/nod
 
 The `record-traffic` skill:
 
-- Starts the app under `proxymock record` with `--map 15432=postgres://localhost:5432` and `DATABASE_URL` pointed at port 15432, so proxymock sits between the app and Postgres. Outbound HTTPS to the CNCF API goes through proxymock's proxy on port 4140.
+- Starts the app under `proxymock record` with `--map 15432=postgres://localhost:54329` and `DATABASE_URL` pointed at port 15432, so proxymock sits between the app and Postgres. Outbound HTTPS to the CNCF API goes through proxymock's proxy on port 4140.
 - Waits for `/healthz` on port 4143, proxymock's inbound port, which forwards to the app on 8080.
 - Runs the traffic driver against `http://localhost:4143` so proxymock sees every inbound request.
 - Names the recording `proxymock/recorded-baseline`, following the skill's `recorded-<name>` convention.
@@ -67,10 +67,10 @@ The capture, by directory, and the skill's `### Result` block. Trimmed:
 |------------------------------|--------------------------------|-------|
 | localhost/                   | Inbound requests to the app    | 136   |
 | demo-api.trafficreplay.com/  | CNCF API calls over HTTPS      | 70    |
-| localhost-5432/              | Postgres messages              | 1,075 |
+| localhost-54329/              | Postgres messages              | 1,075 |
 
 ### Result
-- **Ran:** `proxymock record --out proxymock/recorded-baseline --map 15432=postgres://localhost:5432 --app-port 8080 --app-health-endpoint /healthz -- go run .` in mock-lab/tutorial/go, traffic from `go run ./cmd/traffic http://localhost:4143`
+- **Ran:** `proxymock record --out proxymock/recorded-baseline --map 15432=postgres://localhost:54329 --app-port 8080 --app-health-endpoint /healthz -- go run .` in mock-lab/tutorial/go, traffic from `go run ./cmd/traffic http://localhost:4143`
 - **Outcome:** complete
 - **Numbers:** 136 inbound pairs across 6/6 endpoints; outbound hosts 1/1 (demo-api.trafficreplay.com, 70 pairs); databases 1/1 (Postgres, 1,075 pairs); 8 error-status pairs (6 inbound 4xx + 2 upstream 404, all expected)
 - **Artifacts:** mock-lab/tutorial/go/proxymock/recorded-baseline/ (5.5 MB, includes proxymock.log)
@@ -87,7 +87,7 @@ Follow the Result's **Next** line later. Chapters 4 and 5 tune the mocks and tes
 
 - **The agent says `record-traffic` is not a loaded skill.** Your skills are an older copy. Install them again as in [Start here](./index.md), then restart the agent.
 - **Java: every catalog call returns `502 catalog unavailable` and the app log shows `PKIX path validation failed`.** The Java truststore proxymock injects is older than its certificate. Rebuild it with `proxymock admin certs --jks`, with `JAVA_HOME` set to your JDK, then delete the partial recording and record again.
-- **The database is on another port.** If you set `TUTORIAL_DB_PORT` in chapter 2, map to that port: `--map 15432=postgres://localhost:<port>`.
+- **The database is on another port.** If you started `tutorial-db -port <port>` in chapter 2, map to that port: `--map 15432=postgres://localhost:<port>`.
 
 See [PostgreSQL](../guides/postgres.md) for how `--map` records a database, and [Java with proxymock](../guides/java.md) for JVM proxy and truststore settings.
 
@@ -103,7 +103,7 @@ Run proxymock with the app in one terminal and the traffic driver in another. St
 cd mock-lab/tutorial/go
 DATABASE_URL='postgres://tutorial:tutorial@localhost:15432/tutorial?sslmode=disable' \
   proxymock record --out proxymock/recorded-baseline \
-  --map 15432=postgres://localhost:5432 \
+  --map 15432=postgres://localhost:54329 \
   --app-port 8080 --app-health-endpoint /healthz -- go run .
 # second terminal
 go run ./cmd/traffic http://localhost:4143
@@ -116,7 +116,7 @@ go run ./cmd/traffic http://localhost:4143
 cd mock-lab/tutorial/java
 DATABASE_URL='postgres://tutorial:tutorial@localhost:15432/tutorial?sslmode=disable' \
   proxymock record --out proxymock/recorded-baseline \
-  --map 15432=postgres://localhost:5432 \
+  --map 15432=postgres://localhost:54329 \
   --app-port 8080 --app-health-endpoint /healthz -- java -jar target/tutorial-orders.jar
 # second terminal
 ./mvnw -q compile exec:java -Dexec.args="http://localhost:4143"
@@ -130,7 +130,7 @@ cd mock-lab/tutorial/python
 source .venv/bin/activate
 DATABASE_URL='postgres://tutorial:tutorial@localhost:15432/tutorial?sslmode=disable' \
   proxymock record --out proxymock/recorded-baseline \
-  --map 15432=postgres://localhost:5432 \
+  --map 15432=postgres://localhost:54329 \
   --app-port 8080 --app-health-endpoint /healthz -- python app.py
 # second terminal
 python traffic.py http://localhost:4143
@@ -143,7 +143,7 @@ python traffic.py http://localhost:4143
 cd mock-lab/tutorial/node
 DATABASE_URL='postgres://tutorial:tutorial@localhost:15432/tutorial?sslmode=disable' \
   proxymock record --out proxymock/recorded-baseline \
-  --map 15432=postgres://localhost:5432 \
+  --map 15432=postgres://localhost:54329 \
   --app-port 8080 --app-health-endpoint /healthz -- node server.js
 # second terminal
 node traffic.mjs http://localhost:4143

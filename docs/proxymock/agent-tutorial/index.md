@@ -34,9 +34,9 @@ The app has these problems planted on purpose. Each chapter's skill finds one.
 
 ## Prerequisites
 
-- **Docker** with Compose, for the app's Postgres. On macOS and Windows, start Docker Desktop.
 - **Your language's toolchain**: Go 1.25 or newer, JDK 21 or newer, Python 3.11 or newer, or Node.js 22.21 or newer.
 - **A coding agent** that can run shell commands, such as Claude Code or Cursor.
+- **No Docker.** The app's Postgres runs from `tutorial-db`, a small helper in mock-lab that chapter 2 starts as an ordinary process.
 - **A free Speedscale account**, for the API key that proxymock needs. Sign up at [app.speedscale.com/proxymock/signup](https://app.speedscale.com/proxymock/signup).
 - **Windows**: use WSL2 and run your agent inside it.
 
@@ -50,33 +50,39 @@ Install the Speedscale agent skills from https://github.com/speedscale/skills. I
 
 ## What the agent does
 
-- In Claude Code, adds the `speedscale/skills` plugin marketplace and installs the `speedscale@speedscale-skills` plugin. When the agent cannot type `/plugin` itself, it runs the same steps with the `claude plugin` command, and can install at project scope, which records the plugin in `.claude/settings.json` in the current directory.
+- In Claude Code, adds the `speedscale/skills` plugin marketplace and installs the `speedscale@speedscale-skills` plugin. The agent cannot type `/plugin` itself, so it runs the same steps with the `claude plugin` command. It installs for your user account, which makes the skills available in every project, or at project scope, which records the plugin in `.claude/settings.json` in the current directory.
 - In other agents, runs `npx skills add speedscale/skills`. Cursor installs the skills into `.agents/skills/` in the current directory.
 - Lists the installed skills and what each is for.
 
 ## What you should see
 
-A table of the skills. Trimmed:
+The 15 skills and what each is for. Each agent words and groups the list in its own way, as a table or a list by task. Trimmed:
 
 ```text
-Installed skills (plugin `speedscale` v0.1.0, 15 skills):
+I installed the Speedscale plugin. Your session can't run /plugin commands directly, so I used the claude plugin command line instead:
 
-| Skill                       | What it's for                                                        |
-|-----------------------------|----------------------------------------------------------------------|
-| quality-loop                | The starting point for testing a service with recorded traffic. ... |
-| install-speedscale          | Installs proxymock locally, including its MCP server and the skills. |
-| tune-snapshot-replay        | A repeating loop that makes the replayed tests accurate ...          |
-| improve-mock-match-rate     | Fixes NO_MATCH, passthrough and low match rates in mocks ...        |
-| proxymock-regression-test   | Replays a recording against the app with its dependencies mocked ... |
-| proxymock-load-test         | A quick load test: replays recorded traffic with parallel virtual users ... |
+- claude plugin marketplace add speedscale/skills added the speedscale-skills marketplace.
+- claude plugin install speedscale@speedscale-skills installed version 0.1.0 for your user account.
+
+The skills won't appear in this session yet. Run /reload-plugins or start a new session to load them.
+
+The 15 installed skills
+- install-speedscale: Sets up proxymock on this machine, including its connection to your coding agent ...
+- quality-loop: The starting point. It points you to the right skill for what you want to do ...
+- record-traffic: Records a service's real traffic, both inbound requests and its calls to HTTP APIs and databases ...
+- improve-mock-match-rate: Tunes the mocks so more of the app's outbound calls are answered from recorded traffic ...
+- tune-snapshot-replay: Repeatedly re-runs a replay, changing one thing at a time, until it's accurate ...
+- proxymock-regression-test: Replays a recording against your app with its dependencies mocked ...
 ...
 ```
+
+This chapter installs the skills but does not run one, so it has no `### Result` block. From chapter 1 on, every chapter runs a skill, and its answer ends with one.
 
 The [agent skills](../how-it-works/agent-skills.md) page describes every skill.
 
 ## If it goes wrong
 
-- **The skills are not available yet.** Claude Code loads a newly installed plugin in the next session. Exit and start the agent again in the same directory (`claude --continue` keeps the conversation).
+- **The skills are not available yet.** Claude Code loads a newly installed plugin after a reload. Run `/reload-plugins`, or exit and start the agent again in the same directory (`claude --continue` keeps the conversation).
 - **The list includes `proxymock-replay-tuning`.** That skill was folded into `improve-mock-match-rate`, and your skills are an older copy. Install them again to pick up the current set.
 
 <details>
