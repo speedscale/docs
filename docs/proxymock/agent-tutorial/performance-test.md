@@ -52,7 +52,7 @@ The skill's `### Result` block. Trimmed:
 
 ```text
 ### Result
-- **Ran:** proxymock/recorded-baseline replayed at http://localhost:8080 (`proxymock mock --in proxymock/recorded-baseline --map 15432=... --no-out`, app on the real Postgres :5432, CNCF API mocked with blueprints, 0 mock misses), --vus 4 --times 30 --performance, tables truncated before each run; APP_SLOW=0 vs APP_SLOW=1
+- **Ran:** proxymock/recorded-baseline replayed at http://localhost:8080 (`proxymock mock --in proxymock/recorded-baseline --map 15432=... --no-out`, app on the real Postgres :54329, CNCF API mocked with blueprints, 0 mock misses), --vus 4 --times 30 --performance, tables truncated before each run; APP_SLOW=0 vs APP_SLOW=1
 - **Outcome:** pass (no --fail-if set); GET /orders regressed 1 ms → 16 ms avg under APP_SLOW=1 — N+1: 1 + one order_items query per listed order (up to 51) instead of one joined COUNT query
 - **Numbers:** GET /orders p95 2 → 17 ms, p99 2 → 19 ms; overall p99 3 → 16 ms; rps 4166 → 2672; failed 0 / 0; matchPct null (--performance)
 - **Artifacts:** .../proxymock/results/load-slow0-fixed/{summary.json,result.json}, .../load-slow1-fixed/{summary.json,result.json}; statement evidence .../stmt-slow0/, .../stmt-slow1/ ...
@@ -76,12 +76,12 @@ Commands from the Go app. For another language, use its start command from [chap
 ```bash
 cd mock-lab/tutorial/go
 
-# Start from empty tables
-docker exec tutorial-postgres-1 psql -U tutorial -d tutorial -qc "TRUNCATE order_items, orders"
+# Start from empty tables (without Go: ../tutorial-db -exec "...")
+go -C ../db run . -exec "TRUNCATE order_items, orders"
 
 # Terminal 1: CNCF API mocked, app on the real Postgres
-DATABASE_URL='postgres://tutorial:tutorial@localhost:5432/tutorial?sslmode=disable' APP_SLOW=0 \
-  proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:5432 \
+DATABASE_URL='postgres://tutorial:tutorial@localhost:54329/tutorial?sslmode=disable' APP_SLOW=0 \
+  proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:54329 \
   --no-out --app-health-endpoint /healthz -- go run .
 
 # Terminal 2: 4 virtual users, 30 passes, latency per endpoint as JSON
@@ -89,11 +89,11 @@ proxymock replay --in proxymock/recorded-baseline --test-against http://localhos
   --vus 4 --times 30 --load-test --output json --no-out > load-slow0.json
 ```
 
-To count the statements behind the slowdown, record one traffic-driver pass of each version and count the `Execute Prepared Statement` entries per statement in `localhost-5432/`:
+To count the statements behind the slowdown, record one traffic-driver pass of each version and count the `Execute Prepared Statement` entries per statement in `localhost-54329/`:
 
 ```bash
 DATABASE_URL='postgres://tutorial:tutorial@localhost:15432/tutorial?sslmode=disable' APP_SLOW=1 \
-  proxymock record --out proxymock/results/stmt-slow1 --map 15432=postgres://localhost:5432 \
+  proxymock record --out proxymock/results/stmt-slow1 --map 15432=postgres://localhost:54329 \
   --app-port 8080 --app-health-endpoint /healthz -- go run .
 go run ./cmd/traffic http://localhost:4143    # second terminal
 ```

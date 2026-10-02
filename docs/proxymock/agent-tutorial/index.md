@@ -34,9 +34,9 @@ The app has these problems planted on purpose. Each chapter's skill finds one.
 
 ## Prerequisites
 
-- **Docker** with Compose, for the app's Postgres. On macOS and Windows, start Docker Desktop.
 - **Your language's toolchain**: Go 1.25 or newer, JDK 21 or newer, Python 3.11 or newer, or Node.js 22.21 or newer.
 - **A coding agent** that can run shell commands, such as Claude Code or Cursor.
+- **No Docker.** The app's Postgres runs from `tutorial-db`, a small helper in mock-lab that chapter 2 starts as an ordinary process.
 - **A free Speedscale account**, for the API key that proxymock needs. Sign up at [app.speedscale.com/proxymock/signup](https://app.speedscale.com/proxymock/signup).
 - **Windows**: use WSL2 and run your agent inside it.
 

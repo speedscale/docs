@@ -21,7 +21,7 @@ Use the improve-mock-match-rate skill to replay the baseline recording against t
 
 The `improve-mock-match-rate` skill works in rounds: measure, accept fixes, re-run, measure again.
 
-- Starts the app behind `proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:5432`, so the CNCF API and Postgres are both answered from the recording, then replays the recorded inbound traffic at the app with `proxymock replay`.
+- Starts the app behind `proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:54329`, so the CNCF API and Postgres are both answered from the recording, then replays the recorded inbound traffic at the app with `proxymock replay`.
 - Runs `proxymock match-rate analyze`, which finds two problems.
 - The app adds a `ts=<epoch ms>` query parameter to every CNCF API call. The value is part of the mock signature, so no recorded call matches and all 70 calls pass through to the real API instead of the mock. The fix replaces `ts` with a constant on every recorded CNCF path.
 - Postgres matches a statement on its text, not its parameter values, and answers repeats of a statement from its recordings in turn. In this replay the requests arrive in recorded order, so each read happens to get its own row. Replayed out of order or with several users, the reads for order A would get order B's row. The analysis reports 122 such reads and recommends keying the three order-id reads on their `$1` value, which comes from the inbound request.
@@ -104,7 +104,7 @@ cd mock-lab/tutorial/go
 # Terminal 1: the app with the CNCF API and Postgres mocked
 DATABASE_URL='postgres://tutorial:tutorial@localhost:15432/tutorial?sslmode=disable' \
   proxymock mock --in proxymock/recorded-baseline \
-  --map 15432=postgres://localhost:5432 --app-health-endpoint /healthz -- go run .
+  --map 15432=postgres://localhost:54329 --app-health-endpoint /healthz -- go run .
 
 # Terminal 2: replay the recorded inbound traffic at the app
 proxymock replay --in proxymock/recorded-baseline --test-against http://localhost:8080

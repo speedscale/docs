@@ -1,6 +1,6 @@
 ---
 title: "Agent tutorial 2: run the demo app"
-description: "Your coding agent clones mock-lab, starts the tutorial app's Postgres with Docker Compose, runs the app, and sends it the tutorial traffic once."
+description: "Your coding agent clones mock-lab, starts the tutorial app's Postgres with tutorial-db (no Docker), runs the app, and sends it the tutorial traffic once."
 sidebar_position: 3
 sidebar_label: "2. Run the demo app"
 ---
@@ -22,28 +22,28 @@ Pick your language. The prompt is the same except for the directory.
 <TabItem value="golang" label="Go">
 
 ```text
-Clone https://github.com/speedscale/mock-lab and open tutorial/go. Start its Postgres with docker compose, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave Postgres running.
+Clone https://github.com/speedscale/mock-lab and open tutorial/go. Start its database with tutorial-db as the README describes, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave the database running.
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```text
-Clone https://github.com/speedscale/mock-lab and open tutorial/java. Start its Postgres with docker compose, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave Postgres running.
+Clone https://github.com/speedscale/mock-lab and open tutorial/java. Start its database with tutorial-db as the README describes, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave the database running.
 ```
 
 </TabItem>
 <TabItem value="python" label="Python">
 
 ```text
-Clone https://github.com/speedscale/mock-lab and open tutorial/python. Start its Postgres with docker compose, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave Postgres running.
+Clone https://github.com/speedscale/mock-lab and open tutorial/python. Start its database with tutorial-db as the README describes, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave the database running.
 ```
 
 </TabItem>
 <TabItem value="nodejs" label="Node.js">
 
 ```text
-Clone https://github.com/speedscale/mock-lab and open tutorial/node. Start its Postgres with docker compose, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave Postgres running.
+Clone https://github.com/speedscale/mock-lab and open tutorial/node. Start its database with tutorial-db as the README describes, run the app, and send it the tutorial traffic once to check it works. Then stop the app and leave the database running.
 ```
 
 </TabItem>
@@ -53,31 +53,35 @@ Clone https://github.com/speedscale/mock-lab and open tutorial/node. Start its P
 
 This chapter uses no skill. The agent reads the app's README and follows it:
 
-- Clones mock-lab and reads `tutorial/<language>/README.md` and `tutorial/compose.yaml`.
-- Checks that Docker is running and that ports 5432 and 8080 are free. If Docker Desktop is stopped, it starts it.
-- Runs `docker compose up -d --wait` from `tutorial/`. Postgres 16 starts on port 5432 with the schema from `contract/schema.sql`.
+- Clones mock-lab and reads `tutorial/README.md` and `tutorial/<language>/README.md`.
+- Starts `tutorial-db` in the background from `tutorial/`: `go -C db run .` when Go is installed, otherwise the prebuilt binary for your OS, downloaded once from the mock-lab release. It runs a real Postgres 16 as an ordinary process, with no Docker, on port 54329 with the schema from `contract/schema.sql`. The first start downloads about 30 MB of Postgres into `tutorial/.tutorial-db/`.
 - Builds and starts the app on port 8080, then runs the language's traffic driver, which sends 135 requests: health checks, catalog lookups, 40 orders with their reads, order lists, and a few bad requests that expect 400, 404 and 422.
-- Stops the app and leaves Postgres running for the next chapters.
+- Stops the app and leaves the database running for the next chapters.
 
 ## What you should see
 
-The agent's summary. Trimmed:
+The agent's summary reports three things. The database started:
 
 ```text
-The Go tutorial app works: the tutorial traffic sent 135 requests and got 0 unexpected responses. The app is now stopped and Postgres is still running.
-
-- Postgres: I ran `docker compose up -d --wait` from `tutorial/`. The container `tutorial-postgres-1` (image `postgres:16`) is healthy on the default port 5432 ...
-- App: ... It logged `tutorial-orders (go) listening on :8080 version=v1 slow=false`, and `/healthz` answered.
-- Traffic: `go run ./cmd/traffic` printed `sent 135 requests, 0 unexpected`. The `orders` table now holds 40 rows. ...
-- Stopped the app: I killed the process, and nothing is listening on port 8080 now.
+tutorial-db: ready on localhost:54329
+DATABASE_URL=postgres://tutorial:tutorial@localhost:54329/tutorial?sslmode=disable
 ```
 
-The line that matters is `sent 135 requests, 0 unexpected`. The traffic driver prints one line for each response with an unexpected status.
+The app started and logged `tutorial-orders (go) listening on :8080 version=v1 slow=false`, with your language in place of `go`.
+
+The traffic driver finished:
+
+```text
+sent 135 requests, 0 unexpected
+```
+
+That last line is the one that matters. The traffic driver prints one line for each response with an unexpected status. Afterwards the `orders` table holds 40 rows.
 
 ## If it goes wrong
 
-- **Docker is not running.** Start Docker Desktop, or ask the agent to start it, and run the prompt again.
-- **Port 5432 is already in use.** Set `TUTORIAL_DB_PORT` to a free port before `docker compose up -d`, and point `DATABASE_URL` at that port, for example `postgres://tutorial:tutorial@localhost:5433/tutorial?sslmode=disable`. In later chapters, use the same port wherever a command maps to `localhost:5432`.
+- **`port 54329 is in use ... already running`.** A `tutorial-db` from an earlier attempt is still running. Use it, or stop it with `tutorial-db -stop`.
+- **`port 54329 is in use` for another reason.** Start `tutorial-db -port <free port>` and point `DATABASE_URL` at that port. In later chapters, use the same port wherever a command maps to `localhost:54329`.
+- **The first start is slow or fails to download.** It fetches about 30 MB of Postgres binaries from Maven Central once. Check your network or proxy, then start it again.
 
 <details>
 <summary>Manual equivalent</summary>
@@ -85,8 +89,10 @@ The line that matters is `sent 135 requests, 0 unexpected`. The traffic driver p
 ```bash
 git clone https://github.com/speedscale/mock-lab
 cd mock-lab/tutorial
-docker compose up -d --wait
+go -C db run .           # terminal 1: runs until ctrl-c
 ```
+
+Without Go, download `tutorial-db` once instead, as `tutorial/README.md` shows for each OS, and run `./tutorial-db` (or `.\tutorial-db.exe` on Windows).
 
 Then run the app and, in a second terminal, the traffic driver:
 
@@ -134,7 +140,7 @@ node traffic.mjs         # terminal 2
 </TabItem>
 </Tabs>
 
-Stop the app with ctrl-c and leave Postgres running.
+Stop the app with ctrl-c and leave the database running.
 
 </details>
 

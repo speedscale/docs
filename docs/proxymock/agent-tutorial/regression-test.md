@@ -56,7 +56,7 @@ The skill's `### Result` block. Trimmed:
 
 ```text
 ### Result
-- **Ran:** proxymock/recorded-baseline replayed at http://localhost:8080 (app `go run .` behind `proxymock mock --map 15432=postgres://localhost:5432`), --test-config tutorial, --baseline proxymock/results/regress-base --fail-on-new-mismatch; baseline on v1, then APP_VERSION=v2, then v1 again
+- **Ran:** proxymock/recorded-baseline replayed at http://localhost:8080 (app `go run .` behind `proxymock mock --map 15432=postgres://localhost:54329`), --test-config tutorial, --baseline proxymock/results/regress-base --fail-on-new-mismatch; baseline on v1, then APP_VERSION=v2, then v1 again
 - **Outcome:** v2 new-mismatch (exit 3; tutorial goal passAssertPct also FAIL) — total_cents number → string on POST /orders, GET /orders/{id}, GET /orders; v1 pass (exit 0, goal PASS)
 - **Numbers:** 136 pairs replayed per run; new mismatches v2 85 / v1 0; body mismatches v2 85 / v1 0; passAssertPct v2 79.17 / v1 100; requests.failed 0 in all runs
 - **Artifacts:** proxymock/results/regress-base/, regress-v2/, regress-v1/ (each with replay-verdict.json), ...
@@ -82,18 +82,18 @@ cd mock-lab/tutorial/go
 export DATABASE_URL='postgres://tutorial:tutorial@localhost:15432/tutorial?sslmode=disable'
 
 # 1. Baseline on v1
-proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:5432 --app-health-endpoint /healthz -- go run .
+proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:54329 --app-health-endpoint /healthz -- go run .
 proxymock replay --in proxymock/recorded-baseline --test-against http://localhost:8080 \
   --test-config tutorial --out proxymock/results/regress-base
 
 # 2. Gate v2 against the baseline (expect exit code 3)
-APP_VERSION=v2 proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:5432 --app-health-endpoint /healthz -- go run .
+APP_VERSION=v2 proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:54329 --app-health-endpoint /healthz -- go run .
 proxymock replay --in proxymock/recorded-baseline --test-against http://localhost:8080 \
   --test-config tutorial --out proxymock/results/regress-v2 \
   --baseline proxymock/results/regress-base --fail-on-new-mismatch
 
 # 3. Gate v1 again (expect exit code 0)
-proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:5432 --app-health-endpoint /healthz -- go run .
+proxymock mock --in proxymock/recorded-baseline --map 15432=postgres://localhost:54329 --app-health-endpoint /healthz -- go run .
 proxymock replay --in proxymock/recorded-baseline --test-against http://localhost:8080 \
   --test-config tutorial --out proxymock/results/regress-v1 \
   --baseline proxymock/results/regress-base --fail-on-new-mismatch
