@@ -63,6 +63,7 @@ direction: IN|OUT
 uuid: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ts: YYYY-MM-DDTHH:MM:SS.nnnnnnnnnZ
 duration: DURATION
+elapsed: ELAPSED
 tags: key1=value1, key2=value2
 ```
 
@@ -221,6 +222,7 @@ direction: IN|OUT
 uuid: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ts: 2024-01-15T14:30:22.123456789Z
 duration: 150ms
+elapsed: 150.2345ms
 tags: key1=value1, key2=value2
 ```
 ````
@@ -229,10 +231,13 @@ tags: key1=value1, key2=value2
 - **direction**: Traffic direction (`IN` for incoming, `OUT` for outgoing)
 - **uuid**: Unique identifier in standard UUID format
 - **ts**: Timestamp in RFC3339Nano format (ISO 8601 with nanoseconds)
-- **duration**: Request duration in milliseconds
+- **duration**: Request duration in whole milliseconds. Older proxymock versions read this line as an integer, so it is always written this way.
+- **elapsed**: Request duration at full precision, as a Go duration string such as `412µs` or `150.2345ms`. It appears only on RRPairs recorded by a proxymock version that measures it.
 - **tags**: Comma-separated key=value pairs for categorization
 
 The `direction` records how the RRPair was captured and does not change. What a replay does with it, send it as a test or serve it as a mock, is its replay role. Inbound RRPairs are tests and outbound RRPairs are mocks unless a tests filter or a `replayRole` tag says otherwise. Add `replayRole=test` or `replayRole=mock` to `tags` to fix the role of one file. See [Choose What a Replay Tests](../guides/choose-replay-tests.md).
+
+To change how long a mock takes to respond, edit either `duration` or `elapsed`. The line you edited wins. Setting `duration: 0ms` makes the mock respond immediately.
 
 #### Example
 ````markdown
@@ -242,6 +247,7 @@ direction: IN
 uuid: f3ead946-90b1-43ab-a7d6-be3f799e8e83
 ts: 2024-01-15T14:30:22.489942Z
 duration: 155ms
+elapsed: 155.0821ms
 tags: environment=staging, service=user-api, test_case=registration
 ```
 ````
