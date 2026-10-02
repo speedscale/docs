@@ -142,7 +142,7 @@ Each run names the config it used and where it came from, then lists any fields 
 
 ```text
 Loaded test config "big-responder" from /path/to/repo/proxymock/testconfigs/big-responder.json
-‼ a local replay does not honour these fields, so they are ignored: assertionGroups, cluster.cleanup, ...
+‼ a local replay does not honour these fields, so they are ignored: cluster.cleanup, ...
 ```
 
 ### Precedence
@@ -161,9 +161,9 @@ For example, `--vus`, `--for`, `--times` or `--stage` on `proxymock replay` repl
 |---|---|---|---|
 | Chaos, most generator traffic settings, load stages and virtual users, responder low data mode and response delay | yes | yes | yes |
 | Responder replicas and resources, generator resources, image tags, `cluster.*`, responder passthrough mode, DLP config, mock mapping | no | yes | yes |
-| Goals (`rules`) and assertions (`assertionGroups`) | no | no | yes |
+| Goals (`rules`) and assertions (`assertionGroups`) | yes, for metrics available locally | no | yes |
 
-Goals and assertions are evaluated only by the Speedscale cloud analyzer. A local replay is judged by its own [verdicts and `--fail-if` gates](./replay-verdicts.md). A cloud-free in-cluster replay does not produce a verdict yet.
+Local replay evaluates goals and assertion groups it can measure and writes the results to its replay verdict. Metrics that require Cloud are marked as not evaluated. Recording coverage goals use the OpenAPI contract in the workspace or `replay --spec`; a positive threshold fails when the contract is missing. A cloud-free in-cluster replay does not produce a verdict yet. See [replay verdicts](./replay-verdicts.md) for local exit codes.
 
 :::note Load stages on a local replay
 Running a test config's load stages on a local replay requires a proxymock release newer than v2.5.1017. On v2.5.1017 and earlier, set local load with `--stage`, `--vus` or `--for`.
