@@ -6,15 +6,20 @@ sidebar_position: 2.5
 
 # Replay on a Namespaced Install
 
-:::caution
-This workflow is currently in preview status. Please provide feedback in our [Slack community](https://slack.speedscale.com).
-:::
-
 A [namespaced install](/getting-started/installation/install/kubernetes-namespaced) cannot have the `TrafficReplay` [CRD](/reference/replay-crd): CRDs are cluster-scoped, and shared with every other install on the cluster. Instead, the in-cluster **replay coordinator** drives replays from a labeled `ConfigMap`, addressed by `--namespaced` on `replay start` and `replay cancel`. `replay get`, `replay list`, `replay wait` and `replay recover-finalizers` address these ConfigMap-driven replay requests only, so they need no `--namespaced` flag of their own. The classic `replay status` and plain `replay cancel` (for a `TrafficReplay`) are untouched by any of this.
 
 ## Starting a replay
 
-The classic `replay start` pushes your recordings to Speedscale cloud as a snapshot. `--namespaced` never leaves the cluster: it takes its traffic from a snapshot document already staged locally, so it needs no login.
+A namespaced replay can stage local recordings through the in-cluster forwarder and create its replay request without a `TrafficReplay` CRD. For a first check, use a generator-only run without dependency mocks:
+
+```bash
+proxymock cluster replay start --namespaced --snapshot-source local \
+  --speedscale-namespace banking-app --namespace banking-app \
+  --workload banking-api --in ./recordings \
+  --mode generator-only --no-mocks --wait
+```
+
+`--speedscale-namespace` selects the installed data plane; `--namespace` selects the workload. Both must be the same namespace in this mode. The command stages the local recording in the namespace forwarder and leaves the report in the in-cluster cache. That report is not durable customer-owned storage. You can also stage a snapshot file or reference one already staged:
 
 ```bash
 proxymock cluster replay start --namespaced \
@@ -25,19 +30,14 @@ proxymock cluster replay start --namespaced \
   --wait
 ```
 
-- `--snapshot-file PATH` stages a snapshot document as a `ConfigMap` alongside
-  the replay request.
-- `--snapshot-id ID` alone (no `--snapshot-file`) references a snapshot
-  already staged in the cluster; the coordinator resolves it.
-- `--mode` selects `full-replay`, `responder-only` or `generator-only`
-  (default `full-replay`).
-- `--test-config-id` picks the generator/responder configuration to run with
-  (default: the platform default).
-- `--request-name` names the replay request object (default: generated).
-- `--wait` blocks until the replay reaches a terminal state, printing each
-  stage as it's reached; `--timeout` bounds how long it waits.
+- `--snapshot-file PATH` stages a snapshot document as a `ConfigMap` alongside the replay request.
+- `--snapshot-id ID` alone references a snapshot already staged in the cluster.
+- `--mode` selects `full-replay`, `responder-only`, or `generator-only`; the default is `full-replay`.
+- `--test-config` selects the test configuration, for example `regression`.
+- `--request-name` names the replay request object; the default is generated.
+- `--wait` blocks until the replay reaches a terminal state; `--timeout` bounds the wait.
 
-`--target` is **not available** with `--namespaced`: the coordinator injects one workload and restores it afterward, and a bare address is not something it can inject into. A namespaced replay drives exactly one workload; routes aimed elsewhere are refused rather than half-applied.
+`--target` is unavailable with `--namespaced`: the coordinator injects one workload and restores it afterward. In chart and CLI version 2.5.1133, full replay with dependency mocks can fail on a RollingUpdate Deployment while the old captured pod and new mock-configured pod overlap. See [current limitations](/getting-started/installation/install/kubernetes-namespaced-limitations#mocked-replay-on-rollingupdate-deployments-in-251133) before using that path.
 
 ## Snapshot staging and its size budget
 

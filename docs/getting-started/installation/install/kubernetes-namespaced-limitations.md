@@ -6,15 +6,11 @@ sidebar_position: 1.7
 
 # Namespaced Install: Limitations & Compatibility
 
-:::caution
-This workflow is currently in preview status. Please provide feedback in our [Slack community](https://slack.speedscale.com).
-:::
-
 Every limitation below is a direct consequence of the same design choice: the [namespaced install](./kubernetes-namespaced.md) holds no permission or component outside one namespace. If your workload or workflow needs one of these, use the [classic operator install](./kubernetes-operator.md) instead.
 
 ## Workload kinds: Deployments and StatefulSets only
 
-Both [sidecar capture](/guides/capture/sidecar-namespaced) and [namespaced replay](/guides/replay/namespaced) support `Deployment` and `StatefulSet` workloads only. The replay coordinator's own RBAC enforces this structurally, not just by convention: its `Role` grants `create`/`delete` on `deployments`, but only `get`/`list`/`watch`/`update`/`patch` on `statefulsets`; there is **no create or delete** on a `StatefulSet`, so the coordinator can patch and restore one but can never destroy a customer workload of that kind. `DaemonSet`s, `ReplicaSet`s (managed indirectly, through their owning `Deployment`) and `Job`/`CronJob`-managed pods are not supported targets for injection or replay.
+Both [sidecar capture](/guides/capture/sidecar-namespaced) and [namespaced replay](/guides/replay/namespaced) support `Deployment` and `StatefulSet` workloads only. The replay coordinator's RBAC enforces this: its `Role` grants `create`/`delete` on `deployments`, but only `get`/`list`/`watch`/`update`/`patch` on `statefulsets`; there is **no create or delete** on a `StatefulSet`, so the coordinator can patch and restore one but can never destroy a customer workload of that kind. `DaemonSet`s, `ReplicaSet`s (managed indirectly, through their owning `Deployment`) and `Job`/`CronJob`-managed pods are not supported targets for injection or replay.
 
 ## Replay runs in the application namespace
 
@@ -26,7 +22,7 @@ A namespaced install has nowhere else to run a replay: the generator, responder 
 
 ## Metrics enrichment is opt-in, everywhere
 
-Per-pod CPU/memory enrichment in replay reports depends on a `metrics.k8s.io/pods` read, which is **off by default** in both places that can grant it: `inspector.metricsEnabled` and `replayRuntime.metricsEnabled`. This isn't a conservative default you're expected to flip on right away: Kubernetes RBAC's escalation-prevention rule means the API server refuses to let an installing identity create a `Role` granting a permission it does not itself hold, so an *unconditional* rule would make `helm install` fail outright for a namespace admin who was never granted that read (this was observed directly in end-to-end testing). A cluster with no metrics-server at all has no such API regardless. Turn either value on only if the identity installing the chart already holds `metrics.k8s.io/pods` read in the namespace; leaving both off costs per-pod resource enrichment in reports and nothing else. The collector and report reader degrade on a 403 or a missing API rather than failing the replay.
+Per-pod CPU/memory enrichment in replay reports depends on a `metrics.k8s.io/pods` read, which is **off by default** in both places that can grant it: `namespaced.inspector.metricsEnabled` and `namespaced.replayRuntime.metricsEnabled`. This isn't a conservative default you're expected to flip on right away: Kubernetes RBAC's escalation-prevention rule means the API server refuses to let an installing identity create a `Role` granting a permission it does not itself hold, so an *unconditional* rule would make `helm install` fail outright for a namespace admin who was never granted that read (this was observed directly in end-to-end testing). A cluster with no metrics-server at all has no such API regardless. Turn either value on only if the identity installing the chart already holds `metrics.k8s.io/pods` read in the namespace; leaving both off costs per-pod resource enrichment in reports and nothing else. The collector and report reader degrade on a 403 or a missing API rather than failing the replay.
 
 ## No eBPF capture, and no cluster-wide topology
 
@@ -50,6 +46,16 @@ Cilium works the same way: node addresses that health probes arrive from cannot 
 
 ## Image pinning
 
-Every image the chart itself renders (`forwarder`, `inspector`, and `operator` for the replay coordinator and the uninstall hook) is pulled from `image.registry` at `image.tag`, one version pin for the whole install. The replay coordinator additionally pulls `generator`, `responder`, `collector`, `goproxy` and `redis` **at replay time**, from the same registry and tag, to run each replay's own components. If your registry is air-gapped or allowlisted, mirror all of those (not only the three the chart deploys continuously) before your first namespaced replay, or it will fail trying to pull an image your registry doesn't have. `image.pullSecrets` references pre-existing pull Secrets the same way `apiKeySecret` does; the chart never creates one.
+Every image the chart itself renders (`forwarder`, `inspector`, and `operator` for the replay coordinator and the uninstall hook) is pulled from `namespaced.image.registry` at `namespaced.image.tag`, one version pin for the whole install. The replay coordinator additionally pulls `generator`, `responder`, `collector`, `goproxy`, and `redis` **at replay time**. Redis uses its own version tag, currently `7.4`, unless you configure an image override. If your registry is air-gapped or allowlisted, mirror all of those (not only the three the chart deploys continuously) before your first namespaced replay, or it will fail trying to pull an image your registry doesn't have. `namespaced.image.pullSecrets` references pre-existing pull Secrets the same way `namespaced.apiKeySecret` does; the chart never creates one.
 
-`tls.jks.image` (`amazoncorretto:23` by default, only rendered when `tls.createJKS` is set) is prefixed with the same `image.registry`, so an air-gapped mirror needs no separate setting for it.
+`namespaced.tls.jks.image` (`amazoncorretto:23` by default, only rendered when `namespaced.tls.createJKS` is set) is prefixed with the same `namespaced.image.registry`, so an air-gapped mirror needs no separate setting for it.
+
+## Restricted egress on 2.5.1133
+
+A minikube test of the public 2.5.1133 chart with default-deny egress and a namespace-local proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com` found that the replay coordinator still attempted `firehose.us-east-1.amazonaws.com:443`, even with `namespaced.forwarder.primaryTransport=cloud`. That destination was denied by the proxy. Do not treat the Cloud transport setting as a three-host-only egress configuration on this release. This is a known coordinator egress defect in 2.5.1133.
+
+## Mocked replay on RollingUpdate Deployments in 2.5.1133
+
+In the same released-version test, full replay with a mocked outbound dependency failed when a RollingUpdate Deployment had an old captured pod terminating alongside the new mock-configured pod. The same recording passed after the disposable test Deployment used the Recreate strategy. Responder-only replay also returned the mocked response after the rollout finished. Do not rely on full mocked replay for RollingUpdate workloads on this version. This is a known replay rollout defect in 2.5.1133.
+
+These are observed 2.5.1133 limits, not general limits of namespace-scoped Kubernetes permissions. Namespace-only replay and customer-owned BYOC report storage are separate workflows.
