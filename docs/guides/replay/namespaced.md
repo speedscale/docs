@@ -30,8 +30,8 @@ proxymock cluster replay start --namespaced \
   --wait
 ```
 
-- `--snapshot-file PATH` stages a snapshot document as a `ConfigMap` alongside the replay request.
-- `--snapshot-id ID` alone references a snapshot already staged in the cluster.
+- `--snapshot-file PATH` stages an analyzed snapshot JSON file and its adjacent action and reaction files in the namespace forwarder.
+- `--snapshot-id ID` alone references a snapshot already staged in the namespace forwarder.
 - `--mode` selects `full-replay`, `responder-only`, or `generator-only`; the default is `full-replay`.
 - `--test-config` selects the test configuration, for example `regression`.
 - `--request-name` names the replay request object; the default is generated.
@@ -39,18 +39,11 @@ proxymock cluster replay start --namespaced \
 
 `--target` is unavailable with `--namespaced`: the coordinator injects one workload and restores it afterward. In chart and CLI version 2.5.1133, full replay with dependency mocks can fail on a RollingUpdate Deployment while the old captured pod and new mock-configured pod overlap. See [current limitations](/getting-started/installation/install/kubernetes-namespaced-limitations#mocked-replay-on-rollingupdate-deployments-in-251133) before using that path.
 
-## Snapshot staging and its size budget
+## Snapshot staging
 
-A snapshot staged with `--snapshot-file` is serialized into a `ConfigMap`, which the Kubernetes API server caps at 1 MiB for the whole object. `proxymock` enforces a tighter **900 KiB** budget on the snapshot document itself, leaving headroom for the object's own metadata:
+`--snapshot-source local` analyzes the selected RRPair recordings on your machine and stages the snapshot in the namespace forwarder. It fails if that forwarder cannot accept the upload. The replay request remains a small labeled `ConfigMap` containing the snapshot reference and run settings; the recording is not stored inside the `ConfigMap`. Use `--snapshot-id` only when that snapshot is already available from the forwarder.
 
-```
-snapshot d6b13639-a93b-472e-b2fd-f397d1c37018 serializes to 1048201 bytes, over
-the 921600 byte ConfigMap budget. Trim the recording (fewer services, a
-shorter window) and push again, or stage the snapshot outside the request and
-pass --snapshot-id alone so the coordinator resolves it
-```
-
-Trim the recording (fewer services in scope, a shorter capture window) and try again, or stage the snapshot by another means and pass `--snapshot-id` alone. In practice, small stub or synthetic snapshots (well under a few kilobytes) are the ones most likely to fail for the *opposite* reason: a generator with too little real traffic to run against fails fast with `Job has reached the specified backoff limit` rather than a size error. Give the generator a snapshot with real recorded traffic in it, not just a minimal placeholder.
+The in-cluster snapshot and report cache are temporary. A local-source replay does not create durable customer-owned report storage. Check available storage and retention before relying on older runs.
 
 ## Reading a namespaced replay
 
