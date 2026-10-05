@@ -60,22 +60,20 @@ This chapter uses no skill. The agent reads the app's README and follows it:
 
 ## What you should see
 
-The agent's summary reports three things. The database started:
+The agent's summary. Trimmed:
 
 ```text
-tutorial-db: ready on localhost:54329
-DATABASE_URL=postgres://tutorial:tutorial@localhost:54329/tutorial?sslmode=disable
+The Go tutorial app works: the traffic script sent 135 requests with 0 unexpected responses. The app is stopped and the database is still running.
+
+- Database: I started it from `tutorial/` with `go -C db run .`, as the README says, but in the background instead of its own terminal. It's Postgres 16 listening on `localhost:54329`, with user, password and database all `tutorial`. Its data and the downloaded Postgres are in `mock-lab/tutorial/.tutorial-db/` ...
+- App: `go run .` in `tutorial/go` started on `:8080` using the default `DATABASE_URL`. ...
+- Traffic: `go run ./cmd/traffic` ran once.
+- Stopped: I ended both the `go run` process and the app binary it started, and port 8080 is free again.
+
+To stop the database later, run `go -C db run . -stop` from `mock-lab/tutorial/`.
 ```
 
-The app started and logged `tutorial-orders (go) listening on :8080 version=v1 slow=false`, with your language in place of `go`.
-
-The traffic driver finished:
-
-```text
-sent 135 requests, 0 unexpected
-```
-
-That last line is the one that matters. The traffic driver prints one line for each response with an unexpected status. Afterwards the `orders` table holds 40 rows.
+The line that matters is `sent 135 requests, 0 unexpected`. The traffic driver prints one line for each response with an unexpected status. Afterwards the `orders` table holds 40 rows.
 
 ## If it goes wrong
 
