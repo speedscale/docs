@@ -10,3 +10,5 @@ The speedctl command line tool is used to interact with Speedscale from your own
 programmable API and the primary way to perform setup actions like installing the Speedscale Operator, generating manifests, etc.
 
 <CLIInstall />
+
+If your outbound proxy requires Kerberos for cloud access, configure [Kerberos proxy authentication](/reference/kerberos-proxy) before running `speedctl` cloud commands.

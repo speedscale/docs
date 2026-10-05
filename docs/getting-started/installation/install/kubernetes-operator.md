@@ -26,6 +26,10 @@ Platform teams reviewing what the chart creates or changes can use the [Helm ins
 
 For additional background and architecture, complete the [Quick Start](../../quick-start.md) first, then return here for conceptual details about how the operator works within your cluster.
 
+## Kerberos cloud proxy
+
+If your outbound proxy requires Kerberos, follow [Kerberos proxy authentication](/reference/kerberos-proxy#kubernetes-operator-setup) to configure the operator override and mount credentials. The operator propagates these settings to forwarder and inspector.
+
 ## Private registry images
 
 If your organization requires approved Redis or Java runtime images, configure `replayComponents.redis.image` and `jks.image` in your Helm values. The [Helm values reference](/reference/helm#bring-your-own-redis-and-java-runtime-images) covers runtime requirements and truststore behavior, with a [private registry example](/reference/helm#private-registry-example) for Artifactory.
