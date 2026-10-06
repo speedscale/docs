@@ -6,7 +6,7 @@ sidebar_position: 1.7
 
 # Namespaced Install: Limitations & Compatibility
 
-Every limitation below is a direct consequence of the same design choice: the [namespaced install](./kubernetes-namespaced.md) holds no permission or component outside one namespace. If your workload or workflow needs one of these, use the [classic operator install](./kubernetes-operator.md) instead.
+The [namespaced install](./kubernetes-namespaced.md) holds no permission or component outside one namespace. The constraints below follow from that scope; the final sections record behavior tested with released chart 2.5.1145. If your workload needs a cluster-scoped component, use the [classic operator install](./kubernetes-operator.md).
 
 ## Workload kinds: Deployments and StatefulSets only
 
@@ -32,7 +32,7 @@ That has a second-order effect worth knowing about: several `proxymock cluster` 
 
 ## Service mesh: Istio only, and ambient/CNI mode must be stated explicitly
 
-The sidecar mutation the namespaced install performs models exactly two mesh signals: Istio, and Cilium's node-address exclusions. No other service mesh (Linkerd, Consul Connect, and similar) is modeled at all; running one is not blocked, but the interaction between its own traffic interception and Speedscale's `iptables` rules has not been validated.
+The sidecar mutation the namespaced install performs models exactly two mesh signals: Istio, and Cilium's node-address exclusions. Interactions with Linkerd, Consul Connect, and other service meshes have not been validated; their traffic interception may conflict with Speedscale's `iptables` rules.
 
 Within Istio, only the **classic sidecar** data plane is auto-detected, from an `istio-init` container already present on the pod template, which needs no cluster-scoped read. Istio's **CNI/ambient** data plane leaves no such container to detect, and the cluster-wide, namespace-label-based Istio discovery the classic install can use (`kube.DetectIstio` / `kube.DiscoverIstio`) is deliberately not available on this path; it is a `Namespace` read, which a namespaced install's RBAC does not extend to. State ambient/CNI mode explicitly instead:
 
@@ -50,12 +50,12 @@ Every image the chart itself renders (`forwarder`, `inspector`, and `operator` f
 
 `namespaced.tls.jks.image` (`amazoncorretto:23` by default, only rendered when `namespaced.tls.createJKS` is set) is prefixed with the same `namespaced.image.registry`, so an air-gapped mirror needs no separate setting for it.
 
-## Restricted egress on 2.5.1133
+## Restricted egress in 2.5.1145
 
-A minikube test of the public 2.5.1133 chart with default-deny egress and a namespace-local proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com` found that the replay coordinator still attempted `firehose.us-east-1.amazonaws.com:443`, even with `namespaced.forwarder.primaryTransport=cloud`. That destination was denied by the proxy. Do not treat the Cloud transport setting as a three-host-only egress configuration on this release. This is a known coordinator egress defect in 2.5.1133.
+The public 2.5.1145 chart passed a minikube test with Calico default-deny egress and a namespace-local proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com`. With `namespaced.forwarder.primaryTransport=cloud`, sidecar capture and full replay with mocks completed. The proxy recorded Speedscale Pod calls to `dev.speedscale.com` and no AWS CONNECT from those Pods, including after the replay coordinator restarted. The test workload's direct external call timed out; deliberate S3 and Firehose calls through the proxy received 403. In 2.5.1133, the replay coordinator still attempted Firehose under the same policy, so upgrade before using this egress configuration.
 
-## Mocked replay on RollingUpdate Deployments in 2.5.1133
+The dev tenant reached its forwarder registration limit, so this test did not confirm that captured traffic appeared in the Cloud dashboard. A passing local replay report confirms the in-cluster path, not Cloud persistence.
 
-In the same released-version test, full replay with a mocked outbound dependency failed when a RollingUpdate Deployment had an old captured pod terminating alongside the new mock-configured pod. The same recording passed after the disposable test Deployment used the Recreate strategy. Responder-only replay also returned the mocked response after the rollout finished. Do not rely on full mocked replay for RollingUpdate workloads on this version. This is a known replay rollout defect in 2.5.1133.
+## Mocked replay on RollingUpdate Deployments in 2.5.1145
 
-These are observed 2.5.1133 limits, not general limits of namespace-scoped Kubernetes permissions. Namespace-only replay and customer-owned BYOC report storage are separate workflows.
+Full replay with a mocked outbound dependency passed at 100% on a default RollingUpdate Deployment in both the plain and default-deny firewall minikube tests. The real dependency had zero replicas; the replayed app received the recorded mock response, and cleanup restored sidecar capture. The 2.5.1145 coordinator waited for the old Pod to leave before starting the generator. The same workload intermittently failed on 2.5.1133 while old and new Pods overlapped. Namespace-only replay and customer-owned BYOC report storage remain separate workflows.

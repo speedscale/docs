@@ -6,7 +6,7 @@ sidebar_position: 1.5
 
 # Kubernetes, Namespaced Install
 
-The public `speedscale-operator` chart has a namespaced mode for clusters where the [classic Speedscale Operator](./kubernetes-operator.md) cannot be installed: environments that forbid cluster-scoped grants, `CustomResourceDefinition`s, or admission webhooks. Set `namespaced.enabled=true` in chart version 2.5.1133 or later. This mode renders a forwarder, inspector, and replay coordinator in one existing namespace. The coordinator drives replays from labeled `ConfigMap`s instead of a `TrafficReplay` custom resource.
+The public `speedscale-operator` chart has a namespaced mode for clusters where the [classic Speedscale Operator](./kubernetes-operator.md) cannot be installed: environments that forbid cluster-scoped grants, `CustomResourceDefinition`s, or admission webhooks. Set `namespaced.enabled=true` in chart version 2.5.1133 or later. Use 2.5.1145 or later for restricted egress and mocked replay on a RollingUpdate Deployment. This mode renders a forwarder, inspector, and replay coordinator in one existing namespace. The coordinator drives replays from labeled `ConfigMap`s instead of a `TrafficReplay` custom resource.
 
 ## Who this is for
 
@@ -82,13 +82,13 @@ This is worth surfacing to your security reviewer up front: "nothing outside you
 
 ## Install the public chart
 
-The namespaced and classic modes use the same public `speedscale-operator` chart. This command uses the released 2.5.1133 chart and component images. Install into the existing application namespace without `--create-namespace`:
+The namespaced and classic modes use the same public `speedscale-operator` chart. This command uses the released 2.5.1145 chart and component images. Install into the existing application namespace without `--create-namespace`:
 
 ```bash
 helm repo add speedscale https://speedscale.github.io/operator-helm/
 helm repo update
 helm upgrade --install speedscale-operator speedscale/speedscale-operator \
-  --version 2.5.1133 \
+  --version 2.5.1145 \
   --namespace banking-app \
   --set namespaced.enabled=true \
   --set namespaced.clusterName=banking-cluster \
@@ -96,7 +96,7 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   --set namespaced.forwarder.primaryTransport=cloud
 ```
 
-`namespaced.forwarder.primaryTransport=cloud` sends the forwarder's primary record stream to the Speedscale application host. On 2.5.1133, the replay coordinator still attempts an AWS Firehose connection, so this setting alone does not support a firewall that allows only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com`. [Restricted-egress validation is in progress](./kubernetes-namespaced-limitations.md#restricted-egress-on-251133). The default chart installation remains the classic operator; always set `namespaced.enabled=true` for this mode.
+`namespaced.forwarder.primaryTransport=cloud` sends the forwarder's primary record stream to the Speedscale application host. With this setting, the released 2.5.1145 chart passed a minikube test behind default-deny egress and a proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com`. The proxy recorded only `dev.speedscale.com` calls from Speedscale Pods during that test, with no AWS CONNECT from them. Your firewall or proxy must enforce the allowed destinations. See the [restricted-egress results](./kubernetes-namespaced-limitations.md#restricted-egress-in-251145). The default chart installation remains the classic operator; always set `namespaced.enabled=true` for this mode.
 
 For an outbound proxy, set the root `http_proxy`, `https_proxy`, and `no_proxy` chart values in a values file. Include local Services, DNS, and the Kubernetes API in `no_proxy` as required by your network. The released chart passes these values to all three namespaced control-plane components. The Helm namespace and workload namespace must match.
 
@@ -104,7 +104,7 @@ The installer needs permission to create and manage the namespace-scoped Deploym
 
 ```bash
 helm template speedscale-operator speedscale/speedscale-operator \
-  --version 2.5.1133 --namespace banking-app \
+  --version 2.5.1145 --namespace banking-app \
   --set namespaced.enabled=true --include-crds > namespaced-rendered.yaml
 ```
 

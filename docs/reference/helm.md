@@ -61,7 +61,7 @@ helm install speedscale-operator speedscale/speedscale-operator \
 
 ## Namespaced mode
 
-The public `speedscale-operator` chart supports a [namespace-only installation](/getting-started/installation/install/kubernetes-namespaced) with `namespaced.enabled=true` in version 2.5.1133 or later. Its values live under `namespaced.*`; the root `http_proxy`, `https_proxy`, and `no_proxy` values also apply. This mode uses one existing application namespace, a pre-existing API key Secret, sidecar capture, and ConfigMap-driven local replay. It renders no Speedscale CRD, admission webhook, ClusterRole, ClusterRoleBinding, DaemonSet, or Namespace. Review the [current limitations](/getting-started/installation/install/kubernetes-namespaced-limitations) before using mocked replay or a restrictive egress policy.
+The public `speedscale-operator` chart supports a [namespace-only installation](/getting-started/installation/install/kubernetes-namespaced) with `namespaced.enabled=true` in version 2.5.1133 or later. Use version 2.5.1145 or later for restricted egress and mocked replay on RollingUpdate Deployments. Its values live under `namespaced.*`; the root `http_proxy`, `https_proxy`, and `no_proxy` values also apply. This mode uses one existing application namespace, a pre-existing API key Secret, sidecar capture, and ConfigMap-driven local replay. It renders no Speedscale CRD, admission webhook, ClusterRole, ClusterRoleBinding, DaemonSet, or Namespace. Review the [compatibility notes](/getting-started/installation/install/kubernetes-namespaced-limitations) before using it.
 
 The quick start and lifecycle below describe the default classic mode.
 

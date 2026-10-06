@@ -19,7 +19,18 @@ proxymock cluster replay start --namespaced --snapshot-source local \
   --mode generator-only --no-mocks --wait
 ```
 
-`--speedscale-namespace` selects the installed data plane; `--namespace` selects the workload. Both must be the same namespace in this mode. The command stages the local recording in the namespace forwarder and leaves the report in the in-cluster cache. That report is not durable customer-owned storage. You can also stage a snapshot file or reference one already staged:
+`--speedscale-namespace` selects the installed data plane; `--namespace` selects the workload. Both must be the same namespace in this mode. The command stages the local recording in the namespace forwarder and leaves the report in the in-cluster cache. That report is not durable customer-owned storage.
+
+For a full replay, the coordinator runs the generator, responder, and collector in that namespace. The responder mocks recorded outbound dependencies by default, and `regression` runs the recorded-response assertions:
+
+```bash
+proxymock cluster replay start --namespaced --snapshot-source local \
+  --speedscale-namespace banking-app --namespace banking-app \
+  --workload banking-api --in ./recordings \
+  --mode full-replay --test-config regression --wait
+```
+
+You can also stage a snapshot file or reference one already staged:
 
 ```bash
 proxymock cluster replay start --namespaced \
@@ -37,7 +48,7 @@ proxymock cluster replay start --namespaced \
 - `--request-name` names the replay request object; the default is generated.
 - `--wait` blocks until the replay reaches a terminal state; `--timeout` bounds the wait.
 
-`--target` is unavailable with `--namespaced`: the coordinator injects one workload and restores it afterward. In chart and CLI version 2.5.1133, full replay with dependency mocks can fail on a RollingUpdate Deployment while the old captured pod and new mock-configured pod overlap. See [current limitations](/getting-started/installation/install/kubernetes-namespaced-limitations#mocked-replay-on-rollingupdate-deployments-in-251133) before using that path.
+`--target` is unavailable with `--namespaced`: the coordinator injects one workload and restores it afterward. Use chart and CLI version 2.5.1145 or later for full replay with dependency mocks on a RollingUpdate Deployment. Version 2.5.1133 can start its generator while the old captured Pod is still terminating; see the [2.5.1145 validation results](/getting-started/installation/install/kubernetes-namespaced-limitations#mocked-replay-on-rollingupdate-deployments-in-251145).
 
 ## Snapshot staging
 
