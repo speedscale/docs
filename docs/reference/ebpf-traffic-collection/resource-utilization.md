@@ -17,14 +17,14 @@ The table below shows peak resource usage per container at various request rates
 
 | QPS  | Capture CPU | Capture Mem | Ingest CPU | Ingest Mem | **Total CPU** | **Total Mem** |
 | ---- | ----------- | ----------- | ---------- | ---------- | ------------- | ------------- |
-| idle | 1m          | 408Mi       | 1m         | 26Mi       | **2m**        | **434Mi**     |
-| 1    | 2m          | 408Mi       | 2m         | 26Mi       | **4m**        | **434Mi**     |
-| 10   | 6m          | 408Mi       | 6m         | 29Mi       | **12m**       | **437Mi**     |
-| 50   | 18m         | 410Mi       | 9m         | 33Mi       | **27m**       | **443Mi**     |
-| 100  | 68m         | 417Mi       | 16m        | 40Mi       | **84m**       | **457Mi**     |
-| 200  | 91m         | 421Mi       | 38m        | 60Mi       | **129m**      | **481Mi**     |
-| 500  | 208m        | 429Mi       | 87m        | 153Mi      | **295m**      | **582Mi**     |
-| 1000 | 414m        | 487Mi       | 116m       | 340Mi      | **530m**      | **827Mi**     |
+| idle | 3m          | 412Mi       | 2m         | 36Mi       | **5m**        | **448Mi**     |
+| 1    | 4m          | 409Mi       | 3m         | 31Mi       | **7m**        | **440Mi**     |
+| 10   | 16m         | 410Mi       | 15m        | 37Mi       | **31m**       | **447Mi**     |
+| 50   | 66m         | 410Mi       | 68m        | 38Mi       | **134m**      | **448Mi**     |
+| 100  | 89m         | 411Mi       | 121m       | 38Mi       | **210m**      | **449Mi**     |
+| 200  | 136m        | 411Mi       | 216m       | 41Mi       | **352m**      | **452Mi**     |
+| 500  | 279m        | 411Mi       | 465m       | 46Mi       | **744m**      | **457Mi**     |
+| 1000 | 468m        | 411Mi       | 787m       | 57Mi       | **1255m**     | **468Mi**     |
 
 :::note
 These observations were made while capturing a single workload with outbound TLS traffic. Your results will vary based on the number of captured workloads, traffic patterns, payload sizes, and protocol mix.
