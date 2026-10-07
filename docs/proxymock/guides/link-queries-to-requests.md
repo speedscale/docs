@@ -47,17 +47,17 @@ Two rules keep the link honest:
 
 So the link is exact for a service behind a gateway, load balancer or caller that propagates trace context, and for a service that calls other services while it handles the request.
 
-## Try it with the demo
+## Try it with the lab
 
-The [go-sqlcommenter demo](https://github.com/speedscale/demo/tree/master/go-sqlcommenter) is a small Go service on Postgres that tags every statement. Its README records it with proxymock and walks through the screens above:
+The [sqlcommenter lab](https://github.com/speedscale/mock-lab/tree/main/labs/sqlcommenter) in mock-lab is a small Go service on Postgres that tags every statement. It ships a recording, so you can look at the links before running anything:
 
 ```bash
-git clone https://github.com/speedscale/demo && cd demo/go-sqlcommenter
-docker compose up -d --wait postgres
-proxymock record --map 15432=postgres://localhost:5432 --app-port 8080
+git clone https://github.com/speedscale/mock-lab && cd mock-lab/labs/sqlcommenter
+make report
+make web
 ```
 
-Then, in two more terminals, start the app against proxymock with `PGPORT=15432 go run .` and send traffic with `./load.sh`. The load includes overlapping requests, an untagged query, a reused prepared statement, and requests without a `traceparent`, so the recording shows every kind of link.
+`make report` runs `proxymock sql-report` on the committed recording and `make web` opens it in proxymock web. To record your own run, start Postgres with `make up` and run `make capture`. The load includes overlapping requests, an untagged query, a reused prepared statement, and requests without a `traceparent`, so the recording shows every kind of link.
 
 ## Turn on SQL comments in your framework
 
@@ -172,7 +172,7 @@ db, err := otelsql.Open("pgx", dsn, otelsql.WithSQLCommenter(true))
 
 The archived `github.com/google/sqlcommenter/go/database/sql` wrapper does the same with `core.CommenterConfig{EnableTraceparent: true, EnableRoute: true}`.
 
-There is no official option for pgx used directly. Append the comment yourself, as the [go-sqlcommenter demo](https://github.com/speedscale/demo/tree/master/go-sqlcommenter) does in about a hundred lines: read the trace from the request context, URL-encode each value, and add `/*route='...',traceparent='...'*/` to the statement.
+There is no official option for pgx used directly. Append the comment yourself, as the [sqlcommenter lab](https://github.com/speedscale/mock-lab/tree/main/labs/sqlcommenter) does in about a hundred lines: read the trace from the request context, URL-encode each value, and add `/*route='...',traceparent='...'*/` to the statement.
 
 ### Datadog Database Monitoring
 
