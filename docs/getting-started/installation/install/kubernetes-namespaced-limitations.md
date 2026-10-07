@@ -54,7 +54,7 @@ Every image the chart itself renders (`forwarder`, `inspector`, and `operator` f
 
 The public 2.5.1145 chart passed a minikube test with Calico default-deny egress and a namespace-local proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com`. With `namespaced.forwarder.primaryTransport=cloud`, sidecar capture and full replay with mocks completed. The proxy recorded Speedscale Pod calls to `dev.speedscale.com` and no AWS CONNECT from those Pods, including after the replay coordinator restarted. The test workload's direct external call timed out; deliberate S3 and Firehose calls through the proxy received 403. In 2.5.1133, the replay coordinator still attempted Firehose under the same policy, so upgrade before using this egress configuration.
 
-The dev tenant reached its forwarder registration limit, so this test did not confirm that captured traffic appeared in the Cloud dashboard. A passing local replay report confirms the in-cluster path, not Cloud persistence.
+After the dev tenant's forwarder registration limit was raised, a fresh restricted-egress test with the same released chart confirmed Cloud persistence through the proxy. Three sidecar-captured requests produced six records in dev Cloud: three inbound requests and three outbound dependency calls. Retrieving the full records confirmed the application and dependency response bodies. This verifies the Cloud API storage path in minikube; the Cloud dashboard UI and customer-owned BYOC storage were not tested. The test policy allowed any Pod in the namespace to reach the proxy, so a customer policy must separately restrict that access to approved Speedscale Pods.
 
 ## Mocked replay on RollingUpdate Deployments in 2.5.1145
 
