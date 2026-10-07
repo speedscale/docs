@@ -68,11 +68,11 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Google BigTable       | DBMS | Full         | If using the Google SDK with standard pagination |
 | Google Spanner        | DBMS | Full         | If using the Google SDK with standard pagination |
 | Microsoft Outlook 365 | API  | Full         |                                                  |
-| MongoDB               | DBMS | Full         | See [proxymock guide](/proxymock/guides/mongodb)  |
+| MongoDB               | DBMS | Full         | See [proxymock guide](/proxymock/databases/record/mongodb)  |
 | MySQL                 | DBMS | Full         | Recorded statements can be replayed against a database. See [MySQL load and regression testing](/proxymock/guides/mysql-load-testing). |
 | Postgres              | DBMS | Full         | See [details](/guides/capture/bodies#postgres)       |
-| Redis                 | DBMS | Full         | See [Redis mocking](/guides/mocking/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
-| Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/guides/mocking/redis). |
+| Redis                 | DBMS | Full         | See [Redis mocking](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
+| Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/proxymock/databases/record/redis). |
 
 ### Supported APIs
 

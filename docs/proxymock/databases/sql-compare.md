@@ -315,6 +315,6 @@ make down
 
 ## Related
 
-- [MySQL mocking and recording](/proxymock/guides/mysql.md) — background on `--map` and MySQL traffic capture
+- [MySQL mocking and recording](/proxymock/databases/record/mysql.md) — background on `--map` and MySQL traffic capture
 - [Local quickstart](/proxymock/getting-started/quickstart/local/index.mdx) — proxymock record/replay basics
 - [node-mariadb demo on GitHub](https://github.com/speedscale/demo/tree/master/node-mariadb) — source for this walkthrough, including `instructions-sql-compare.md` for a condensed version

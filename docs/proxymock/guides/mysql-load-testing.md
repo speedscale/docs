@@ -295,7 +295,7 @@ Each replayed statement keeps its OK packet (affected rows, insert id and warnin
 ## Related {#related}
 
 - [Choose What a Replay Tests](./choose-replay-tests.md)
-- [MySQL Mocking](./mysql.md)
+- [MySQL Mocking](../databases/record/mysql.md)
 - [PostgreSQL Load and Regression Testing](./postgres-load-testing.md)
-- [Compare SQL between recordings](./sql-compare.md)
+- [Compare SQL between recordings](../databases/sql-compare.md)
 - [proxymock CLI reference](/reference/proxymock-cli-reference)

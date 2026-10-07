@@ -245,6 +245,6 @@ Secrets referenced from `generator.postgres` are not mounted into the replay aut
 ## Related {#related}
 
 - [Choose What a Replay Tests](./choose-replay-tests.md)
-- [PostgreSQL Mocking](./postgres.md)
-- [Compare SQL between recordings](./sql-compare.md)
+- [PostgreSQL Mocking](../databases/record/postgresql.md)
+- [Compare SQL between recordings](../databases/sql-compare.md)
 - [proxymock CLI reference](/reference/proxymock-cli-reference)

@@ -36,6 +36,35 @@ const config = {
       "@docusaurus/plugin-client-redirects",
       {
         redirects: [
+          // Databases sections (S-13517)
+          {
+            from: "/proxymock/guides/postgres/",
+            to: "/proxymock/databases/record/postgresql/",
+          },
+          {
+            from: "/proxymock/guides/mysql/",
+            to: "/proxymock/databases/record/mysql/",
+          },
+          {
+            from: "/proxymock/guides/mongodb/",
+            to: "/proxymock/databases/record/mongodb/",
+          },
+          {
+            from: "/guides/mocking/redis/",
+            to: "/proxymock/databases/record/redis/",
+          },
+          {
+            from: "/proxymock/guides/sql-compare/",
+            to: "/proxymock/databases/sql-compare/",
+          },
+          {
+            from: "/proxymock/guides/link-queries-to-requests/",
+            to: "/proxymock/databases/link-queries-to-requests/",
+          },
+          {
+            from: "/guides/mocking/sql-matching/",
+            to: "/guides/databases/mock-a-database/",
+          },
           {
             from: "/guides/byoc/",
             to: "/byoc/",
