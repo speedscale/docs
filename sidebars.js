@@ -110,6 +110,7 @@ const sidebars = {
         {
           type: "category",
           label: "Databases",
+          link: { type: "doc", id: "guides/databases/index" },
           items: ["guides/databases/mock-a-database"],
           collapsed: true,
         },
@@ -227,6 +228,7 @@ const sidebars = {
         {
           type: "category",
           label: "Databases",
+          link: { type: "doc", id: "proxymock/databases/index" },
           items: [
             {
               type: "category",
