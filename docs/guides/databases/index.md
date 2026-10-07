@@ -21,6 +21,8 @@ That turns database traffic into something you can use:
 
 On the **Traffic** page, filter to a database protocol or add any **Database** filter and the grid switches to the **Database** columns: event, statement, application, user, database, session, duration, rows and status. The database icon in the grid toolbar switches between these columns and the default ones. Statements read as their shape, with values masked, so repeats of one statement line up.
 
+![The Traffic grid with the Database columns on for a service that talks to Postgres: Logout, Error, Login and Statement events, statement shapes such as DELETE FROM records WHERE id = ?, the JDBC driver as application, user traffic, database coverage, the session, duration, rows and status, with a 42P01 error and a purple bar marking statements inside a transaction](./overview/database-columns.png)
+
 ## Find database calls
 
 The filter builder has a **Database** group. Each fact is its own filter:
@@ -34,6 +36,8 @@ The filter builder has a **Database** group. Each fact is its own filter:
 
 The value pickers offer the values in your traffic, and errors show with their names, such as `23505 · unique_violation`.
 
+![The filter builder's filter type list, showing Trace ID and then the Database group: Application, DB user, Database, Session, Transaction, Event, SQL operation, Table, Statement shape, Error, Attention, Rows and Route](./overview/database-filters.png)
+
 ## Inspect a database call
 
 Open any database call to see:
@@ -46,6 +50,14 @@ Open any database call to see:
 - The result sets the database returned.
 
 Every database fact in the drawer is also a one-click filter or exclusion.
+
+![The Request tab of a Postgres Execute call: the statement DELETE FROM records WHERE id = $1 shown With values as DELETE FROM records WHERE id = 'postgres-138205', and its Parameters table with $1, varchar, postgres-138205](./overview/statement-values.png)
+
+![The Response tab of a failed call: an error card reading relation records does not exist, 42P01, undefined_table, with a caret under the table name in the statement, and the call's database facts as one-click filters below it](./overview/error-card.png)
+
+![The login card of a Postgres connection: user traffic, database coverage, application PostgreSQL JDBC Driver, auth SCRAM-SHA-256, the session, the server version and the client address, with the facts as one-click filters](./overview/login-card.png)
+
+![The Connection tab: 32 requests on the same connection in order, from the login through inserts, selects, updates, a committed transaction marked in green, deletes and the logout, with the selected statement highlighted](./overview/connection.png)
 
 ## See a snapshot's database schema
 
