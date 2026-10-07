@@ -170,7 +170,7 @@ const sidebars = {
         "proxymock/index",
         {
           type: "category",
-          label: "Agent Tutorial",
+          label: "Agent Tutorial: On Your Machine",
           link: { type: "doc", id: "proxymock/agent-tutorial/index" },
           items: [
             "proxymock/agent-tutorial/install-proxymock",
@@ -186,14 +186,30 @@ const sidebars = {
         },
         {
           type: "category",
-          label: "Getting Started",
+          label: "Agent Tutorial: In Your Cluster",
+          link: { type: "doc", id: "proxymock/agent-tutorial-cluster/index" },
+          items: [
+            "proxymock/agent-tutorial-cluster/install-the-operator",
+            "proxymock/agent-tutorial-cluster/deploy-the-demo-app",
+            "proxymock/agent-tutorial-cluster/record-traffic",
+            "proxymock/agent-tutorial-cluster/replay-the-tests",
+            "proxymock/agent-tutorial-cluster/tune-the-mocks",
+            "proxymock/agent-tutorial-cluster/regression-test",
+            "proxymock/agent-tutorial-cluster/performance-test",
+            "proxymock/agent-tutorial-cluster/your-own-workload",
+          ],
+          collapsed: false,
+        },
+        "proxymock/agent-skills",
+        {
+          type: "category",
+          label: "Manual Workflows",
           items: [
             "proxymock/getting-started/installation",
             {
               type: "category",
               label: "Quickstart",
               items: [
-                "proxymock/getting-started/quickstart/index",
                 "proxymock/getting-started/quickstart/local/index",
                 "proxymock/getting-started/quickstart/in-cluster/index",
                 "proxymock/getting-started/quickstart/live-tail/index",

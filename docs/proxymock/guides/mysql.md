@@ -9,7 +9,7 @@ This guide covers how to use proxymock to mock MySQL database connections and qu
 
 ## Introduction to MySQL {#introduction}
 
-MySQL is one of the world's most popular open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock MySQL databases. This allows you to mock a MySQL database, including real data, without running a MySQL database or populating it with data. To do this, we record your app talking to a MySQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, check out the [quick start](../getting-started/quickstart/index.md).
+MySQL is one of the world's most popular open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock MySQL databases. This allows you to mock a MySQL database, including real data, without running a MySQL database or populating it with data. To do this, we record your app talking to a MySQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../agent-tutorial/index.md).
 
 ## Demo App
 

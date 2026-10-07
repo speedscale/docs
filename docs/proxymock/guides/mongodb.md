@@ -9,7 +9,7 @@ This guide covers how to use proxymock to mock MongoDB database connections and 
 
 ## Introduction to MongoDB {#introduction}
 
-MongoDB is one of the world's most popular NoSQL document databases, using a binary wire protocol (OP_MSG) for client-server communication. **proxymock** is able to record and mock MongoDB databases. This allows you to mock a MongoDB database, including real data, without running a MongoDB instance or populating it with data. To do this, we record your app talking to a MongoDB database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, check out the [quick start](../getting-started/quickstart/index.md).
+MongoDB is one of the world's most popular NoSQL document databases, using a binary wire protocol (OP_MSG) for client-server communication. **proxymock** is able to record and mock MongoDB databases. This allows you to mock a MongoDB database, including real data, without running a MongoDB instance or populating it with data. To do this, we record your app talking to a MongoDB database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../agent-tutorial/index.md).
 
 ## When to use `--map` {#why-map}
 

@@ -7,7 +7,7 @@ sidebar_label: "Start here"
 
 # Agent tutorial: start here
 
-In this tutorial your coding agent does every step. You paste one prompt per chapter, the agent runs it with the Speedscale [agent skills](../how-it-works/agent-skills.md) and proxymock, and you read what it found.
+In this tutorial your coding agent does every step. You paste one prompt per chapter, the agent runs it with the Speedscale [agent skills](../agent-skills.md) and proxymock, and you read what it found.
 
 Time: about 25 minutes of agent work for all nine chapters. This chapter takes under a minute.
 
@@ -78,7 +78,7 @@ The 15 installed skills
 
 This chapter installs the skills but does not run one, so it has no `### Result` block. From chapter 1 on, every chapter runs a skill, and its answer ends with one.
 
-The [agent skills](../how-it-works/agent-skills.md) page describes every skill.
+The [agent skills](../agent-skills.md) page describes every skill.
 
 ## If it goes wrong
 

@@ -9,7 +9,7 @@ This guide covers how to use proxymock to mock PostgreSQL database connections a
 
 ## Introduction to PostgreSQL {#introduction}
 
-PostgreSQL is one of the world's most advanced open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock PostgreSQL databases. This allows you to mock a PostgreSQL database, including real data, without running a PostgreSQL database or populating it with data. To do this, we record your app talking to a PostgreSQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, check out the [quick start](../getting-started/quickstart/index.md).
+PostgreSQL is one of the world's most advanced open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock PostgreSQL databases. This allows you to mock a PostgreSQL database, including real data, without running a PostgreSQL database or populating it with data. To do this, we record your app talking to a PostgreSQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../agent-tutorial/index.md).
 
 ## Demo App
 
