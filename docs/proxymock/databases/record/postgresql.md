@@ -109,7 +109,7 @@ You will notice a new `.metadata` directory containing your transform definition
 
 ## Load and Regression Testing {#load-testing}
 
-The queries you recorded can also be replayed against a real PostgreSQL database, to load test it or to catch regressions after a schema change or version upgrade. See [PostgreSQL Load and Regression Testing](../../guides/postgres-load-testing.md).
+The queries you recorded can also be replayed against a real PostgreSQL database, to load test it or to catch regressions after a schema change or version upgrade. See [Load and Regression Test a Database](../load-and-regression-testing.md).
 
 ## Kubernetes and eBPF {#kubernetes}
 

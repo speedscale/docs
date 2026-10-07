@@ -66,6 +66,14 @@ const config = {
             to: "/guides/databases/mock-a-database/",
           },
           {
+            from: "/proxymock/guides/postgres-load-testing/",
+            to: "/proxymock/databases/load-and-regression-testing/",
+          },
+          {
+            from: "/proxymock/guides/mysql-load-testing/",
+            to: "/proxymock/databases/load-and-regression-testing/",
+          },
+          {
             from: "/guides/byoc/",
             to: "/byoc/",
           },

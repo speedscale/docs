@@ -69,7 +69,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Google Spanner        | DBMS | Full         | If using the Google SDK with standard pagination |
 | Microsoft Outlook 365 | API  | Full         |                                                  |
 | MongoDB               | DBMS | Full         | See [proxymock guide](/proxymock/databases/record/mongodb)  |
-| MySQL                 | DBMS | Full         | Recorded statements can be replayed against a database. See [MySQL load and regression testing](/proxymock/guides/mysql-load-testing). |
+| MySQL                 | DBMS | Full         | Recorded statements can be replayed against a database. See [database load and regression testing](/proxymock/databases/load-and-regression-testing). |
 | Postgres              | DBMS | Full         | See [details](/guides/capture/bodies#postgres)       |
 | Redis                 | DBMS | Full         | See [Redis mocking](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
 | Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/proxymock/databases/record/redis). |

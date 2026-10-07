@@ -242,6 +242,7 @@ const sidebars = {
             },
             "proxymock/databases/sql-compare",
             "proxymock/databases/link-queries-to-requests",
+            "proxymock/databases/load-and-regression-testing",
           ],
           collapsed: true,
         },

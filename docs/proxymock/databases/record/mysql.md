@@ -113,7 +113,7 @@ You will notice a new `.metadata` directory containing your transform definition
 
 ## Load and Regression Testing {#load-testing}
 
-The statements you recorded can also be replayed against a real MySQL database, to load test it or to catch regressions after a schema change or a MySQL upgrade. See [MySQL Load and Regression Testing](../../guides/mysql-load-testing.md).
+The statements you recorded can also be replayed against a real MySQL database, to load test it or to catch regressions after a schema change or a MySQL upgrade. See [Load and Regression Test a Database](../load-and-regression-testing.md).
 
 ## Kubernetes and eBPF {#kubernetes}
 
