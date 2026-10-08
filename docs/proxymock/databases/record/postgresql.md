@@ -9,7 +9,7 @@ This guide covers how to use proxymock to mock PostgreSQL database connections a
 
 ## Introduction to PostgreSQL {#introduction}
 
-PostgreSQL is one of the world's most advanced open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock PostgreSQL databases. This allows you to mock a PostgreSQL database, including real data, without running a PostgreSQL database or populating it with data. To do this, we record your app talking to a PostgreSQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../agent-tutorial/index.md).
+PostgreSQL is one of the world's most advanced open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock PostgreSQL databases. This allows you to mock a PostgreSQL database, including real data, without running a PostgreSQL database or populating it with data. To do this, we record your app talking to a PostgreSQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../../agent-tutorial/index.md).
 
 ## Demo App
 
@@ -39,7 +39,7 @@ Start a dedicated terminal window to run the proxymock recorder:
 proxymock record --map 15432=localhost:5432 --app-port 8080
 ```
 
-This tells the recorder to listen on port 15432 for PostgreSQL traffic and forward it to the real PostgreSQL server at 5432. Your can learn more about the how *proxymock* records on the [architecture page](../how-it-works/architecture.md).
+This tells the recorder to listen on port 15432 for PostgreSQL traffic and forward it to the real PostgreSQL server at 5432. Your can learn more about the how *proxymock* records on the [architecture page](../../how-it-works/architecture.md).
 
 ### PostgreSQL Connection Configuration {#configure-postgresql-client}
 
@@ -67,7 +67,7 @@ proxymock captures PostgreSQL traffic as RRPair files containing:
 - **Response Data**: Result sets, error responses, metadata
 - **Timing Information**: Query execution times and connection latency
 
-The actual wire protocol is binary but proxymock displays request and response data as JSON. The underlying files can be modified if you want your mock to return different values. You can learn more about the structure of the underlying recording by looking at the `proxymock` directory containing the recording files and the [docs](../how-it-works/rrpair-format.md).
+The actual wire protocol is binary but proxymock displays request and response data as JSON. The underlying files can be modified if you want your mock to return different values. You can learn more about the structure of the underlying recording by looking at the `proxymock` directory containing the recording files and the [docs](../../how-it-works/rrpair-format.md).
 
 ### Troubleshooting Recording
 
@@ -109,7 +109,7 @@ You will notice a new `.metadata` directory containing your transform definition
 
 ## Load and Regression Testing {#load-testing}
 
-The queries you recorded can also be replayed against a real PostgreSQL database, to load test it or to catch regressions after a schema change or version upgrade. See [PostgreSQL Load and Regression Testing](./postgres-load-testing.md).
+The queries you recorded can also be replayed against a real PostgreSQL database, to load test it or to catch regressions after a schema change or version upgrade. See [Load and Regression Test a Database](../load-and-regression-testing.md).
 
 ## Kubernetes and eBPF {#kubernetes}
 

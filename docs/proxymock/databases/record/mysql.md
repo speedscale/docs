@@ -9,7 +9,7 @@ This guide covers how to use proxymock to mock MySQL database connections and qu
 
 ## Introduction to MySQL {#introduction}
 
-MySQL is one of the world's most popular open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock MySQL databases. This allows you to mock a MySQL database, including real data, without running a MySQL database or populating it with data. To do this, we record your app talking to a MySQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../agent-tutorial/index.md).
+MySQL is one of the world's most popular open-source relational database management systems (RDBMS). It uses Structured Query Language (SQL) for accessing and managing data stored in relational tables. **proxymock** is able to record and mock MySQL databases. This allows you to mock a MySQL database, including real data, without running a MySQL database or populating it with data. To do this, we record your app talking to a MySQL database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../../agent-tutorial/index.md).
 
 ## Demo App
 
@@ -40,7 +40,7 @@ Start a dedicated terminal window to run the proxymock recorder:
 proxymock record --map 13306=localhost:3306 --app-port 8080
 ```
 
-This tells the recorder to listen on port 13306 for MySQL traffic and forward it to the real MySQL server at 3306. The database request will be forwarded from 13306 to the real MySQL at 3306. Your can learn more about the how *proxymock* records on the [architecture page](../how-it-works/architecture.md).
+This tells the recorder to listen on port 13306 for MySQL traffic and forward it to the real MySQL server at 3306. The database request will be forwarded from 13306 to the real MySQL at 3306. Your can learn more about the how *proxymock* records on the [architecture page](../../how-it-works/architecture.md).
 
 ### MySQL Connection Configuration {#configure-mysql-client}
 
@@ -71,7 +71,7 @@ proxymock captures MySQL traffic as RRPair files containing:
 - **Response Data**: Result sets, error responses, metadata
 - **Timing Information**: Query execution times and connection latency
 
-The actual wire protocol is binary but proxymock displays request and response data as JSON. The underlying files can be modified if you want your mock to return different values. You can learn more about the structure of the underlying recording by looking at the `proxymock` directory containing the recording files and the [docs](../how-it-works/rrpair-format.md).
+The actual wire protocol is binary but proxymock displays request and response data as JSON. The underlying files can be modified if you want your mock to return different values. You can learn more about the structure of the underlying recording by looking at the `proxymock` directory containing the recording files and the [docs](../../how-it-works/rrpair-format.md).
 
 ### Troubleshooting Recording
 
@@ -113,7 +113,7 @@ You will notice a new `.metadata` directory containing your transform definition
 
 ## Load and Regression Testing {#load-testing}
 
-The statements you recorded can also be replayed against a real MySQL database, to load test it or to catch regressions after a schema change or a MySQL upgrade. See [MySQL Load and Regression Testing](./mysql-load-testing.md).
+The statements you recorded can also be replayed against a real MySQL database, to load test it or to catch regressions after a schema change or a MySQL upgrade. See [Load and Regression Test a Database](../load-and-regression-testing.md).
 
 ## Kubernetes and eBPF {#kubernetes}
 

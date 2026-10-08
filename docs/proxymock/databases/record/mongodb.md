@@ -9,7 +9,7 @@ This guide covers how to use proxymock to mock MongoDB database connections and 
 
 ## Introduction to MongoDB {#introduction}
 
-MongoDB is one of the world's most popular NoSQL document databases, using a binary wire protocol (OP_MSG) for client-server communication. **proxymock** is able to record and mock MongoDB databases. This allows you to mock a MongoDB database, including real data, without running a MongoDB instance or populating it with data. To do this, we record your app talking to a MongoDB database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../agent-tutorial/index.md).
+MongoDB is one of the world's most popular NoSQL document databases, using a binary wire protocol (OP_MSG) for client-server communication. **proxymock** is able to record and mock MongoDB databases. This allows you to mock a MongoDB database, including real data, without running a MongoDB instance or populating it with data. To do this, we record your app talking to a MongoDB database and simulate the database in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../../agent-tutorial/index.md).
 
 ## When to use `--map` {#why-map}
 
@@ -17,7 +17,7 @@ Use `--map` when you can change the MongoDB connection address and want to avoid
 
 HTTP proxy environment variables do not route MongoDB's wire protocol. SOCKS support depends on the driver and transport. The current Java Sync Driver has explicit `proxyHost` and `proxyPort` options; it ignores those options when using a Unix domain socket or configured `TransportSettings`. See [MongoDB's Java SOCKS5 guide](https://www.mongodb.com/docs/drivers/java/sync/current/security/socks/).
 
-Do not assume JVM-wide SOCKS properties or `ALL_PROXY` configure your MongoDB driver. Use its documented options or the port-mapping example below. See [Java proxy configuration](./java.md) for the differences.
+Do not assume JVM-wide SOCKS properties or `ALL_PROXY` configure your MongoDB driver. Use its documented options or the port-mapping example below. See [Java proxy configuration](../../guides/java.md) for the differences.
 
 ## Recording MongoDB Traffic {#recording-intro}
 
@@ -31,7 +31,7 @@ Start a dedicated terminal window to run the proxymock recorder:
 proxymock record --map 37017=localhost:27017
 ```
 
-This tells the recorder to listen on port 37017 for MongoDB traffic and forward it to the real MongoDB server at 27017. Your can learn more about the how *proxymock* records on the [architecture page](../how-it-works/architecture.md).
+This tells the recorder to listen on port 37017 for MongoDB traffic and forward it to the real MongoDB server at 27017. Your can learn more about the how *proxymock* records on the [architecture page](../../how-it-works/architecture.md).
 
 ### MongoDB Connection Configuration {#configure-mongodb-client}
 
@@ -87,7 +87,7 @@ proxymock captures MongoDB wire protocol traffic as RRPair files containing:
 - **Response Data**: Document results, cursor data, write acknowledgments, error responses
 - **Timing Information**: Command execution times and connection latency
 
-The actual wire protocol is binary but proxymock displays request and response data as JSON. The underlying files can be modified if you want your mock to return different values. You can learn more about the structure of the underlying recording by looking at the `proxymock` directory containing the recording files and the [docs](../how-it-works/rrpair-format.md).
+The actual wire protocol is binary but proxymock displays request and response data as JSON. The underlying files can be modified if you want your mock to return different values. You can learn more about the structure of the underlying recording by looking at the `proxymock` directory containing the recording files and the [docs](../../how-it-works/rrpair-format.md).
 
 ### Troubleshooting Recording
 
