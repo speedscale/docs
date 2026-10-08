@@ -85,9 +85,9 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 | Connection view with transactions | Yes | Yes | No | No |
 | [Database filters](/guides/databases/find-statements) and columns | Yes | Yes | No | No |
 | [Inferred schema](/guides/databases/inferred-schema) | Yes | Yes | No | No |
-| [Live SQL](/proxymock/databases/watch-live-sql) and [SQL inventory](/proxymock/databases/sql-inventory) | Yes | Yes | No | No |
-| [SQL script export](/proxymock/databases/export-sql-script) | Yes | Yes | No | No |
-| [Link queries to requests](/proxymock/databases/link-queries-to-requests) by trace id | Yes | Yes | No | No |
+| Live SQL ([dashboard](/guides/databases/watch-live-sql), [proxymock](/proxymock/databases/watch-live-sql)) and [SQL inventory](/proxymock/databases/sql-inventory) | Yes | Yes | No | No |
+| SQL script export ([dashboard](/guides/databases/export-sql-script), [proxymock](/proxymock/databases/export-sql-script)) | Yes | Yes | No | No |
+| Link queries to requests by trace id ([dashboard](/guides/databases/link-queries-to-requests), [proxymock](/proxymock/databases/link-queries-to-requests)) | Yes | Yes | No | No |
 | [Load and regression replay](/proxymock/databases/load-and-regression-testing) against a database | Yes | Yes | No | No |
 
 ### Supported APIs

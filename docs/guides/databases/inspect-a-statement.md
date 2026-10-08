@@ -40,13 +40,13 @@ A login call shows a login card: the user, the database, the client application,
 
 The **Connection** tab lists the calls on the same database connection around the selected one, in order, from the login to the logout when they are in range. Calls inside a transaction are marked with a colored bar and a number, and a chip above the list says how each transaction ended (committed, rolled back, failed, ended or still open), how long it took and how long the client held it open without running anything.
 
-Use it to see what led up to a failed or slow statement, whether a transaction held its locks while the app did something else, and in what order a request's statements really ran.
+Use it to see what led up to a failed or slow statement, whether a transaction held its locks while the app did something else, and in what order a request's statements really ran. **Export as .sql** downloads the connection's statements as a runnable script; see [Export a SQL script](./export-sql-script.md).
 
 ![The Connection tab: 32 requests on the same connection in order, from the login through inserts, selects, updates, a committed transaction marked in green, deletes and the logout, with the selected statement highlighted](./overview/connection.png)
 
 ## The request that ran it
 
-When the app writes the request's trace id into its SQL comments, the drawer of a database call names the inbound request that ran it, marked **linked by trace ID**, and otherwise the request that was running when it ran, marked **by timing**. See [Link queries to the request that ran them](../../proxymock/databases/link-queries-to-requests.md) for how to tag your SQL.
+When the app writes the request's trace id into its SQL comments, the drawer of a database call names the inbound request that ran it, marked **linked by trace ID**, and otherwise the request that was running when it ran, marked **by timing**. See [Link queries to the request that ran them](./link-queries-to-requests.md).
 
 ## Related
 

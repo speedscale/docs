@@ -112,8 +112,11 @@ const sidebars = {
           label: "Databases",
           link: { type: "doc", id: "guides/databases/index" },
           items: [
+            "guides/databases/watch-live-sql",
             "guides/databases/find-statements",
             "guides/databases/inspect-a-statement",
+            "guides/databases/link-queries-to-requests",
+            "guides/databases/export-sql-script",
             "guides/databases/inferred-schema",
             "guides/databases/mock-a-database",
           ],

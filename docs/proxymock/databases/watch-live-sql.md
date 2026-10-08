@@ -77,4 +77,4 @@ For a workload in Kubernetes, start a live tap on it from **Observability** in p
 
 - [Inspect a statement](./inspect-a-statement.md)
 - [SQL inventory and sql-report](./sql-inventory.md)
-- [Watch live SQL in the Speedscale dashboard](../../guides/databases/index.md#watch-database-traffic)
+- [Watch live SQL in the Speedscale dashboard](../../guides/databases/watch-live-sql.md)

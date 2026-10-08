@@ -35,7 +35,7 @@ Text fields compare with **is**, **contains** or **regex**, and each can be nega
 
 ## Filter by trace id
 
-The **Trace ID** filter matches one request's trace across protocols: HTTP and gRPC calls by their `traceparent` or B3 headers, and database calls by the trace id the app wrote into their SQL comment. A filter on a header would drop the database calls, so use **Trace ID** to see a request together with the queries it ran. You can paste a whole `traceparent`; the filter keeps only the trace id. See [Link queries to the request that ran them](../../proxymock/databases/link-queries-to-requests.md) for how apps tag their SQL.
+The **Trace ID** filter matches one request's trace across protocols: HTTP and gRPC calls by their `traceparent` or B3 headers, and database calls by the trace id the app wrote into their SQL comment. A filter on a header would drop the database calls, so use **Trace ID** to see a request together with the queries it ran. You can paste a whole `traceparent`; the filter keeps only the trace id. See [Link queries to the request that ran them](./link-queries-to-requests.md).
 
 ## Filter from a call
 

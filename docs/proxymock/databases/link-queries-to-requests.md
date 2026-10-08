@@ -30,6 +30,10 @@ Statements per inbound request (18 requests, 31 statements attributed, 20 of the
 
 In JSON output (`-o json`), `requestLoad.exactStatements` is that count, and `ambiguousStatements` counts the statements that were linked by time while several requests overlapped. A statement linked by its comment is never ambiguous.
 
+### In the Speedscale dashboard
+
+The same links appear for traffic captured in a cluster. A database call's request drawer shows **Caused by**, an inbound request counts the queries it ran and filters to them, and the **Trace ID** filter and the trace waterfall work as they do here. See [Link queries to the request that ran them](../../guides/databases/link-queries-to-requests.md) in the dashboard guides.
+
 ## How the link works
 
 The comment uses the [sqlcommenter](https://google.github.io/sqlcommenter/spec/) format, or the `key:value` format of Rails query log tags and marginalia. proxymock reads the `traceparent` key, a [W3C trace context](https://www.w3.org/TR/trace-context/) value, and the route (`route`, or `controller` and `action`):
@@ -208,6 +212,7 @@ Tagging is optional. Statements without a comment, or with a comment that has no
 
 ## Related
 
+- [Link queries to requests in the dashboard](../../guides/databases/link-queries-to-requests.md)
 - [Compare SQL between runs](./sql-compare.md)
 - [Trace a request without traces](../guides/trace-without-traces.md)
 - [PostgreSQL mocking](./record/postgresql.md)
