@@ -61,6 +61,8 @@ You can browse the recording in your browser with proxymock web:
 proxymock web
 ```
 
+proxymock web shows each statement with its bound values, how it ended and the rest of its connection, and its Live SQL lens follows statements as your app runs them. See [Inspect a statement](../inspect-a-statement.md) and [Watch live SQL](../watch-live-sql.md). To list every statement your app ran, see [SQL inventory](../sql-inventory.md), and to turn them into a runnable `.sql` file, see [Export a SQL script](../export-sql-script.md).
+
 proxymock captures PostgreSQL traffic as RRPair files containing:
 
 - **Request Data**: SQL queries, prepared statements, connection handshakes
@@ -89,7 +91,9 @@ You can now run your PostgreSQL client normally and it will connect to proxymock
 
 ## Modifying Responses
 
-To modify the responses manually, you can find the appropriate markdown file and edit the contents. However, to automate data transforamtion you can use the transform system provided by [Speedscale enterprise](https://app.speedscale.com). To edit your snapshot, upload it to the cloud:
+A SQL mock matches on the statement, not on its bound values. See [Mock a database](../mock-a-database.md) for what that means and when a transform should make a value part of the match.
+
+To modify the responses manually, you can find the appropriate markdown file and edit the contents. However, to automate data transformation you can use the transform system provided by [Speedscale enterprise](https://app.speedscale.com). To edit your snapshot, upload it to the cloud:
 
 ```sh
 proxymock cloud push snapshot
