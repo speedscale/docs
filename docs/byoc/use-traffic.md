@@ -25,14 +25,14 @@ Point `--prefix` at `byoc/` for the current layout. proxymock prunes the object 
 
 ### Direct S3 replay storage layout
 
-The direct [customer-owned replay storage mode](./configure-kubernetes.md#customer-owned-s3-replay-storage) writes each captured RRPair as JSON under `<PREFIX>/records/rrpairs/`. Point `--prefix` at that path instead of `byoc/`:
+The direct [customer-owned replay storage mode](./configure-kubernetes.md#customer-owned-s3-replay-storage) writes each captured RRPair as JSON under `<PREFIX>/records/rrpairs/year=/month=/day=/hour=/minute=` partitions. Point `--prefix` at that path instead of `byoc/`:
 
 ```shell
 proxymock import s3 --bucket customer-speedscale --prefix speedscale/records/rrpairs/ \
   --service checkout --from now-15m --out ./proxymock/byoc-check
 ```
 
-For a private S3-compatible service, add `--s3-endpoint-url <URL>` and `--s3-force-path-style` if the service requires path-style addressing. This direct layout currently has no time partitions or layout manifest, so a narrow time window filters the RRPairs after the importer scans the prefix. Size retention and the prefix for the expected capture volume before using it for a large workload.
+For a private S3-compatible service, add `--s3-endpoint-url <URL>` and `--s3-force-path-style` if the service requires path-style addressing. The importer uses the time partitions to narrow its object listing. This mode currently writes one object per captured RRPair, so size S3 write throughput and retention for the expected capture volume before using it for a large workload.
 
 ## Before you begin
 

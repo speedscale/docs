@@ -20,7 +20,7 @@ flowchart LR
 
 ## Direct S3 replay storage
 
-The customer-owned replay storage mode uses the Forwarder as the S3 client. It writes captured RRPairs under `<PREFIX>/records/rrpairs/`, replay inputs and reports under `<PREFIX>/snapshots/`, and operational events under `<PREFIX>/records/`. The generator, responder, and collector retrieve or update replay artifacts through the in-cluster Forwarder snapshot API, so they do not need customer S3 credentials or Speedscale-managed AWS credentials. The Forwarder uses EKS workload identity or a Secret scoped to its namespace for access to AWS S3 or a private S3-compatible service.
+The customer-owned replay storage mode uses the Forwarder as the S3 client. It writes captured RRPairs under time partitions beneath `<PREFIX>/records/rrpairs/`, replay inputs and reports under `<PREFIX>/snapshots/`, and operational events under `<PREFIX>/records/`. The generator, responder, and collector retrieve or update replay artifacts through the in-cluster Forwarder snapshot API, so they do not need customer S3 credentials or Speedscale-managed AWS credentials. The Forwarder uses EKS workload identity or a Secret scoped to its namespace for access to AWS S3 or a private S3-compatible service.
 
 The Speedscale API remains necessary for account validation, Forwarder registration, and configuration downloads. Proxy authentication for that API route and access to customer storage are separate network paths. The chart does not determine the customer's proxy, KDC, DNS, or private storage topology.
 
