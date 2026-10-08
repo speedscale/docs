@@ -11,4 +11,4 @@ programmable API and the primary way to perform setup actions like installing th
 
 <CLIInstall />
 
-If your outbound proxy requires Kerberos for cloud access, configure [Kerberos proxy authentication](/reference/kerberos-proxy) before running `speedctl` cloud commands.
+If your outbound proxy requires Kerberos for cloud access, configure [Kerberos proxy authentication](/reference/proxy_config) before running `speedctl` cloud commands.

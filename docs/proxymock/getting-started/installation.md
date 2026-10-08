@@ -45,7 +45,7 @@ Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `pr
 
 ## Kerberos cloud proxy
 
-If your outbound proxy requires Kerberos, configure [Kerberos proxy authentication](/reference/kerberos-proxy#local-cli-setup) before running `proxymock init` or other cloud commands.
+If your outbound proxy requires Kerberos, configure [Kerberos proxy authentication](/reference/proxy_config#local-cli-setup) before running `proxymock init` or other cloud commands.
 
 ## After installing
 

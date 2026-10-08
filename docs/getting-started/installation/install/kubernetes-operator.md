@@ -28,7 +28,7 @@ For additional background and architecture, complete the [Quick Start](../../qui
 
 ## Kerberos cloud proxy
 
-If your outbound proxy requires Kerberos, follow [Kerberos proxy authentication](/reference/kerberos-proxy#kubernetes-operator-setup) to configure the operator override and mount credentials. The operator propagates these settings to forwarder and inspector.
+If your outbound proxy requires Kerberos, follow [Kerberos proxy authentication](/reference/proxy_config#kubernetes-operator-setup) to configure the operator override and mount credentials. The operator propagates these settings to forwarder and inspector.
 
 ## Private registry images
 

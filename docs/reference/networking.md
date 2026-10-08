@@ -19,7 +19,7 @@ In order to operate properly, the Speedscale operator requires network access to
 
 <ExternalServices />
 
-For cloud connections through an HTTP CONNECT proxy that requires Kerberos, use [Kerberos proxy authentication](./kerberos-proxy.md). The client also needs direct access to its realm's KDCs and Kerberos DNS discovery.
+For cloud connections through an HTTP CONNECT proxy that requires Kerberos, use [Kerberos proxy authentication](./proxy_config.mdx). The client also needs direct access to its realm's KDCs and Kerberos DNS discovery.
 
 ## Cluster Webhook Access
 
