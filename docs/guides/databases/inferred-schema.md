@@ -29,7 +29,9 @@ The table list shows each table with its column count and how often it was read 
 
 Constraints the traffic revealed, in a `CREATE TABLE` or in an error such as a unique violation, are listed under the table.
 
-Select a column to see the statements that touch it, busiest first, and open an example request for any of them.
+Below the columns, the statements that touch the table are listed busiest first with how often each ran. Select a column to narrow the list to the statements that touch that column, and open one of a statement's example requests to see the call itself.
+
+![The Database schema pane of a snapshot: 1 table, 3 columns, 4 statements, 96 executions, Postgres. The records table has columns id (varchar, UNIQUE, 72 reads, 24 writes), value (varchar or text, 12 reads, 36 writes) and updated_at (unknown, 36 writes), and its INSERT, DELETE, SELECT and UPDATE statements with example requests](./inferred-schema/schema.png)
 
 ## How it is inferred
 
