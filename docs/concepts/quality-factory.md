@@ -6,9 +6,15 @@ sidebar_position: 1
 
 A Quality Factory is a repeatable verification workflow for new code and production incidents. It runs a candidate service against selected traffic and defined scenarios, then produces validation reports and failures engineers can reproduce. The goal is to reduce review and rework time so useful changes reach production sooner.
 
-Speedscale supplies traffic capture, transformation, mocking, and replay. Your SCM, CI, observability, and cloud systems supply the surrounding workflow. AI coding and review tools remain in the SDLC; a dedicated quality stage checks the running software before release approval.
+Speedscale supplies traffic capture, transformation, mocking, and replay. Your SCM, CI, observability, and cloud systems supply the surrounding workflow. AI coding and review tools remain in the SDLC. Independent validation checks the running candidate before merge into trunk.
 
-[![Traditional SDLC and AI-assisted SDLC with a dedicated Speedscale verification stage](./quality-factory/new-sdlc.png)](./quality-factory/new-sdlc.png)
+## Independent validation before merge
+
+Keep planning, AI-assisted coding, code review, and existing CI tests. Add the Quality Factory as a required check before merge. After merge, release and observe the software. Production incidents feed new reproduction scenarios back into the same workflow.
+
+A PR must carry a passing report for the exact candidate revision, build, dataset, and scenario configuration. Missing, failed, or incomplete checks block merge. Revalidate a changed candidate, including changes from a rebase or merge queue. An asynchronous job that runs only after merge does not enforce this boundary.
+
+Agents can propose repairs. Configured assertions determine whether the repair passes. Humans retain authority over merge, release, and approved exceptions.
 
 ## Supporting foundation
 
@@ -49,10 +55,14 @@ Deterministic verification evaluates configured requests and explicit expectatio
 
 A passing suite covers only its selected cases and assertions. Report ignored fields, missing requests, mock misses, and excluded checks. An empty dataset or incomplete run must not count as a passing quality gate. Human owners retain release authority.
 
-## Handoff to release or break/fix
+## Evidence for merge or break/fix
 
 Retain the candidate revision, dataset identity, scenario or blueprint version, expected and observed behavior, and validation report. Include instructions to rerun the scenario. Separate application failures from setup failures so engineers know whether to fix code or the test environment.
 
-Start with one service and one known failure. Confirm that a bad revision fails and a corrected revision passes before using the scenario as a gate. Track release lead time and time to reproduce and fix; these measure delivery improvements more directly than generated code volume.
+An alert, PR, release event, or manual request can start a run. A release event can trigger an additional regression check or refresh a dataset; it does not replace the pre-merge gate. The factory publishes evidence to the systems that own the next action: a required SCM check for a PR, or reproduction details for an incident. A report link must identify which revision and scenario it validates.
+
+Observability partners contribute incident context and receive selected telemetry and results. Cloud partners host isolated workloads, retain approved traffic, and route work. The same factory can use different partners without changing how it determines pass or fail. See the [partner mappings](/reference/quality-factory#partner-mappings) for the supported components and the integrations that still require implementation.
+
+Start with one service and one known failure. Confirm that a bad revision fails and a corrected revision passes before using the scenario as a gate. Compare time to a validated fix, repair retries, token usage, and validation infrastructure cost with the team's current process. These are measurements for a pilot, not promised savings.
 
 See the [Quality Factory reference design](/reference/quality-factory) for system responsibilities and implementation steps.
