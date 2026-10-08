@@ -53,6 +53,8 @@ kubectl -n banking-app create secret generic speedscale-apikey \
 
 Point `apiKeySecret` at a different name if your platform provisions credentials elsewhere (sealed-secrets, external-secrets, a Vault agent).
 
+If outbound access to Speedscale Cloud goes through a Kerberos-authenticated proxy, follow the [namespaced chart proxy setup](/reference/proxy_config#namespaced-chart-setup). The v2.5.1145 chart does not yet include the required Kerberos mount values.
+
 ### A Pod Security exemption for the instrumented namespace
 
 The Speedscale control plane (forwarder, inspector, replay coordinator) runs under the **`restricted`** Pod Security Standard with no changes needed, with one caveat: turning on `tls.createJKS` (off by default) adds a `post-install` Job that runs as root to write a Java keystore, so a namespace enforcing `restricted` must either leave `createJKS` off or exempt that one Job. The namespace holding the **workloads you capture or replay against** is different: the injected sidecar's init container needs `NET_ADMIN` and `NET_RAW` to redirect the workload's traffic through the proxy, which neither `restricted` nor `baseline` allows.
