@@ -17,6 +17,10 @@ Use proxymock web to work directly against your Kubernetes cluster. You can:
 
 This path is best when you want realistic in-environment behavior or to validate changes inside the cluster.
 
+:::tip Let your coding agent do the whole loop
+The [agent tutorial in your cluster](/proxymock/agent-tutorial-cluster/) has your coding agent install the operator, record a demo workload with eBPF capture, and replay it in the cluster as a regression test and a load test, one prompt per chapter.
+:::
+
 ## Prerequisites
 - Kubernetes cluster access (`kubectl` working, correct context)
 - Authorized (if you plan to run in-cluster replay): `proxymock init` (browser sign-in)

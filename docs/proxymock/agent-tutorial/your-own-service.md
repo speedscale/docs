@@ -105,6 +105,6 @@ proxymock replay --in proxymock/recorded-baseline --test-against http://localhos
 
 ## Where to go next
 
-- The [agent skills](../how-it-works/agent-skills.md) page lists every skill, including chaos, contract and verify-fix testing.
+- The [agent skills](../agent-skills.md) page lists every skill, including chaos, contract and verify-fix testing.
 - [Model Context Protocol (MCP)](../how-it-works/mcp.md) explains the proxymock MCP server your agent uses.
 - [Choose replay tests](../guides/choose-replay-tests.md) compares the ways to test with recorded traffic.

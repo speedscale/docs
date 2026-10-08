@@ -107,7 +107,19 @@ const config = {
           },
           {
             from: "/proxymock/getting-started/quickstart-mcp/",
-            to: "/proxymock/getting-started/quickstart/quickstart-mcp/",
+            to: "/proxymock/agent-tutorial/",
+          },
+          {
+            from: "/proxymock/getting-started/quickstart/quickstart-mcp/",
+            to: "/proxymock/agent-tutorial/",
+          },
+          {
+            from: "/proxymock/getting-started/quickstart/",
+            to: "/proxymock/agent-tutorial/",
+          },
+          {
+            from: "/proxymock/how-it-works/agent-skills/",
+            to: "/proxymock/agent-skills/",
           },
           {
             from: "/proxymock/getting-started/api-key/",
