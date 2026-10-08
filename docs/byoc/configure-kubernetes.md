@@ -37,7 +37,11 @@ namespaced:
 
 For private S3-compatible storage, set `namespaced.forwarder.byoc.endpoint` to its HTTP or HTTPS URL, set `pathStyle: true` if required by that service, and set `credentialsSecret` to the Secret name. Do not configure `forwarder.exporters` for the same capture stream unless you intentionally want a second destination.
 
+Plan the Cloud proxy and customer storage routes separately. EKS IAM roles for service accounts obtain credentials through AWS STS; a private EKS cluster needs an approved [STS VPC endpoint and regional STS configuration](https://docs.aws.amazon.com/eks/latest/userguide/configure-sts-endpoint.html). If the private S3 host should bypass the Cloud proxy, add that exact host to the chart-root `no_proxy` value. Confirm the proxy, KDC, STS, S3, and Kubernetes service routes with the customer network team.
+
 ```bash
+helm repo add speedscale https://speedscale.github.io/operator-helm/
+helm repo update
 helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   -n banking-app -f values.yaml
 ```
