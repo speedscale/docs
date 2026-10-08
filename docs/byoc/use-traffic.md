@@ -5,7 +5,7 @@ description: "Use proxymock import s3, proxymock import gcs, or the pull_byoc_bu
 
 # Use BYOC Traffic with proxymock
 
-In a bring-your-own-cloud (BYOC) deployment, the in-cluster Speedscale collector can write captured traffic to an object-store bucket you own. proxymock pulls historical traffic directly from that bucket into a local workspace, so the import operation does not route the downloaded traffic through Speedscale.
+In a bring-your-own-cloud (BYOC) deployment, a collector or the Speedscale Forwarder can write captured traffic to an object-store bucket you own. proxymock pulls historical traffic directly from that bucket into a local workspace, so the import operation does not route the downloaded traffic through Speedscale.
 
 Enabling a BYOC exporter does not automatically disable the Speedscale Cloud exporter. Configure exporters separately when captured RRPairs must remain only in customer-controlled destinations. See [Network and data boundaries](./how-it-works.md#network-and-data-boundaries).
 
@@ -22,6 +22,17 @@ There are three ways to run the pull, over the same bucket layout:
 The BYOC OpenTelemetry `awss3` exporter writes OTLP-JSON objects under the `byoc/` prefix, in hive-style `year=/month=/day=/hour=/minute=` partitions. When the bucket contains `_speedscale/byoc-layout.json`, proxymock reads it to enumerate workload-specific `namespace=/app=/…` prefixes directly, which makes a narrow pull cheap. The legacy Fluent Bit layout, with objects at the bucket root and hour-granularity partitions, is also supported.
 
 Point `--prefix` at `byoc/` for the current layout. proxymock prunes the object listing by the time window before it downloads anything, so a tight `--from`/`--to` keeps the pull fast even against a large bucket.
+
+### Direct S3 replay storage layout
+
+The direct [customer-owned replay storage mode](./configure-kubernetes.md#customer-owned-s3-replay-storage) writes each captured RRPair as JSON under `<PREFIX>/records/rrpairs/`. Point `--prefix` at that path instead of `byoc/`:
+
+```shell
+proxymock import s3 --bucket customer-speedscale --prefix speedscale/records/rrpairs/ \
+  --service checkout --from now-15m --out ./proxymock/byoc-check
+```
+
+For a private S3-compatible service, add `--s3-endpoint-url <URL>` and `--s3-force-path-style` if the service requires path-style addressing. This direct layout currently has no time partitions or layout manifest, so a narrow time window filters the RRPairs after the importer scans the prefix. Size retention and the prefix for the expected capture volume before using it for a large workload.
 
 ## Before you begin
 
@@ -71,7 +82,7 @@ See [Author DLP and filter rules locally](/proxymock/guides/local-rules.md) for 
 proxymock import s3 --bucket my-bucket --prefix byoc/ --service checkout --follow
 ```
 
-### Google Cloud Storage
+### GCS {#google-cloud-storage}
 
 Use `proxymock import gcs` to read directly through the native Google Cloud Storage API. Authenticate with Google Application Default Credentials (ADC): run `gcloud auth application-default login` for local development, set `GOOGLE_APPLICATION_CREDENTIALS` to a credentials file, or use workload identity in your runtime. The identity needs `storage.objects.list` and `storage.objects.get` on the bucket.
 
