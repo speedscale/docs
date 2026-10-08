@@ -25,7 +25,7 @@ A replay in the cluster reports a verdict, not how each outbound call was answer
 - Replays the recorded inbound traffic at it with `proxymock replay`, then measures with `proxymock replay score` and `proxymock match-rate analyze`.
 - Finds the two problems the version on your machine finds. The app adds `ts=<epoch ms>` to every CNCF API call, so none of the 70 calls matched a recording and all of them went to the real API. And 122 Postgres reads got their own row only because the replay sent them in recorded order.
 - Accepts the four recommendations: `ts` replaced with a constant on the CNCF API calls, and the three order-id reads keyed on their `$1` value. They are written to blueprints in `proxymock/blueprints/`, with a checkpoint before and after.
-- Re-runs locally to measure the fix, then confirms with a replay in the cluster (`proxymock cluster replay start ... --test-config regression --wait`). The blueprints travel with that replay: the responder's log reports the four chains it loaded.
+- Re-runs locally to measure the fix, then confirms with a replay in the cluster (`proxymock cluster replay start ... --test-config tutorial --wait`). The blueprints travel with that replay.
 
 ## What you should see
 
@@ -33,19 +33,20 @@ The skill's `### Result` block. Trimmed:
 
 ```text
 ### Result
-- **Ran:** workspace `proxymock/` (recording `proxymock/recorded-baseline`); 1 offline round; phase 2 as two local re-runs (Go app built from `mock-lab/tutorial/go`, Postgres through `--map 15432`), then one cluster confirmation on `speedscale-tutorial` / `tutorial` / `tutorial-orders` with the `regression` config
-- **Outcome:** measured 93.4% → 100%, and the cluster replay passed with the new blueprints. Nothing still misses, and no app regression was found.
+- **Ran:** workspace `proxymock/` (`recorded-baseline`). Phase 1: one round of offline analysis, 4 fixes accepted. Phase 2: two local replays with the app behind `proxymock mock` (before and after), then one cluster confirmation replay against `tutorial-orders` in `speedscale-tutorial` / `tutorial` with `--test-config tutorial`.
+- **Outcome:** measured 93.4% → 100%, with no passthrough; the cluster confirmation passed (100% of checks passed). No regressions in the app.
 - **Numbers:**
-  - local match rate: 93.4% before (993/1063, 70 passthrough) → 100% after (1063/1063, 0 passthrough, 0 noMatch)
-  - SQL: order-dependent reads 122 → 0, with 0 bind drift and 0 fallback
-  - cluster: Passed, 0 of 1 goals missed; the cluster doesn't report a match rate
+  - Match rate: 93% when recorded at replay time, 100% projected after the fixes, and 93.4% → 100% measured (1063/1063).
+  - Passthrough: 70 → 0.
+  - SQL correctness: order-dependent reads 122 → 0; 0 bind drift, 0 fallback.
+  - Accuracy held at 100%.
 - **Artifacts:**
-  - blueprints: `proxymock/blueprints/` (2 files)
-  - checkpoints: `proxymock/tuning/checkpoints/0/` and `1/`
-- **Next:** with the mocks complete and order-independent, a load test is now safe.
+  - `proxymock/blueprints/` (2 files) and the checkpoints `proxymock/tuning/checkpoints/0/` (before any fix) and `proxymock/tuning/checkpoints/1/` (after the `ts` fix).
+  - `proxymock/results/cluster-replay-mocks-confirm.log`
+- **Next:** now that the SQL reads are keyed, the recording can be used for load: `run a light load test of the baseline against tutorial-orders in the cluster` (proxymock-load-test, which hands off to run-snapshot-replay in load mode).
 ```
 
-The agent's evidence that the fix reached the cluster: the confirming replay's responder logged `chainCount: 4` when it loaded the snapshot, and the real Postgres in the cluster still holds only the orders from chapter 3, so none of the replay's writes reached it.
+The agent's evidence that the fix reached the cluster: the endpoints that call the CNCF API got much faster once it was mocked. `POST /orders` went from a p95 of 256.5 ms in chapter 4's replay to 5.0 ms in the confirming replay.
 
 The numbers match the version on your machine, because it is the same app and the same recording. From here on, every replay in the cluster carries these blueprints.
 

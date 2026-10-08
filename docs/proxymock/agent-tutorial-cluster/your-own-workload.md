@@ -24,12 +24,12 @@ Now treat mock-lab/languages/go as my own service. Build it into an image, deplo
 The `quality-loop` skill asks where the service runs, and the prompt says the cluster, so every step takes the cluster route:
 
 - Runs the environment check (`quality-loop.sh doctor`) and reads the service: no database, calls to the CNCF projects API, and an `access_token` and an `order_id` minted on every run.
-- Writes what the repo lacks for a cluster: a `Dockerfile` that keeps the binary's symbols, because eBPF reads Go's HTTPS through them, Kubernetes manifests with a TCP readiness probe so probes never land in a recording, and a traffic Job that covers every endpoint and error path.
-- Builds the image into minikube and deploys it to its own namespace.
-- Records it as in chapter 3: turns capture on, restarts the workload, runs the Job, pulls the traffic into `proxymock/recorded-cluster`, and turns capture off.
-- Replays the recording on your machine with the dependencies mocked. The service's committed blueprint already carries the fresh token and order id into later requests, so the replay is clean on the first try.
-- Writes a strict test config for the gate: status, content type, schema with value types, and response bodies, ignoring only the fields that change on every run, with passthrough off so a missing mock fails the run instead of reaching the real API.
-- Writes `regression-gate.sh`, which builds your working tree, deploys it, and replays the recording at it in the cluster. It proves the gate: it passes on the current code and fails a deliberately broken copy, then restores the code.
+- Writes what the repo lacks for a cluster: a `Dockerfile` that keeps the binary's symbols, because eBPF reads Go's HTTPS through them, Kubernetes manifests for a Deployment and Service, and a traffic Job that covers every endpoint and its error paths.
+- Builds the image into minikube and deploys it to its own namespace, `go-demo`.
+- Records it as in chapter 3: turns capture on, restarts the workload, runs the Job, pulls the traffic into `proxymock/recorded-cluster-baseline`, and turns capture off.
+- Replays the recording on your machine with the dependencies mocked. The service's committed blueprint already carries the fresh token and order id into later requests, so the replay is clean on the first try. Without the blueprint, the same replay scores about 81%.
+- Writes the gate's test config the way chapter 4 did: the built-in `regression` config plus value-type checks.
+- Writes `deploy/regression-gate.sh`, which builds your working tree, deploys it, and replays the recording at it in the cluster. It proves the gate: it passes on the current code, fails a deliberately broken build, and passes again once the code is restored.
 
 ## What you should see
 
@@ -37,22 +37,17 @@ The skill's `### Result` block. Trimmed:
 
 ```text
 ### Result
-- **Ran:** "do it to your own service" in cluster mode on `speedscale-tutorial`: build and deploy, record (eBPF capture plus an in-cluster traffic Job), local replay to tune, cluster gate runs.
-- **Outcome:** gate created. It passes on the current code and fails a deliberately broken build.
-- **Numbers:**
-  - recording: 48 RRPairs (30 inbound, 18 outbound)
-  - local replay: accuracy 100%, measured mock match rate 100% (19 of 19, 0 passthrough)
-  - cluster gate: `passAssertPct` 100 on the good build (exit 0); 97.33 on the mutant (exit 1)
-- **Artifacts** (all under `mock-lab/languages/go/`):
-  - `regression-gate.sh`
-  - `Dockerfile`, `.dockerignore`
-  - `k8s/app.yaml`, `k8s/traffic-job.yaml`
-  - `proxymock/recorded-cluster/`
-  - `proxymock/testconfigs/mocklab-regression.json`
-- **Next:** run `./regression-gate.sh` before each change.
+- **Ran:** your own service in cluster `speedscale-tutorial` → namespace `go-demo`. Read the repo and ran doctor → built and deployed → recorded in the cluster → replayed locally to tune tests and mocks (including the control without the blueprint) → created the cluster gate and tested it on clean, broken and restored code.
+- **Outcome:** gate created; it passes on the current code and caught the deliberate break (exit 1).
+- **Numbers:** 81 pairs recorded (51 inbound, 30 outbound); 100% accuracy and 100% measured mock match rate, with 0 passthrough; 80.88% without the blueprint; baseline gate passed (100%).
+- **Artifacts:**
+  - Recording: `mock-lab/languages/go/proxymock/recorded-cluster-baseline/`
+  - Gate: `deploy/regression-gate.sh` with config `proxymock/testconfigs/go-demo.json`
+  - Run logs: `proxymock/results/gate-*.log`
+- **Next:** add a load tier: `load test go-demo in the cluster with the baseline recording` (proxymock-load-test, which runs it as a cluster load replay).
 ```
 
-The broken copy returned one field as a string instead of a number. The gate caught it because its config checks value types, the lesson from chapter 6.
+The broken build returned `expires_in` as a string instead of a number. The gate failed 3 of 204 checks, the 3 token responses, because its config checks value types, the lesson from chapter 6.
 
 ## If it goes wrong
 

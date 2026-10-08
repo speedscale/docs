@@ -9,7 +9,7 @@ sidebar_label: "3. Record traffic"
 
 Your agent turns eBPF capture on for the workload, records everything it receives and sends while the traffic Job runs, and pulls the recording into the workspace. Every later chapter replays it.
 
-Time: about 5 minutes, most of it waiting for the captured traffic to arrive.
+Time: about 8 minutes, most of it waiting for the captured traffic to arrive.
 
 ## Prompt
 
@@ -34,15 +34,11 @@ The skill's `### Result` block. Trimmed:
 
 ```text
 ### Result
-- **Ran:** `speedscale-tutorial` cluster, namespace `tutorial`, workload `tutorial-orders` (Go), eBPF capture; traffic from the in-cluster Job `tutorial-traffic-cslwj` (135 sent, 0 unexpected)
-- **Outcome:** complete
-- **Numbers:**
-  - inbound: 134 of 134 business requests (`/healthz` excluded); status codes 200×88, 201×40, 400×2, 404×2, 422×2, matching what the driver expects
-  - outbound hosts: 1 of 1 (`demo-api.trafficreplay.com`, 70 pairs, including 2 expected 404s for unknown projects)
-  - databases: 1 of 1 (Postgres `postgres.tutorial.svc.cluster.local:5432`, 1074 pairs)
-  - error-status pairs: 8 in total, all expected (400×2, 404×4, 422×2)
-- **Artifacts:** `proxymock/recorded-baseline/` (1278 RRPairs) and `proxymock/recording-brief-baseline.md`
-- **Next:** `tune-snapshot-replay`: replay `proxymock/recorded-baseline` against `tutorial-orders` in the cluster with its dependencies mocked
+- **Ran:** cluster `speedscale-tutorial`, namespace `tutorial`, workload `tutorial-orders` (Go, eBPF capture, restarted after turning capture on); traffic from Job `tutorial-traffic-hf8vp` (135 requests, 0 unexpected).
+- **Outcome:** complete.
+- **Numbers:** 134 inbound pairs (135 sent minus the `/healthz` probe); 1 of 1 outbound hosts and 1 of 1 databases captured; 8 error-status pairs.
+- **Artifacts:** `proxymock/recorded-baseline/` (cloud snapshot `baseline`), `proxymock/summary-baseline/summary.md`, `recording-start.txt`.
+- **Next:** `run the run-snapshot-replay skill on proxymock/recorded-baseline against tutorial-orders in the cluster`, then `tune-snapshot-replay` if accuracy is below 100%.
 ```
 
 The recording has the same shape as the one from the version on your machine: 134 inbound requests, 70 CNCF API calls and about 1,075 Postgres messages. The traffic Job sends 135 requests, and the first, `GET /healthz`, is a health check, which capture leaves out. The Postgres host is the in-cluster Service name, and the CNCF API calls are HTTPS, which eBPF reads from the app's TLS library without a proxy or certificates.

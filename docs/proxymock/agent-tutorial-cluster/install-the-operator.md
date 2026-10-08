@@ -38,13 +38,14 @@ The skill's `### Result` block. Trimmed:
 
 ```text
 ### Result
-- **Ran:** local + cluster install on macOS arm64, tenant `external` (dev.speedscale.com); `KUBE_CONTEXT=speedscale-tutorial` → cluster `speedscale-tutorial` (new minikube profile, Kubernetes v1.34.0)
-- **Outcome:** pass. The local record → mock test returned `200` with `match=HIT` (the answer came from the recording, not the network), and the cluster check script printed `RESULT: PASS` (11/11).
-- **Numbers:** operator chart 2.5.1145; 15/15 Speedscale skills installed; 12/12 checks passed (1 local proof + 11 cluster checks)
+- **Ran:** both paths on macOS arm64: local install, then cluster install into `KUBE_CONTEXT=speedscale-tutorial` → cluster `speedscale-tutorial`, tenant `external`.
+- **Outcome:** pass.
+- **Numbers:** 11 of 11 cluster checks passed and the local record → mock test returned `match=HIT`; 15 of 15 Speedscale skills installed.
 - **Artifacts:**
-  - cluster: `./speedscale-values.yaml` (reuse it for upgrades), `./minikube-start.log`
-  - local proof: `./localproof/proxymock/`
-- **Next:** restart your coding agent to load the MCP server and skills, then ask: `record my app in the speedscale-tutorial cluster with proxymock and replay it`
+  - Skills in `~/.claude/skills/`.
+  - In this directory: `speedscale-values.yaml` (reuse it for upgrades), `minikube-start.log` and `local-proof/proxymock/`.
+  - Helm release `speedscale-operator` in namespace `speedscale`, with the Secret `speedscale-apikey`.
+- **Next:** restart your coding agent to load the MCP server and skills, then try the prompt `record my service in the cluster with proxymock and replay it` (the record-traffic skill).
 ```
 
 Your tenant name, versions and paths differ. The cluster also shows up under your Speedscale account's clusters, registered as `speedscale-tutorial`.

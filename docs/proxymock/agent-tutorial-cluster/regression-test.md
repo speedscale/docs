@@ -9,7 +9,7 @@ sidebar_label: "6. Run a regression test"
 
 Your agent changes the app, replays the recording in the cluster, and finds what broke.
 
-Time: about 6 minutes.
+Time: about 5 minutes.
 
 ## Prompt
 
@@ -31,7 +31,7 @@ The `proxymock-regression-test` skill hands a cluster workload to `run-snapshot-
   ```
 
   There is no baseline run in a cluster: the test config's goal, every assertion passes, is the gate, and the command exits nonzero when it misses.
-- Works out what broke. The cluster result gives the verdict and the failing goal but not the failing responses, so the agent cross-checks: a local replay of the v2 build with the same config names the field, and a single call to the v2 list endpoint shows the list items changed too.
+- Works out what broke. The cluster result gives the verdict and the failing goal but not the failing responses, so the agent replays the same recording and config on your machine: once as v1 to set a baseline, then as v2 with `--fail-on-new-mismatch`, which lists every changed response.
 - Removes `APP_VERSION` (`kubectl set env ... APP_VERSION-`), waits for the rollout, and runs the same gate again.
 
 ## What you should see
@@ -50,21 +50,22 @@ Error: replay missed its goals: Missed Goals (success rate 84.1%)
 The agent's answer. Trimmed:
 
 ```text
-The regression test caught the break: with APP_VERSION=v2 the cluster gate failed (Missed Goals, passAssertPct 84.14, exit 1). With APP_VERSION removed it passes at 100.
+With APP_VERSION=v2, tutorial-orders sends total_cents as a string instead of a number, and the regression test caught it. After I removed APP_VERSION, the same test passes again.
 
-What broke: total_cents comes back as a JSON string instead of a number (for example 2400 → "2400"). Status codes didn't change. The cluster gate failed 85 of 536 assertions, one for each changed response:
+What broke: total_cents changed from a number to a string, for example 2400 → "2400". It affects every response that carries an order total:
+- POST /orders: 40 created orders (status 201).
+- GET /orders/{id}: 40 lookups.
+- GET /orders: all 5 list calls (orders[*].total_cents).
 
-| Endpoint | Responses | Field |
-|---|---|---|
-| POST /orders | 40 | total_cents |
-| GET /orders/{id} | 40 | total_cents |
-| GET /orders | 5 | orders[*].total_cents |
+That makes 85 of the 134 replayed requests. Status codes, content types and field names were unchanged, and no request failed outright.
+
+| Run | App | Verdict | Checks passing | Goal passAssertPct >= 100 |
+| --- | --- | --- | --- | --- |
+| Cluster tutorial/sensational-delicatessen | v2 | Missed Goals, exit 1 | 84.14% (451/536) | FAIL |
+| Cluster tutorial/intelligent-platypus | APP_VERSION removed | Passed, exit 0 | 100% | PASS |
+
+The v2 run listed 85 new mismatches, all `total_cents changed type: number -> string`, and scored the same 84.14% as the cluster run.
 ```
-
-| Run | App | Exit code | Assertions passed (`tutorial`) |
-| --- | --- | --- | --- |
-| v2 | `APP_VERSION=v2` | 1 | 84.14% (451/536) |
-| v1 | `APP_VERSION` removed | 0 | 100% (536/536) |
 
 No status code changed and no request failed, so a check on status codes alone, or the built-in `regression` config, would have passed v2. The type check from chapter 4 is what catches it.
 

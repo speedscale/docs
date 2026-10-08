@@ -56,7 +56,7 @@ Clone https://github.com/speedscale/mock-lab and deploy the tutorial app from mo
 ## What you should see
 
 ```text
-All 135 requests got the answer they expected. The traffic Job tutorial-traffic-gkkr4 completed and its log ends with `sent 135 requests, 0 unexpected`.
+Yes, every request got the answer it expected. The traffic Job ran once and ended with `sent 135 requests, 0 unexpected`, which is the result the tutorial README says a clean run should give.
 ```
 
 The Job is the same traffic driver the version on your machine runs. It sends 135 requests covering every endpoint, including a few bad requests and two unknown projects whose 4xx answers are expected. Each `kubectl create` makes a new Job with a generated name, so you can run it again any time, and every finished Job deletes itself after an hour.
