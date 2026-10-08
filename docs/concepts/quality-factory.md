@@ -27,7 +27,7 @@ The factory rests on four sources of evidence:
 
 Traffic records observed behavior. Contracts and assertions determine whether that behavior is acceptable. A captured defect must not become the expected result simply because it occurred in production.
 
-[![Quality Factory supported by code, traffic, context, and observability data](./quality-factory/factory.png)](./quality-factory/factory.png)
+[![Code PR, production alert, release notification, and manual run trigger a Quality Factory supported by code, traffic, context, and observability; outputs are verdicts, diffs, performance results, and reproduction reports](./quality-factory/factory-triggers.png)](./quality-factory/factory-triggers.png)
 
 ## Factory workflows
 
