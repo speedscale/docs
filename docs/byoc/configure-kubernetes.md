@@ -5,7 +5,7 @@ description: Install a BYOC collector and configure named Speedscale Forwarder e
 
 # Configure BYOC on Kubernetes
 
-This guide installs a reference collector and connects the Speedscale Forwarder to it. Repeat the backend and exporter steps for every independent destination channel.
+Choose customer-owned S3 replay storage below, or install a reference collector and connect the Speedscale Forwarder to it. For collector export, repeat the backend and exporter steps for every independent destination channel.
 
 ## Prerequisites
 
@@ -48,7 +48,11 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
 
 The public chart must be rendered with the mode enabled before installation. Reject a rendered manifest containing `CustomResourceDefinition`, `MutatingWebhookConfiguration`, `ValidatingWebhookConfiguration`, `ClusterRole`, `ClusterRoleBinding`, or `DaemonSet`. The chart requires one Forwarder replica because report updates are serialized in that process. Its generic `networkPolicy.enabled` policy is rejected in this mode because it permits broad HTTPS egress. Supply a customer-specific policy after mapping the actual API, proxy, KDC, and storage routes. Do not assume that allowing `app.speedscale.com` through an authenticated proxy specifies the rest of the network design.
 
+Use the [namespaced sidecar capture guide](/guides/capture/sidecar-namespaced) to inject and check capture with `proxymock cluster capture inject --sidecar`. Use the [namespaced replay guide](/guides/replay/namespaced) to stage local traffic and start replay with `proxymock cluster replay start --namespaced`. The collector-export capture annotation in step 5 below does not apply to this installation.
+
 This mode still uses the Speedscale API for account validation, registration, and configuration downloads. A Kerberos-capable outbound proxy path is being developed separately; test it with the customer's proxy settings before deployment. No Speedscale-managed AWS credential endpoint is needed for S3 access in this mode. [Verify direct storage and replay](./verify.md#direct-s3-replay-storage) after installing.
+
+The numbered steps below configure collector export. Skip them for customer-owned S3 replay storage.
 
 ## 1. Add the Helm repositories
 
@@ -205,7 +209,7 @@ Use the receiver's actual protocol port. A reference collector normally uses OTL
 
 :::
 
-## 5. Enable capture
+## 5. Enable capture for collector export
 
 Annotate the workload you want to capture:
 
