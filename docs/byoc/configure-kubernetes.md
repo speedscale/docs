@@ -1,6 +1,6 @@
 ---
 title: Configure BYOC on Kubernetes
-description: Install a BYOC collector and configure named Speedscale Forwarder exporters on Kubernetes.
+description: Configure customer-owned S3 replay storage or BYOC collector export on Kubernetes.
 ---
 
 # Configure BYOC on Kubernetes
