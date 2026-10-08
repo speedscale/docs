@@ -37,4 +37,4 @@ Regenerate the email, the third placeholder, of every replayed user insert:
 }
 ```
 
-See [MySQL Load and Regression Testing](/proxymock/guides/mysql-load-testing#regenerate) for the full walkthrough.
+See [Load and Regression Test a Database](/proxymock/databases/load-and-regression-testing#regenerate) for the full walkthrough.

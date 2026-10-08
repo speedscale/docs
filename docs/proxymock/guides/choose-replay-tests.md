@@ -50,7 +50,7 @@ Two rules trip people up:
 | proxymock web | The **Tests filter** field on the Replay tab |
 | Speedscale dashboard | **Choose replay tests** in the snapshot's actions menu. Pick the dependencies under **Outbound dependencies**, optionally check **Also keep inbound tests**, and save. The snapshot is reanalyzed and the page shows the active selection as **Replay tests:** followed by the filter. |
 
-Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database` or `mysql://host:port/database` address; see [PostgreSQL Load and Regression Testing](./postgres-load-testing.md#credentials) or [MySQL Load and Regression Testing](./mysql-load-testing.md#credentials) for credentials.
+Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database` or `mysql://host:port/database` address; see [Connect to the database](../databases/load-and-regression-testing.md#credentials) for credentials.
 
 ### Save the filter with a workspace {#save}
 
@@ -109,7 +109,6 @@ Use a tests filter instead. `(direction IS OUT)` replaces reverse services for m
 
 ## Related {#related}
 
-- [PostgreSQL Load and Regression Testing](./postgres-load-testing.md)
-- [MySQL Load and Regression Testing](./mysql-load-testing.md)
+- [Load and Regression Test a Database](../databases/load-and-regression-testing.md)
 - [RRPair markdown format](../how-it-works/rrpair-format.md)
 - [proxymock CLI reference](/reference/proxymock-cli-reference)

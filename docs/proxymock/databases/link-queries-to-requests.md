@@ -209,6 +209,6 @@ Tagging is optional. Statements without a comment, or with a comment that has no
 ## Related
 
 - [Compare SQL between runs](./sql-compare.md)
-- [Trace a request without traces](./trace-without-traces.md)
-- [PostgreSQL mocking](./postgres.md)
-- [MySQL mocking](./mysql.md)
+- [Trace a request without traces](../guides/trace-without-traces.md)
+- [PostgreSQL mocking](./record/postgresql.md)
+- [MySQL mocking](./record/mysql.md)

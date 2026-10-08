@@ -54,5 +54,5 @@ A fingerprint match answers with any recording of the same statement, whatever v
 
 ## Related
 
-- [Matching SQL mocks](../../mocking/sql-matching.md) explains what SQL mocks match on by default and when the mock server falls back to looser matches.
+- [Matching SQL mocks](../../databases/mock-a-database.md) explains what SQL mocks match on by default and when the mock server falls back to looser matches.
 - [`sql_query`](../extractors/sql_query.md) is the extractor to pair it with.
