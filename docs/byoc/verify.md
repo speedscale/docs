@@ -7,6 +7,14 @@ description: Validate capture, Forwarder export, collector receipt, and destinat
 
 Send a known request through an annotated workload, then check the pipeline from the Forwarder outward. Running pods alone do not prove that captured traffic reached storage.
 
+## Direct S3 replay storage
+
+For `forwarder.primaryTransport: byoc`, verify the rendered Forwarder ConfigMap sets `SPEEDSCALE_PRIMARY_TRANSPORT=byoc` and names the intended bucket and prefix. Verify that the Forwarder service account has only the required bucket access, and that no workload outside the Speedscale namespace receives its S3 credentials.
+
+Send a known request through a captured service. Check for a new raw RRPair object under `<PREFIX>/records/rrpairs/`; the object must contain the expected service and request. Import that same capture with `proxymock import s3 --bucket <BUCKET> --prefix <PREFIX>/records/rrpairs/ --service <SERVICE> --from now-15m --out ./proxymock/byoc-check`. For private S3-compatible storage, add `--s3-endpoint-url <URL> --s3-force-path-style` if needed. A successful import must report at least one written RRPair.
+
+Run a local-source replay with mocks and tests, then check `<PREFIX>/snapshots/<REPORT_ID>/report.json` in the customer bucket for final status and test results, plus `<PREFIX>/snapshots/<REPORT_ID>/collector-events.json` for collector events and `collector-metrics.json` for bounded metric samples. Restart the Forwarder and retrieve the same report through the snapshot API to confirm persistence. Block Speedscale-managed S3 and AWS credential endpoints during this test; allow only the approved customer storage route and the approved Speedscale API route. A running pod or successful health check alone does not prove these data paths.
+
 ## 1. Confirm the Forwarder configuration
 
 ```bash

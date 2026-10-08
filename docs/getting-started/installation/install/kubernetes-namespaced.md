@@ -6,11 +6,7 @@ sidebar_position: 1.5
 
 # Kubernetes, Namespaced Install
 
-:::caution
-This workflow is currently in preview status. Please provide feedback in our [Slack community](https://slack.speedscale.com).
-:::
-
-The namespaced install is a separate Helm chart, `speedscale-namespaced`, for clusters where the [classic Speedscale Operator](./kubernetes-operator.md) cannot be installed at all: environments that forbid cluster-scoped grants, `CustomResourceDefinition`s, or admission webhooks. It renders the same forwarder and inspector the classic install does, plus a **replay coordinator** that drives replays from labeled `ConfigMap`s instead of a `TrafficReplay` custom resource.
+The public `speedscale-operator` chart has a namespaced mode for clusters where the [classic Speedscale Operator](./kubernetes-operator.md) cannot be installed: environments that forbid cluster-scoped grants, `CustomResourceDefinition`s, or admission webhooks. Set `namespaced.enabled=true` in chart version 2.5.1133 or later. Use 2.5.1145 or later for restricted egress and mocked replay on a RollingUpdate Deployment. This mode renders a forwarder, inspector, and replay coordinator in one existing namespace. The coordinator drives replays from labeled `ConfigMap`s instead of a `TrafficReplay` custom resource.
 
 ## Who this is for
 
@@ -43,15 +39,17 @@ It works, and that is the problem: it makes the install look like it needs names
 
 ### An API key Secret must already exist
 
-The chart **never creates** the API key Secret; it references one by name (`apiKeySecret`, default `speedscale-apikey`):
+The namespaced mode **never creates** the API key Secret; it references one by name (`namespaced.apiKeySecret`, default `speedscale-apikey`). Use a service account API key and load it from a protected file:
 
 ```bash
 kubectl -n banking-app create secret generic speedscale-apikey \
-  --from-literal=SPEEDSCALE_API_KEY=<your-api-key> \
+  --from-file=SPEEDSCALE_API_KEY=/secure/path/to/key \
   --from-literal=SPEEDSCALE_APP_URL=app.speedscale.com
 ```
 
-Point `apiKeySecret` at a different name if your platform provisions credentials elsewhere (sealed-secrets, external-secrets, a Vault agent).
+Point `namespaced.apiKeySecret` at a different name if your platform provisions credentials elsewhere (sealed-secrets, external-secrets, a Vault agent).
+
+If outbound access to Speedscale Cloud goes through a Kerberos-authenticated proxy, follow the [namespaced chart proxy setup](/reference/proxy_config#namespaced-chart-setup). The v2.5.1145 chart does not yet include the required Kerberos mount values.
 
 ### A Pod Security exemption for the instrumented namespace
 
@@ -84,50 +82,35 @@ This is worth surfacing to your security reviewer up front: "nothing outside you
 
 ### Kubernetes 1.21+, Helm 3+
 
-## Install
+## Install the public chart
 
-The `speedscale-namespaced` chart is published to the same Helm repository as the classic operator chart:
+The namespaced and classic modes use the same public `speedscale-operator` chart. This command uses the released 2.5.1145 chart and component images. Install into the existing application namespace without `--create-namespace`:
 
 ```bash
 helm repo add speedscale https://speedscale.github.io/operator-helm/
 helm repo update
-helm install speedscale speedscale/speedscale-namespaced \
+helm upgrade --install speedscale-operator speedscale/speedscale-operator \
+  --version 2.5.1145 \
   --namespace banking-app \
-  --values values.yaml
+  --set namespaced.enabled=true \
+  --set namespaced.clusterName=banking-cluster \
+  --set namespaced.appUrl=app.speedscale.com \
+  --set namespaced.forwarder.primaryTransport=cloud
 ```
 
-A realistic `values.yaml`, modeled on a working install:
+`namespaced.forwarder.primaryTransport=cloud` sends captured records to Speedscale Cloud; it does not select customer-owned BYOC storage. With this setting, the released 2.5.1145 chart passed a minikube test behind default-deny egress and a proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com`. The proxy recorded only `dev.speedscale.com` calls from Speedscale Pods during that test, with no AWS CONNECT from them. Full captured records were retrieved from dev Cloud through the proxy. Your firewall or proxy must enforce the allowed destinations and restrict which Pods can use that route. See the [restricted-egress results](./kubernetes-namespaced-limitations.md#restricted-egress-in-251145). The default chart installation remains the classic operator; always set `namespaced.enabled=true` for this mode.
 
-```yaml
-clusterName: "banking-cluster"
-appUrl: "app.speedscale.com"
-apiKeySecret: "speedscale-apikey"
+For an outbound proxy, set the root `http_proxy`, `https_proxy`, and `no_proxy` chart values in a values file. Include local Services, DNS, and the Kubernetes API in `no_proxy` as required by your network. The released chart passes these values to all three namespaced control-plane components. The Helm namespace and workload namespace must match.
 
-image:
-  registry: gcr.io/speedscale
-  tag: "v2.5.878"
+The installer needs permission to create and manage the namespace-scoped Deployments, Services, ConfigMaps, Secrets, Jobs, ServiceAccounts, Roles, and RoleBindings the chart renders, plus permission to grant the rules in those Roles. It needs no permission to create a CRD, webhook, ClusterRole, or resource in another namespace. Review the exact render before installing:
 
-# Cloud-issued tenant identity. The chart cannot compute these -- Speedscale
-# cloud issues them in exchange for your API key. Until your install can
-# resolve them automatically, pass all five together.
-tenant:
-  id: "00000000-1111-2222-3333-444444444444"  # from your Speedscale account
-  name: "acme"
-  bucket: "sstenant-000123"
-  region: "us-east-1"
-  stream: "sstenant-000123"
-  subTenantName: "default"
+```bash
+helm template speedscale-operator speedscale/speedscale-operator \
+  --version 2.5.1145 --namespace banking-app \
+  --set namespaced.enabled=true --include-crds > namespaced-rendered.yaml
 ```
 
-:::danger `tenant.subTenantName` is not your tenant name
-`tenant.subTenantName` is a separate, cloud-issued value; it is **not** guaranteed to equal `tenant.name`, and guessing wrong is easy to do because the two often look alike. In one verified install, `tenant.name` was one tenant's name was `"acme"` while the correct `subTenantName` was `"default"`.
-
-Worse, getting it wrong does not fail loudly: the coordinator's own startup self-check only confirms that `tenant.subTenantName` (and the other four tenant fields) are **non-empty**, not that they are correct, and logs `tenant identity is known` regardless. The value flows straight through to `SUB_TENANT_STREAM` in the forwarder and coordinator `ConfigMap`s, so a wrong value can leave captured traffic and replay reports attributed to the wrong stream while every readiness check reports healthy.
-
-Get the correct value from your Speedscale account team or the tenant details in the dashboard rather than assuming it matches `tenant.name`, and confirm captured traffic actually lands where you expect before relying on the install.
-:::
-
-All five `tenant.*` fields are required together: a partial set (for example, only `tenant.id` and `tenant.name`) counts as none, because the forwarder and replay coordinator only consider the identity resolved once the stream and every root-tenant field is non-empty. Neither component becomes ready until then.
+The namespaced render contains no Speedscale CRD, admission webhook, ClusterRole, ClusterRoleBinding, DaemonSet, or Namespace object. Review the rendered RBAC against the installer identity before applying it. The default classic render has cluster-scoped resources. The rendered YAML includes a generated TLS private key; store or discard it according to your secret-handling policy.
 
 ## Verify
 
@@ -165,6 +148,6 @@ proxymock cluster status --speedscale-namespace banking-app -o json
 | | `DaemonSet`: no eBPF (`nettap`) capture; schedules a pod on every node |
 | | `SecurityContextConstraints`, `PriorityClass`: cluster-scoped policy |
 
-Every `Role` and `RoleBinding` the chart renders is namespaced to the release namespace, and a static test (`tests/denylist.sh` in the chart repository) renders the chart across a matrix of values and namespaces and fails the build if any of the above ever appears, or if any object lands outside the release namespace. The chart's own security review pack (shipped with the chart; ask Speedscale support for the pack matching your version) contains an RBAC summary (every `Role` rule, by identity, with the reason it exists) and a capabilities/images/secrets/network summary. It is generated from the same templates and is the right thing to hand your security reviewer instead of walking them through the values file by hand.
+Every `Role` and `RoleBinding` the chart renders in this mode is scoped to the release namespace. Review the render for your exact chart version and values before granting access.
 
-Two settings are opt-in on purpose because they can make the chart un-installable for the exact user it is written for: `inspector.metricsEnabled` and `replayRuntime.metricsEnabled` each add a `metrics.k8s.io/pods` read rule, and both default to **off**. Kubernetes refuses to let an installing identity create a `Role` granting a permission it does not itself hold, so an unconditional rule would make `helm install` fail outright for a namespace admin who was never granted `metrics.k8s.io/pods`. Turn either on only if the installing identity already holds that read; leaving them off costs per-pod CPU/memory enrichment in reports and nothing else.
+Two settings are opt-in on purpose because they can make the chart un-installable for the exact user it is written for: `namespaced.inspector.metricsEnabled` and `namespaced.replayRuntime.metricsEnabled` each add a `metrics.k8s.io/pods` read rule, and both default to **off**. Kubernetes refuses to let an installing identity create a `Role` granting a permission it does not itself hold, so an unconditional rule would make `helm install` fail outright for a namespace admin who was never granted `metrics.k8s.io/pods`. Turn either on only if the installing identity already holds that read; leaving them off costs per-pod CPU/memory enrichment in reports and nothing else.

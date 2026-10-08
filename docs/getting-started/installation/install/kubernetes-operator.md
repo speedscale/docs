@@ -22,9 +22,15 @@ that will be always present on the cluster.
 > Prefer to install manually? Follow the step-by-step instructions in
 > [Quick Start – Install Speedscale Operator](../../quick-start.md#install-speedscale-operator-optional).
 
+If your installer can only write in one existing namespace, use the [namespaced mode of the same public chart](./kubernetes-namespaced.md). It creates no Speedscale CRD, admission webhook, or cluster-scoped RBAC.
+
 Platform teams reviewing what the chart creates or changes can use the [Helm install and upgrade lifecycle](/reference/helm#install-and-upgrade-lifecycle). It separates chart-managed resources, pre-install hooks, Kubernetes actions, and operator-managed runtime components.
 
 For additional background and architecture, complete the [Quick Start](../../quick-start.md) first, then return here for conceptual details about how the operator works within your cluster.
+
+## Kerberos cloud proxy
+
+If your outbound proxy requires Kerberos, follow [Kerberos proxy authentication](/reference/proxy_config#kubernetes-operator-setup) to configure the operator override and mount credentials. The operator propagates these settings to forwarder and inspector.
 
 ## Private registry images
 

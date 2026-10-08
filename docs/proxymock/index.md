@@ -18,17 +18,16 @@ import {
 
 # Overview
 
-This guide is the proxymock entry point. Start with the agent tutorial, the install and quickstart flow, or the language-specific first-success path that matches your app.
+This guide is the proxymock entry point. Start with one of the agent tutorials, the install flow, or the language-specific first-success path that matches your app.
 
 ## [Let your coding agent do it](./agent-tutorial/index.md) {#agent-tutorial}
 
-In the [agent tutorial](./agent-tutorial/index.md), your coding agent does every step while you paste one prompt per chapter into Claude Code or Cursor.
+In the agent tutorials, your coding agent does every step while you paste one prompt per chapter into Claude Code or Cursor. Both use a demo orders service in Go, Java, Python or Node.js.
 
-It installs proxymock, records a demo orders service in Go, Java, Python or Node.js, tunes its mocks and tests, runs a regression test and a performance test, then repeats the loop on a second service standing in for your own. All nine chapters take about 25 minutes of agent work.
+- **[On your machine](./agent-tutorial/index.md):** the agent installs proxymock, records the service, tunes its mocks and tests, runs a regression test and a performance test, then repeats the loop on a second service standing in for your own. About 25 minutes of agent work.
+- **[In your Kubernetes cluster](./agent-tutorial-cluster/index.md):** the same loop against a workload in a cluster. The agent installs the Speedscale operator (in a local minikube cluster if you have none), records the workload with eBPF capture, and replays it in the cluster as a regression test and a load test.
 
-[Start the agent tutorial](./agent-tutorial/index.md)
-
-## [Getting started in 30 seconds](./getting-started/quickstart) {#getting-started}
+## Getting started in 30 seconds {#getting-started}
 
 <AgentInstall />
 
