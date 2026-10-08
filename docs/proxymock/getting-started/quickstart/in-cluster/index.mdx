@@ -15,7 +15,7 @@ Use proxymock web to work directly against your Kubernetes cluster. You can:
 - Enable eBPF capture on a workload to record real in-cluster traffic
 - Run an in-cluster replay of your local recordings (“Run in cluster”) and stream results live
 
-This path is best when you want realistic in-environment behavior or to validate changes inside the cluster.
+This path is best when you want realistic in-environment behavior or to validate changes inside the cluster. The steps below use the classic cluster-wide operator. For a cluster that cannot grant CRDs, webhooks, or cluster RBAC, use the [namespaced installation guide](/getting-started/installation/install/kubernetes-namespaced) and its [sidecar capture workflow](/guides/capture/sidecar-namespaced). Namespaced mode does not support the eBPF or Java Agent capture steps below. Its local replay has [version-specific limits](/getting-started/installation/install/kubernetes-namespaced-limitations).
 
 :::tip Let your coding agent do the whole loop
 The [agent tutorial in your cluster](/proxymock/agent-tutorial-cluster/) has your coding agent install the operator, record a demo workload with eBPF capture, and replay it in the cluster as a regression test and a load test, one prompt per chapter.
