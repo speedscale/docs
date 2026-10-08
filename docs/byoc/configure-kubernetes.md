@@ -14,6 +14,38 @@ This guide installs a reference collector and connects the Speedscale Forwarder 
 - A Speedscale API key with BYOC enabled
 - Credentials and an existing destination for the backend you select
 
+## Customer-owned S3 replay storage
+
+This mode is under development and requires a Speedscale release that includes `forwarder.primaryTransport: byoc`. It uses the public `speedscale/speedscale-operator` chart with `namespaced.enabled: true` when the installation must avoid cluster-scoped permissions, CRDs, and webhooks. The storage setting is separate from the Kubernetes permission setting. A classic operator installation is not yet supported by this mode.
+
+Create the target namespace and the Speedscale API key Secret using your normal process. On EKS, bind the Forwarder service account to an IAM role with `s3:PutObject`, `s3:GetObject`, `s3:ListBucket`, and `s3:DeleteObject` on the chosen bucket and prefix. For a private S3-compatible service, create a Secret in the Speedscale namespace with `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. Only the Forwarder receives these storage credentials. The bucket must already exist.
+
+```yaml
+namespaced:
+  enabled: true
+  clusterName: banking-cluster
+  apiKeySecret: speedscale-apikey
+  forwarder:
+    primaryTransport: byoc
+    byoc:
+      bucket: customer-speedscale
+      region: us-east-1
+      prefix: speedscale/
+      serviceAccountAnnotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<FORWARDER_ROLE>
+```
+
+For private S3-compatible storage, set `namespaced.forwarder.byoc.endpoint` to its HTTP or HTTPS URL, set `pathStyle: true` if required by that service, and set `credentialsSecret` to the Secret name. Do not configure `forwarder.exporters` for the same capture stream unless you intentionally want a second destination.
+
+```bash
+helm upgrade --install speedscale-operator speedscale/speedscale-operator \
+  -n banking-app -f values.yaml
+```
+
+The public chart must be rendered with the mode enabled before installation. Reject a rendered manifest containing `CustomResourceDefinition`, `MutatingWebhookConfiguration`, `ValidatingWebhookConfiguration`, `ClusterRole`, `ClusterRoleBinding`, or `DaemonSet`. The chart requires one Forwarder replica because report updates are serialized in that process. Its generic `networkPolicy.enabled` policy is rejected in this mode because it permits broad HTTPS egress. Supply a customer-specific policy after mapping the actual API, proxy, KDC, and storage routes. Do not assume that allowing `app.speedscale.com` through an authenticated proxy specifies the rest of the network design.
+
+This mode still uses the Speedscale API for account validation, registration, and configuration downloads. A Kerberos-capable outbound proxy path is being developed separately; test it with the customer's proxy settings before deployment. No Speedscale-managed AWS credential endpoint is needed for S3 access in this mode. [Verify direct storage and replay](./verify.md#direct-s3-replay-storage) after installing.
+
 ## 1. Add the Helm repositories
 
 ```bash
@@ -61,7 +93,7 @@ helm upgrade --install byoc-s3 speedscale-byoc/fluentbit-s3 \
   --set irsa.roleArn="arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>"
 ```
 
-### Native Google Cloud Storage
+### Native GCS storage
 
 The chart reuses an existing bucket. Its Google service account (GSA) therefore needs `storage.objects.create` to write objects and `storage.buckets.get` to check that the bucket exists. `roles/storage.objectCreator` contains only the first permission, so add a narrowly scoped custom role for the second.
 

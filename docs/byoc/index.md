@@ -6,7 +6,7 @@ slug: /byoc/
 
 # Bring Your Own Cloud
 
-Speedscale Bring Your Own Cloud (BYOC) routes captured request and response pairs (RRPairs) to storage and observability systems in your cloud account. The Speedscale Forwarder sends the captured traffic to an OpenTelemetry Collector that you operate, and the collector writes to the destinations you choose.
+Speedscale Bring Your Own Cloud (BYOC) routes captured request and response pairs (RRPairs) to storage and observability systems in your cloud account. For named BYOC exporters, the Speedscale Forwarder sends captured traffic to an OpenTelemetry Collector that you operate. A separate customer-owned replay storage mode writes captures, replay inputs, and reports directly to your S3 or S3-compatible bucket.
 
 Use BYOC when your organization needs to control where captured traffic is stored, apply its own retention and access policies, or connect traffic capture to an existing observability platform.
 
@@ -30,14 +30,14 @@ BYOC requires a Speedscale Enterprise plan. Contact [support@speedscale.com](mai
 
 ## What you operate
 
-You operate the collector, destination credentials, storage lifecycle, network policy, and access controls. Speedscale supplies the capture components, Forwarder exporters, public reference charts, and product updates.
+You operate the destination credentials, storage lifecycle, network policy, and access controls. Named BYOC exporters also require a collector that you operate. The direct S3 replay storage mode uses the public Speedscale Helm chart and does not require a collector for storage.
 
-BYOC export keeps captured RRPairs in destinations you control. It does not, by itself, make the Speedscale installation offline: account registration, configuration downloads, and operational telemetry can still use the Speedscale API. Configure the cloud exporter separately if captured RRPairs must not be sent to Speedscale Cloud.
+The direct S3 replay storage mode keeps captures and reports in customer-owned storage and does not request Speedscale-managed AWS credentials. It still needs the Speedscale API for account validation, Forwarder registration, and configuration. The exact network route and proxy authentication depend on your environment. Named BYOC exporters remain a separate option for observability destinations.
 
 ## Typical workflow
 
 1. [Choose a backend](./backends.md) based on retention, query, and replay requirements.
-2. [Install its collector and configure the Forwarder](./configure-kubernetes.md).
+2. [Configure the Forwarder and, for a named exporter, install its collector](./configure-kubernetes.md).
 3. Enable capture on a workload and [verify each hop](./verify.md).
 4. Query traffic in the destination or [import it into proxymock](./use-traffic.md) for analysis, mocking, and replay.
 
