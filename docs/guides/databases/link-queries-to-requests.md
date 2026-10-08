@@ -18,6 +18,8 @@ Untagged traffic still links, by timing, so the views below work for every servi
 
 Open a Postgres or MySQL call on the **Traffic** page. Its **Request** tab shows **Caused by**: the inbound request's method and path, its service, status and duration, marked **linked by trace ID** or **by timing**.
 
+![The Request tab of a Postgres Prepare Statement call: Caused by GET /reports/sales, shop, 200, 203 ms, linked by trace ID, with a Filter: this trace button, above the statement and its sqlcommenter comment carrying the route and traceparent](./link-queries-to-requests/caused-by.png)
+
 When the call carries a trace id, **Filter: this trace** adds the **Trace ID** filter for it, so the grid shows the whole request: the inbound call, the HTTP and gRPC calls it made and its database calls. A filter on the `traceparent` header would drop the database calls, which carry the trace in their SQL comment instead.
 
 An HTTP or gRPC call with a trace id shows the trace id and the same **Filter: this trace** button on its **Request** tab.
