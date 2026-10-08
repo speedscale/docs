@@ -171,7 +171,7 @@ Mount the entire Secret directory to receive credential rotations. Kubernetes [u
 
 The [namespaced installation](/getting-started/installation/install/kubernetes-namespaced) runs the forwarder, inspector and replay coordinator in the release namespace. Its Kerberos settings mount a pre-existing Secret read-only on those three components. They do not grant Secret read permissions to an application sidecar or replay runtime Pod.
 
-The released v2.5.1145 chart does not contain the `kerberos` values below. Before using this procedure, check `helm show values speedscale/speedscale-namespaced` for a `kerberos` section and upgrade to a chart release that contains it.
+Chart versions through 2.5.1149 do not contain the namespaced Kerberos values below. Before using this procedure, run `helm show values speedscale/speedscale-operator` and confirm the published chart has a `namespaced.kerberos` section.
 
 Create the credential Secret in the release namespace:
 
@@ -186,18 +186,20 @@ Add these values to the same file used for the namespaced install:
 ```yaml title="values.yaml"
 https_proxy: http://proxy.example.com:8080
 no_proxy: localhost,127.0.0.1,.svc,.cluster.local
-kerberos:
+namespaced:
   enabled: true
-  secretName: speedscale-kerberos
-  credentialSource: keytab
-  principal: user@EXAMPLE.COM
-  # Set proxySPN only when the registered SPN differs from HTTP/<proxy hostname>.
-  # proxySPN: HTTP/proxy.example.com
+  kerberos:
+    enabled: true
+    secretName: speedscale-kerberos
+    credentialSource: keytab
+    principal: user@EXAMPLE.COM
+    # Set proxySPN only when the registered SPN differs from HTTP/<proxy hostname>.
+    # proxySPN: HTTP/proxy.example.com
 ```
 
 For a FILE cache, create the Secret with `--from-file=cache=/path/to/cache`, set `credentialSource: cache`, and omit `principal`. Refresh the cache and update the Secret before its TGT expires. The chart requires `https_proxy`, the Secret name, and a principal for keytab mode. It mounts only `krb5.conf` and the selected credential file, so either missing Secret key prevents the Pods from starting.
 
-If using the unified `speedscale-operator` chart in namespaced mode, place the `kerberos` block under `namespaced:` alongside `enabled: true`; `https_proxy` and `no_proxy` remain root values. The [installation guide](/getting-started/installation/install/kubernetes-namespaced) covers the namespace permissions and chart selection. Permit direct access to the realm's KDC from these three Pods in addition to the authenticated proxy connection. The chart's optional NetworkPolicy does not add egress for the proxy port or KDC; supply that access in your CNI policy before enabling the chart policy.
+The [installation guide](/getting-started/installation/install/kubernetes-namespaced) covers the namespace permissions and the public chart. Keep `https_proxy` and `no_proxy` at the chart root, and permit direct access to the realm's KDC from these three Pods in addition to the authenticated proxy connection. The chart's optional NetworkPolicy does not add egress for the proxy port or KDC; supply that access in your CNI policy before enabling the chart policy.
 
 ### Validate the connection
 
