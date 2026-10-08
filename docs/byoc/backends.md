@@ -5,7 +5,7 @@ description: Choose a BYOC backend for retention, search, dashboards, and proxym
 
 # Storage and Observability Backends
 
-Speedscale publishes reference Helm charts in the [speedscale-byoc repository](https://github.com/speedscale/speedscale-byoc). Install one independent collector channel for each destination you need.
+Speedscale publishes reference collector charts in the [speedscale-byoc repository](https://github.com/speedscale/speedscale-byoc). Install one independent collector channel for each observability destination you need. The direct customer-owned S3 replay storage mode uses the public Speedscale operator chart and does not need a separate collector chart for storage.
 
 | Chart | Destination | Speedscale capture signal | Optional application signals | Direct proxymock import |
 | --- | --- | --- | --- | --- |
@@ -18,6 +18,8 @@ Speedscale publishes reference Helm charts in the [speedscale-byoc repository](h
 | `datadog` | Datadog | RRPair logs | Application traces and metrics sent independently; the Datadog connector can derive APM trace metrics | Trace recipe |
 | `dynatrace` | Dynatrace | RRPair logs | Application traces and metrics sent independently | No |
 | `newrelic` | New Relic | RRPair logs | Application traces and metrics sent independently | No |
+
+For replay inputs and reports in customer storage, select the [direct S3 replay storage mode](./configure-kubernetes.md#customer-owned-s3-replay-storage). It supports AWS S3 with EKS workload identity and private S3-compatible storage with a customer endpoint and credentials. Captures from this mode are imported from `<PREFIX>/records/rrpairs/`, while the collector chart above writes OTLP objects under `byoc/`.
 
 The `fluentbit-s3` name is historical; the chart writes OTLP JSON directly with the OpenTelemetry `awss3` exporter. New GCS installations should use the native `gcs` chart. Keep the legacy `fluentbit-gcs` chart only for an existing S3-interoperability and HMAC workflow.
 
