@@ -43,6 +43,10 @@ Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `pr
 
 :::
 
+## Kerberos cloud proxy
+
+If your outbound proxy requires Kerberos, configure [Kerberos proxy authentication](/reference/proxy_config#local-cli-setup) before running `proxymock init` or other cloud commands.
+
 ## After installing
 
 Initialize once before your first recording. This registers a valid email to activate proxymock and is required even for fully local use; your recorded traffic stays on your machine. Browser sign-in is the default path:
