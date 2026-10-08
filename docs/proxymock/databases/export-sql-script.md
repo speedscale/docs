@@ -74,4 +74,5 @@ proxymock sql-script --in proxymock/recorded-2026-10-06_17-40-00.000000000Z \
 ## Related
 
 - [Inspect a statement](./inspect-a-statement.md)
+- [Export a SQL script from the dashboard](../../guides/databases/export-sql-script.md)
 - [Load and Regression Test a Database](./load-and-regression-testing.md), to replay the statements with many sessions instead of once
