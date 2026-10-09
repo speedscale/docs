@@ -27,13 +27,14 @@ Capture and replay can run in different environments. List which dependencies wi
 
 | Environment | Setup and permissions |
 | --- | --- |
-| Kubernetes | A Speedscale account/API key, `kubectl` access and approval to deploy capture and replay components. Follow the [Quick Start](./quick-start.md), which includes Helm and GitOps options. |
+| Kubernetes with the classic operator | A Speedscale account/API key, `kubectl` access and approval to deploy capture and replay components. Follow the [Quick Start](./quick-start.md), which includes Helm and GitOps options. |
+| Kubernetes with namespace restrictions | Follow [namespace-only installation](./installation/install/kubernetes-namespaced.md). This mode uses sidecar capture and cannot deploy the DaemonSet required for eBPF. Confirm its namespace-scoped permissions, pre-provisioned Secrets and connectivity before kickoff. |
 | Workstation or a service you can run locally | Install and initialize [proxymock](../proxymock/getting-started/installation.md), run the service and configure proxy routing and TLS trust. This path does not require Kubernetes. |
 | Existing VM or Docker deployment | Review the [VM](./installation/install/vm.md) or [Docker](./installation/install/docker.md) guide with the platform owner. Confirm proxy routing and certificate trust. |
 
-For Kubernetes, confirm:
+For classic Kubernetes operator installations, confirm:
 
-- **Permissions:** for the classic operator, approve RBAC, admission webhooks and Secret access using [Kubernetes security requirements](../security/kubernetes-permissions.md). If cluster-scoped access is prohibited, review [namespace-only installation](./installation/install/kubernetes-namespaced.md).
+- **Permissions:** approve RBAC, admission webhooks and Secret access using [Kubernetes security requirements](../security/kubernetes-permissions.md).
 - **Capture:** confirm kernel, BTF, runtime and host-access compatibility using [eBPF requirements](../reference/ebpf-traffic-collection/README.md). Use eBPF where supported; otherwise agree on [sidecar capture](./installation/sidecar/install.md).
 - **Networking:** allow the deployment's outbound destinations and, for the classic operator, API-server access to its webhook on TCP 9443. See [networking requirements](../reference/networking.md) for current hosts. Cloud connections originate outbound from the cluster.
 - **Artifacts:** access the chart and container images, or arrange internal mirrors. Supply the API key through your approved Secret-management process.
