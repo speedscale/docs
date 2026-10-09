@@ -22,7 +22,7 @@ Evaluate Speedscale with one service to assess replay accuracy and performance i
 | Environment | Prepare |
 | --- | --- |
 | Kubernetes, classic operator | Configure an API key and follow the [Quick Start](./quick-start.md). Approve [RBAC and webhook access](../security/kubernetes-permissions.md) and confirm [eBPF compatibility](../reference/ebpf-traffic-collection/README.md), or agree on sidecar capture. |
-| Kubernetes, namespace-only | Follow the [namespaced guide](./installation/install/kubernetes-namespaced.md). Pre-provision the namespace and required Secrets, including the API key. This mode uses sidecar capture; eBPF is unavailable. |
+| Kubernetes, namespace-only | For Deployment or StatefulSet targets, follow the [namespaced guide](./installation/install/kubernetes-namespaced.md). Pre-provision the namespace and required Secrets, including the API key. This mode uses sidecar capture; eBPF is unavailable. |
 | Local service | Install [proxymock](../proxymock/getting-started/installation.md) and activate through browser sign-in. Use an API key for headless runs. Confirm proxy routing and TLS trust; Kubernetes is optional. |
 | VM or Docker | Configure an API key and review the [VM](./installation/install/vm.md) or [Docker](./installation/install/docker.md) guide. |
 
