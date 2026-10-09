@@ -7,6 +7,10 @@ description: End-to-end BYOC deployment and traffic-reuse examples.
 
 Use these examples after reviewing [How BYOC works](../how-it-works.md) and the backend-specific prerequisites.
 
+## Reference architectures
+
+- [AWS EKS quality factory](./aws-eks-quality-factory.md) shows how eBPF-captured, redacted S3 traffic can check a Kiro code change with an independent local replay gate. The Bedrock path is a separate capture proof.
+
 ## Deployment examples
 
 - [BYOC on ECS/Fargate](./ecs.md) captures ECS application traffic and writes it to S3 with an OpenTelemetry collector and ECS task role.
