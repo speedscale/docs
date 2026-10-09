@@ -36,6 +36,10 @@ const config = {
       "@docusaurus/plugin-client-redirects",
       {
         redirects: [
+          {
+            from: "/getting-started/poc-prerequisites/",
+            to: "/getting-started/evaluation/",
+          },
           // Databases sections (S-13517)
           {
             from: "/proxymock/guides/postgres/",

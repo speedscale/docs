@@ -20,6 +20,7 @@ const sidebars = {
       label: "Getting Started",
       items: [
         "getting-started/introduction",
+        "getting-started/evaluation",
         "getting-started/quick-start",
         "getting-started/tutorial",
         {
