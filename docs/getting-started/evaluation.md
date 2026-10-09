@@ -15,16 +15,16 @@ Evaluate Speedscale with one service to assess replay accuracy and performance i
 - **Test environment:** provide a non-production deployment, test credentials, seed data and capacity for the agreed load. Identify which dependencies will be mocked or remain live.
 - **Owners:** name an application owner and a platform contact for installation and network access.
 - **Data handling:** agree on fields to redact, storage location, access and retention before capture. See [Data Loss Prevention](/guides/dlp/).
-- **Access:** arrange a Speedscale account and API key, approved installation permissions, and access to the required binaries or container images.
+- **Access:** arrange Speedscale access, installation permissions and the required binaries or container images.
 
 ## Installation requirements
 
 | Environment | Prepare |
 | --- | --- |
-| Kubernetes, classic operator | Follow the [Quick Start](./quick-start.md). Approve [RBAC and webhook access](../security/kubernetes-permissions.md) and confirm [eBPF compatibility](../reference/ebpf-traffic-collection/README.md), or agree on sidecar capture. |
-| Kubernetes, namespace-only | Follow the [namespaced guide](./installation/install/kubernetes-namespaced.md). Pre-provision the namespace and Secrets. This mode uses sidecar capture; eBPF is unavailable. |
-| Local service | Install and initialize [proxymock](../proxymock/getting-started/installation.md). Confirm proxy routing and TLS trust. Kubernetes is optional. |
-| VM or Docker | Review the [VM](./installation/install/vm.md) or [Docker](./installation/install/docker.md) guide with your platform owner. |
+| Kubernetes, classic operator | Configure an API key and follow the [Quick Start](./quick-start.md). Approve [RBAC and webhook access](../security/kubernetes-permissions.md) and confirm [eBPF compatibility](../reference/ebpf-traffic-collection/README.md), or agree on sidecar capture. |
+| Kubernetes, namespace-only | Follow the [namespaced guide](./installation/install/kubernetes-namespaced.md). Pre-provision the namespace and required Secrets, including the API key. This mode uses sidecar capture; eBPF is unavailable. |
+| Local service | Install [proxymock](../proxymock/getting-started/installation.md) and activate through browser sign-in. Use an API key for headless runs. Confirm proxy routing and TLS trust; Kubernetes is optional. |
+| VM or Docker | Configure an API key and review the [VM](./installation/install/vm.md) or [Docker](./installation/install/docker.md) guide. |
 
 Confirm [network access](../reference/networking.md) for your deployment, including outbound cloud connections and TCP 9443 webhook access for the classic operator. If captured traffic must stay in customer-controlled storage, review [BYOC](../byoc/index.md). It requires Enterprise enablement and still needs Speedscale API connectivity.
 
