@@ -21,7 +21,7 @@ Speedscale is different from static checks and synthetic-only tests because it v
 
 ## Plan an evaluation
 
-Start with [POC prerequisites and the evaluation plan](./poc-prerequisites.md) to choose a service, prepare your environment and agree on success criteria before installation.
+Start with [evaluation prerequisites and plan](./evaluation.md) to choose a service, prepare your environment and agree on success criteria before installation.
 
 ## Install
 
