@@ -7,6 +7,8 @@ sidebar_position: 1
 
 Speedscale runs a set of components and processes in your Kubernetes environment. This document outlines the specific components and the network requirements for each component.
 
+To connect these components to code-change verification and incident reproduction, see the [Quality Factory reference design](/reference/quality-factory).
+
 Security-relevant defaults and options in this architecture:
 
 - **Capture ordering:** prefer eBPF (`nettap`) first; use goproxy sidecars only when eBPF is not suitable.
