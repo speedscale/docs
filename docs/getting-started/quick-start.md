@@ -10,6 +10,8 @@ import AgentInstall from './installation/install/_agent_install.mdx'
 
 # Quick Start
 
+Planning a proof of concept? Review the [POC prerequisites and evaluation plan](./poc-prerequisites.md) before installing.
+
 :::info Local installation
 For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. See **[Local Development – Getting Started](/proxymock/)** to install proxymock and get started in about 30 seconds.
 :::
