@@ -16,7 +16,7 @@ Choose customer-owned S3 replay storage below, or install a reference collector 
 
 ## Customer-owned S3 replay storage
 
-This mode is under development and requires a Speedscale release that includes `forwarder.primaryTransport: byoc`. It uses the public `speedscale/speedscale-operator` chart with `namespaced.enabled: true` when the installation must avoid cluster-scoped permissions, CRDs, and webhooks. The storage setting is separate from the Kubernetes permission setting. A classic operator installation is not yet supported by this mode.
+Customer-owned replay storage is available in the public `speedscale/speedscale-operator` chart and proxymock version 2.5.1169 or later. Set `namespaced.forwarder.primaryTransport: byoc` and `namespaced.enabled: true` when the installation must avoid cluster-scoped permissions, CRDs, and webhooks. The storage setting is separate from the Kubernetes permission setting. A classic operator installation is not yet supported by this mode.
 
 Create the target namespace and the Speedscale API key Secret using your normal process. On EKS, bind the Forwarder service account to an IAM role with `s3:PutObject`, `s3:GetObject`, `s3:ListBucket`, and `s3:DeleteObject` on the chosen bucket and prefix. For a private S3-compatible service, create a Secret in the Speedscale namespace with `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. Only the Forwarder receives these storage credentials. The bucket must already exist.
 
@@ -35,7 +35,24 @@ namespaced:
         eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<FORWARDER_ROLE>
 ```
 
-For private S3-compatible storage, set `namespaced.forwarder.byoc.endpoint` to its HTTP or HTTPS URL, set `pathStyle: true` if required by that service, and set `credentialsSecret` to the Secret name. Do not configure `forwarder.exporters` for the same capture stream unless you intentionally want a second destination.
+For private S3-compatible storage, remove `serviceAccountAnnotations` from the values above, create the credential Secret in the same namespace, then add the endpoint settings:
+
+```bash
+kubectl -n banking-app create secret generic s3-credentials \
+  --from-file=AWS_ACCESS_KEY_ID=/secure/path/to/access-key-id \
+  --from-file=AWS_SECRET_ACCESS_KEY=/secure/path/to/secret-access-key
+```
+
+```yaml
+namespaced:
+  forwarder:
+    byoc:
+      endpoint: https://s3.internal.example
+      pathStyle: true
+      credentialsSecret: s3-credentials
+```
+
+Use the endpoint URL and path-style setting required by your storage service. Do not configure `forwarder.exporters` for the same capture stream unless you intentionally want a second destination.
 
 Plan the Cloud proxy and customer storage routes separately. EKS IAM roles for service accounts obtain credentials through AWS STS; a private EKS cluster needs an approved [STS VPC endpoint and regional STS configuration](https://docs.aws.amazon.com/eks/latest/userguide/configure-sts-endpoint.html). If the private S3 host should bypass the Cloud proxy, add that exact host to the chart-root `no_proxy` value. Confirm the proxy, KDC, STS, S3, and Kubernetes service routes with the customer network team.
 
@@ -43,14 +60,14 @@ Plan the Cloud proxy and customer storage routes separately. EKS IAM roles for s
 helm repo add speedscale https://speedscale.github.io/operator-helm/
 helm repo update
 helm upgrade --install speedscale-operator speedscale/speedscale-operator \
-  -n banking-app -f values.yaml
+  --version 2.5.1169 -n banking-app -f values.yaml
 ```
 
 The public chart must be rendered with the mode enabled before installation. Reject a rendered manifest containing `CustomResourceDefinition`, `MutatingWebhookConfiguration`, `ValidatingWebhookConfiguration`, `ClusterRole`, `ClusterRoleBinding`, or `DaemonSet`. The chart requires one Forwarder replica because report updates are serialized in that process. Its generic `networkPolicy.enabled` policy is rejected in this mode because it permits broad HTTPS egress. Supply a customer-specific policy after mapping the actual API, proxy, KDC, and storage routes. Do not assume that allowing `app.speedscale.com` through an authenticated proxy specifies the rest of the network design.
 
-Use the [namespaced sidecar capture guide](/guides/capture/sidecar-namespaced) to inject and check capture with `proxymock cluster capture inject --sidecar`. Use the [namespaced replay guide](/guides/replay/namespaced) to stage local traffic and start replay with `proxymock cluster replay start --namespaced`. The collector-export capture annotation in step 5 below does not apply to this installation.
+Use the [namespaced sidecar capture guide](/guides/capture/sidecar-namespaced) to inject and check capture with `proxymock cluster capture inject --sidecar`. Use the [namespaced replay guide](/guides/replay/namespaced) to stage local traffic and start replay with `proxymock cluster replay start --namespaced --snapshot-source local`, which prevents a Cloud upload if local staging fails. To pull captured traffic directly from the bucket, follow [Use BYOC Traffic with proxymock](/byoc/use-traffic#direct-s3-replay-storage-layout). The collector-export capture annotation in step 5 below does not apply to this installation.
 
-This mode still uses the Speedscale API for account validation, registration, and configuration downloads. A Kerberos-capable outbound proxy path is being developed separately; test it with the customer's proxy settings before deployment. No Speedscale-managed AWS credential endpoint is needed for S3 access in this mode. [Verify direct storage and replay](./verify.md#direct-s3-replay-storage) after installing.
+This mode still uses the Speedscale API for account validation, registration, and configuration downloads. For a Kerberos-authenticated Cloud proxy, use the [namespaced chart proxy setup](/reference/proxy_config#namespaced-chart-setup) and test it with the customer's proxy and realm before deployment. No Speedscale-managed AWS credential endpoint is needed for S3 access in this mode. [Verify direct storage and replay](./verify.md#direct-s3-replay-storage) after installing.
 
 The numbered steps below configure collector export. Skip them for customer-owned S3 replay storage.
 

@@ -49,7 +49,7 @@ kubectl -n banking-app create secret generic speedscale-apikey \
 
 Point `namespaced.apiKeySecret` at a different name if your platform provisions credentials elsewhere (sealed-secrets, external-secrets, a Vault agent).
 
-If outbound access to Speedscale Cloud goes through a Kerberos-authenticated proxy, follow the [namespaced chart proxy setup](/reference/proxy_config#namespaced-chart-setup). The v2.5.1145 chart does not yet include the required Kerberos mount values.
+If outbound access to Speedscale Cloud goes through a Kerberos-authenticated proxy, use chart version 2.5.1169 or later and follow the [namespaced chart proxy setup](/reference/proxy_config#namespaced-chart-setup).
 
 ### A Pod Security exemption for the instrumented namespace
 
@@ -84,13 +84,13 @@ This is worth surfacing to your security reviewer up front: "nothing outside you
 
 ## Install the public chart
 
-The namespaced and classic modes use the same public `speedscale-operator` chart. This command uses the released 2.5.1145 chart and component images. Install into the existing application namespace without `--create-namespace`:
+The namespaced and classic modes use the same public `speedscale-operator` chart. This command uses the released 2.5.1169 chart and component images. Install into the existing application namespace without `--create-namespace`:
 
 ```bash
 helm repo add speedscale https://speedscale.github.io/operator-helm/
 helm repo update
 helm upgrade --install speedscale-operator speedscale/speedscale-operator \
-  --version 2.5.1145 \
+  --version 2.5.1169 \
   --namespace banking-app \
   --set namespaced.enabled=true \
   --set namespaced.clusterName=banking-cluster \
@@ -98,7 +98,7 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
   --set namespaced.forwarder.primaryTransport=cloud
 ```
 
-`namespaced.forwarder.primaryTransport=cloud` sends captured records to Speedscale Cloud; it does not select customer-owned BYOC storage. With this setting, the released 2.5.1145 chart passed a minikube test behind default-deny egress and a proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com`. The proxy recorded only `dev.speedscale.com` calls from Speedscale Pods during that test, with no AWS CONNECT from them. Full captured records were retrieved from dev Cloud through the proxy. Your firewall or proxy must enforce the allowed destinations and restrict which Pods can use that route. See the [restricted-egress results](./kubernetes-namespaced-limitations.md#restricted-egress-in-251145). The default chart installation remains the classic operator; always set `namespaced.enabled=true` for this mode.
+`namespaced.forwarder.primaryTransport=cloud` sends captured records to Speedscale Cloud. For customer-owned S3 or S3-compatible storage, use `namespaced.forwarder.primaryTransport=byoc` and the [BYOC Kubernetes configuration](/byoc/configure-kubernetes#customer-owned-s3-replay-storage). The Kubernetes permission scope and storage destination are separate choices. With Cloud transport, the released 2.5.1145 chart passed a minikube test behind default-deny egress and a proxy allowing only `app.speedscale.com`, `staging.speedscale.com`, and `dev.speedscale.com`. See the [restricted-egress results](./kubernetes-namespaced-limitations.md#restricted-egress-in-251145). Your firewall or proxy must enforce the allowed destinations and restrict which Pods can use that route. The default chart installation remains the classic operator; always set `namespaced.enabled=true` for this mode.
 
 For an outbound proxy, set the root `http_proxy`, `https_proxy`, and `no_proxy` chart values in a values file. Include local Services, DNS, and the Kubernetes API in `no_proxy` as required by your network. The released chart passes these values to all three namespaced control-plane components. The Helm namespace and workload namespace must match.
 
@@ -106,7 +106,7 @@ The installer needs permission to create and manage the namespace-scoped Deploym
 
 ```bash
 helm template speedscale-operator speedscale/speedscale-operator \
-  --version 2.5.1145 --namespace banking-app \
+  --version 2.5.1169 --namespace banking-app \
   --set namespaced.enabled=true --include-crds > namespaced-rendered.yaml
 ```
 
@@ -141,7 +141,7 @@ proxymock cluster status --speedscale-namespace banking-app -o json
 
 | Runs | Does not run |
 |---|---|
-| **forwarder**: receives captured traffic from sidecars, ships it to Speedscale cloud | `Namespace`: installing one needs cluster-scoped write |
+| **forwarder**: receives captured traffic from sidecars and writes it to the selected Cloud or customer-owned storage destination | `Namespace`: installing one needs cluster-scoped write |
 | **inspector**: read-only workload inventory (pods, deployments, statefulsets, logs, events) for `proxymock` and the dashboard | `CustomResourceDefinition`: cluster-scoped, and shared with every other install |
 | **replay coordinator**: drives replays from labeled `ConfigMap`s, injects and restores the sidecar on the workload under test | `MutatingWebhookConfiguration` / `ValidatingWebhookConfiguration`: intercepts every API call in the cluster |
 | | `ClusterRole` / cluster role bindings: the exact grant this chart exists to avoid |
