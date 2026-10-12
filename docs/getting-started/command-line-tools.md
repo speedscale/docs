@@ -60,15 +60,15 @@ Installing a CLI on your machine is separate from installing the operator in a c
 
 ## Credentials: do I initialize both? {#credentials}
 
-Both CLIs use the same Speedscale configuration in `~/.speedscale` by default. For the same account and tenant, initialize once with either `proxymock init` or `speedctl init`. If speedctl is already configured for your enterprise tenant, proxymock can reuse that configuration. Installing the second binary does not require registering another email or running `init` again.
-
-The account in that configuration determines your access. Free proxymock activation enables local workflows; accessing a tenant's cloud snapshots requires credentials for that tenant. Existing customers should sign in with their enterprise account or use its personal API key from the [Profile page](https://app.speedscale.com/profile). See [proxymock initialization](../proxymock/guides/initialize.md) for the sign-in and headless options. Changing the shared credentials affects both CLIs.
-
-To check which config each installed client uses without printing credentials, run:
+Both CLIs use `~/.speedscale` as their default configuration directory. Reusing credentials requires both clients to select the same configuration file and account context. Check which file each installed client uses without printing credentials:
 
 ```bash
 proxymock version --client
 speedctl version --client
 ```
 
-Compare the `ConfigFile` paths. Older clients use `config.yaml`; newer clients prefer `config.json` and fall back to YAML. If the paths differ, align the clients' versions and configure both to use the same file. Both accept `--config <path>` and `--context <name>` for an explicit file and account context. A custom home or config path can make their settings separate.
+Compare the `ConfigFile` paths. Older clients use `config.yaml`; newer clients prefer `config.json` and fall back to YAML. If the paths differ, align the clients' versions and configure both to use the same file. Both accept `--config <path>` and `--context <name>` for an explicit file and account context. Use the same overrides with both clients when you need them. A custom home or config path can make their settings separate.
+
+With the same file and account context selected, initialize once with either `proxymock init` or `speedctl init`. If speedctl is already configured for your enterprise tenant, proxymock can reuse that configuration. Installing the second binary does not require registering another email or running `init` again.
+
+The account in that configuration determines your access. Free proxymock activation enables local workflows; accessing a tenant's cloud snapshots requires credentials for that tenant. Follow [enterprise account setup](../proxymock/guides/initialize.md#enterprise-account) for sign-in and API-key options. If the file already contains credentials for another account, [replace the existing configuration](../proxymock/guides/initialize.md#replace-credentials). `proxymock init --api-key` alone keeps an existing configuration. Changing the shared credentials affects both CLIs.

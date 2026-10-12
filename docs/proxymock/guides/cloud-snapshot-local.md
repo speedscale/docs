@@ -12,7 +12,7 @@ Use this path when the traffic is already in a Speedscale Cloud snapshot and you
 ## Before you begin
 
 - [Install proxymock CLI](../getting-started/installation.md). If speedctl already uses your enterprise tenant's credentials, [reuse the shared configuration](/getting-started/command-line-tools/#credentials); a second initialization is unnecessary.
-- Have access to the tenant that owns the snapshot. Free local activation alone does not grant that access. If needed, [initialize with your enterprise account](./initialize.md).
+- Have access to the tenant that owns the snapshot. Free local activation alone does not grant that access. If needed, [initialize with your enterprise account](./initialize.md#enterprise-account). If you already activated proxymock with another account, follow the [configuration replacement steps](./initialize.md#replace-credentials); `proxymock init --api-key` alone keeps an existing configuration.
 - Copy the snapshot ID from the Speedscale dashboard. Open the snapshot's actions menu to copy its ID.
 - Prepare a local version of the app and know its listening port. The example below uses `8080`; replace it with your port.
 
