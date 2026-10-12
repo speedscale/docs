@@ -606,6 +606,8 @@ KAFKA_BROKERS=localhost:19092 java -jar target/my-app.jar
 
 proxymock captures the Kafka binary wire protocol including `ApiVersions`, `Metadata`, `Produce`, `Fetch`, `FindCoordinator`, `JoinGroup`, `SyncGroup`, and other API operations. Each request/response pair is stored as an RRPair file.
 
+To see how your consumer groups behaved in the recording, including lag, rebalances, poll timeouts and stuck partitions, run `proxymock kafka-report`; see [Kafka consumer-group health](../../proxymock/kafka/consumer-group-health.md).
+
 ## Mocking Kafka with proxymock {#mocking}
 
 After recording Kafka traffic, you can mock the broker for local development and testing. This lets your application run without a real Kafka broker.

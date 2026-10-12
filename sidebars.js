@@ -278,6 +278,7 @@ const sidebars = {
           ],
           collapsed: true,
         },
+        "proxymock/kafka/consumer-group-health",
         {
           type: "category",
           label: "AWS",
