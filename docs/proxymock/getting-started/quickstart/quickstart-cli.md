@@ -126,6 +126,8 @@ Need another OS like Windows or are you having issues? See advanced [installatio
 
 ## Step 2: Get and register your API key {#api-key}
 
+If speedctl already uses the same account and tenant, [reuse that shared configuration](/getting-started/command-line-tools/#credentials) and continue to [Step 3](#recording). Otherwise initialize proxymock below.
+
 **Easiest path:** Run `proxymock init` with no arguments and use the browser sign-in flow. Your configuration is saved automatically.
 
 **If you already have a key or need a headless flow:** Get it from [sign up](https://app.speedscale.com/proxymock/signup) or, for enterprise customers, the [Profile page](https://app.speedscale.com/profile). Then register it:

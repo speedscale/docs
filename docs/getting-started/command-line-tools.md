@@ -10,23 +10,24 @@ keywords: [CLI, command line, command-line tools, proxymock, speedctl, installat
 
 Speedscale has two command-line tools: **proxymock** and **speedctl**. Start with **proxymock** for new workflows that record traffic, mock dependencies, and replay tests. Use **speedctl** for platform setup, managing Speedscale Cloud resources, and existing scripts that call `speedctl` commands.
 
-Both tools can run replays, so choose the guide that matches your workflow. proxymock supports local development, CI/CD, Kubernetes, and Speedscale Cloud. A cluster or cloud workflow can use proxymock too.
+First choose where your traffic is now and where you want to test it. Traffic recorded on your machine, snapshots in Speedscale Cloud, and recordings in a BYOC bucket can all feed proxymock workflows. Installing the operator is a separate prerequisite when capture or replay will run in Kubernetes.
 
 ## Choose a CLI for your task
 
-| What you want to do | Tool and next step |
+| Traffic and destination | Steps |
 | --- | --- |
-| Record, mock, and replay an app on your machine | Install [proxymock CLI](../proxymock/getting-started/installation.md), then follow the [proxymock CLI quickstart](../proxymock/getting-started/quickstart/quickstart-cli.md). |
-| Run recorded tests in CI/CD | Use [proxymock in CI/CD](../proxymock/guides/cicd.md). Review its account requirements before configuring a pipeline. |
-| Capture traffic or run a replay in Kubernetes | Use [proxymock cluster commands](../proxymock/guides/cluster.md) and [choose where the replay runs](../proxymock/guides/replay-paths.md). The cluster needs the Speedscale components described in those guides. |
-| Use recordings stored in your own cloud account | Follow [Use BYOC traffic with proxymock](../byoc/use-traffic.md). |
-| Start a replay through Speedscale Cloud | Use [proxymock cloud replay](../proxymock/guides/replay-paths.md#via-speedscale-cloud). Existing `speedctl infra replay` scripts can follow [Replay with speedctl](../guides/replay/via-speedctl.md). |
-| Install the Speedscale operator or generate Kubernetes manifests | Follow the [platform quick start](./quick-start.md). It covers Helm, GitOps, and the [speedctl CLI](./installation/install/cli.md). |
-| Manage cloud snapshots, test configs, or other platform resources from an existing script | Install [speedctl CLI](./installation/install/cli.md) and use `speedctl --help` for its commands. |
+| Your app to local recordings | 1. [Install proxymock CLI](../proxymock/getting-started/installation.md). 2. Follow the [proxymock CLI quickstart](../proxymock/getting-started/quickstart/quickstart-cli.md). |
+| Speedscale Cloud snapshot to your laptop | 1. [Install proxymock](../proxymock/getting-started/installation.md) and [reuse your cloud credentials](#credentials). 2. [Pull the snapshot and replay it locally](../proxymock/guides/cloud-snapshot-local.md). |
+| Kubernetes workload to capture or replay in your cluster | 1. [Install and verify the operator](./quick-start.md#install-speedscale-operator-optional), or [verify your existing BYOC deployment](../byoc/verify.md). 2. [Install proxymock](../proxymock/getting-started/installation.md) and follow [cluster commands](../proxymock/guides/cluster.md). 3. [Choose the in-cluster replay path](../proxymock/guides/replay-paths.md#in-your-cluster). |
+| BYOC bucket to your machine or cluster | 1. [Install proxymock CLI](../proxymock/getting-started/installation.md). 2. [Pull BYOC traffic](../byoc/use-traffic.md). 3. [Choose where the replay runs](../proxymock/guides/replay-paths.md). |
+| Recorded traffic to CI/CD | 1. [Record locally](../proxymock/getting-started/quickstart/quickstart-cli.md) or [pull a cloud snapshot](../proxymock/guides/cloud-snapshot-local.md#pull). 2. Follow [proxymock CI/CD setup](../proxymock/guides/cicd.md), including its account requirements. |
+| Recordings to a cloud-managed cluster replay | 1. [Install the operator](./quick-start.md#install-speedscale-operator-optional) if needed. 2. Use [proxymock cloud replay](../proxymock/guides/replay-paths.md#via-speedscale-cloud). Existing `speedctl infra replay` scripts can follow [Replay with speedctl](../guides/replay/via-speedctl.md). |
+| Platform setup in Kubernetes | Follow the [platform quick start](./quick-start.md). Choose Helm, GitOps, or the [speedctl CLI](./installation/install/cli.md) install method. |
+| Existing script to Speedscale Cloud resources | Install [speedctl CLI](./installation/install/cli.md), [reuse your tenant credentials](#credentials), and use `speedctl --help` for its commands. |
 
 ## Start with proxymock
 
-For a local record/mock/replay workflow, install proxymock alone. Initialize it once with `proxymock init`, then work through the quickstart with your application. Local recording requires one-time activation, and recorded traffic stays on your machine by default. See [data and privacy](../proxymock/how-it-works/data_and_privacy.md) for details.
+For a local record/mock/replay workflow, install proxymock alone. Initialize it once with `proxymock init`, or [reuse your existing speedctl credentials](#credentials), then work through the quickstart with your application. Local recording requires one-time activation, and recorded traffic stays on your machine by default. See [data and privacy](../proxymock/how-it-works/data_and_privacy.md) for details.
 
 - [Install proxymock CLI](../proxymock/getting-started/installation.md): installation and initialization for macOS, Linux, and Windows.
 - [proxymock CLI quickstart](../proxymock/getting-started/quickstart/quickstart-cli.md): a complete record, mock, and replay loop with a demo app.
@@ -48,6 +49,26 @@ Run `speedctl --help` to list commands and `speedctl <command> --help` to see th
 
 ## Do I need both CLIs?
 
-Install the tool for the task you are doing. Local proxymock recording, mocking, and replaying use proxymock. If your deployment or automation also calls speedctl, install both. The [platform agent install](./quick-start.md#install-with-ai-agent) installs both tools; the [local proxymock agent install](../proxymock/getting-started/installation.md#install-with-ai-agent) installs proxymock and its MCP server.
+For a manual install, install the tool your chosen workflow calls for. Local proxymock recording, mocking, and replaying use proxymock. If your deployment or automation also calls speedctl, install both.
+
+For an agent-assisted install, choose the scope of the prompt:
+
+- **proxymock only:** the [local proxymock agent install](../proxymock/getting-started/installation.md#install-with-ai-agent) installs proxymock and its MCP server, with no operator.
+- **Platform setup:** the [platform agent install](./quick-start.md#install-with-ai-agent) deliberately installs both CLIs, Kubernetes prerequisites, and the operator when requested. It prepares the full platform toolset; the install-one guidance above applies to manual installation.
 
 Installing a CLI on your machine is separate from installing the operator in a cluster. For cluster setup, continue with the [platform quick start](./quick-start.md) or [BYOC Kubernetes setup](../byoc/configure-kubernetes.md).
+
+## Credentials: do I initialize both? {#credentials}
+
+Both CLIs use the same Speedscale configuration in `~/.speedscale` by default. For the same account and tenant, initialize once with either `proxymock init` or `speedctl init`. If speedctl is already configured for your enterprise tenant, proxymock can reuse that configuration. Installing the second binary does not require registering another email or running `init` again.
+
+The account in that configuration determines your access. Free proxymock activation enables local workflows; accessing a tenant's cloud snapshots requires credentials for that tenant. Existing customers should sign in with their enterprise account or use its personal API key from the [Profile page](https://app.speedscale.com/profile). See [proxymock initialization](../proxymock/guides/initialize.md) for the sign-in and headless options. Changing the shared credentials affects both CLIs.
+
+To check which config each installed client uses without printing credentials, run:
+
+```bash
+proxymock version --client
+speedctl version --client
+```
+
+Compare the `ConfigFile` paths. Older clients use `config.yaml`; newer clients prefer `config.json` and fall back to YAML. If the paths differ, align the clients' versions and configure both to use the same file. Both accept `--config <path>` and `--context <name>` for an explicit file and account context. A custom home or config path can make their settings separate.

@@ -22,6 +22,8 @@ In proxymock web all three live in the **Where it runs** strip at the top of the
 
 ## On this machine
 
+If your traffic is already in a Speedscale Cloud snapshot, [pull it and replay it locally](./cloud-snapshot-local.md). That guide covers cloud authentication, the download, dependency mocks, and the local target.
+
 The replay runs inside proxymock and sends traffic to a URL. Use it while you are editing code: your service runs locally, the replay hits it directly, and nothing else has to exist.
 
 ![The Replay tab with On this machine selected and a local URL target](./images/replay-where-local.png)

@@ -195,6 +195,8 @@ If you have any issues installing, check out the [troubleshooting guide](./getti
 
 # Next Steps
 
+For the proxymock CLI path, continue with [cluster capture and replay commands](/proxymock/guides/cluster/). If proxymock is not installed yet, [install it first](/proxymock/getting-started/installation/); the platform agent install already installs it.
+
 At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
 
 If you're already an expert you can click the `Add Service` button in the UI to target workloads for capture. Prefer enabling the [eBPF collector](/reference/ebpf-traffic-collection); if not possible, add sidecars [manually](./getting-started/installation/sidecar/install.md).

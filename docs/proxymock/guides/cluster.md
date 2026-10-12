@@ -6,6 +6,8 @@ sidebar_position: 13
 
 # Work a Kubernetes Cluster with proxymock CLI
 
+Before using these commands, [install and verify the Speedscale operator](/getting-started/quick-start/#install-speedscale-operator-optional), or [verify an existing BYOC deployment](/byoc/verify/). Then [install proxymock CLI](../getting-started/installation.md) and use your kubeconfig to connect. The operator installation guide covers Helm and speedctl; the commands below use proxymock.
+
 `proxymock cluster` drives the Kubernetes cluster your kubeconfig points at without leaving the terminal. It turns eBPF traffic capture on and off for a workload, runs a recorded replay inside the cluster, and reads the service map, pod logs, and Kubernetes events.
 
 This is the same surface three ways: the `cluster` verbs here, the grouped `cluster` MCP tool (one tool with an `action` for each verb, so an AI agent can drive it), and the [Topology and cluster visibility](./observability.md) view in `proxymock web`. Pick whichever fits the task; they read and write the same cluster state.

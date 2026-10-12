@@ -15,7 +15,7 @@ For most developers, the easiest path is to run the following command and use th
 proxymock init
 ```
 
-That is usually all you need. You can view or modify your configuration in `~/.speedscale/config.yaml`.
+That is usually all you need. proxymock and speedctl share the default configuration in `~/.speedscale`, so an existing speedctl setup for the same account can be reused. See [shared credentials and configuration](/getting-started/command-line-tools/#credentials) before initializing the second CLI. Run `proxymock version --client` to see which configuration file your installed version uses.
 
 Speedscale does not share or sell your email address, although we might send you updates or announcements if we can ever figure out this marketing thing. Engineering is more our wheelhouse.
 
@@ -42,7 +42,7 @@ If you're trying to initialize **proxymock** without any prompts, specify the AP
 proxymock init --api-key <Your API Key>
 ```
 
-For the full workflow after initialization, work through the [agent tutorial](/proxymock/agent-tutorial/) or the [CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/). If you want a language-specific landing page instead, use one of these:
+After initialization, start with the [proxymock CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/), or [replay an existing cloud snapshot locally](./cloud-snapshot-local.md). Use the [agent tutorial](/proxymock/agent-tutorial/) if you prefer agent prompts. For language-specific setup, use the examples below:
 
 <ProxymockLanguageLinks className="space-y-1 mt-3" />
 

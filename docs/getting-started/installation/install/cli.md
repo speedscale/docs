@@ -20,7 +20,7 @@ If your outbound proxy requires Kerberos for cloud access, configure [Kerberos p
 
 ## Verify and initialize
 
-Run `speedctl --help` to verify that the executable is on your PATH. Before using cloud commands, run `speedctl init` and follow the prompts to authorize your Speedscale account. You can get your personal API key from the [Profile page](https://app.speedscale.com/profile).
+Run `speedctl --help` to verify that the executable is on your PATH. If proxymock is already configured for your enterprise account, [reuse the shared credentials](../../command-line-tools.md#credentials). Otherwise run `speedctl init` before using cloud commands and follow the prompts to authorize your Speedscale account. You can get your personal API key from the [Profile page](https://app.speedscale.com/profile).
 
 ## Next steps
 
