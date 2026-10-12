@@ -6,9 +6,8 @@ name: MCP docs sync
 # scripts/mcp-docs-version.txt, so a page generated from an unreleased
 # build is never rolled back to an older release.
 #
-# GitHub does not start other workflows for a PR opened with GITHUB_TOKEN,
-# so pr.yaml never runs on the bot PR. This job runs the same writing gate
-# and build before it pushes; close and reopen the PR to get a preview.
+# GITHUB_TOKEN pull_request runs need workflow approval. PR Preview also
+# follows successful sync runs to build and publish the rolling PR automatically.
 
 on:
   schedule:
@@ -164,7 +163,7 @@ jobs:
         body=$(cat <<EOF
         This PR regenerates \`$PAGE\` with \`scripts/gen-mcp-docs.sh\` from the released proxymock $VERSION. The MCP docs sync workflow opened it: $RUN_URL
 
-        The writing gate and \`yarn build\` passed in that run. GitHub does not start the PR Preview workflow for a PR opened by \`GITHUB_TOKEN\`, so close and reopen this PR to get a preview.
+        The writing gate and \`yarn build\` passed in that run. PR Preview follows the successful sync run, publishes a preview, and reports its result on the tested commit. A human review is still required before merge.
 
         Review the diff against the proxymock release notes. If the gate fails on a later run, fix the description in \`speedctl/mcp\` in the speedscale repo; do not edit the page by hand.
         EOF
