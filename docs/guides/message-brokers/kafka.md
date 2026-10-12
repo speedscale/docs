@@ -73,6 +73,8 @@ For example:
 proxymock replay --in ./proxymock/snapshot-abc123 --test-against localhost:9092
 ```
 
+To replay a local proxymock recording, choose the Kafka calls to replay with `--tests-filter`, such as `(command IS "Fetch") AND (location IS "orders")` for what a consumer read from `orders`. See [Replay Kafka traffic](../../proxymock/kafka/replay.md).
+
 ### Output
 
 When replaying Kafka traffic, proxymock displays a Kafka-specific latency table:
@@ -569,60 +571,30 @@ python main.py --csv out.csv --topic my-topic --brokers localhost:9092 --respect
 
 ## Recording Kafka Traffic with proxymock {#recording}
 
-You can record Kafka traffic locally using proxymock's `--map` flag. This creates a reverse proxy that captures the Kafka wire protocol between your application and the broker.
+You can record Kafka traffic locally with proxymock's `--map` flag, which puts a reverse proxy between your application and the broker. Kafka clients connect to the bootstrap address only once and then to the address the broker advertises, so the broker needs a listener that advertises proxymock's port, or only the bootstrap calls are recorded:
 
-### Start the Recorder
+```properties
+listeners=PLAINTEXT://127.0.0.1:9092,RECORD://127.0.0.1:9094
+advertised.listeners=PLAINTEXT://127.0.0.1:9092,RECORD://localhost:19094
+listener.security.protocol.map=PLAINTEXT:PLAINTEXT,RECORD:PLAINTEXT
+```
 
 ```bash
-proxymock record --map 19092=localhost:9092
+proxymock record --map 19094=kafka://localhost:9094
+KAFKA_BOOTSTRAP_SERVERS=localhost:19094 ./my-app
 ```
 
-This tells proxymock to listen on port 19092 and forward Kafka traffic to the real broker on port 9092.
-
-### Configure Your Application
-
-Point your Kafka client at the mapped port:
-
-```bash
-export KAFKA_BOOTSTRAP_SERVERS=localhost:19092
-./my-app
-```
-
-Or in your application configuration (Spring Boot example):
-
-```yaml
-spring:
-  kafka:
-    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
-```
-
-Then start with the mapped port:
-
-```bash
-KAFKA_BROKERS=localhost:19092 java -jar target/my-app.jar
-```
-
-### What Gets Recorded
-
-proxymock captures the Kafka binary wire protocol including `ApiVersions`, `Metadata`, `Produce`, `Fetch`, `FindCoordinator`, `JoinGroup`, `SyncGroup`, and other API operations. Each request/response pair is stored as an RRPair file.
-
-To see how your consumer groups behaved in the recording, including lag, rebalances, poll timeouts and stuck partitions, run `proxymock kafka-report`; see [Kafka consumer-group health](../../proxymock/kafka/consumer-group-health.md).
+[Record Kafka traffic](../../proxymock/kafka/record.md) explains the listener, the broker ports proxymock recognizes, SASL, and what each recorded call holds. To see how your consumer groups behaved in the recording, including lag, rebalances, poll timeouts and stuck partitions, run `proxymock kafka-report`; see [Kafka consumer-group health](../../proxymock/kafka/consumer-group-health.md).
 
 ## Mocking Kafka with proxymock {#mocking}
 
-After recording Kafka traffic, you can mock the broker for local development and testing. This lets your application run without a real Kafka broker.
+After recording Kafka traffic, you can mock the broker for local development and testing, so your application runs without a real Kafka broker:
 
 ```bash
-proxymock mock
+proxymock mock --in proxymock/recorded-<timestamp> --map 19094=kafka://localhost:9094
 ```
 
-proxymock starts a Kafka mock provider on the port from the recording (typically 9092). Your application connects normally and receives recorded responses.
-
-To map to a different port:
-
-```bash
-proxymock mock --map 19092=localhost:9092
-```
+Producers get their acknowledgements, consumers join their group and read the recorded records, and offset commits succeed. See [Mock a Kafka broker](../../proxymock/kafka/mock-kafka.md).
 
 ## Kubernetes and eBPF {#kubernetes}
 

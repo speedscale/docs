@@ -1,7 +1,7 @@
 ---
 title: Kafka consumer-group health and kafka-report
 description: "Report how your app's Kafka consumer groups behaved in a proxymock recording or a Speedscale snapshot: members, rebalances, per-partition lag and commit lag, and findings for consumer lag, stuck partitions, poll timeouts, offset resets and repeated rebalances, with no broker access."
-sidebar_label: Kafka consumer-group health
+sidebar_label: Consumer-group health
 ---
 
 # Kafka consumer-group health and kafka-report
@@ -12,7 +12,7 @@ It is built for the problems a broker-side lag graph shows but cannot explain: a
 
 ## Record consumer traffic
 
-Record your app while it consumes, as described in [Recording Kafka traffic with proxymock](../../guides/message-brokers/kafka.md#recording). The report reads the consumer-group calls a client makes: `JoinGroup`, `SyncGroup`, `Heartbeat`, `LeaveGroup` and `ConsumerGroupHeartbeat` for membership, and `Fetch`, `ListOffsets`, `OffsetFetch` and `OffsetCommit` for positions. Both the classic group protocol and the KIP-848 consumer protocol (`group.protocol=consumer`) are supported.
+Record your app while it consumes, as described in [Record Kafka traffic](./record.md). The report reads the consumer-group calls a client makes: `JoinGroup`, `SyncGroup`, `Heartbeat`, `LeaveGroup` and `ConsumerGroupHeartbeat` for membership, and `Fetch`, `ListOffsets`, `OffsetFetch` and `OffsetCommit` for positions. Both the classic group protocol and the KIP-848 consumer protocol (`group.protocol=consumer`) are supported.
 
 In Kubernetes, record with the Speedscale operator as usual, with no `--map` setup; see [Kubernetes and eBPF](../../guides/message-brokers/kafka.md#kubernetes) and [In a snapshot](#in-a-snapshot).
 
@@ -110,5 +110,7 @@ With `-o json`, or in `kafka-report.json`, the report has `caveat`, `start`, `en
 
 ## Related
 
-- [Kafka](../../guides/message-brokers/kafka.md): record, mock and replay Kafka traffic
+- [Record Kafka traffic](./record.md)
+- [Mock a Kafka broker](./mock-kafka.md)
+- [Replay Kafka traffic](./replay.md)
 - [MCP tools reference](../how-it-works/mcp-tools.md)

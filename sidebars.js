@@ -278,7 +278,18 @@ const sidebars = {
           ],
           collapsed: true,
         },
-        "proxymock/kafka/consumer-group-health",
+        {
+          type: "category",
+          label: "Kafka",
+          link: { type: "doc", id: "proxymock/kafka/index" },
+          items: [
+            "proxymock/kafka/record",
+            "proxymock/kafka/consumer-group-health",
+            "proxymock/kafka/mock-kafka",
+            "proxymock/kafka/replay",
+          ],
+          collapsed: true,
+        },
         {
           type: "category",
           label: "AWS",
