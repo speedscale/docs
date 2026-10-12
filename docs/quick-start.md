@@ -12,7 +12,7 @@ import AgentInstall from './getting-started/installation/install/_agent_install.
 # Quick Start
 
 :::info Local installation
-For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. See **[Local Development – Getting Started](/proxymock/)** to install proxymock and get started in about 30 seconds.
+For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. Follow [Install proxymock CLI](/proxymock/getting-started/installation/) and the [proxymock CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/). For help choosing between proxymock and speedctl, see [Command-line tools](/getting-started/command-line-tools/).
 :::
 
 :::tip Security options
@@ -38,7 +38,7 @@ Speedscale is tested with apps hosted on the local desktop all the way up to hig
 The rest of this guide walks through the same install by hand:
 
 1. Retrieve your API Key
-2. Install CLI (recommended)
+2. Install speedctl CLI (optional for Helm installation)
 3. Install Operator (if required)
 4. Verify Installation
 5. Capture and replay traffic against a demo app
@@ -49,7 +49,7 @@ You will need to get your personal API key from your [Profile Page](https://app.
 
 <img src={ApiKey} width="600"/>
 
-## Install CLI (optional)
+## Install speedctl CLI (optional) {#install-cli-optional}
 
 <CLIInstall />
 
@@ -80,7 +80,7 @@ for all configuration options available for the Helm chart.
 
 </TabItem>
 
-<TabItem value="cli" label="CLI (Mac/Linux)">
+<TabItem value="cli" label="speedctl (Mac/Linux)">
 
 Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
@@ -105,7 +105,7 @@ speedctl install --imgpullsecrets my-secret1,my-secret2p
 
 </TabItem>
 
-<TabItem value="cli_windows" label="CLI (Windows)">
+<TabItem value="cli_windows" label="speedctl (Windows)">
 
 If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
 The install wizard will walk you through installing the
@@ -115,7 +115,7 @@ Recommended next step: enable the [eBPF collector](/reference/ebpf-traffic-colle
 to capture traffic in Kubernetes. If eBPF is not suitable for your
 workload or kernel, use the [Sidecar installation](./getting-started/installation/sidecar/install.md) instead.
 
-Speedscale can also be used with [Docker](./getting-started/installation/install/docker.md) and [locally](./guides/cli.md).
+Speedscale can also be used with [Docker](./getting-started/installation/install/docker.md) and [locally with proxymock](/proxymock/getting-started/quickstart/quickstart-cli/).
 
 </TabItem>
 
@@ -155,7 +155,7 @@ Installing via `helm install` is preferred as different GitOps engines treat Hel
 
 :::
 
-You can generate manifests either via Helm or our [CLI](./getting-started/installation/install/cli.md).
+You can generate manifests either via Helm or [speedctl CLI](./getting-started/installation/install/cli.md).
 
 ```
 helm template speedscale-operator speedscale/speedscale-operator \

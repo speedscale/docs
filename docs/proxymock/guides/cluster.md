@@ -1,10 +1,10 @@
 ---
-title: Work a Kubernetes Cluster from the CLI
+title: Work a Kubernetes Cluster with proxymock CLI
 description: "Use the proxymock cluster verbs to turn eBPF traffic capture on and off for a workload, run a recorded replay inside the cluster, and read topology, pod logs, and Kubernetes events, all from your kubeconfig. The same surface is available as the cluster MCP tool and the proxymock web Observability view."
 sidebar_position: 13
 ---
 
-# Work a Kubernetes Cluster from the CLI
+# Work a Kubernetes Cluster with proxymock CLI
 
 `proxymock cluster` drives the Kubernetes cluster your kubeconfig points at without leaving the terminal. It turns eBPF traffic capture on and off for a workload, runs a recorded replay inside the cluster, and reads the service map, pod logs, and Kubernetes events.
 
@@ -17,7 +17,7 @@ Two kinds of connection are in play, and they need different access:
 - **Capture verbs write straight to the cluster from your kubeconfig.** `cluster capture` patches `capture.speedscale.com/*` annotations onto a workload. That needs no Speedscale account and no registered inspector; it records intent, and the in-cluster Speedscale operator and nettap daemon do the actual capture when they see the annotations.
 - **Read verbs are served by Speedscale components running in the cluster.** proxymock finds the in-cluster forwarder and inspector and port-forwards to them using the selected kube-context. That is automatic and needs no configuration. The topology-style reads come from the forwarder's aggregator; logs, events, services, and dependencies come from the inspector.
 
-`cluster replay start` is the one verb that also needs a Speedscale cloud login, because the in-cluster generator replays a snapshot pulled from the cloud rather than from local files. Every other verb runs from your kubeconfig alone.
+`cluster replay start` can stage local recordings in the cluster or use a cloud snapshot. The local path uses your kubeconfig and in-cluster Speedscale components. The cloud path requires a Speedscale cloud login. See [Choose Where a Replay Runs](./replay-paths.md#in-your-cluster) for the prerequisites and how to control cloud fallback.
 
 Use `--kube-context` on any verb to target a context other than your current one:
 

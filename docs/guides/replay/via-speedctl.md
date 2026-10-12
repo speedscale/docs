@@ -1,11 +1,14 @@
 ---
-description: "Replay traffic using Speedscale's `speedctl` to test workloads locally or in a cluster, ensuring accurate API performance and functionality."
+title: Replay with speedctl CLI
+description: "Replay Speedscale Cloud snapshots with speedctl, locally or in a registered Kubernetes cluster. For proxymock replays, choose a local, in-cluster, or cloud replay path."
 sidebar_position: 9
 ---
 
 # Replay With `speedctl`
 
-`speedctl` gives you the options of running a replay locally or against a deployment in a cluster.
+`speedctl` gives you the options of running a replay locally or against a deployment in a cluster. This guide covers speedctl commands for existing platform workflows.
+
+For a new proxymock workflow, see [choose where a replay runs](/proxymock/guides/replay-paths/). proxymock supports local, in-cluster, and cloud replays. Compare both tools in [Command-line tools](/getting-started/command-line-tools/).
 
 ### Replay in a Cluster
 
@@ -233,4 +236,4 @@ mocks:
 
 ## Replay Locally
 
-See the full guide on the [CLI](/guides/cli.md#terminal-2-1) page.
+See the full guide on the [speedctl walkthrough](/guides/cli.md#run-a-replay) page.

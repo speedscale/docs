@@ -4,4 +4,4 @@ sidebar_position: 0
 ---
 # Select Environment
 
-Please select your environment from the main navigation. This list includes less common enterprise distributions that are supported by Speedscale. If you're looking for overall installation instructions please see the [Quick Start](../../../getting-started/quick-start.md).
+For CLI installation, [choose proxymock or speedctl](../../command-line-tools.md) and follow the matching install guide. For Kubernetes setup, see the [Quick Start](../../quick-start.md). The environment pages in this section cover platform-specific installation requirements.

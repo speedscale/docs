@@ -35,7 +35,7 @@ Pick your recording mode like this:
 - Clients that support SOCKS: set `ALL_PROXY`
 - Clients that ignore proxy environment variables or use raw TCP protocols such as Redis: use `proxymock record --map`
 
-Examples on this page follow the casing conventions commonly used by each runtime. The [CLI reference](../how-it-works/cli.md) uses lowercase shell examples, and many proxy-aware clients accept uppercase and lowercase variants.
+Examples on this page follow the casing conventions commonly used by each runtime. Many proxy-aware clients accept uppercase and lowercase variants. The [proxymock CLI overview](../how-it-works/cli.md) shows proxy variables, and the [proxymock CLI reference](../../reference/proxymock-cli-reference.md) covers flags and syntax.
 
 `--map` tells **proxymock** to listen on a local port and forward traffic to the real backend. Then point your application at the mapped port instead of the real service.
 

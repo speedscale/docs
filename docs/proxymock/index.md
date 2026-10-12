@@ -1,5 +1,7 @@
 ---
-description: "Create a sandbox for testing your Go application with proxymock, featuring automatic test generation and a mock server setup in just 30 seconds."
+title: proxymock overview
+sidebar_label: Overview
+description: "Use proxymock CLI, web, or MCP to record traffic, mock dependencies, and replay tests locally, in Kubernetes, or through Speedscale Cloud."
 sidebar_position: 1
 ---
 import Tabs from '@theme/Tabs';
@@ -16,9 +18,11 @@ import {
   EnterpriseCard 
 } from '@site/src/components/Cards';
 
-# Overview
+# proxymock overview
 
-This guide is the proxymock entry point. Start with one of the agent tutorials, the install flow, or the language-specific first-success path that matches your app.
+proxymock records traffic, mocks dependencies, and replays tests from the CLI, a local web UI, or an AI agent through MCP. It supports local, Kubernetes, and cloud workflows. Start with an agent tutorial or the [proxymock CLI quickstart](./getting-started/quickstart/quickstart-cli.md).
+
+Looking for speedctl platform setup or deciding which CLI to install? See [Command-line tools: proxymock and speedctl](/getting-started/command-line-tools/).
 
 ## [Let your coding agent do it](./agent-tutorial/index.md) {#agent-tutorial}
 

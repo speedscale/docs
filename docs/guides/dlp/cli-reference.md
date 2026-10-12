@@ -1,10 +1,12 @@
 ---
 sidebar_position: 12
-title: CLI Reference
-description: CLI reference for managing DLP rules with speedctl.
+title: speedctl DLP CLI reference
+description: "Pull and push Speedscale Cloud DLP rules with speedctl. For local redaction testing with proxymock, see the proxymock DLP guide."
 ---
 
-# CLI Reference
+# speedctl DLP CLI reference
+
+These commands manage platform DLP rules with speedctl. To test or apply redaction rules against local recordings, see [proxymock local DLP rules](/proxymock/guides/local-rules/). For help choosing a CLI, see [Command-line tools](/getting-started/command-line-tools/).
 
 :::note Administrator Access Required
 Only administrators can modify DLP rules. You must have the appropriate permissions to pull and push DLP rules.

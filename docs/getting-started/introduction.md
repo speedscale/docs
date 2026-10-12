@@ -27,7 +27,7 @@ Start with [evaluation prerequisites and plan](./evaluation.md) to choose a serv
 
 The fastest way to install is to let your coding agent do it. Paste the prompt from [Install with your coding agent](./quick-start.md#install-with-ai-agent) into Claude Code, Cursor, Codex, or any agent that can run commands. It installs the CLIs and, if you want, the Kubernetes operator, and asks before it touches a cluster.
 
-Prefer to install manually? Follow the [Quick Start](./quick-start.md#install-manually). For local development without a cluster, start with [proxymock](/proxymock/).
+Choose your tool before installing: [Command-line tools: proxymock and speedctl](./command-line-tools.md) explains their roles and links to both CLI installs. For manual Kubernetes setup, follow the [Quick Start](./quick-start.md#install-manually). For recording, mocking, and replaying with proxymock, start with the [proxymock overview](/proxymock/).
 
 ## Security and data control options
 

@@ -1,8 +1,15 @@
 ---
 title: proxymock CLI reference
-description: "Full command reference for the proxymock CLI."
+description: "proxymock CLI commands, flags, and examples for recording, mocking, replaying, and working with local files, Kubernetes clusters, and Speedscale Cloud."
+keywords: [CLI, proxymock, command line, commands, reference]
 sidebar_position: 22
 ---
+
+# proxymock CLI reference
+
+New to proxymock? Start with [installation](../proxymock/getting-started/installation.md), the [CLI quickstart](../proxymock/getting-started/quickstart/quickstart-cli.md), or the [CLI overview](../proxymock/how-it-works/cli.md). To choose between proxymock and speedctl, see [Command-line tools](../getting-started/command-line-tools.md).
+
+For the exact commands and flags shipped with your installed version, run `proxymock --help` or `proxymock <command> --help`.
 
 ## Usage
 

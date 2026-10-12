@@ -1,11 +1,18 @@
 ---
-title: Speedscale on the CLI
-description: "Capture traffic, run replays, and create local mocks using Speedscale's CLI tool speedctl in this comprehensive guide for developers."
+title: Capture, replay, and mock with speedctl
+sidebar_label: speedctl capture and replay
+description: "Capture traffic, replay cloud snapshots, and create local mocks with speedctl. For a new proxymock workflow, follow the proxymock CLI quickstart."
+keywords: [CLI, speedctl, command line, capture, replay, mocks]
 sidebar_position: 21
 ---
 
-In this guide we will use [speedctl](../getting-started/installation/install/cli.md) to capture
-traffic, run a replay, and create local mocks, all from the command line.
+# Capture, replay, and mock with speedctl
+
+This guide uses [speedctl](../getting-started/installation/install/cli.md) to capture traffic into Speedscale Cloud, replay a cloud snapshot, and create local mocks from that snapshot. Use it when your existing workflow calls for speedctl.
+
+:::tip Starting a new record/mock/replay workflow?
+Follow the [proxymock CLI quickstart](../proxymock/getting-started/quickstart/quickstart-cli.md). proxymock supports local, cluster, and cloud workflows; see [choose where a replay runs](../proxymock/guides/replay-paths.md). For the role of each CLI, see [Command-line tools](../getting-started/command-line-tools.md).
+:::
 
 ## Prerequisites
 
@@ -24,7 +31,7 @@ In order to capture traffic from your application all inbound and outbound
 [traffic](../reference/glossary.md#traffic) will need to be routed through the
 Speedscale [proxy](../reference/glossary.md#proxy).
 
-The traffic flow will look should look something like this:
+The traffic flow looks like this:
 
 ```mermaid
 flowchart LR
@@ -87,10 +94,7 @@ flowchart LR
     app --> responder
 ```
 
-The captured traffic is loaded into Speedscale components before the replay
-starts. The [generator](../reference/glossary.md#generator) makes requests to
-the your app and the [responder](../reference/glossary.md#responder) mocks
-external resources.
+The captured traffic is loaded into Speedscale components before the replay starts. The [generator](../reference/glossary.md#generator) makes requests to your app and the [responder](../reference/glossary.md#responder) mocks external resources.
 
 We will need 2 terminal windows for this example.
 
@@ -101,7 +105,7 @@ start your server.
 
 ```
 export http_proxy=http://localhost:4140
-export http_proxys=https://localhost:4140
+export https_proxy=http://localhost:4140
 ./my_app
 ```
 
@@ -122,10 +126,10 @@ port 8081.
 ```
 speedctl replay 310457d7-b17a-4802-897c-ac98004dab21 \
   --test-config-id=standard-passthrough \
-  --custom-url='http://localhost:8081'
+  --test-against='http://localhost:8081'
 ```
 
-The `--custom-url` flag overrides the URL for each replay request.  See [custom URL configuration](/reference/configuration/traffic#custom-url) for more information.
+The `--test-against` flag sets the destination for replay requests. See [Replay with speedctl](./replay/via-speedctl.md) for routing individual services to different targets.
 
 This command will run both the generator and the responder in the same terminal
 window and your app should receive all requests from the snapshot.
@@ -147,7 +151,7 @@ the Speedscale responder and start your server.
 
 ```
 export http_proxy=http://localhost:4140
-export http_proxys=https://localhost:4140
+export https_proxy=http://localhost:4140
 ./my_app
 ```
 
