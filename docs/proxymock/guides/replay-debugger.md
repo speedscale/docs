@@ -271,7 +271,7 @@ To send the rest regardless of breakpoints, which turns the session into an ordi
 curl -s -X POST http://127.0.0.1:7902/api/replay/current/debug/run-to -d '{"ignore_pause_on":true}'
 ```
 
-When the last request has been sent or skipped, the run finishes on its own and writes the report.
+A run-to that reaches the last request finishes the run on its own and writes the report. A step or skip that handles the last request instead parks the session at the end, so the last result stays on screen; step and skip are refused there, and finish writes the report.
 
 ## From proxymock web
 
@@ -332,7 +332,7 @@ The detail panel has four tabs:
 - **Variables** lists the variables this step changed and every change so far in the session. No transform writes a variable in this recording, so the tab is empty here; it fills in once a blueprint extracts the token.
 - **Mocks** is reserved for cluster mode, where the responder runs alongside the generator and its hits and misses can be joined to each step. A local session uses whatever answers the app's dependencies, so the tab explains that there is nothing to show yet.
 
-Press **Finish here**. The session ends, the **Report** sub-tab opens with the report over the 7 sent requests, and the banner says how many requests the report covers. A session finished by the idle timeout says so in the same banner.
+Press **Finish here**. The session ends, the **Report** sub-tab opens with the report over the 7 sent requests, and the banner counts the sent requests that failed with a status mismatch, a failed assertion or a send failure, plus how many were sent and skipped. Skipped requests are not failures. A session finished by the idle timeout says so in the same banner.
 
 A web session writes its step log under `proxymock/results/replayed-<timestamp>/.debug/steps.jsonl` in the workspace. It does not write `replay-verdict.json`; the report is in the Report sub-tab, as for every replay started from proxymock web.
 
