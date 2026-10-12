@@ -397,9 +397,9 @@ esac
 
 ## Create a fresh snapshot
 
-Create snapshots in a separate baseline-refresh job, then pass the chosen `SNAPSHOT_ID` to the replay job. Snapshot creation selects traffic already captured and uploaded; it does not start recording.
+Create snapshots in a separate baseline-refresh job, then pass the chosen `SNAPSHOT_ID` to the replay job. The replay steps in this guide read the same `SNAPSHOT_ID` variable. Snapshot creation selects traffic already captured and uploaded; it does not start recording.
 
-With `speedctl` and `SPEEDSCALE_API_KEY` configured as above, use Bash and `jq`. Set `SOURCE_CLUSTER` and `SOURCE_NAMESPACE` to the captured location, and `SERVICE` to the captured service. Set `START_UTC` and `END_UTC` to a UTC window at least five minutes long, for example `2026-10-12T18:00:00Z` through `2026-10-12T18:05:00Z`. Wait for that window to appear in Traffic Viewer.
+With `speedctl` and `SPEEDSCALE_API_KEY` configured as above, use Bash and `jq`. Set `SOURCE_CLUSTER` and `SOURCE_NAMESPACE` to the captured location, and `SERVICE` to the captured service. Set `START_UTC` and `END_UTC` to a UTC window at least five minutes long, for example `2026-10-12T18:00:00Z` through `2026-10-12T18:05:00Z`. Wait until traffic from that window is visible in Traffic Viewer. A snapshot created before the upload finishes is empty, and the record count check below fails the job.
 
 ```bash
 set -euo pipefail
@@ -419,7 +419,13 @@ export SNAPSHOT_ID
 
 The filter includes the source and time range because `--filter` replaces the default traffic filters. The timestamp flags omit the trailing `Z` and keep the snapshot metadata consistent. Verify the metadata after waiting: the wait command can return success for some internal failures.
 
-For regular refreshes, add a Snapshot action to a [schedule](/concepts/schedules) with the source filters and lookback window. If CI must toggle eBPF recording, use the [capture annotation](/reference/ebpf-traffic-collection#enabling-via-annotation) with a runner that has Kubernetes access. Verify collection starts before the test suite, disable capture even when tests fail (GitHub: `if: always()`), and allow the final traffic to upload before creating the snapshot.
+For regular refreshes, add a Snapshot action to a [schedule](/concepts/schedules) with the source filters and lookback window.
+
+If CI must toggle eBPF recording, use the [capture annotation](/reference/ebpf-traffic-collection#enabling-via-annotation) with a runner that has Kubernetes access:
+
+- Verify collection starts before the test suite.
+- Disable capture even when tests fail (GitHub: `if: always()`).
+- Allow the final traffic to upload before creating the snapshot.
 
 ## Use your existing test driver
 
