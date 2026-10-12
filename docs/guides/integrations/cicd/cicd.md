@@ -399,7 +399,7 @@ esac
 
 Create snapshots in a separate baseline-refresh job, then pass the chosen `SNAPSHOT_ID` to the replay job. The replay steps in this guide read the same `SNAPSHOT_ID` variable. Snapshot creation selects traffic already captured and uploaded; it does not start recording.
 
-With `speedctl` and `SPEEDSCALE_API_KEY` configured as above, use Bash and `jq`. Set `SOURCE_CLUSTER` and `SOURCE_NAMESPACE` to the captured location, and `SERVICE` to the captured service. Set `START_UTC` and `END_UTC` to a UTC window at least five minutes long, for example `2026-10-12T18:00:00Z` through `2026-10-12T18:05:00Z`. Wait until traffic from that window is visible in Traffic Viewer. A snapshot created before the upload finishes is empty, and the record count check below fails the job.
+With `speedctl` and `SPEEDSCALE_API_KEY` configured as above, use Bash and `jq`. Set `SOURCE_CLUSTER` and `SOURCE_NAMESPACE` to the captured location, and `SERVICE` to the captured service. Set `START_UTC` and `END_UTC` to a UTC window at least five minutes long, for example `2026-10-12T18:00:00Z` through `2026-10-12T18:05:00Z`. Wait for the full window to upload before creating the snapshot; the record-count check rejects empty snapshots.
 
 ```bash
 set -euo pipefail
