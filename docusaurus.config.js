@@ -37,6 +37,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/reference/cli/",
+            to: "/guides/cli/",
+          },
+          {
             from: "/getting-started/poc-prerequisites/",
             to: "/getting-started/evaluation/",
           },

@@ -70,7 +70,7 @@ flowchart TD
 - [Troubleshooting](./troubleshooting.md)
 
 ### Reference
-- [CLI Reference](./cli-reference.md)
+- [speedctl DLP CLI reference](./cli-reference.md)
 
 ## Key Concepts
 

@@ -20,9 +20,9 @@ In this guide we're going to use [this repo's](https://github.com/speedscale/dem
 
 ## Prerequisites
 
-1. CLI [speedctl is installed](./getting-started/installation/install/cli.md)
-2. CLI [proxymock is installed](./proxymock/getting-started/installation.md)
-3. After installing CLI, `SPEEDSCALE_HOME` should be set correctly, if you don't see it run `proxymock init` again and allow it to update your rcfile.
+1. [speedctl CLI is installed](./getting-started/installation/install/cli.md)
+2. [proxymock CLI is installed](./proxymock/getting-started/installation.md)
+3. After initializing proxymock, `SPEEDSCALE_HOME` should be set correctly. If it is missing, run `proxymock init` again and allow it to update your rcfile.
 4. Clone the repo: https://github.com/speedscale/demo
 5. [Java](https://jdk.java.net/) is present and `JAVA_HOME` is set correctly (on MacOS you can run `/usr/libexec/java_home` to find the correct `JAVA_HOME`)
 6. Install `jq` and `make` if not already on your desktop (`brew install jq` and `brew install make` on MacOS for example)
