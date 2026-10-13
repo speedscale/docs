@@ -1,7 +1,7 @@
 ---
 title: Quality Factory
 description: Add a dedicated quality stage to the SDLC with real traffic, explicit checks, and reproducible failures.
-sidebar_position: 1
+sidebar_position: 12
 ---
 
 A Quality Factory is a repeatable verification workflow for new code and production incidents. It runs a candidate service against selected traffic and defined scenarios, then produces validation reports and failures engineers can reproduce. The goal is to reduce review and rework time so useful changes reach production sooner.
