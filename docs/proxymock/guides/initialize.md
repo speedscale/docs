@@ -41,10 +41,11 @@ Use an account with access to the tenant that owns the snapshot. Free local acti
 
 The initialization examples below use the default configuration in `~/.speedscale`. For a custom directory or filename, pass both `--home <directory>` and `--config <path>` to `init` so it writes to the intended file.
 
-For a fresh installation with no configuration file, run `proxymock init` and sign in with your enterprise account. For API-key setup, get your personal key from the [Profile page](https://app.speedscale.com/profile) and replace `YOUR_ENTERPRISE_API_KEY` below:
+For a fresh installation with no configuration file, run `proxymock init` and sign in with your enterprise account. For API-key setup, get your personal key from the [Profile page](https://app.speedscale.com/profile) and paste it at the hidden prompt below. Reading it into a variable keeps the key out of your shell history:
 
 ```bash
-proxymock init --api-key "YOUR_ENTERPRISE_API_KEY"
+read -rs SPEEDSCALE_API_KEY && export SPEEDSCALE_API_KEY
+proxymock init --api-key "$SPEEDSCALE_API_KEY"
 ```
 
 ### Replace an existing configuration {#replace-credentials}
@@ -56,7 +57,8 @@ Replacement backs up and replaces the entire selected configuration file, includ
 On an interactive workstation, run `proxymock init`. Choose browser sign-in with your enterprise account and accept the prompt to back up and overwrite the configuration. For API-key or headless replacement, use:
 
 ```bash
-proxymock init --overwrite --api-key "YOUR_ENTERPRISE_API_KEY"
+read -rs SPEEDSCALE_API_KEY && export SPEEDSCALE_API_KEY
+proxymock init --overwrite --api-key "$SPEEDSCALE_API_KEY"
 ```
 
 After initialization succeeds, return to [pulling your cloud snapshot](./cloud-snapshot-local.md#pull). Keep using the same configuration file and account context for the pull, mock, and replay commands.
