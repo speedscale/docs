@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # Kubernetes Security Requirements
 
-This page covers the classic `speedscale-operator` chart, which uses Kubernetes admission webhooks, an operator service account, and namespaced resources to capture traffic and run replays. eBPF capture adds host-level runtime permissions. Setting `namespaceSelector` limits this operator's scope; it does not turn it into the separate `speedscale-namespaced` deployment mode.
+This page covers the classic `speedscale-operator` chart, which uses Kubernetes admission webhooks, an operator service account, and namespaced resources to capture traffic and run replays. eBPF capture adds host-level runtime permissions. Setting `namespaceSelector` limits this operator's scope; it does not enable the namespace-only mode. That mode uses the same public chart with `namespaced.enabled=true`; see the [namespaced installation guide](/getting-started/installation/install/kubernetes-namespaced).
 
 The examples and defaults below were checked against [Speedscale Operator chart 2.5.978](https://github.com/speedscale/operator-helm/tree/main/charts/2.5.978). Render the exact chart version and values you plan to install; older versions have different runtime security contexts:
 

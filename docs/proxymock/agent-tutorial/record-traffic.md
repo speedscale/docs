@@ -89,7 +89,7 @@ Follow the Result's **Next** line later. Chapters 4 and 5 tune the mocks and tes
 - **Java: every catalog call returns `502 catalog unavailable` and the app log shows `PKIX path validation failed`.** The Java truststore proxymock injects is older than its certificate. Rebuild it with `proxymock admin certs --jks`, with `JAVA_HOME` set to your JDK, then delete the partial recording and record again.
 - **The database is on another port.** If you started `tutorial-db -port <port>` in chapter 2, map to that port: `--map 15432=postgres://localhost:<port>`.
 
-See [PostgreSQL](../guides/postgres.md) for how `--map` records a database, and [Java with proxymock](../guides/java.md) for JVM proxy and truststore settings.
+See [PostgreSQL](../databases/record/postgresql.md) for how `--map` records a database, and [Java with proxymock](../guides/java.md) for JVM proxy and truststore settings.
 
 <details>
 <summary>Manual equivalent</summary>

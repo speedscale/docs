@@ -42,7 +42,7 @@ If you're trying to initialize **proxymock** without any prompts, specify the AP
 proxymock init --api-key <Your API Key>
 ```
 
-For the full workflow after initialization, see the [Quickstart](/proxymock/getting-started/quickstart). If you want a language-specific landing page instead, use one of these:
+For the full workflow after initialization, work through the [agent tutorial](/proxymock/agent-tutorial/) or the [CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/). If you want a language-specific landing page instead, use one of these:
 
 <ProxymockLanguageLinks className="space-y-1 mt-3" />
 

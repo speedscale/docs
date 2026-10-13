@@ -145,7 +145,7 @@ proxymock mock --in ./proxymock/java-db --no-passthrough \
 
 Run your app with the same local JDBC URL. For databases using TLS, preserve the driver's trust and hostname-verification requirements; changing the URL to `localhost` can affect the name the driver verifies. Follow the protocol-specific guide for TLS configuration.
 
-See [PostgreSQL](./postgres.md), [MySQL](./mysql.md), and [MongoDB](./mongodb.md) for database details. A mapping handles routing; it does not remove authentication or protocol-specific setup requirements.
+See [PostgreSQL](../databases/record/postgresql.md), [MySQL](../databases/record/mysql.md), and [MongoDB](../databases/record/mongodb.md) for database details. A mapping handles routing; it does not remove authentication or protocol-specific setup requirements.
 
 ## Run with mocks in CI {#ci}
 

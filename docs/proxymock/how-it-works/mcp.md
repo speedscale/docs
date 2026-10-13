@@ -42,7 +42,7 @@ Together these make agent integrations predictable across different AI applicati
 
 For the full list of tools, prompts, and resources the proxymock MCP server exposes — with parameters and read-only markers — see the [MCP Tools & Prompts Reference](./mcp-tools.md).
 
-For the agent skills Speedscale publishes and what each one is for, see [Agent skills](./agent-skills.md).
+For the agent skills Speedscale publishes and what each one is for, see [Agent skills](../agent-skills.md).
 
 ## Agentic vs IDE Assistants
 

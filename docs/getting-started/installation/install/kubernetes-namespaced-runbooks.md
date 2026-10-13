@@ -6,10 +6,6 @@ sidebar_position: 1.6
 
 # Namespaced Install: Uninstall & Recovery Runbooks
 
-:::caution
-This workflow is currently in preview status. Please provide feedback in our [Slack community](https://slack.speedscale.com).
-:::
-
 These runbooks cover the ways an uninstall of the [namespaced install](./kubernetes-namespaced.md) can go wrong, and how to recover. They assume you've read the [installation guide](./kubernetes-namespaced.md), the [sidecar capture guide](/guides/capture/sidecar-namespaced), and the [namespaced replay guide](/guides/replay/namespaced).
 
 ## Why uninstall can block at all
@@ -21,7 +17,7 @@ This exists because deleting the release out from under an instrumented workload
 ## Runbook: uninstall blocked by active capture or replay
 
 ```bash
-helm -n banking-app uninstall speedscale
+helm -n banking-app uninstall speedscale-operator
 # Error: resource Job/banking-app/speedscale-uninstall not ready. status:
 # Failed, message: Job Failed. failed: 2/1
 ```
@@ -54,19 +50,19 @@ in this namespace, which survives the uninstall.
 The output names the **exact command** to run for each affected workload; copy it verbatim rather than reconstructing it. Run every command it lists, confirm with [`capture status --sidecar`](/guides/capture/sidecar-namespaced#readiness-verification) that each workload is clean, cancel or wait out any replay still running (`replay list` / `replay cancel --namespaced` / [`replay wait`](/guides/replay/namespaced#reading-a-namespaced-replay)), then retry:
 
 ```bash
-helm -n banking-app uninstall speedscale
+helm -n banking-app uninstall speedscale-operator
 ```
 
 A workload found only `via: sidecar` (no inventory) or only `via: inventory` (no live sidecar) still blocks the uninstall: the check treats either kind of evidence as "still instrumented," because either one means a workload still depends on something the uninstall is about to remove.
 
 ## `forceCleanupOnUninstall` and the recovery ConfigMap
 
-Sometimes the right call is to proceed anyway: a workload the check flags that you know is being decommissioned along with the namespace, for example. Set `uninstall.forceCleanupOnUninstall=true` (or pass `--force` to the underlying cleanup Job by upgrading the release with that value first) to let `helm uninstall` proceed even though the check would otherwise refuse:
+Sometimes the right call is to proceed anyway: a workload the check flags that you know is being decommissioned along with the namespace, for example. Set `namespaced.uninstall.forceCleanupOnUninstall=true` (or pass `--force` to the underlying cleanup Job by upgrading the release with that value first) to let `helm uninstall` proceed even though the check would otherwise refuse:
 
 ```bash
-helm upgrade speedscale ./speedscale-namespaced -n banking-app \
-  --reuse-values --set uninstall.forceCleanupOnUninstall=true
-helm -n banking-app uninstall speedscale
+helm upgrade speedscale-operator speedscale/speedscale-operator -n banking-app \
+  --reuse-values --set namespaced.uninstall.forceCleanupOnUninstall=true
+helm -n banking-app uninstall speedscale-operator
 ```
 
 :::warning Forcing does not clean anything up
@@ -80,10 +76,10 @@ Before it lets the uninstall proceed, force mode writes a `speedscale-uninstall-
 The sequence above assumes you set the value *before* running `helm uninstall`. If an uninstall has already been refused, Helm leaves the release in `uninstalling` status, and in that state `helm upgrade` fails with `has no deployed releases`, so the escape hatch looks unreachable. Roll back first to return the release to `deployed`, then set the value and uninstall:
 
 ```bash
-helm -n banking-app rollback speedscale
-helm upgrade speedscale ./speedscale-namespaced -n banking-app \
-  --reuse-values --set uninstall.forceCleanupOnUninstall=true
-helm -n banking-app uninstall speedscale
+helm -n banking-app rollback speedscale-operator
+helm upgrade speedscale-operator speedscale/speedscale-operator -n banking-app \
+  --reuse-values --set namespaced.uninstall.forceCleanupOnUninstall=true
+helm -n banking-app uninstall speedscale-operator
 ```
 
 The rollback re-renders the release's own objects and nothing else; it does not touch instrumented workloads or in-flight replays.
@@ -129,11 +125,11 @@ The Job carries `ttlSecondsAfterFinished: 60`, which the Kubernetes TTL controll
 ```bash
 kubectl -n banking-app logs job/speedscale-uninstall   # read why it failed, and fix that
 kubectl -n banking-app delete job speedscale-uninstall  # then clear it
-helm -n banking-app uninstall speedscale                # retry
+helm -n banking-app uninstall speedscale-operator  # retry
 ```
 
 The Job's `helm.sh/hook-delete-policy` includes `before-hook-creation`, so a retry would replace the old Job automatically anyway; deleting it by hand just makes the next attempt's logs unambiguous rather than mixed with a previous run's.
 
 :::note An image without the cleanup subcommand also blocks uninstall
-The hook Job invokes the operator image's `namespaced-cleanup` subcommand. An older image that predates it exits non-zero the same way an active-capture check does, and blocks the uninstall identically. If the logs show a `StartError` with no further output rather than one of the messages above, confirm `image.tag` in your values points at an image that actually ships `namespaced-cleanup`.
+The hook Job invokes the operator image's `namespaced-cleanup` subcommand. An older image that predates it exits non-zero the same way an active-capture check does, and blocks the uninstall identically. If the logs show a `StartError` with no further output rather than one of the messages above, confirm `namespaced.image.tag` in your values points at an image that actually ships `namespaced-cleanup`.
 :::

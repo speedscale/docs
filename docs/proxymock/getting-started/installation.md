@@ -43,6 +43,10 @@ Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `pr
 
 :::
 
+## Kerberos cloud proxy
+
+If your outbound proxy requires Kerberos, configure [Kerberos proxy authentication](/reference/proxy_config#local-cli-setup) before running `proxymock init` or other cloud commands.
+
 ## After installing
 
 Initialize once before your first recording. This registers a valid email to activate proxymock and is required even for fully local use; your recorded traffic stays on your machine. Browser sign-in is the default path:
@@ -50,6 +54,6 @@ Initialize once before your first recording. This registers a valid email to act
 - Run `proxymock init` and use the browser sign-in flow.
 - Use `proxymock init --api-key <your key>` only for CI or other headless environments.
 
-For more options (enterprise profile, CI, troubleshooting), see [Initialize API Key](/proxymock/guides/initialize.md). Then continue with the [Quickstart](/proxymock/getting-started/quickstart) or use a language-specific first-success path:
+For more options (enterprise profile, CI, troubleshooting), see [Initialize API Key](/proxymock/guides/initialize.md). Then continue with the [agent tutorial](/proxymock/agent-tutorial/), the [CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/), or a language-specific first-success path:
 
 <ProxymockLanguageLinks className="space-y-1 mt-3" />

@@ -36,4 +36,4 @@ Regenerate the email, `$3`, of every replayed user insert:
 }
 ```
 
-See [PostgreSQL Load and Regression Testing](/proxymock/guides/postgres-load-testing#regenerate) for the full walkthrough.
+See [Load and Regression Test a Database](/proxymock/databases/load-and-regression-testing#regenerate) for the full walkthrough.

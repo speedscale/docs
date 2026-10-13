@@ -37,6 +37,47 @@ const config = {
       {
         redirects: [
           {
+            from: "/getting-started/poc-prerequisites/",
+            to: "/getting-started/evaluation/",
+          },
+          // Databases sections (S-13517)
+          {
+            from: "/proxymock/guides/postgres/",
+            to: "/proxymock/databases/record/postgresql/",
+          },
+          {
+            from: "/proxymock/guides/mysql/",
+            to: "/proxymock/databases/record/mysql/",
+          },
+          {
+            from: "/proxymock/guides/mongodb/",
+            to: "/proxymock/databases/record/mongodb/",
+          },
+          {
+            from: "/guides/mocking/redis/",
+            to: "/proxymock/databases/record/redis/",
+          },
+          {
+            from: "/proxymock/guides/sql-compare/",
+            to: "/proxymock/databases/sql-compare/",
+          },
+          {
+            from: "/proxymock/guides/link-queries-to-requests/",
+            to: "/proxymock/databases/link-queries-to-requests/",
+          },
+          {
+            from: "/guides/mocking/sql-matching/",
+            to: "/guides/databases/mock-a-database/",
+          },
+          {
+            from: "/proxymock/guides/postgres-load-testing/",
+            to: "/proxymock/databases/load-and-regression-testing/",
+          },
+          {
+            from: "/proxymock/guides/mysql-load-testing/",
+            to: "/proxymock/databases/load-and-regression-testing/",
+          },
+          {
             from: "/guides/byoc/",
             to: "/byoc/",
           },
@@ -70,7 +111,19 @@ const config = {
           },
           {
             from: "/proxymock/getting-started/quickstart-mcp/",
-            to: "/proxymock/getting-started/quickstart/quickstart-mcp/",
+            to: "/proxymock/agent-tutorial/",
+          },
+          {
+            from: "/proxymock/getting-started/quickstart/quickstart-mcp/",
+            to: "/proxymock/agent-tutorial/",
+          },
+          {
+            from: "/proxymock/getting-started/quickstart/",
+            to: "/proxymock/agent-tutorial/",
+          },
+          {
+            from: "/proxymock/how-it-works/agent-skills/",
+            to: "/proxymock/agent-skills/",
           },
           {
             from: "/proxymock/getting-started/api-key/",

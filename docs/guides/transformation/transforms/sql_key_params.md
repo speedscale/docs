@@ -48,5 +48,5 @@ With ids 1, 2 and 3 recorded and a replay that asks for 3, 1 and 2, the mock ans
 
 ## Related
 
-- [Matching SQL mocks](../../mocking/sql-matching.md) walks through this example with a proxymock blueprint.
+- [Matching SQL mocks](../../databases/mock-a-database.md) walks through this example with a proxymock blueprint.
 - The `postgres_param` and [`mysql_param`](../extractors/mysql_param.md) extractors read a single parameter, for example to regenerate a unique value on every replay.

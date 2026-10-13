@@ -9,7 +9,7 @@ This guide covers how to use proxymock to mock AWS Simple Email Service (SES) co
 
 ## Introduction to AWS SES {#introduction}
 
-Amazon Simple Email Service (SES) is a cloud-based email sending service designed to help digital marketers and application developers send marketing, notification, and transactional emails. **proxymock** is able to record and mock AWS SES API calls. This allows you to test email functionality without actually sending emails, incurring AWS costs or triggering spam filters. To do this, we record your app talking to AWS SES and simulate the service in subsequent tests. To learn more about proxymock recording and architecture, check out the [quick start](../getting-started/quickstart/index.md).
+Amazon Simple Email Service (SES) is a cloud-based email sending service designed to help digital marketers and application developers send marketing, notification, and transactional emails. **proxymock** is able to record and mock AWS SES API calls. This allows you to test email functionality without actually sending emails, incurring AWS costs or triggering spam filters. To do this, we record your app talking to AWS SES and simulate the service in subsequent tests. To learn more about proxymock recording and architecture, work through the [agent tutorial](../agent-tutorial/index.md).
 
 ## Demo App
 

@@ -15,16 +15,17 @@ If you are evaluating the effect on your applications rather than on the collect
 
 The table below shows peak resource usage per container at various request rates. Measurements were taken against a Go HTTP application making outbound TLS calls, running on a single captured workload.
 
-| QPS  | Capture CPU | Capture Memory | Ingest CPU | Ingest Memory | Total CPU | Total Memory |
-|------|-------------|----------------|------------|---------------|-----------|--------------|
-| Idle | 3m          | 413Mi          | 2m         | 30Mi          | 5m        | 443Mi        |
-| 1    | 4m          | 412Mi          | 2m         | 33Mi          | 6m        | 445Mi        |
-| 10   | 14m         | 409Mi          | 11m        | 41Mi          | 25m       | 450Mi        |
-| 50   | 60m         | 412Mi          | 49m        | 41Mi          | 109m      | 453Mi        |
-| 100  | 86m         | 412Mi          | 72m        | 42Mi          | 158m      | 454Mi        |
-| 200  | 139m        | 411Mi          | 122m       | 43Mi          | 261m      | 454Mi        |
-| 500  | 259m        | 413Mi          | 228m       | 47Mi          | 487m      | 460Mi        |
-| 1000 | 388m        | 413Mi          | 347m       | 60Mi          | 735m      | 473Mi        |
+
+| QPS  | Capture CPU | Capture Mem | Ingest CPU | Ingest Mem | **Total CPU** | **Total Mem** |
+| ---- | ----------- | ----------- | ---------- | ---------- | ------------- | ------------- |
+| idle | 3m          | 412Mi       | 2m         | 36Mi       | **5m**        | **448Mi**     |
+| 1    | 4m          | 409Mi       | 3m         | 31Mi       | **7m**        | **440Mi**     |
+| 10   | 16m         | 410Mi       | 15m        | 37Mi       | **31m**       | **447Mi**     |
+| 50   | 66m         | 410Mi       | 68m        | 38Mi       | **134m**      | **448Mi**     |
+| 100  | 89m         | 411Mi       | 121m       | 38Mi       | **210m**      | **449Mi**     |
+| 200  | 136m        | 411Mi       | 216m       | 41Mi       | **352m**      | **452Mi**     |
+| 500  | 279m        | 411Mi       | 465m       | 46Mi       | **744m**      | **457Mi**     |
+| 1000 | 468m        | 411Mi       | 787m       | 57Mi       | **1255m**     | **468Mi**     |
 
 :::note
 These observations were made while capturing a single workload with outbound TLS traffic. Your results will vary based on the number of captured workloads, traffic patterns, payload sizes, and protocol mix.

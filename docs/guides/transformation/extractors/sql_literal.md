@@ -46,4 +46,4 @@ sql_literal(index=2) -> constant(new=any)
 
 ## Related
 
-- [Matching SQL mocks](../../mocking/sql-matching.md) explains how SQL mocks match and how the SQL transforms change that.
+- [Matching SQL mocks](../../databases/mock-a-database.md) explains how SQL mocks match and how the SQL transforms change that.

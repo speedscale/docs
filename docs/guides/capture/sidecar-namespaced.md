@@ -6,10 +6,6 @@ sidebar_position: 5
 
 # Sidecar Capture for Namespaced Installs
 
-:::caution
-This workflow is currently in preview status. Please provide feedback in our [Slack community](https://slack.speedscale.com).
-:::
-
 A [namespaced install](/getting-started/installation/install/kubernetes-namespaced) has no cluster-wide admission webhook, so nothing in the cluster mutates a workload for you. Instead, `proxymock cluster capture` computes the same `goproxy` sidecar mutation the webhook would perform and applies it directly with your own kubeconfig, when you pass `--sidecar`.
 
 ```bash

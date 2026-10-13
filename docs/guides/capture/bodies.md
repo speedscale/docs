@@ -144,7 +144,7 @@ You'll need to understand which columns attach to which columns but the JSON mod
 
 Speedscale represents the Redis wire protocol as structured command and argument arrays. Text values are human readable and editable, while binary values remain available for exact mock matching.
 
-Captured Redis traffic can also be replayed as a dependency mock. See [Redis Mocking](/guides/mocking/redis) for RESP2/RESP3 support, transaction requirements, and local proxymock commands.
+Captured Redis traffic can also be replayed as a dependency mock. See [Redis Mocking](/proxymock/databases/record/redis) for RESP2/RESP3 support, transaction requirements, and local proxymock commands.
 
 ```json
 "array": {

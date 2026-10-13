@@ -25,5 +25,6 @@ This section contains how-to guides for practical uses of **proxymock**.
 ## Configure and verify replays
 
 - [Create and Verify Blueprints](./blueprints.md): save, preview, and check runtime transforms.
+- [Debug a Replay Step by Step](./replay-debugger.md): park before each request, run to the first failure, and inspect what was sent.
 - [Gate CI on Replay Results](./replay-verdicts.md): baseline comparisons, fix verification, and exit codes.
 - [Compare Response Meaning](./semantic-comparison.md): similarity thresholds and optional judging.
