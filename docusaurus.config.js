@@ -86,6 +86,10 @@ const config = {
             to: "/byoc/",
           },
           {
+            from: "/qabot/",
+            to: "/quality-factory/",
+          },
+          {
             from: "/guides/byoc-ecs/",
             to: "/byoc/examples/ecs/",
           },

@@ -1,0 +1,14 @@
+{
+  "checkedOn": "2026-10-15",
+  "proxymockVersion": "v2.5.1133",
+  "fixture": "synthetic local deposit response; HTTP capture and HTTPS replay",
+  "bodyComparison": false,
+  "outboundDependencies": 0,
+  "runs": [
+    { "name": "baseline", "recordedStatus": 201, "observedStatus": 201, "exit": 0, "verdict": "pass" },
+    { "name": "candidate", "recordedStatus": 201, "observedStatus": 503, "exit": 3, "verdict": "new-mismatch" },
+    { "name": "still-faulty", "recordedStatus": 503, "observedStatus": 503, "exit": 2, "verdict": "bug-still-reproduces" },
+    { "name": "fixed", "recordedStatus": 503, "observedStatus": 201, "exit": 0, "verdict": "fix-confirmed" },
+    { "name": "repaired-regression", "recordedStatus": 201, "observedStatus": 201, "exit": 0, "verdict": "pass" }
+  ]
+}

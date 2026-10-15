@@ -1,0 +1,28 @@
+const fs = require('node:fs');
+const http = require('node:http');
+const https = require('node:https');
+
+const mode = process.argv[2];
+if (!['baseline', 'faulty', 'repaired'].includes(mode)) {
+  throw new Error('Usage: node deposit.cjs baseline|faulty|repaired');
+}
+const handler = (req, res) => {
+  req.resume();
+  req.on('end', () => {
+    if (req.method !== 'POST' || req.url !== '/api/transactions/deposit') {
+      res.writeHead(404).end();
+      return;
+    }
+    const status = mode === 'faulty' ? 503 : 201;
+    res.writeHead(status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(status === 503 ? { error: 'Temporary processing failure' } : { status: 'COMPLETED' }));
+  });
+};
+const servers = [
+  http.createServer(handler).listen(8080, '127.0.0.1'),
+  https.createServer({ key: fs.readFileSync('localhost-key.pem'), cert: fs.readFileSync('localhost-cert.pem') }, handler).listen(18444, '127.0.0.1'),
+];
+for (const signal of ['SIGINT', 'SIGTERM']) {
+  process.on(signal, () => servers.forEach(server => server.close()));
+}
+console.log(`Deposit fixture: ${mode}; HTTP 8080; HTTPS 18444`);
