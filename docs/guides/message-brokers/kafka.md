@@ -37,14 +37,55 @@ This sort of outbound traffic would typically be part of a mock when running a r
 1. [speedctl](/reference/glossary.md#speedctl) is installed
 1. [Create a snapshot](/guides/creating-a-snapshot.md) containing the traffic you need.
 
-## Replay from UI (Recommended)
+## Replay in your cluster
 
-The simplest way to replay Kafka traffic is using the replay wizard in the Speedscale UI. The wizard provides a guided experience for configuring and running replays directly against your Kafka brokers in-cluster. Speedscale automatically handles Kafka message production during replay, eliminating the need for manual setup or scripting.
+The generator replays a consumer's recorded `Fetch` responses as records produced to the broker the consumer read from, so the consumer reads the same records again. A consumer's `Fetch` traffic is outbound, so a replay mocks it by default. Choose it as the replay's tests first.
 
-For detailed instructions, see the [replay wizard guide](/guides/replay/README.md).
+**1. Choose the Fetches to replay** when you create the snapshot. This filter replays the records the consumer read from the `orders` topic:
+
+```bash
+speedctl create snapshot --name orders-consumer --service orders-consumer --tests-filter '(command IS "Fetch") AND (location IS "orders")'
+```
+
+In the dashboard, open the snapshot and use **Choose replay tests** instead. [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md) covers the filter syntax.
+
+**2. Replay the snapshot.** Each record is produced to the broker its `Fetch` came from, with its recorded key, value, headers, partition, CreateTime and compression codec:
+
+```bash
+speedctl infra replay orders-consumer --snapshot-id <snapshot-id> --test-config-id <test-config-id> --no-mocks
+```
+
+To produce to a different broker, add `--test-against '<recorded broker>=<broker host>:<port>'`.
+
+### Brokers that require SASL
+
+Add `generator.kafka` to the test config with the user, password and SASL mechanism the replay authenticates with. The mechanism is `PROTOCOL_SASL_MECHANISM_PLAIN`, `PROTOCOL_SASL_MECHANISM_SCRAM_SHA_256` or `PROTOCOL_SASL_MECHANISM_SCRAM_SHA_512`. Set `tlsMode` to `PROTOCOL_TLS_MODE_REQUIRE` to connect over TLS without verifying the broker's certificate, or to `PROTOCOL_TLS_MODE_VERIFY_FULL` to verify it.
+
+When a replay mocks Kafka, the mock answers your app's SASL handshake itself. It accepts PLAIN with any credentials. SCRAM needs `responder.kafka` with the password your app uses, because the client checks the server's signature.
+
+Use secret references for passwords, because a literal value is stored with the test config. Speedscale mounts every secret the test config references into the generator and the mock, so the secret only has to exist in the namespace of the workload you replay:
+
+```json
+{
+  "generator": {
+    "kafka": {
+      "username": "${{secret:kafka-credentials/username}}",
+      "password": "${{secret:kafka-credentials/password}}",
+      "saslMechanism": "PROTOCOL_SASL_MECHANISM_SCRAM_SHA_512"
+    }
+  },
+  "responder": {
+    "kafka": {
+      "username": "${{secret:kafka-credentials/username}}",
+      "password": "${{secret:kafka-credentials/password}}",
+      "saslMechanism": "PROTOCOL_SASL_MECHANISM_SCRAM_SHA_512"
+    }
+  }
+}
+```
 
 :::note
-The latency reported on the report in the UI is the time to produce messages to the broker, not the full latency for downstream applications to consume them.
+The latency reported on the report is the time to produce messages to the broker, not the full latency for downstream applications to consume them.
 :::
 
 ## Replay with proxymock
