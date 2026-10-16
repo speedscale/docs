@@ -24,7 +24,7 @@ The recording of the traffic covers both inbound and outbound HTTP, API and Data
 
 Start by capturing traffic from a running instance of your service. This snapshot becomes the baseline — it contains the inbound requests QABot will replay and the outbound responses it will use to build mocks.
 
-You can capture traffic using the [Traffic Viewer](/guides/capture/filter) or the [CLI](/guides/cli). The snapshot should include a representative sample of your service's traffic: typical CRUD operations, authentication flows, and any flows you want covered in CI.
+You can capture traffic using the [Traffic Viewer](/guides/capture/filter) or the [speedctl CLI](/guides/cli). The snapshot should include a representative sample of your service's traffic: typical CRUD operations, authentication flows, and any flows you want covered in CI.
 
 ### Step 2: Point QABot at a Test Environment
 

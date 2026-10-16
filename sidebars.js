@@ -20,6 +20,7 @@ const sidebars = {
       label: "Getting Started",
       items: [
         "getting-started/introduction",
+        "getting-started/command-line-tools",
         "getting-started/evaluation",
         "getting-started/quick-start",
         "getting-started/tutorial",
@@ -181,7 +182,7 @@ const sidebars = {
     },
     {
       type: "category",
-      label: "Local Development",
+      label: "proxymock",
       items: [
         "proxymock/index",
         {
@@ -226,6 +227,7 @@ const sidebars = {
               type: "category",
               label: "Quickstart",
               items: [
+                "proxymock/getting-started/quickstart/quickstart-cli",
                 "proxymock/getting-started/quickstart/local/index",
                 "proxymock/getting-started/quickstart/in-cluster/index",
                 "proxymock/getting-started/quickstart/live-tail/index",

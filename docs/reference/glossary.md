@@ -199,6 +199,10 @@ environment.
 See [service mocking](../concepts/service_mocking.md) and
 [mocking backends](/guides/replay/mocks/) for more information.
 
+### proxymock
+
+A Speedscale CLI for recording traffic, mocking dependencies, and replaying tests in local, CI/CD, Kubernetes, and cloud workflows. See [Install proxymock CLI](/proxymock/getting-started/installation/), the [proxymock CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/), and [Command-line tools: proxymock and speedctl](/getting-started/command-line-tools/).
+
 ### RRPair
 
 The RRPair, short for request / response pair, is the Speedscale internal
@@ -228,10 +232,7 @@ A snapshot can be [locked](/guides/locking-a-snapshot.md) to make it read-only u
 
 ### speedctl
 
-The Speedscale CLI which can be used to interact with Speedscale resources in
-all the same ways the [Speedscale UI](https://app.speedscale.com) does.
-
-See [cli setup](/getting-started/installation/install/cli) for more information.
+A Speedscale CLI for platform setup, cloud resource management, and existing capture and replay workflows. See [Install speedctl CLI](/getting-started/installation/install/cli/) and [Command-line tools: proxymock and speedctl](/getting-started/command-line-tools/) for its role alongside proxymock.
 
 ### SUT
 

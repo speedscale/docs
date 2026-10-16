@@ -64,3 +64,16 @@ Use this checklist when adding or updating docs pages:
 ### Public Writing Checks
 
 Follow the [repository public-writing rules](./AGENTS.md#public-writing) and run `yarn check:writing` before pushing documentation changes. It checks added public prose by default, while `yarn check:writing --all` reports the existing backlog. The same checker runs in pull request and main-branch CI.
+
+### Dependency Maintenance
+
+The docs maintainer reviews npm dependencies and GitHub Actions at least monthly and opens a maintenance PR when updates are justified. Routine Dependabot version-update PRs are disabled. GitHub vulnerability alerts remain enabled; automatic security-update PRs are currently disabled.
+
+1. Review the repository's [vulnerability alerts](https://github.com/speedscale/docs/security/dependabot) and run `yarn audit` and `yarn outdated`. Triage new advisories promptly: record the affected dependency, advisory, available fix, and impact in Linear. Security fixes take priority over the monthly review. Record any deferred finding and its reason.
+2. Inventory action references with `rg 'uses:' .github/workflows`. Review each action repository's releases and security advisories, and compare the pinned commit and version comment with its latest compatible release. For example, `gh api repos/actions/checkout/releases/latest --jq '{tag: .tag_name, url: .html_url}'` discovers the latest checkout release. Repeat for every external action; `yarn outdated` only covers npm packages.
+3. Read upstream release notes before choosing versions. Keep Docusaurus packages aligned, check React compatibility, and inspect `package.json` overrides in `resolutions`; a dependency bump can be ineffective when an override still pins the old version. Handle major upgrades separately when they require migration work.
+4. Update the selected dependencies and matching overrides, then run `yarn` to regenerate `yarn.lock`. Review the lockfile diff for unexpected dependency changes. For GitHub Actions, retain full commit-SHA pins and update their version comments from the corresponding upstream releases.
+5. Validate with `yarn --frozen-lockfile`, `yarn test:writing`, `yarn check:writing --base origin/main`, `node --test scripts/security-regressions.test.mjs`, and `yarn build`. Run any additional regression tests affected by the update. Compare vulnerability findings before and after the change.
+6. Open one PR for a coherent maintenance batch. Explain why the updates are needed, identify behavior changes and remaining advisories, and include validation results. Inspect the published preview, including affected diagrams, search, redirects, and navigation, before requesting human review.
+
+Vulnerability alerts and their triage are separate from version-update automation. Keep alerts enabled in the repository settings when changing this process.

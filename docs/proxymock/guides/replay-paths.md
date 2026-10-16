@@ -1,10 +1,10 @@
 ---
-title: Choose Where a Replay Runs
+title: Choose Where a proxymock Replay Runs
 description: "proxymock can replay recorded traffic in three places: in-process on your machine, inside your Kubernetes cluster with no Speedscale cloud involved, or through Speedscale cloud like a dashboard replay. Compare the three and run each one from proxymock web, the CLI, or the MCP server."
 sidebar_position: 14
 ---
 
-# Choose Where a Replay Runs
+# Choose Where a proxymock Replay Runs
 
 Every replay sends recorded requests at a target and reports how the responses compare. What changes is *where* the replay runs and *what it needs from you*. proxymock offers three paths, and they are independent: having a cluster does not stop you replaying locally, and being logged in to Speedscale cloud does not force a replay through it.
 
@@ -21,6 +21,8 @@ Every replay sends recorded requests at a target and reports how the responses c
 In proxymock web all three live in the **Where it runs** strip at the top of the Replay tab. Picking one decides what the rest of the form asks for, and the run button changes with it. The **Test config** picker below it applies to all three paths; see [Configure a Replay with Test Configs](./test-configs.md).
 
 ## On this machine
+
+If your traffic is already in a Speedscale Cloud snapshot, [pull it and replay it locally](./cloud-snapshot-local.md). That guide covers cloud authentication, the download, dependency mocks, and the local target.
 
 The replay runs inside proxymock and sends traffic to a URL. Use it while you are editing code: your service runs locally, the replay hits it directly, and nothing else has to exist.
 

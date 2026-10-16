@@ -9,13 +9,15 @@ import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks'
 
 # Initialize API Key
 
-For most developers, the easiest path is to run the following command and use the browser sign-in flow:
+Before initializing, check whether you can [reuse an existing speedctl configuration](/getting-started/command-line-tools/#credentials). Both clients must select the same configuration file and account context. If that configuration already has access to your tenant, skip initialization.
+
+For a new local setup, run the following command and use the browser sign-in flow:
 
 ```bash
 proxymock init
 ```
 
-That is usually all you need. You can view or modify your configuration in `~/.speedscale/config.yaml`.
+Run `proxymock version --client` to see which configuration file your installed version uses. To access a tenant's cloud snapshots, follow [enterprise account setup](#enterprise-account), including the replacement steps if you already activated proxymock with another account.
 
 Speedscale does not share or sell your email address, although we might send you updates or announcements if we can ever figure out this marketing thing. Engineering is more our wheelhouse.
 
@@ -29,10 +31,37 @@ Speedscale does not share or sell your email address, although we might send you
   </TabItem>
 
   <TabItem value="Existing Enterprise Customer">
-If you already have a Speedscale account, get your personal API key from your [Profile page](https://app.speedscale.com/profile) (API Key section). Copy the key, then run `proxymock init --api-key <your key>`. If you are on a developer workstation, `proxymock init` with browser sign-in is usually simpler.
+Get your personal API key from your [Profile page](https://app.speedscale.com/profile) (API Key section). Follow [enterprise account setup](#enterprise-account) below. If your current configuration uses another account, follow the [replacement steps](#replace-credentials).
   </TabItem>
 </Tabs>
 
+## Use your enterprise account {#enterprise-account}
+
+Use an account with access to the tenant that owns the snapshot. Free local activation alone does not grant that access. If an existing configuration already includes the right tenant's account context, select it with `--context <name>` when running your commands; replacement is unnecessary.
+
+The initialization examples below use the default configuration in `~/.speedscale`. For a custom directory or filename, pass both `--home <directory>` and `--config <path>` to `init` so it writes to the intended file.
+
+For a fresh installation with no configuration file, run `proxymock init` and sign in with your enterprise account. For API-key setup, get your personal key from the [Profile page](https://app.speedscale.com/profile) and paste it at the hidden prompt below. Reading it into a variable keeps the key out of your shell history:
+
+```bash
+read -rs SPEEDSCALE_API_KEY && export SPEEDSCALE_API_KEY
+proxymock init --api-key "$SPEEDSCALE_API_KEY"
+```
+
+### Replace an existing configuration {#replace-credentials}
+
+If you already activated proxymock locally or configured another account, `proxymock init --api-key` keeps the existing configuration unless you also pass `--overwrite`. A message saying the file already exists and the download was skipped means the credentials were not replaced.
+
+Replacement backs up and replaces the entire selected configuration file, including its saved contexts. Both CLIs using that file will use the replacement configuration. Check the file path with `proxymock version --client` before proceeding, and keep the backup path printed by initialization.
+
+On an interactive workstation, run `proxymock init`. Choose browser sign-in with your enterprise account and accept the prompt to back up and overwrite the configuration. For API-key or headless replacement, use:
+
+```bash
+read -rs SPEEDSCALE_API_KEY && export SPEEDSCALE_API_KEY
+proxymock init --overwrite --api-key "$SPEEDSCALE_API_KEY"
+```
+
+After initialization succeeds, return to [pulling your cloud snapshot](./cloud-snapshot-local.md#pull). Keep using the same configuration file and account context for the pull, mock, and replay commands.
 
 ## CI and other non interactive modes
 
@@ -42,7 +71,9 @@ If you're trying to initialize **proxymock** without any prompts, specify the AP
 proxymock init --api-key <Your API Key>
 ```
 
-For the full workflow after initialization, work through the [agent tutorial](/proxymock/agent-tutorial/) or the [CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/). If you want a language-specific landing page instead, use one of these:
+This command initializes a fresh environment. To change credentials in an environment that already has a configuration file, follow [Replace an existing configuration](#replace-credentials).
+
+After initialization, start with the [proxymock CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/), or [replay an existing cloud snapshot locally](./cloud-snapshot-local.md). Use the [agent tutorial](/proxymock/agent-tutorial/) if you prefer agent prompts. For language-specific setup, use the examples below:
 
 <ProxymockLanguageLinks className="space-y-1 mt-3" />
 

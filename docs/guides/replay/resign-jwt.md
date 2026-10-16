@@ -72,3 +72,75 @@ When you're done, you should be able to click on the "Advanced" tab and see JSON
 ```
 
 Now, run your replay and you're ready to go!
+
+## Request a new token with OAuth client credentials
+
+Re-signing only works when you hold the key that signs your tokens. When your service accepts tokens from an identity provider you do not control, such as Microsoft Entra ID, Okta, Auth0 or Keycloak, the replay can request a fresh token from that provider instead. The replay launcher and the replay wizard build an [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform for you: the generator requests a token with the OAuth 2.0 client credentials grant and sends it as the `Authorization: Bearer` header to the services you choose.
+
+### Recognize the problem
+
+- The **JWT Locations** table for the snapshot shows the recorded tokens as expired, and the launcher summary reports expired JWTs that are not resigned.
+- The replay gets 401 responses where the recording had 2xx responses, and misses its goals.
+- The tokens were issued by a third-party identity provider, and the request that obtained them is not in the snapshot.
+
+### Prerequisites
+
+- Speedscale v2.5.1184 or later for the cloud, operator and generator, and dashboard v0.10.253 or later. The operator in the replay cluster must be at least v2.5.1184 so the generator it starts includes the transform.
+- A client ID and client secret for an app registration (client) that is allowed to request tokens for your API with the client credentials grant.
+- The client secret stored in a Kubernetes Secret in the namespace the replay runs in:
+
+```bash
+kubectl create secret generic entra-oauth --from-literal=client_secret='<client secret>' -n <replay namespace>
+```
+
+- Network access from the generator pod to the token URL. If egress from the replay namespace is restricted, allow the token endpoint's host.
+
+### Configure the replay
+
+The option appears when the snapshot has JWT locations, in the **Advanced** section of the replay launcher and in the **Authentication & Resigning** step of the replay wizard.
+
+1. Select **Request new access_token with OAuth client credentials (client ID, secret, scope, token URL)**.
+2. Fill in the form:
+
+| Field | What to enter |
+|---|---|
+| Client name | A label for you. It is not sent to the token endpoint. |
+| Token URL | The token endpoint, for example `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token`. Required. |
+| Client ID | The OAuth client ID. Required. |
+| Secret name and Key | The Kubernetes Secret and key that hold the client secret, for example `entra-oauth` and `client_secret` (the default key). Only the reference `${{secret:entra-oauth/client_secret}}` is sent to Speedscale; the secret value stays in your cluster. |
+| Scope | The scope to request. For Microsoft Entra ID this is usually the API's application ID URI followed by `/.default`, for example `api://orders-api/.default`. |
+| Token field in the response | The JSON path of the token in the token response. Defaults to `access_token`. |
+| Send the new token to these services | The services the recorded tokens were sent to, taken from the snapshot's JWT locations. All are selected to start with; choose at least one. |
+
+When a recorded token was issued by Microsoft Entra ID, the form fills in the token URL (`https://login.microsoftonline.com/<tid>/oauth2/v2.0/token`, keeping the authority host of a sovereign cloud), the scope (`<aud>/.default`) and the client ID (`azp` or `appid`) from its claims. Check them before you start.
+
+3. Start the replay. The launcher and the wizard keep the replay from starting until the token URL is an `http` or `https` URL, the client ID, secret name and key are filled in, and at least one service is selected.
+
+### What to expect
+
+- For the run, Speedscale adds one transform chain per selected service to the snapshot. Each chain extracts the `Authorization` header from requests to that service and replaces a `Bearer` value with the new token. Requests without an `Authorization` header, and headers with another scheme such as `Basic`, keep their recorded values.
+- The operator mounts the Secret into the generator pod. If the Secret is missing from the replay namespace, the generator pod cannot start.
+- The generator requests a token when the first request needs one, shares it across its vUsers, and requests a new one shortly before it expires.
+- Replayed requests to the selected services get the responses a valid token gets, and the 401s from the baseline replay go away.
+- When the replay completes, the snapshot's original transforms are restored. If the replay fails before it completes, open the snapshot's transforms and remove the `oauth_client_credentials` chains before the next run.
+
+### Troubleshooting
+
+When the token request fails, each affected request keeps its recorded token and carries an error event that starts with `transform chain failed:`. The message names the token URL, the HTTP status and the provider's OAuth error, and never includes the client secret.
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `returned HTTP 401 (invalid_client: ...)`, for example `AADSTS7000215: Invalid client secret provided` | The client ID or secret is wrong or expired | Check the client ID, then update the Secret: `kubectl create secret generic entra-oauth --from-literal=client_secret='<client secret>' -n <replay namespace> --dry-run=client -o yaml \| kubectl apply -f -` |
+| `returned HTTP 400 (invalid_scope: ...)` | The scope is wrong or the client may not request it | Correct the scope. For Entra ID, use the API's application ID URI followed by `/.default` |
+| `oauth token endpoint ... unreachable: ...` | The generator cannot reach the token URL: DNS, a NetworkPolicy, a firewall or a missing egress proxy | Allow egress from the replay namespace to the token endpoint. The token request honors the generator's `HTTPS_PROXY`, `HTTP_PROXY` and `NO_PROXY` settings |
+| The generator pod stays in `ContainerCreating` with a `FailedMount` event, or requests fail with `failed to read secret ${{secret:...}}` | The Secret, or the key in it, is missing from the replay namespace | Create the Secret in the namespace the replay runs in, with the key you entered |
+| `oauth client_secret must be a ${{secret:name/key}} reference to a Kubernetes secret in the replay namespace` | An API call passed a plaintext client secret | Pass a `${{secret:name/key}}` reference instead |
+| Requests still get 401 with no token errors | The service was not selected, the recorded header is not a `Bearer` header, or the token is for a different audience | Select the service, check the recorded header, and check that the scope matches the audience your service expects |
+
+## Request a token with a Postman collection
+
+The **Request new JWT access_token (provide Postman collection)** option imports your Postman collection into the snapshot and uses the token from it for the replay:
+
+- Speedscale finds the token field in the collection's saved example response, preferring an `access_token` field, and during the replay takes the token from that field of the live response. Save a successful token response as an example in the collection before you upload it.
+- A token written to the `Authorization` header is sent as `Bearer <token>`.
+- Postman requests are imported as inbound traffic that the replay sends to your service. This suits a login endpoint that the system under test serves. For a third-party identity provider, use [OAuth client credentials](#request-a-new-token-with-oauth-client-credentials) instead.
