@@ -3,8 +3,8 @@
 # Regenerate the MCP tools/prompts reference page from the proxymock
 # binary's live tool registry, so it never drifts from the actual MCP
 # server surface. Run this whenever the proxymock MCP tools change.
-# The nightly "MCP docs sync" workflow runs it against each new
-# proxymock release.
+# Kraken's post-release pipeline runs it against the exact proxymock
+# release binary whose release notes it publishes.
 #
 #   ./scripts/gen-mcp-docs.sh          # use `proxymock` on PATH
 #   PROXYMOCK=/path/to/proxymock ./scripts/gen-mcp-docs.sh
@@ -15,10 +15,8 @@
 # "undefined"; set PROXYMOCK_VERSION to the tag it was built from.
 #
 # The version that generated the page is recorded in VERSION_FILE. The
-# nightly workflow only regenerates from a release newer than it, so a
-# page built from an unreleased proxymock is not rolled back. For the
-# same reason this script refuses a binary older than the recorded one
-# unless ALLOW_OLDER=1.
+# release pipeline pins generation to the release version. This script
+# refuses a binary older than the recorded one unless ALLOW_OLDER=1.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

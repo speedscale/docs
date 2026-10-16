@@ -3,17 +3,12 @@ name: PR Preview
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-  workflow_run:
-    workflows: [MCP docs sync]
-    types: [completed]
-    branches: [main]
 
 permissions:
   contents: read
 
 jobs:
   build:
-    if: github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
       pull-requests: read
@@ -32,8 +27,6 @@ jobs:
 
     - name: resolve preview
       id: preview
-      env:
-        GH_TOKEN: ${{ github.token }}
       run: node scripts/resolve-pr-preview.mjs
 
     - name: checkout PR merge
@@ -119,7 +112,7 @@ jobs:
 
   publish:
     needs: build
-    if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && github.actor != 'dependabot[bot]' && (github.event_name == 'workflow_run' || github.event.pull_request.head.repo.full_name == github.repository)
+    if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -183,28 +176,3 @@ jobs:
         issue-number: ${{ needs.build.outputs.pr_number }}
         body: Preview available at 'http://${{ env.DOWNLOADS_PREVIEW_BUCKET }}.s3-website-us-east-1.amazonaws.com/pr-${{ needs.build.outputs.pr_number }}/'
         edit-mode: replace
-
-  report-mcp-preview:
-    needs: [build, publish]
-    if: always() && github.event_name == 'workflow_run' && needs.build.outputs.run == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      statuses: write
-    steps:
-    - name: report preview result on the tested commit
-      env:
-        GH_TOKEN: ${{ github.token }}
-        HEAD_SHA: ${{ needs.build.outputs.head_sha }}
-        BUILD_RESULT: ${{ needs.build.result }}
-        PUBLISH_RESULT: ${{ needs.publish.result }}
-        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      run: |
-        state=failure
-        description='MCP reference checks or preview publication failed'
-        if [ "$BUILD_RESULT" = success ] && [ "$PUBLISH_RESULT" = success ]; then
-          state=success
-          description='MCP reference checks passed and preview published'
-        fi
-        gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA" \
-          -f state="$state" -f context='MCP docs preview' \
-          -f description="$description" -f target_url="$RUN_URL"
