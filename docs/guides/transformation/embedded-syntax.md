@@ -168,7 +168,4 @@ ${{secret:NAME/KEY}}
 }
 ```
 
-The `secret:` keyword is recognized by the transforms that handle credentials —
-[constant](./transforms/constant.md), [jwt_resign](./transforms/jwt_resign.md),
-[aws_auth](./transforms/aws_auth.md), and the SASL auth transform — and the value is never written
-to logs or dumps.
+The `secret:` keyword is recognized by the transforms that handle credentials: [constant](./transforms/constant.md), [jwt_resign](./transforms/jwt_resign.md), [aws_auth](./transforms/aws_auth.md), [oauth_client_credentials](./transforms/oauth_client_credentials.md), and the SASL auth transform. The value is never written to logs or dumps.

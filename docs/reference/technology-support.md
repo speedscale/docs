@@ -54,6 +54,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Basic Auth            | Auth | Full    |                                                                                                  |
 | Bearer JWT            | Auth | Full    | Automatic discovery and replacement. See [JWT guide](../guides/replay/resign-jwt.md)             |
 | Cookies               | Auth | Full    |                                                                                                  |
+| OAuth 2.0 client credentials | Auth | Full | Fresh tokens from your identity provider during replay. See [oauth_client_credentials transform](/guides/transformation/transforms/oauth_client_credentials) |
 
 ### Supported DBMS
 

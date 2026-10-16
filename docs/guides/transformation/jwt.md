@@ -107,8 +107,28 @@ The replay wizard offers multiple options for handling JWTs during replay. Choos
 **Requirements**:
 - Your Postman collection must successfully return a response containing an `access_token` field
 - The auth endpoint must be accessible from the replay environment
+- Save a successful token response as an example in the collection. Speedscale finds the token field in that example, preferring `access_token`, and writes the token to the `Authorization` header as `Bearer <token>`.
 
-### 4. Automated JWKS Resigning
+**Limitations**: Postman requests are imported as inbound traffic that the replay sends to your service, so this option suits a login endpoint that the system under test serves. For a third-party identity provider, use OAuth client credentials instead.
+
+### 4. Request Token Using OAuth Client Credentials
+
+**When to use**: Recommended when your service accepts tokens from a third-party identity provider, such as Microsoft Entra ID, Okta, Auth0 or Keycloak, and you have a client ID and client secret that may request tokens with the OAuth 2.0 client credentials grant.
+
+**How it works**: During the replay the generator requests a token from the token URL and sends it as the `Authorization: Bearer` header to the services you select. One token is shared by the generator's vUsers and refreshed before it expires. The identity provider does not have to be in the snapshot.
+
+**Configuration**:
+1. Store the client secret in a Kubernetes Secret in the replay namespace, for example `kubectl create secret generic entra-oauth --from-literal=client_secret='<client secret>' -n <replay namespace>`
+2. Select **Request new access_token with OAuth client credentials (client ID, secret, scope, token URL)**
+3. Enter the token URL, client ID, the Secret name and key, the scope and the token field, and choose the services that get the token. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you.
+
+**Requirements**:
+- Speedscale v2.5.1184 or later, including the operator in the replay cluster, and dashboard v0.10.253 or later
+- The token endpoint must be reachable from the generator pod
+
+See [Re-sign JWTs](../replay/resign-jwt.md#request-a-new-token-with-oauth-client-credentials) for the full walkthrough and the [oauth_client_credentials transform](./transforms/oauth_client_credentials.md) for the reference.
+
+### 5. Automated JWKS Resigning
 
 **When to use**: Recommended when your application follows the JSON Web Key Set (JWKS) pattern for JWT validation, commonly used with auth providers like Auth0, Keycloak, and Okta.
 
@@ -163,7 +183,7 @@ When using the JWKS discovery option, at replay time Speedscale can intercept bo
 
 **Limitations**: Only works with applications that use JWKS for JWT validation. Does not work with traditional testing tools that can't control both sides of the conversation.
 
-### 5. Use Login Request from Snapshot
+### 6. Use Login Request from Snapshot
 
 **When to use**: Recommended when your captured snapshot contains the actual login/authentication request that obtains an access token from the auth provider.
 
@@ -193,7 +213,7 @@ Learn more about OAuth 2.0 flows:
 - Only works if the login request is present in the snapshot
 - Credentials in the snapshot must still be valid
 
-### 6. Use a Kubernetes Secret
+### 7. Use a Kubernetes Secret
 
 **When to use**: Recommended for Kubernetes deployments when you have a signing secret available and need fine-grained control over JWT resigning, including the ability to customize claims.
 
