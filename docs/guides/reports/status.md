@@ -144,6 +144,27 @@ The replay was manually canceled by a user before completion.
 
 ---
 
+## Watch a Replay's Progress
+
+The status says where a replay is, and the **Replay progress** panel at the top of the report's **Overview** tab shows why. It is there while the replay runs and after it finishes. While it runs, it shows the elapsed time and updates every second. Afterwards it shows how long the replay ran.
+
+The stepper walks through six stages in order:
+
+| Stage | Done when |
+|---|---|
+| **Provision** | The operator has created the replay's resources |
+| **Mocks** | The responder has loaded the snapshot and is ready to answer |
+| **App** | The system under test has rolled out and is ready |
+| **Load** | The generator has sent its traffic, stage by stage |
+| **Analyze** | Analysis of the results has started |
+| **Result** | The verdict is in |
+
+A stage that does not apply to the replay, such as **Mocks** when nothing is mocked or **App** when traffic goes to a custom URL, is shown as skipped. While the load runs, a bar under the stepper shows the current stage, requests sent out of expected, virtual users and requests per second. When a stage is waiting on something, the bar says what it is waiting for and how long until that wait times out.
+
+Click **Expand lanes** to see each component's own steps: the **Operator**, the **Mocks** responder, the **App**, the **Generator**, the optional **Collector** and the **Analysis**. The lanes open on their own while a replay runs or when one of them failed.
+
+When a step fails, it turns red and a card below the stepper names the component, the reason and the severity, with the suggested fix and a docs link when there is one. A button such as **Show generator logs** filters the timeline below to that component's logs, and **Kubernetes events** shows the cluster events for it. When a step stops making progress and Kubernetes reported warnings for it, a card says the step **is not progressing** and lists the warnings, such as an image that cannot be pulled. This answers most "is my replay running?" questions without `kubectl`.
+
 ## Checking Report Status
 
 ### Using the CLI
