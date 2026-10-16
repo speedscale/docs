@@ -143,6 +143,37 @@ The standalone `analyze_mock_matches`, `accept_mock_recommendation`, and `simila
 
 See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full parameter documentation, and the [Replay Tuning guide](replay-tuning.md) for the script-based variant of this workflow.
 
+## In proxymock web
+
+The same loop runs in `proxymock web`, for when you would rather see the misses than read a report. The browser, the CLI and the agent share one analysis and write the same per-service tuning blueprint, so a fix applied in one shows up in the others.
+
+### Fix misses in the Mocks view
+
+Open **Mocks** in the sidebar. Choose the run to check under **Replay** and the recording it was mocked from under **Recorded**. proxymock web picks the newest of each and analyzes as soon as both are set, so there is no button to press. The analysis runs offline from the RRPair files and needs no replay report: a plain recording works too.
+
+The two gauges are the two rates from [How it works](#how-it-works). **Projected** is what the next run would score with the active blueprints. **Report** is the recorded verdicts, which only change after a real replay.
+
+Under **To fix**, each card is a group of misses that one fix would collapse, scoped by a filter on the endpoint. Click a transform on the card to apply it to every request in the group:
+
+- **Wildcard** for a rotating URL segment.
+- **Mask** or **Replay recorded** for a field that changes between runs.
+- **Ignore param** to drop a query parameter from the signature.
+- **Key on params** to match a SQL statement on its parameters.
+
+**More…** lets you pick a different transform. **Apply all recommended** applies the recommended fix for every group at once and leaves correlations (**Bind**) for you to review. Every applied fix is listed under **Applied** with an **Undo** button, and **Undo all** removes them all. The Projected gauge updates after each change.
+
+The collapsed **Stateful endpoints**, **Volatile response fields**, **Created ids** and **Credentials & session** sections are the advisories described in [Good to know](#good-to-know). They explain misses that no signature fix should hide.
+
+### See why one request missed
+
+Open a request marked **no match** in the Requests grid, and its **Similar** tab opens first. It ranks the recorded signatures this request came closest to, with the active blueprints applied to both sides.
+
+Each candidate is a field-by-field table: the original value, the value after blueprints, and the recorded value, with the drifting fields first. When every field agrees, the card says the request will match on the next replay.
+
+On a drifting row, **Apply fix** accepts the analyzer's recommendation for that field, and **Add blueprint** lets you choose the transform yourself. The tab ranks again as soon as a blueprint is added, so you can watch the red rows clear. **Diff body** compares the two request bodies side by side, and **Open** shows the recorded request in the grid.
+
+When the recording is not in the workspace, for example after pulling only a report, the tab ranks against the run's own matched requests and says so. Pull the report again with its source snapshot to compare against the recording.
+
 ## From the command line
 
 Every step the agent runs through the `mocks` tool is also a `proxymock match-rate` verb, over the same workspace and the same blueprints. The analysis and the ids are identical, so you can drive the loop by hand or wire it into a script when you would rather not involve an agent:
