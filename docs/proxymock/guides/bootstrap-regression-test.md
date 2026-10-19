@@ -1,7 +1,7 @@
 ---
 title: Bootstrap a Regression Test With No Recording
 description: Build the first recording and regression gate for a service or a new endpoint that has never been recorded, starting from a traffic driver, a spec, a cloud capture or the code.
-sidebar_position: 9
+sidebar_position: 1.6
 ---
 
 # Bootstrap a Regression Test With No Recording
