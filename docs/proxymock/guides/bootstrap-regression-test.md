@@ -328,6 +328,15 @@ Commit the recording and everything the gate needs, so CI runs it without an age
 | The gate script | Yes |
 | Other `proxymock/results/` runs, `proxymock/candidates-*/`, `.replay/`, `proxymock.log` | No |
 
+mock-lab itself ignores `tutorial/*/proxymock/` so that tutorial readers start clean. In your own repository, or to keep the tutorial result, add exceptions for the paths above:
+
+```text
+!/tutorial/go/proxymock/
+/tutorial/go/proxymock/results/*
+!/tutorial/go/proxymock/results/regress-base/
+.replay/
+```
+
 Check the recording for credentials and personal data before you commit it. Then run the gate script as one CI step. See [Gate CI on replay results](./replay-verdicts.md) and [CI/CD](./cicd.md).
 
 ## If it goes wrong
