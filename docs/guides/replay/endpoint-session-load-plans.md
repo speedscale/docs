@@ -7,8 +7,8 @@ sidebar_position: 6
 
 Load groups give selected traffic its own schedule and goals. For example, raise statement traffic while keeping transaction posts at a steady rate, then check whether posting latency increases. Both workloads run against the same app.
 
-:::info Release candidate
-This guide accompanies the endpoint and session load-plan release candidate. The completed engine is included in v2.5.1012. Use compatible proxymock, generator, operator and cloud components. The proxymock visual editor supports local replay and **Run in cluster**, including inline plans carried by namespaced replay requests. Dashboard controls cover groups, shared arrival pools, budgets, scoped goals and recording previews. Final acceptance of the cluster launch integration is still pending.
+:::info Requirements
+Load plans need v2.5.1012 or later of proxymock, the generator, the operator and the cloud components, so upgrade them together. The proxymock visual editor supports local replay and **Run in cluster**, including inline plans carried by namespaced replay requests. Dashboard controls cover groups, shared arrival pools, budgets, scoped goals and recording previews.
 :::
 
 For an executable walkthrough, start with [Test one endpoint while stressing another](./endpoint-load-how-to.md). See the [load-plan field reference](../../reference/configuration/endpoint-load-plans.md) for JSON fields, units, ownership and compatibility rules.
