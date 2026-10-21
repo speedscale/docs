@@ -90,7 +90,7 @@ speedctl alerts preview \
   --received-at 2026-10-21T14:07:00Z
 ```
 
-Preview needs no cloud connection and creates no snapshot. It returns the fixed interval **13:58-14:06 UTC**, a ready time of **14:08 UTC**, seed and snapshot expressions, and a stable planned snapshot ID. The default preview tenant is `preview`; pass `--tenant` with the actual tenant ID to compare IDs with a live receiver.
+Preview needs no cloud connection and creates no snapshot. It returns the fixed interval **13:58-14:06 UTC**, a ready time of **14:08 UTC**, an ingestion deadline of **14:13 UTC**, seed and snapshot expressions, and a stable planned snapshot ID. Alerts that cannot be planned appear under `rejected` with a reason. The default preview tenant is `preview`; pass `--tenant` with the actual tenant ID to compare IDs with a live receiver.
 
 The evaluation annotations are optional custom fields, not values Grafana automatically provides. Supply them only when your integration knows the actual evaluated interval. Otherwise the receiver estimates the interval ending at `startsAt`, using `lookback` plus `pending`. The resulting plan says `estimated-from-alert-start`. Notification arrival never replaces the event timestamp.
 
@@ -106,7 +106,7 @@ speedctl alerts serve \
   --listen 127.0.0.1:8095
 ```
 
-The receiver reads policy configuration and secrets at startup. Restart it to apply changes. Existing receipts keep their original plans. The state directory is bound to its original cloud tenant and endpoint and locked against a second receiver process.
+The receiver reads policy configuration and secrets at startup. Restart it to apply changes. Policy changes apply to new occurrences only. A redelivered occurrence that already has a receipt keeps its original plan, receipt, and snapshot ID. The state directory is bound to its original cloud tenant and endpoint and locked against a second receiver process.
 
 For a local preview through HTTP:
 
@@ -118,7 +118,7 @@ curl --fail-with-body \
   http://127.0.0.1:8095/preview/checkout
 ```
 
-Use a fresh event for live ingestion. Sending the fixed example to `/alerts/checkout` after its configured `maxAge` produces a validation error.
+Use a fresh event for live ingestion. Sending the fixed example to `/alerts/checkout` after its configured `maxAge` returns HTTP `422` with the alert listed under `rejected`.
 
 ## Connect Grafana
 
@@ -126,9 +126,11 @@ Create a [webhook contact point](https://grafana.com/docs/grafana/latest/alertin
 
 Route the `CheckoutErrors` rule to that contact point. The receiver matches labels on each element in `alerts[]`, so grouped notifications cannot substitute shared labels for an individual alert's identity. A policy always maps matching alerts to its configured target. Use separate policies and label constraints for different workloads.
 
+Each alert in a notification is planned independently. An alert without a receipt that is older than `maxAge`, or that starts in the future, is listed under `rejected` with a reason, and the other alerts in the notification are still accepted. The receiver returns `422` only when no matching alert can be planned.
+
 The receiver rejects notifications reporting `truncatedAlerts` and batches larger than 100 alerts. Increase the contact point's alert limit or narrow notification grouping; do not accept an incomplete batch as complete evidence.
 
-Resolved alerts create no snapshot. Repeated Grafana deliveries with the same fingerprint and original `startsAt` return the existing receipt. Recovery does not cancel a queued incident capture or extend its window.
+Resolved alerts create no snapshot. Repeated Grafana deliveries with the same fingerprint and original `startsAt` return the existing receipt, including after the policy is edited. Recovery does not cancel a queued incident capture or extend its window.
 
 ## Connect Datadog
 
@@ -170,7 +172,7 @@ Allowlist your receiver host in Dynatrace External requests and use Credential V
 
 ## Inspect the result
 
-Accepted ingestion returns HTTP `202` with a job ID, reserved snapshot ID, and authenticated status path:
+Accepted ingestion returns HTTP `202` with a job ID, reserved snapshot ID, and authenticated status path for each planned alert, plus any `rejected` alerts:
 
 ```bash
 curl --fail-with-body \
@@ -178,7 +180,7 @@ curl --fail-with-body \
   http://127.0.0.1:8095/jobs/checkout/JOB_ID
 ```
 
-The receipt includes the frozen plan, latest state, seed count, and selected-pair count. Counts are preflight observations, not a guarantee that ingestion had completed. The receiver waits until the window end plus `settle`, then retries empty seed queries until five minutes after receipt or ready time, whichever is later.
+The receipt includes the frozen plan, latest state, seed count, and selected-pair count. Counts are preflight observations, not a guarantee that ingestion had completed. The receiver waits until the window end plus `settle`, then retries empty seed queries until five minutes after receipt or ready time, whichever is later. A longer `settle` therefore never shortens that retry period. Before submitting, it checks whether the reserved snapshot ID already exists and adopts that snapshot instead of creating it again. Snapshot analysis has its own 15-minute budget measured from submission.
 
 | State | Meaning |
 | --- | --- |
@@ -187,11 +189,12 @@ The receipt includes the frozen plan, latest state, seed count, and selected-pai
 | `complete` | Snapshot analysis completed; capture coverage remains unverified. |
 | `no_matching_failures` | No matching inbound seeds by the ingestion deadline. |
 | `unknown`, `indeterminate` | Submission could not be confirmed. Inspect the reserved snapshot ID before further action. |
-| `failed`, `analysis_timeout` | Query, selection, submission, or analysis needs investigation. |
+| `analysis_delayed` | The snapshot exists but analysis has run longer than 15 minutes. The receiver keeps checking once a minute for 24 hours and updates the state when analysis finishes. |
+| `failed`, `analysis_timeout` | Query, selection, submission, or analysis needs investigation. `analysis_timeout` means analysis was still unfinished when the receiver stopped checking. |
 
 Selections over one million request/response pairs fail rather than silently dropping dependency traffic. Narrow the workload, interval, or seed criteria; outbound context still covers the configured interval. A failed analysis is not reported as a successful capture.
 
-The volume holds at most 1,000 receipts. Retain receipts for deduplication, monitor capacity, and plan receiver replacement deliberately. Deleting receipts or moving to a new volume removes that duplicate history. This is not a distributed queue or a retention-management API.
+The volume holds at most 1,000 receipts. Retain receipts for deduplication, monitor capacity, and plan receiver replacement deliberately. Deleting receipts or moving to a new volume removes that duplicate history. A replacement receiver for the same tenant derives the same reserved snapshot ID from the policy ID and occurrence, so a redelivered occurrence adopts the existing snapshot rather than overwriting it. It still creates a new receipt. This is not a distributed queue or a retention-management API.
 
 ## Validate before rollout
 
