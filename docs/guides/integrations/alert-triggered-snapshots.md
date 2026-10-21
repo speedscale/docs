@@ -188,7 +188,7 @@ The receipt includes the frozen plan, latest state, seed count, and selected-pai
 | `creating`, `submitted` | Submission intent saved, or snapshot analysis pending. |
 | `complete` | Snapshot analysis completed; capture coverage remains unverified. |
 | `no_matching_failures` | No matching inbound seeds by the ingestion deadline. |
-| `unknown`, `indeterminate` | Submission could not be confirmed. Inspect the reserved snapshot ID before further action. |
+| `unknown`, `indeterminate` | Submission could not be confirmed. If the reserved snapshot ID is still missing two minutes after an attempt, the receiver submits again, up to three attempts. `indeterminate` means it could not confirm the snapshot; inspect the reserved ID before further action. |
 | `analysis_delayed` | The snapshot exists but analysis has run longer than 15 minutes. The receiver keeps checking once a minute for 24 hours and updates the state when analysis finishes. |
 | `failed`, `analysis_timeout` | Query, selection, submission, or analysis needs investigation. `analysis_timeout` means analysis was still unfinished when the receiver stopped checking. |
 
