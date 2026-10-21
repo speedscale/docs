@@ -1,14 +1,33 @@
 ---
-description: "Configure and run load tests with Speedscale to prepare your service for high traffic by defining load patterns and stages for accurate performance analysis"
+description: "Load test an entire recording, selected endpoints, or complete user sessions with independent schedules and goals."
 sidebar_position: 5
 ---
 
 # Load Testing
 
-Load testing your service, stressing it until it starts to fail, is one of the
-best ways to prepare for a point in the future when your service has more load
-than it does today.  This guide will help you configure and run a load test
-against your service.
+Load testing shows how your service behaves as traffic increases. You can scale an entire recording, target selected endpoints, or replay complete user journeys with separate schedules and goals.
+
+## Choose a load test
+
+| What you want to test | Start here |
+| --- | --- |
+| Increase traffic across an entire recording | [Configure replay stages](#load-test-an-entire-recording) below. |
+| Increase one endpoint's load while keeping another steady | Follow [Test one endpoint while stressing another](./endpoint-load-how-to.md). |
+| Replay complete user journeys, including login and transaction steps | Use [session load groups](./endpoint-session-load-plans.md#rotate-complete-banking-journeys). |
+| Look for problems that appear under sustained load | Run a [soak test](#soak-test). |
+| Find a load-plan field, unit, or compatibility limit | Read the [load-plan reference](../../reference/configuration/endpoint-load-plans.md). |
+
+## Independent endpoint and session workloads
+
+Use [endpoint and session load plans](./endpoint-session-load-plans.md) when each workload needs its own schedule and goals. For example, ramp statement requests while holding transaction posting steady, then check posting latency during the busiest part of the test.
+
+Select endpoints with URL filters, adding an HTTP method filter when reads and writes share a route. A request group replays those requests independently. A session group selects recorded users with a matching request and replays their complete journeys, including login and other steps.
+
+In the dashboard, open **Test Config > Load Pattern** to add request or session groups. Set each group's filter, schedule, and goals, then use **Preview against a recording** to check selected endpoints, request ownership, and session population before running. For local replay and **Run in cluster**, use **Replay > Load plan** in `proxymock web`.
+
+The [banking walkthrough](./endpoint-load-how-to.md) takes you through endpoint selection, rotating sessions, latency goals, and report interpretation. The [feature guide](./endpoint-session-load-plans.md) explains scheduling choices, shared arrival rates, budgets, and Kubernetes setup.
+
+## Load test an entire recording
 
 Use a [test config](/reference/glossary.md#test-config) to define the load
 pattern for your test.  Start by making a copy of the test config
@@ -99,14 +118,10 @@ The graph for this load pattern might look something like this:
 
 There are several performance oriented test configs available by default to get you started.
 
-# Soak Test
+## Soak Test
 
 A common use case is to use a small amount of traffic to create a high
 throughput or long running replay.  Some issues are only exposed after
 sustained load exhausts a resource, which can take time.  Extend your traffic
 with the test config **Duration** setting.  This will run your traffic in a
 loop for the entirety of the duration.
-
-## Independent endpoint and session workloads
-
-To ramp one endpoint while holding another steady, use [endpoint and session load plans](./endpoint-session-load-plans.md). The [banking how-to](./endpoint-load-how-to.md) covers request groups, rotating complete sessions, scoped goals and report interpretation. Existing whole-recording load patterns remain available.
