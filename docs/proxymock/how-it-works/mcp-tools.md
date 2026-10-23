@@ -535,7 +535,7 @@ Convert a third-party traffic capture into local RRPair files that proxymock can
 
 Choose the format that matches the source artifact:
 - postman: a Postman collection JSON file (v2.1). Every request becomes an inbound test; requests with a saved example response also become outbound mocks.
-- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock.
+- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock. Set mocks-only for a browser DevTools HAR whose calls should be answered as mocks behind Playwright journeys.
 - goreplay: a GoReplay capture file (.gor). Every request becomes an inbound test.
 - wiremock: a WireMock project directory or .zip. Every stub mapping becomes an outbound mock.
 - http-wire: a directory or .zip of raw HTTP wire-format files (Req&lt;n&gt;.txt / Res&lt;n&gt;.txt). Every request/response pair becomes an outbound mock.
@@ -546,6 +546,7 @@ Returns the number of tests and mocks written and a sample of the RRPair file pa
 | --- | --- | --- | --- |
 | `format` | string | **yes** | Format of the source artifact: 'postman', 'har', 'goreplay' (single file), or 'wiremock', 'http-wire' (directory or .zip). |
 | `source` | string | **yes** | Path to the input artifact, relative to the working directory. A file for postman/har/goreplay; a directory or .zip for wiremock/http-wire. |
+| `mocks-only` | boolean | no | har only: write only the outbound mocks, for a HAR of the calls a client made (for example a browser DevTools HAR) rather than requests to replay. |
 | `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-&lt;source-name&gt;. |
 | `service-name` | string | no | Service name recorded on all imported RRPairs. Defaults to 'localhost'. |
 | `target-host` | string | no | wiremock/http-wire only: hostname recorded on each imported mock (for http-wire, a fallback when the request has no Host header). |
