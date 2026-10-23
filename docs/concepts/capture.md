@@ -39,6 +39,8 @@ and your application rejects timestamps older than an hour. You can configure
 
 ## The Request Response Pair
 
+An observability alert can also select already recorded traffic through the experimental [alert-triggered snapshot receiver](/guides/alert-triggered-snapshots). Recording must cover the incident before notification arrives. The receiver preserves an event-based interval and keeps outbound dependency context alongside matching inbound failures.
+
 Snapshots, as referenced above, are made up mostly of request / response pairs,
 with a bit of metadata on top.  The request / response pair, often referenced
 as just [RRPair](/reference/glossary.md#rrpair), is the Speedscale internal representation in which all traffic
