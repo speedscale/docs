@@ -44,6 +44,14 @@ Features of Payload Inspection:
 
 By providing detailed access to API payloads, the Traffic Viewer ensures that teams can confidently understand and optimize the interactions driving their services.
 
+## Sequence Diagram of Recent Calls
+
+When a design doc or an incident review needs a diagram of who called whom, draw it from the traffic instead of from memory. Filter the Traffic page to a service, a snapshot or a report, then click **View network sequence diagram** in the toolbar next to the time picker. The diagram needs one of those three filters; without one, the panel opens empty.
+
+The panel draws the most recent calls that match your filters, oldest first, up to 25 of them. Each service or host is a participant, named without its port, and each call is an arrow from the caller to the callee labeled with the request location, such as the URL path. Inbound calls point into the filtered service and outbound calls point out of it. Responses are not drawn. The diagram is built when you open the panel, so close and reopen it to pick up new traffic.
+
+**Copy as Mermaid Text** copies the diagram's [Mermaid](https://mermaid.js.org/) source, which renders as a diagram in GitHub, GitLab and most Markdown tools. **Copy PNG** copies it as an image, or downloads `mermaid-diagram.png` when the browser cannot put images on the clipboard. Zoom with the buttons or the mouse wheel and drag to pan.
+
 ## API Filtering Capabilities
 
 The Speedscale Traffic Viewer offers advanced API filtering capabilities, allowing teams to pinpoint specific traffic flows and focus on critical interactions within their systems. This feature is particularly useful for debugging, testing, and performance tuning in complex microservices environments.

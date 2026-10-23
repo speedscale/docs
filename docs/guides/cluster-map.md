@@ -78,3 +78,13 @@ The Infrastructure **Service Map** combines observed service dependencies and te
 Open a workload to inspect its cluster and node placement, available logs and Kubernetes events, and capture health. Use node placement to investigate whether affected workloads share a node. The workload view is also a useful starting point for opening its traffic and checking downstream dependencies.
 
 The account **Usage** tab includes cluster capacity when the connected components report it. Capacity describes the cluster resources reported to Speedscale; it is separate from CPU and memory consumed during an individual replay. For replay measurements, use the report's [Performance Details](./reports/performance-details.md).
+
+## Third-party APIs on the service map
+
+Open a cluster and click **Service Map** to see its services connected by the traffic Speedscale observed. Each node carries the logo of the technology detected in most of its traffic, and a well-known SaaS API counts as a technology: traffic to Stripe, Twilio or Okta shows that vendor's logo. That lets you see which outside APIs the cluster depends on without reading any code. Nodes outside the cluster have a dashed border and the subtitle **External / third party**.
+
+Speedscale recognizes these APIs: Stripe, PayPal, Braintree, Square, Plaid, Shopify, Salesforce, HubSpot, ServiceNow, SendGrid, Mailgun, Twilio, Slack, Zapier, GitHub, Atlassian, Okta, Elasticsearch, Vault, Consul, Algolia and Moody's. Auth0, New Relic, LaunchDarkly and the OpenAI, Anthropic, OpenRouter, Grok and Perplexity APIs are recognized too.
+
+A call is recognized by any one signal that belongs to the vendor: the host or a subdomain of it, a vendor-specific header such as `Stripe-Version` or `x-okta-request-id`, a vendor token prefix such as `sk_live_` or `xoxb-`, or the vendor's user agent. Generic headers such as `X-API-Key` are not used, so an unrelated API that happens to share one is not mislabeled. Vault and Consul are recognized by their headers alone.
+
+Hover a node to see its technology and its inbound and outbound counts, and click it to open its traffic on the Traffic page for the same time range. The map shows the first 60 services; narrow the time range to map fewer. The **Service Dependencies** map on the Traffic page shows the same logos.
