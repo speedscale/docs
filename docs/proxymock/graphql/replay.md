@@ -50,7 +50,7 @@ The replay verdict is `mismatch`: one request whose status matched, 200 and 200,
 
 A recorded token, timestamp or one-time id is usually wrong by the time you replay it. Fix it with a transform that rewrites the request before it is sent. For a GraphQL request, the [`graphql`](../../guides/transformation/transforms/graphql.md) transform reaches a value by its [semantic path](../../guides/graphql/semantic-paths.md), such as `variables.token` or `createUser.args.input.plan`, so the rest of the chain sees a plain value.
 
-The quickest way is from proxymock web: open the request, select **Request → Body**, and use the button on the value's row. proxymock saves the transform in the **Field Transforms** blueprint, scoped to the GraphQL endpoint, so it applies to every operation on it. See [Read the recording](./record.md#read-the-recording).
+The quickest way is from proxymock web: open the request, select **Request → Body**, and use the button on the value's row. Its chooser replaces a value, stores it for a later request, or smart-replaces it, and saves the transform in the **Field Transforms** blueprint, scoped to the GraphQL endpoint, so it applies to every operation on it. See [Read the recording](./record.md#read-the-recording). A fix the chooser does not offer, such as re-signing a JWT, goes in a blueprint you write yourself.
 
 You can also write the blueprint yourself. This one re-signs the demo's session token with the demo's published HS256 key:
 

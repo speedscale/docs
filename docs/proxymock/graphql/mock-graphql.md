@@ -66,7 +66,7 @@ The chain runs on both sides of the match, the recordings and each incoming requ
 
 Accept recommendations wherever is convenient:
 
-- In proxymock web, on the **Mocks** view, accept them one at a time or all at once.
+- In proxymock web, on the **Mocks** view, choose **Mask** or **Replay recorded** for each field, or **Apply all recommended**.
 - From an AI coding assistant, with the `mocks` tool of the [proxymock MCP server](../how-it-works/mcp-tools.md), or let the assistant run the whole loop: [Improve Mock Match Rate with AI](../guides/mock-match-rate.md).
 
 ## Clients that add `__typename`
