@@ -10,7 +10,7 @@ description: "Turn a gRPC service's .proto file into proxymock tests and mocks, 
 Generated calls are a starting point, not a baseline. Their messages are made up from the field types. Replay the tests at your service while `proxymock record` runs, and the recording holds the service's real responses.
 
 :::note
-`.proto` support in `generate` needs a proxymock release newer than 2.5.1247.
+`.proto` support in `generate` needs proxymock 2.5.1249 or newer.
 :::
 
 ## Generate

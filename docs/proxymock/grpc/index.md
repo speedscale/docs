@@ -19,7 +19,7 @@ What that gives you:
 Every step works from the proxymock CLI and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md).
 
 :::note
-`.proto` support in `generate`, `validate` and `coverage` needs a proxymock release newer than 2.5.1247. Recording, mocking and replaying gRPC do not need it.
+`.proto` support in `generate`, `validate` and `coverage` needs proxymock 2.5.1249 or newer. Recording, mocking and replaying gRPC do not need it.
 :::
 
 ## The pages in this section

@@ -8,7 +8,7 @@ description: "Check recorded or replayed gRPC responses against the .proto messa
 Two commands read a recording against a `.proto` file. `proxymock validate` checks that each response message still matches its declared type. `proxymock coverage` reports which RPCs, gRPC status codes and response fields the recording reaches. Both run locally, with no Speedscale account, and take the same flags as for an [OpenAPI spec](../guides/openapi.md#validate-recorded-and-replayed-responses).
 
 :::note
-`.proto` support in `validate` and `coverage` needs a proxymock release newer than 2.5.1247.
+`.proto` support in `validate` and `coverage` needs proxymock 2.5.1249 or newer.
 :::
 
 ## Validate responses against the .proto
