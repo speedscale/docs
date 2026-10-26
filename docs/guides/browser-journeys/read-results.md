@@ -8,7 +8,7 @@ sidebar_position: 4
 
 A replay that ran journeys gets a **Journeys** tab in its report. The tab's badge counts the journeys that failed.
 
-![The report's Journeys tab for a failed journey, "shopper loads the item list": its steps are listed with their category, the click step made 2 calls and the real API answered GET http://api.demo.test/items differently from the recording (Body JSON), the expect step failed with the expected and received list items, and a box below names one more call answered differently, GET http://api.demo.test/session (Status Code)](./images/report-journeys-tab.png)
+![The report's Journeys tab for a replay of three journeys: 2 passed, 1 failed, with p95 LCP, FCP, TTFB and CLS chips. The expanded journey "shopper pages through the items" lists its steps with their category: Navigate to "/" with 1 call, the test.step "load the item list" with its click (1 call) and expect, and the test.step "load the next page" with 1 call, followed by the web vitals of its last page](./images/report-journeys-tab.png)
 
 ## Journeys
 
@@ -50,6 +50,8 @@ Above the table, the tab shows each vital's p95 across all journeys.
 
 Playwright keeps a screenshot, a trace and an error context for each failed journey, and the expanded journey shows them. The files are not redacted: they show what the page showed.
 
+![A failed journey's files in the Journeys tab: the web vitals of its last page, the screenshot Playwright took when the journey failed (the demo shop with its item list but no Checkout button), an Open trace button, download buttons for the screenshot, error context and trace, and the npx playwright show-trace command](./images/report-failed-journey-files.png)
+
 - **Screenshot.** The page as it was when the journey failed, shown under the steps.
 - **Open trace.** Opens the trace in Playwright's trace viewer inside the dashboard. The viewer replays the journey action by action, with a snapshot of the page before and after each one, the console, the network calls and the error. The trace is read in your browser and is not sent anywhere else.
 - **Downloads.** Each file also downloads under its own name, for example to open a trace on your machine:
@@ -58,7 +60,7 @@ Playwright keeps a screenshot, a trace and an error context for each failed jour
 npx playwright show-trace trace.zip
 ```
 
-![The dashboard's trace viewer open on the failed journey "shopper sees a checkout button": the action list shows the page load and the failed Expect "toBeVisible", the snapshot pane shows the Demo shop page with only a Load items button, and the Call tab shows the expect's locator and timing](./images/report-trace-viewer.png)
+![The trace viewer open in the dashboard on the failed journey "shopper sees a checkout button": the action list shows the named step "go to checkout" and its failed Expect "toBeVisible", the snapshot pane shows the demo shop page at that moment, and the Call tab shows the Checkout button locator and the 3.1 second duration](./images/report-trace-viewer.png)
 
 A cloud-free cluster replay keeps these files in the cluster instead, and `proxymock cluster replay start --wait` downloads them; see [Run journeys in a cluster](./run-in-cluster.md#from-the-command-line).
 

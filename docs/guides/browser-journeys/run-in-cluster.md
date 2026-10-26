@@ -64,6 +64,8 @@ Then open the replay launcher for that snapshot at `/replay-launcher?snapshotId=
 5. Check the goals under **Test settings**. The template starts with **Browser journeys passing ≥ 100%**.
 6. Select **Start**. When the replay finishes, open its report's **Journeys** tab; see [Read the results](./read-results.md).
 
+![The replay launcher with the Browser journeys template: the summary reads "Run 2 browser journeys against http://shop-spa.browser-demo:80 in mattintosh / default, answering their API calls from the recording, and pass if Browser journeys passing ≥ 100%", System under test holds the Frontend URL and names the snapshot's specs, and Mocks has the switch Answer the frontend's API calls from the recording turned on](./images/launcher-browser-journeys.png)
+
 The run panel beside the launcher shows the `proxymock cluster replay start --browser` command for the same run, for a replay from your machine's copy of the journeys and recording.
 
 ## In a test config

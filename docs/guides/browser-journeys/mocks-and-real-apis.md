@@ -44,6 +44,8 @@ Turn mocks off with:
 
 The proxy compares the status code and the response body, the same checks as the [status code](../../reference/configuration/assertions/httpstatuscode.md) and [response body](../../reference/configuration/assertions/httpresponsebody.md) assertions. Calls that differ are named on the step that made them, with what differed, such as `GET https://api.example.com/items (Body JSON)`. Fields that change on every call, such as timestamps and request IDs, show up as differences.
 
+![A failed journey whose calls went to the real APIs: under its click step, the Journeys tab names GET http://api.demo.test/items as answered differently from the recording by the real API (Body JSON), and a box below the steps names GET http://api.demo.test/session (Status Code), a call no step claims](./images/report-changed-calls.png)
+
 In a Speedscale cloud report, the analyzer also scores each observed call (see [How each call is scored](#how-each-call-is-scored)). It uses the test config's assertions when the config sets any, so you can ignore those changing fields there, and status code and response body otherwise. A cloud-free cluster replay does not score observed calls; run it with `--snapshot-source cloud` to get them scored.
 
 ## How each call is scored
