@@ -67,8 +67,8 @@ This is a proprietary format since no official protobuf->JSON mapping exists at 
 
 ## Native server streaming
 
-:::note Release dependency
-This section describes the server-streaming implementation tracked in S-13817 and must be published with the release that includes it. Earlier proxymock versions support unary replay only.
+:::note Version compatibility
+These steps require a proxymock release whose `record --help` lists `--grpc-streaming`, together with readers that support gRPC call format 1. Older releases support unary replay only.
 :::
 
 Opt in with `proxymock record --grpc-streaming --out /absolute/recording`. This applies the bounded capture limits below to all native gRPC calls in that recording, including unary calls. Without the flag, existing unary capture keeps its previous behavior and detected multi-message streams are omitted with a diagnostic.
