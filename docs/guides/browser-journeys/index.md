@@ -14,7 +14,7 @@ Running journeys as a replay gives you what a plain Playwright run does not:
 - **Each step tied to the calls it made.** The report credits every request the browser sent to the Playwright action or step that caused it, and flags the calls the recording could not answer.
 - **Real APIs checked against the recording.** With mocks off, the browser calls the real APIs and the report names the calls whose answer differs from the recording.
 - **Web vitals as goals.** Largest Contentful Paint, First Contentful Paint, Time to First Byte and Cumulative Layout Shift are measured on every journey and can fail the replay like any other goal.
-- **A screenshot and trace of every failure.** Playwright keeps them for failed journeys, and they come back with the report.
+- **A screenshot and trace of every failure.** Playwright keeps them for failed journeys. The report shows the screenshot and opens the trace in Playwright's trace viewer, without the trace leaving your browser.
 
 ## How a journey replay runs
 

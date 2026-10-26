@@ -1,6 +1,6 @@
 ---
 title: Read the results
-description: "Read a browser journey replay in the Speedscale report: the Journeys tab's verdicts, steps and the calls each step made, the calls the recording could not answer or the real API answered differently, web vitals, the failed journey's screenshot and trace, and the goals that pass or fail the replay."
+description: "Read a browser journey replay in the Speedscale report: the Journeys tab's verdicts, steps and the calls each step made, the calls the recording could not answer or the real API answered differently, web vitals, the failed journey's screenshot and trace viewer, and the goals that pass or fail the replay."
 sidebar_position: 4
 ---
 
@@ -48,15 +48,17 @@ Above the table, the tab shows each vital's p95 across all journeys.
 
 ## A failed journey's files
 
-Playwright keeps a screenshot, a trace and an error context for each failed journey. The expanded journey offers each one as a download. The files are not redacted: they show what the page showed.
+Playwright keeps a screenshot, a trace and an error context for each failed journey, and the expanded journey shows them. The files are not redacted: they show what the page showed.
 
-Open a trace with Playwright's trace viewer on your machine. Nothing is uploaded:
+- **Screenshot.** The page as it was when the journey failed, shown under the steps.
+- **Open trace.** Opens the trace in Playwright's trace viewer inside the dashboard. The viewer replays the journey action by action, with a snapshot of the page before and after each one, the console, the network calls and the error. The trace is read in your browser and is not sent anywhere else.
+- **Downloads.** Each file also downloads under its own name, for example to open a trace on your machine:
 
 ```bash
 npx playwright show-trace trace.zip
 ```
 
-The trace replays the journey action by action, with a snapshot of the page before and after each one, the console, and the network calls.
+![The dashboard's trace viewer open on the failed journey "shopper sees a checkout button": the action list shows the page load and the failed Expect "toBeVisible", the snapshot pane shows the Demo shop page with only a Load items button, and the Call tab shows the expect's locator and timing](./images/report-trace-viewer.png)
 
 A cloud-free cluster replay keeps these files in the cluster instead, and `proxymock cluster replay start --wait` downloads them; see [Run journeys in a cluster](./run-in-cluster.md#from-the-command-line).
 
