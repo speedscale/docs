@@ -16,7 +16,7 @@ What that gives you:
 - **Catch contract breaks.** `proxymock validate` checks recorded responses against the `.proto` message types and flags a field whose type changed, an enum value the enum does not declare, or a field the message does not declare.
 - **Know what a recording covers.** `proxymock coverage` lists every RPC in the `.proto` and which of them, which status codes and which response fields the recording reached.
 
-Every step works from the proxymock CLI and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md).
+The unary workflows work from the proxymock CLI and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Native server-streaming capture uses the CLI's explicit opt-in flag.
 
 :::note
 `.proto` support in `generate`, `validate` and `coverage` needs proxymock 2.5.1249 or newer. Recording, mocking and replaying gRPC do not need it.
@@ -50,7 +50,7 @@ The body is a protobuf message in binary. proxymock decodes it without needing t
 }
 ```
 
-The key is `<field number>:<wire type>`. `LEN` holds strings, bytes and nested messages, `VARINT` holds integers, booleans and enums, and `I32` and `I64` hold fixed-width values such as `float` and `double`, shown as their raw bits. Match a key to the field with the same number in the `.proto`, here `account_id = 1` and `user_id = 2`. When you have no `.proto`, the values usually make the fields plain: a field holding `SELECT * FROM orders` is the query. Edit a value and proxymock writes the binary message back when it mocks or replays the call. The [protobuf encoding guide](https://protobuf.dev/programming-guides/encoding/) explains the wire format in full.
+The key is `<field number>:<wire type>`. `LEN` holds strings, bytes and nested messages, `VARINT` holds integers, booleans and enums, and `I32` and `I64` hold fixed-width values such as `float` and `double`, shown as their raw bits. Match a key to the field with the same number in the `.proto`, here `account_id = 1` and `user_id = 2`. When you have no `.proto`, the values usually make the fields plain: a field holding `SELECT * FROM orders` is the query. In existing unary Markdown, edit a value and proxymock writes the binary message back when it mocks or replays the call. Versioned native call recordings keep wire messages and read-only previews; see the [format rules](./server-streaming.md#recording-formats-and-compatibility) before editing them. The [protobuf encoding guide](https://protobuf.dev/programming-guides/encoding/) explains the wire format in full.
 
 Check out this video for a walkthrough of gRPC observability and mocking on the local desktop:
 
