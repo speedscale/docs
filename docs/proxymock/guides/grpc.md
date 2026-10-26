@@ -81,7 +81,7 @@ Replay sends the request once, half-closes and receives the complete response se
 
 ### Bounded and partial recordings
 
-Capture keeps a bounded prefix when a call resets, is cancelled, reaches a quota or exceeds its idle or duration limit. These records carry an explicit incomplete outcome and remain available for inspection. They are excluded from strict mock and replay expectations; a missing status never becomes an implicit OK.
+Capture keeps a bounded prefix when a call resets, is cancelled, reaches a quota or exceeds its idle or duration limit. These records carry an explicit incomplete outcome and remain available for inspection. They are excluded from strict mock and replay expectations with a diagnostic; a missing status never becomes an implicit OK. A mixed replay runs its eligible calls without counting excluded calls as passing. If no eligible traffic remains, replay exits unsuccessfully.
 
 | Limit | Default |
 | --- | --- |
@@ -102,7 +102,7 @@ JSON stores framed bodies and a versioned call index. Streaming Markdown uses a 
 
 Use a version that understands call format 1 throughout the recording workflow. Updated readers enforce the recording directory's format requirement. Older JSON readers can ignore unknown fields, so the directory manifest does not make old binaries safe. Older Markdown readers reject streaming v3. Existing unary recordings keep their previous format and execution behavior.
 
-Legacy per-message recordings are grouped by their recorded call identity, rather than by method. They require recoverable request bytes, half-close evidence and terminal status before strict execution is allowed. Old multi-frame recordings without that evidence remain partial and need recapture or explicit completion of the missing metadata.
+Legacy per-message recordings are grouped by their recorded call identity, rather than by method. They require recoverable request bytes, half-close evidence and terminal status before strict execution is allowed. Old multi-frame recordings without that evidence remain partial and need recapture or explicit completion of the missing metadata. Legacy import retains at most 128 groups, 1,024 parts per group and 512 KiB of raw bodies per group. Over-budget or malformed groups are excluded with diagnostics while independent calls continue loading; keep the original files for inspection.
 
 Content redaction visits every decoded message. If requested content redaction cannot safely handle an opaque or partial call, the payload is withheld and an explicit failure is recorded; local recording refuses to save that call.
 
