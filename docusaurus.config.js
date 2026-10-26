@@ -1461,8 +1461,8 @@ const config = {
             to: "/proxymock/how-it-works/",
           },
           {
-            from: "/proxymock/grpc/",
-            to: "/proxymock/guides/grpc/",
+            from: "/proxymock/guides/grpc/",
+            to: "/proxymock/grpc/",
           },
           {
             from: "/proxymock/getting-started/quickstart/quickstart-cli/replay/mocks/edit-sig/",

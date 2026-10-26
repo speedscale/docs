@@ -32,7 +32,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
 | GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |
-| gRPC              | Protocol | Full         | See [details](/guides/capture/bodies#grpc)                                             |
+| gRPC              | Protocol | Full         | Unary RPCs. Streaming RPCs are partial: see [gRPC known limits](/proxymock/grpc/#known-limits). See [details](/guides/capture/bodies#grpc) |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |
 | HTTP/S TLS        | Protocol | Full         | See [TLS capture](/guides/tls/)                                                                          |

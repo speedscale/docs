@@ -16,10 +16,10 @@ const GrpcCard = () => {
       </CardHeader>
       <CardBody className="padding-vert--md">
         Learn how to use <strong>proxymock</strong> with gRPC services. 
-        Record, replay, and mock gRPC calls with full protocol buffer support.
+        Record, replay, and mock gRPC calls, and generate tests and mocks from a .proto file.
       </CardBody>
       <CardFooter style={{ backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-        <a href="/proxymock/guides/grpc" className="button button--primary">Learn gRPC</a>
+        <a href="/proxymock/grpc/" className="button button--primary">Learn gRPC</a>
       </CardFooter>
     </Card>
   );
