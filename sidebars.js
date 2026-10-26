@@ -295,6 +295,18 @@ const sidebars = {
         },
         {
           type: "category",
+          label: "gRPC",
+          link: { type: "doc", id: "proxymock/grpc/index" },
+          items: [
+            "proxymock/grpc/record",
+            "proxymock/grpc/mock-a-grpc-dependency",
+            "proxymock/grpc/generate-from-a-proto",
+            "proxymock/grpc/validate-and-coverage",
+          ],
+          collapsed: true,
+        },
+        {
+          type: "category",
           label: "Browser journeys",
           items: [
             { type: "link", label: "Overview", href: "/guides/browser-journeys/" },
