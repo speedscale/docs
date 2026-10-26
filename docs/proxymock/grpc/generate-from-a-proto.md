@@ -61,7 +61,7 @@ Each call is a gRPC `POST` to the method path over HTTP/2, the same shape proxym
 - Fields declared `optional` are left out unless you pass `--include-optional`. Every other field is set.
 - A `google.protobuf.Timestamp` gets 2024-01-15T10:30:00Z. A message type that contains itself is not expanded a second time.
 
-Streaming RPCs are not generated, because a generated call holds one request message and one response message. The summary lists them:
+Streaming RPCs are not generated, because a generated call holds one request message and one response message, and proxymock does not replay streams yet (see [Known limits](./index.md#known-limits)). The summary lists them:
 
 ```
 SKIPPED STREAMING RPCS (not generated; record them instead):

@@ -57,5 +57,8 @@ Check out this video for a walkthrough of gRPC observability and mocking on the 
 
 ## Known limits
 
-- **Streaming RPCs** are recorded and replayed, but `proxymock generate` does not write them. It lists them as skipped.
-- **A message body with more than one message**, as a streaming call has, keeps only its first message in the markdown files proxymock writes by default. RRPair JSON files, written with `--out-format json`, keep the raw body.
+- **Unary RPCs are fully supported. Streaming RPCs are not yet.** A streaming call is recorded as one call, once both sides close the stream, with all of its messages joined and their timing lost. A stream the client cancels, as a watch or subscribe call usually is, is not recorded at all.
+- **Markdown keeps one message per direction.** The markdown files proxymock writes by default keep only the first message of a streaming call's request and response. RRPair JSON files, written with `--out-format json`, keep every message.
+- **Mocking a stream** sends every recorded response message at once, and needs the client to finish sending first, so a bidirectional client that waits for a reply hangs.
+- **Replaying a stream** does not work: replay sends each call as a unary call, so a server that answers with more than one message, or expects more than one, fails the call.
+- **`proxymock generate`** does not write streaming RPCs. It lists them as skipped.
