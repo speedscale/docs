@@ -21,8 +21,8 @@ proxymock needs a recording of the service before it can mock its dependencies o
 | 1b | A Kubernetes cluster with the Speedscale operator | A fresh capture of the deployed workload |
 | 2 | Postman, HAR, GoReplay, k6, Gatling, an e2e suite or a traffic driver | Imported, or run against the recording proxy |
 | 3a | An OpenAPI spec | `proxymock generate`, with placeholders replaced by real values |
-| 3b | Protobuf for gRPC | Requests written from the `.proto` |
-| 3c | A GraphQL schema | Operations written from the schema |
+| 3b | Protobuf for gRPC | `proxymock generate` on the `.proto`, with placeholders replaced by real values |
+| 3c | A GraphQL schema | `proxymock generate` on the schema, with placeholders replaced by real values |
 | 4 | The code | Requests written from the routes and handlers |
 
 The highest available rank is the base. Rank 4 is always added on top, because the new behavior is never in any other source.
@@ -314,7 +314,7 @@ When the service already runs where Speedscale captures it, production traffic i
 
 ### gRPC and GraphQL
 
-`proxymock generate` reads OpenAPI only today. For a gRPC service the agent writes one `grpcurl` call per RPC from the `.proto`, and for a GraphQL service one named operation per query and mutation, and sends them through the recording proxy the same way.
+`proxymock generate` also reads a `.proto` file and a GraphQL schema, and the agent treats the output the same way: replace the placeholders, then replay the tests through the recording proxy. For gRPC, `generate` writes one test per unary RPC and lists streaming RPCs as skipped. For GraphQL it writes one operation per query and mutation from SDL, an introspection JSON file or a running endpoint, and lists subscriptions as skipped. See [Generate tests and mocks from a .proto](../grpc/generate-from-a-proto.md).
 
 ## Commit the result
 
