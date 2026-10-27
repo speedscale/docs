@@ -50,7 +50,7 @@ The body is a protobuf message in binary. proxymock decodes it without needing t
 }
 ```
 
-The key is `<field number>:<wire type>`. `LEN` holds strings, bytes and nested messages, `VARINT` holds integers, booleans and enums, and `I32` and `I64` hold fixed-width values such as `float` and `double`, shown as their raw bits. Match a key to the field with the same number in the `.proto`, here `account_id = 1` and `user_id = 2`. When you have no `.proto`, the values usually make the fields plain: a field holding `SELECT * FROM orders` is the query. In existing unary Markdown, edit a value and proxymock writes the binary message back when it mocks or replays the call. Versioned native call recordings keep wire messages and read-only previews; see the [format rules](./server-streaming.md#recording-formats-and-compatibility) before editing them. The [protobuf encoding guide](https://protobuf.dev/programming-guides/encoding/) explains the wire format in full.
+The key is `<field number>:<wire type>`. `LEN` holds strings, bytes and nested messages, `VARINT` holds integers, booleans and enums, and `I32` and `I64` hold fixed-width values such as `float` and `double`, shown as their raw bits. Match a key to the field with the same number in the `.proto`, here `account_id = 1` and `user_id = 2`. When you have no `.proto`, the values usually make the fields plain: a field holding `SELECT * FROM orders` is the query. In existing unary Markdown, edit a value and proxymock writes the binary message back when it mocks or replays the call. Streaming call recordings use the same JSON for each message when it re-encodes exactly; see the [format rules](./server-streaming.md#recording-formats-and-compatibility) before editing them. The [protobuf encoding guide](https://protobuf.dev/programming-guides/encoding/) explains the wire format in full.
 
 Check out this video for a walkthrough of gRPC observability and mocking on the local desktop:
 
@@ -58,8 +58,8 @@ Check out this video for a walkthrough of gRPC observability and mocking on the 
 
 ## Known limits
 
-- **Unary RPCs remain supported.** Bounded native server streaming is available with explicit `proxymock record --grpc-streaming` capture. A call with one request and a client half-close can round-trip all messages through JSON and streaming Markdown, mock with pacing and recorded status, and replay with every response compared. See [native server streaming](./server-streaming.md) for version requirements and limits.
+- **Unary RPCs remain supported.** Bounded native server streaming is captured automatically, and unary calls are recorded exactly as before. A call with one request and a client half-close can round-trip all messages through JSON and streaming Markdown, mock with pacing and recorded status, and replay with every response compared. See [native server streaming](./server-streaming.md) for version requirements and limits.
 - **Long or cancelled streams remain partial.** Capture retains a bounded prefix and termination reason. Partial or unsupported calls are excluded from strict execution with diagnostics. A mixed replay executes eligible calls only; a recording with no eligible traffic exits unsuccessfully.
-- **Existing unary Markdown keeps its format.** Versioned native call recordings use streaming Markdown v3 with wire messages and read-only previews. Older readers must not be used for the new format.
+- **Existing unary Markdown keeps its format.** Streaming call recordings use Markdown v3, with editable decoded messages where they re-encode exactly and base64 wire messages otherwise. Older readers must not be used for the new format.
 - **Client streaming, bidirectional execution and grpc-web streaming are separate phases.** Capturing their messages does not qualify them for Phase 1 execution.
 - **`proxymock generate`** does not write streaming RPCs. It lists them as skipped. Streaming generation and kraken qualification remain follow-up work.
