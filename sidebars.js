@@ -293,6 +293,7 @@ const sidebars = {
           link: { type: "doc", id: "proxymock/grpc/index" },
           items: [
             "proxymock/grpc/record",
+            "proxymock/grpc/server-streaming",
             "proxymock/grpc/mock-a-grpc-dependency",
             "proxymock/grpc/generate-from-a-proto",
             "proxymock/grpc/validate-and-coverage",
