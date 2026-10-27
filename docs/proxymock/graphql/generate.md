@@ -112,7 +112,11 @@ SKIPPED: 1 operation(s) were not generated:
 
 ## Turn generated tests into a recording
 
-Generated values make a request valid, not meaningful. The `PLACEHOLDERS:` list names the tests that still send `example_value`. Beyond those, a value your server checks needs a real one: a token it verifies, an id that must exist, a string it parses. In the demo, `trackEvent` takes a JSON document as a string and `session` takes a signed JWT, so both answer with GraphQL errors until you rewrite them.
+Generated values make a request valid, not meaningful. The `PLACEHOLDERS:` list names the tests that still send `example_value`, and proxymock web shows where each one sits. Run `proxymock web` in the workspace and pick the `generated` run. This is its `search` test, on **Request → Body**:
+
+![The GraphQL panel in proxymock web on the generated search test: the operation query Search, the variable q String! with the value example_value, and search.args.q supplied by $q from variables.q.](./generate/generated-test.png)
+
+Beyond those, a value your server checks needs a real one: a token it verifies, an id that must exist, a string it parses. In the demo, `trackEvent` takes a JSON document as a string and `session` takes a signed JWT, so both answer with GraphQL errors until you rewrite them.
 
 Rewrite each test with values from your code, seed data or fixtures, or delete it. Then send the tests through `proxymock record` so the recording holds your server's real responses, and use that recording as the baseline for [replay](./replay.md). From an AI coding assistant, the proxymock MCP server's `generate` tool takes the same schema sources, and the [quality-loop skill](../agent-skills.md) walks a service with no recording through these steps.
 

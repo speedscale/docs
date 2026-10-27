@@ -3,6 +3,8 @@ title: Replay GraphQL operations
 description: "Replay recorded GraphQL operations at your server with proxymock as a regression test: results grouped by operation, GraphQL errors inside an HTTP 200 caught as body mismatches, and expired tokens in variables fixed with a semantic-path transform."
 ---
 
+import TransformChooser from './replay/transform-chooser.png'
+
 # Replay GraphQL operations
 
 `proxymock replay` sends the operations your server received while you recorded it to a new build of the server, and compares each response with the recorded one. Every operation your clients really sent becomes a test, with no test code to write.
@@ -46,11 +48,17 @@ The [graphql-demo](https://github.com/speedscale/demo/tree/master/graphql-demo) 
 
 The replay verdict is `mismatch`: one request whose status matched, 200 and 200, and whose body did not.
 
+Open the replay's run in proxymock web to see it. The Requests list labels each call with its operation, and nothing in the list sets `Session` apart: status 200, like the rest. Its response body holds the error:
+
+![The Requests list in proxymock web for a replay of the graphql-demo recording: rows labeled query Session, mutation CreateUser, query Dashboard,UserFields, query Find, query,query GetPlans,GetUser twice and mutation Track, each with status 200, then POST /graphql for the persisted query and POST /api/search. The Session row is selected, and its Response body shows data.session as null and an errors entry with the message token expired.](./replay/graphql-error.png)
+
 ## Fix values that expire
 
 A recorded token, timestamp or one-time id is usually wrong by the time you replay it. Fix it with a transform that rewrites the request before it is sent. For a GraphQL request, the [`graphql`](../../guides/transformation/transforms/graphql.md) transform reaches a value by its [semantic path](../../guides/graphql/semantic-paths.md), such as `variables.token` or `createUser.args.input.plan`, so the rest of the chain sees a plain value.
 
 The quickest way is from proxymock web: open the request, select **Request → Body**, and use the button on the value's row. Its chooser replaces a value, stores it for a later request, or smart-replaces it, and saves the transform in the **Field Transforms** blueprint, scoped to the GraphQL endpoint, so it applies to every operation on it. See [Read the recording](./record.md#read-the-recording). A fix the chooser does not offer, such as re-signing a JWT, goes in a blueprint you write yourself.
+
+<img src={TransformChooser} alt="The Choose a transform dialog for variables.token, with options grouped under Data replacement (constant value, value of variable, one of a list of values, string matching a regular expression, value from CSV), Variable operations (store value in variable, identify session using this field), Data processing (extract JSONPath from embedded JSON field, remove from the GraphQL document, include this value in the signature calculation), Data privacy and Smart replace." width="420" />
 
 You can also write the blueprint yourself. This one re-signs the demo's session token with the demo's published HS256 key:
 

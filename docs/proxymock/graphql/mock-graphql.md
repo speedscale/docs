@@ -49,6 +49,10 @@ proxymock mock --in proxymock/recorded-<timestamp> --map 18081=http://localhost:
 
 The first request, `Session`, misses, and the driver stops.
 
+Open the workspace with `proxymock web` and select **Mocks**. Select a field to open the request that missed:
+
+![The Mocks view in proxymock web after the first mock run of the graphql-demo driver: 0% of 1 request matched, Apply all recommended, and one To fix group, POST /graphql, recommending two fields, http.req.bodyBase64.variables.requestId and http.req.bodyBase64.variables.token, each with Mask and Replay recorded buttons. Below it the Session request is open on Request, Body, showing the operation query Session and the requestId and token variables with their values.](./mock-graphql/mocks-view.png)
+
 The Mocks view finds the fields that drifted between the request and its nearest recording and recommends a fix for each. For `Session` it recommends masking `variables.token` and `variables.requestId`. It never recommends masking the query or `operationName`, because those say which operation the request is, and masking them would let any operation match any other. An accepted fix is a responder chain in the workspace's tuning blueprint, scoped to the GraphQL endpoint:
 
 ```json
