@@ -507,7 +507,9 @@ Paths that fail validation are reported as skipped with a reason and do not abor
 
 #### `generate`
 
-Turn an OpenAPI specification into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
+Turn an OpenAPI or protobuf specification into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) or a .proto file and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
+
+For a .proto spec each unary RPC becomes a gRPC over HTTP/2 RRPair, the same shape proxymock records, so the mock server and replay serve it unchanged. Streaming RPCs are listed as skipped. Include and exclude patterns match /package.Service/Method, and tag-filter does not apply. Pass proto-path when the .proto imports files outside its own directory.
 
 Use 'direction' to pick what to emit:
 - outbound (default): OUTBOUND mock definitions. Serve them with 'mock_server_start' (proxymock mock) to stand up a mock of the spec's API, or use them as dependency mocks during 'replay_traffic'.
@@ -518,16 +520,17 @@ Returns the number of RRPair files generated and the output directory.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML), relative to the working directory. |
+| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML) or .proto file, relative to the working directory. The type is detected from the file. |
 | `out-directory` | string | **yes** | Directory to write the generated RRPair files to, relative to the working directory. |
 | `direction` | string | no | Which RRPairs to generate: 'outbound' (mocks for the mock server, default), 'inbound' (tests for replay), or 'both'. |
 | `examples-only` | boolean | no | Only generate responses that have an explicit example in the spec, skipping schema-synthesized ones. Defaults to false. |
-| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. |
-| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL. |
-| `include-optional` | boolean | no | Include optional schema properties in generated request/response bodies. Defaults to false. |
-| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. |
+| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. For a .proto, /package.Service/Method globs. |
+| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL, or localhost for a .proto. |
+| `include-optional` | boolean | no | Include optional schema properties (proto fields declared optional) in generated request/response bodies. Defaults to false. |
+| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. For a .proto, /package.Service/Method globs such as /orders.v1.Orders/*. |
 | `port` | number | no | Override the port recorded on generated requests. Defaults to the port from the spec, or 80/443. |
-| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). |
+| `proto-path` | array | no | Import roots for a .proto spec, relative to the working directory, like protoc -I. The spec's own directory is always searched. |
+| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). Rejected for a .proto spec, which has no tags. |
 
 #### `import_traffic`
 
@@ -535,7 +538,7 @@ Convert a third-party traffic capture into local RRPair files that proxymock can
 
 Choose the format that matches the source artifact:
 - postman: a Postman collection JSON file (v2.1). Every request becomes an inbound test; requests with a saved example response also become outbound mocks.
-- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock.
+- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock. Set mocks-only for a browser DevTools HAR whose calls should be answered as mocks behind Playwright journeys.
 - goreplay: a GoReplay capture file (.gor). Every request becomes an inbound test.
 - wiremock: a WireMock project directory or .zip. Every stub mapping becomes an outbound mock.
 - http-wire: a directory or .zip of raw HTTP wire-format files (Req&lt;n&gt;.txt / Res&lt;n&gt;.txt). Every request/response pair becomes an outbound mock.
@@ -546,6 +549,7 @@ Returns the number of tests and mocks written and a sample of the RRPair file pa
 | --- | --- | --- | --- |
 | `format` | string | **yes** | Format of the source artifact: 'postman', 'har', 'goreplay' (single file), or 'wiremock', 'http-wire' (directory or .zip). |
 | `source` | string | **yes** | Path to the input artifact, relative to the working directory. A file for postman/har/goreplay; a directory or .zip for wiremock/http-wire. |
+| `mocks-only` | boolean | no | har only: write only the outbound mocks, for a HAR of the calls a client made (for example a browser DevTools HAR) rather than requests to replay. |
 | `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-&lt;source-name&gt;. |
 | `service-name` | string | no | Service name recorded on all imported RRPairs. Defaults to 'localhost'. |
 | `target-host` | string | no | wiremock/http-wire only: hostname recorded on each imported mock (for http-wire, a fallback when the request has no Host header). |
