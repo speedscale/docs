@@ -39,6 +39,8 @@ A rule's expected share is its percent, times the chance at least one of its eff
 
 The band is the matched count times the expected share, plus or minus `tolerance` percentage points, and never below `minFired`. A rule passes when its perturbed count is within the band.
 
+A rule with `stickyBySignature` rolls once per request signature, so it perturbs every request of a signature or none of them. Its share of requests then depends on how traffic splits across signatures, so below 100 percent its band runs from `minFired` to every matched request.
+
 A rule no request matched is reported as not exercised. It fails the assertion only when it is listed in `required`. Rules are evaluated in order and the first match wins, so a rule behind a broader rule may legitimately see no traffic.
 
 The assertion fails with its reason, rather than passing, when the test config has no chaos rules, the replay had no responder, or the responders did not report per-rule counts because they predate this assertion.
