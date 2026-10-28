@@ -645,7 +645,7 @@ Producers get their acknowledgements, consumers join their group and read the re
 
 ## Kubernetes and eBPF {#kubernetes}
 
-In Kubernetes environments, Speedscale's eBPF collector (`nettap`) captures Kafka traffic automatically at the kernel level — no `--map` configuration, proxy settings, or application changes required. The collector uses kprobes and uprobes to observe TCP and TLS traffic directly, including Kafka's binary wire protocol.
+In Kubernetes environments, Speedscale's eBPF collector (`nettap`) captures Kafka traffic automatically at the kernel level, with no `--map` configuration, proxy settings or application changes. The collector uses kprobes and uprobes to observe TCP and TLS traffic directly, including Kafka's binary wire protocol.
 
 This means the `--map` workflow described above applies to **local development** only. When your application is deployed in Kubernetes with the Speedscale operator, Kafka traffic is captured transparently alongside all other protocols.
 
