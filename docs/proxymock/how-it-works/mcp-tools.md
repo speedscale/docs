@@ -400,6 +400,7 @@ Returns:
 - accuracy: replayed responses that matched the recorded ones (pairs, matched, statusMismatches, bodyMismatches, rate, topFailingEndpoints). Cloud reports also carry the report's own reportSuccessRate.
 - matchRate: outbound calls the mocks answered, from the responder status of each call (HIT, MISS, PASSTHROUGH): total, matched, noMatch, passthrough, rate, noMatchRate, passthroughRate, topMissingSignatures, topMissingHosts. Local replays also carry matchRate.analysis, the offline match-rate analysis of the same run with its projected rate under the active tuning blueprints; its reportRate treats passthrough as a non-match, like matchRate.rate.
 - goals: the goal verdict and each goal's condition and observed value.
+- httpOutput: the test config's httpOutput assertion (the app's outbound HTTP calls against the recording's mocks): status, reason and differences per kind. A local replay is scored from 'mocks_out', the directory the mock server wrote while serving it; without it the replay's own outcome is reported. A cloud report is scored from its http-output-diff.json.
 - sources: the file each section was read from. notes: why a section is null.
 
 'input' is one of: a cloud report id already pulled into the workspace (pull it with pull_report first; this tool never downloads), a pulled workspace (its single report), a pulled report's report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json (written by replay_traffic). A local replay's match rate comes from the mocked-* run (the mock server output) that served it: the run whose RRPairs overlap the replay in time, else the latest one started before the replay, else the newest one with a note that the pairing is a guess. Pass 'mock_run' to name it. matchRate.mockRun and mockRunSelection say which run was used and how. Its analysis matches the mocks tool's analyze action.
@@ -411,6 +412,7 @@ Pass 'baseline' (another input of any kind) to include its score and per-number 
 | `input` | string | **yes** | A pulled cloud report id, a pulled workspace, a report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json. |
 | `baseline` | string | no | Optional second input of any of the same kinds. When set, the result includes the baseline's score and deltas (this score minus the baseline's). |
 | `mock_run` | string | no | Optional mocked-* run directory that served a local input replay, overriding the time-overlap pairing. A path, or a run name inside the workspace. Applies to the input, not the baseline. |
+| `mocks_out` | string | no | Optional directory the mock server wrote while it served a local input replay. Scores the test config's httpOutput assertion. Applies to the input, not the baseline. |
 | `workspace` | string | no | Directory a bare report id is looked up in: the repo root or its proxymock directory. Defaults to the server's working directory. |
 
 ### Author configs
@@ -507,27 +509,33 @@ Paths that fail validation are reported as skipped with a reason and do not abor
 
 #### `generate`
 
-Turn an OpenAPI specification into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
+Turn an OpenAPI or protobuf specification or a GraphQL schema into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) or a .proto file and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
+
+For a .proto spec each unary RPC becomes a gRPC over HTTP/2 RRPair, the same shape proxymock records, so the mock server and replay serve it unchanged. Streaming RPCs are listed as skipped. Include and exclude patterns match /package.Service/Method, and tag-filter does not apply. Pass proto-path when the .proto imports files outside its own directory.
+
+A GraphQL schema (SDL in .graphql/.graphqls/.gql, an introspection JSON file, or an http(s) URL to introspect) yields one named operation per root query and mutation field, POSTed to a single endpoint, with variables for its required arguments. Include and exclude patterns match query.&lt;field&gt; and mutation.&lt;field&gt;; subscriptions are listed as skipped.
 
 Use 'direction' to pick what to emit:
 - outbound (default): OUTBOUND mock definitions. Serve them with 'mock_server_start' (proxymock mock) to stand up a mock of the spec's API, or use them as dependency mocks during 'replay_traffic'.
 - inbound: INBOUND test definitions. Drive them at a running implementation of the spec with 'replay_traffic' (proxymock replay).
 - both: an inbound test and an outbound mock per endpoint.
 
-Returns the number of RRPair files generated and the output directory.
+Returns the number of RRPair files generated and the output directory, plus any inbound tests that still send placeholders and any GraphQL operations that were skipped.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML), relative to the working directory. |
+| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML), .proto file, or GraphQL schema (SDL or introspection JSON), relative to the working directory, or an http(s) URL of a GraphQL endpoint to introspect. The type is detected from the file. |
 | `out-directory` | string | **yes** | Directory to write the generated RRPair files to, relative to the working directory. |
 | `direction` | string | no | Which RRPairs to generate: 'outbound' (mocks for the mock server, default), 'inbound' (tests for replay), or 'both'. |
 | `examples-only` | boolean | no | Only generate responses that have an explicit example in the spec, skipping schema-synthesized ones. Defaults to false. |
-| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. |
-| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL. |
-| `include-optional` | boolean | no | Include optional schema properties in generated request/response bodies. Defaults to false. |
-| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. |
+| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. For a .proto, /package.Service/Method globs; for GraphQL, operation globs. |
+| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL or GraphQL schema URL, else localhost. |
+| `include-optional` | boolean | no | Include optional schema properties (proto fields declared optional) in generated request/response bodies. Defaults to false. |
+| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. For a .proto, /package.Service/Method globs such as /orders.v1.Orders/*; for GraphQL, operation globs such as query.* or mutation.createUser. |
+| `path` | string | no | URL path generated GraphQL requests are POSTed to. Defaults to /graphql, or the path of a schema URL. Ignored for OpenAPI and .proto specs. |
 | `port` | number | no | Override the port recorded on generated requests. Defaults to the port from the spec, or 80/443. |
-| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). |
+| `proto-path` | array | no | Import roots for a .proto spec, relative to the working directory, like protoc -I. The spec's own directory is always searched. |
+| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). Rejected for a .proto spec or GraphQL schema, which have no tags. |
 
 #### `import_traffic`
 
@@ -535,7 +543,7 @@ Convert a third-party traffic capture into local RRPair files that proxymock can
 
 Choose the format that matches the source artifact:
 - postman: a Postman collection JSON file (v2.1). Every request becomes an inbound test; requests with a saved example response also become outbound mocks.
-- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock.
+- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock. Set mocks-only for a browser DevTools HAR whose calls should be answered as mocks behind Playwright journeys.
 - goreplay: a GoReplay capture file (.gor). Every request becomes an inbound test.
 - wiremock: a WireMock project directory or .zip. Every stub mapping becomes an outbound mock.
 - http-wire: a directory or .zip of raw HTTP wire-format files (Req&lt;n&gt;.txt / Res&lt;n&gt;.txt). Every request/response pair becomes an outbound mock.
@@ -546,6 +554,7 @@ Returns the number of tests and mocks written and a sample of the RRPair file pa
 | --- | --- | --- | --- |
 | `format` | string | **yes** | Format of the source artifact: 'postman', 'har', 'goreplay' (single file), or 'wiremock', 'http-wire' (directory or .zip). |
 | `source` | string | **yes** | Path to the input artifact, relative to the working directory. A file for postman/har/goreplay; a directory or .zip for wiremock/http-wire. |
+| `mocks-only` | boolean | no | har only: write only the outbound mocks, for a HAR of the calls a client made (for example a browser DevTools HAR) rather than requests to replay. |
 | `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-&lt;source-name&gt;. |
 | `service-name` | string | no | Service name recorded on all imported RRPairs. Defaults to 'localhost'. |
 | `target-host` | string | no | wiremock/http-wire only: hostname recorded on each imported mock (for http-wire, a fallback when the request has no Host header). |
