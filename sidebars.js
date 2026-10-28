@@ -289,6 +289,18 @@ const sidebars = {
         },
         {
           type: "category",
+          label: "Kafka",
+          link: { type: "doc", id: "proxymock/kafka/index" },
+          items: [
+            "proxymock/kafka/record",
+            "proxymock/kafka/consumer-group-health",
+            "proxymock/kafka/mock-kafka",
+            "proxymock/kafka/replay",
+          ],
+          collapsed: true,
+        },
+        {
+          type: "category",
           label: "gRPC",
           link: { type: "doc", id: "proxymock/grpc/index" },
           items: [
