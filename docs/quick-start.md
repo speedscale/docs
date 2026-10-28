@@ -6,7 +6,6 @@ sidebar_position: 0
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CLIInstall from './getting-started/installation/install/_cli_install.mdx'
-import ApiKey from './getting-started/installation/install/api-key.png'
 import AgentInstall from './getting-started/installation/install/_agent_install.mdx'
 
 # Quick Start
@@ -45,9 +44,11 @@ The rest of this guide walks through the same install by hand:
 
 ## Retrieve your API Key
 
-You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key and paste when prompted.
+:::tip Cluster API key
+For Kubernetes deployments, use a service account API key from [Tenant Settings](https://app.speedscale.com/tenant) instead of a personal key, so cluster access is not tied to an employee's account. Ask a tenant admin to create one if needed.
+:::
 
-<img src={ApiKey} width="600"/>
+Copy the service account API key and use it as `apiKey` in the Helm commands below, or paste it when prompted by `speedctl install`.
 
 ## Install speedctl CLI (optional) {#install-cli-optional}
 

@@ -90,6 +90,8 @@ Open **Services** separately to confirm that application throughput, response-ti
 
 ![Dynatrace Services Explorer showing live throughput, response time, failure rate, and HTTP errors](./dynatrace/services.png)
 
+Dynatrace also exposes ingest health metrics such as accepted and rejected OTLP metric data points and received spans for troubleshooting.
+
 ## Use the capture with proxymock
 
 Dynatrace is the observability view, not the portable RRPair archive. There is no direct `proxymock import dynatrace` command. Retain the same traffic in Speedscale Cloud, Amazon S3, or Google Cloud Storage if developers need to turn a trace into local tests and mocks.
@@ -116,9 +118,59 @@ proxymock import gcs --bucket '<GCS_BUCKET>' --prefix byoc/ \
 
 See [Use BYOC traffic with proxymock](/byoc/use-traffic.md) for authentication, filtering, and cluster discovery.
 
-## Evidence
+## Optional: exclude Speedscale pods from Dynatrace injection
 
-The chart's collector configuration is rendered and validated with its pinned OpenTelemetry Collector image in CI. A runtime test sends HTTPS, PostgreSQL, and Kafka RRPairs through the rendered collector in one mixed batch and verifies readable messages, source-service isolation, real upstream hostnames, protocol metadata, and trace behavior. Dynatrace also exposes ingest health metrics such as accepted and rejected OTLP metric data points and received spans for troubleshooting.
+Use these exclusions if you want to keep application pods instrumented while preventing Dynatrace injection into Speedscale components.
+
+Finish any active replay first. Commands assume the default Speedscale namespace; substitute yours if different.
+
+### 1. Exclude the namespace
+
+In your existing DynaKube, append this expression at the paths below. Preserve existing selectors; create missing selector/list fields as needed.
+
+```yaml
+- key: kubernetes.io/metadata.name
+  operator: NotIn
+  values: ["speedscale"]
+```
+
+- `spec.oneAgent.cloudNativeFullStack.namespaceSelector.matchExpressions` **or** `spec.oneAgent.applicationMonitoring.namespaceSelector.matchExpressions`, matching your current mode.
+- `spec.metadataEnrichment.namespaceSelector.matchExpressions`.
+- `spec.otlpExporterConfiguration.namespaceSelector.matchExpressions`, if enabled.
+
+Apply the updated DynaKube. These selectors control webhook injection; they do not disable ActiveGate Kubernetes monitoring or OneAgent host monitoring.
+
+### 2. Exclude replay pods through Helm
+
+Replay pods run in the application namespace. Save this as `dynatrace-exclude-values.yaml`:
+
+```yaml
+globalAnnotations:
+  dynatrace.com/inject: "false"
+```
+
+Apply it using your installed release name and chart version:
+
+```bash
+helm upgrade YOUR_RELEASE_NAME speedscale-operator \
+  --repo https://speedscale.github.io/operator-helm/ \
+  --namespace speedscale \
+  --version YOUR_INSTALLED_CHART_VERSION \
+  --reuse-values -f dynatrace-exclude-values.yaml
+```
+
+### 3. Restart and verify
+
+After Dynatrace has reconciled the namespace exclusions:
+
+```bash
+kubectl -n speedscale rollout restart deployment
+kubectl -n speedscale rollout restart daemonset/speedscale-nettap
+```
+
+Wait for Speedscale pods to become Ready, then start a fresh replay. New Speedscale and replay pods should have no `dynatrace-operator` init container or `oneagent-bin` volume. Confirm application pods remain instrumented with OneAgent.
+
+[Dynatrace namespace and pod exclusion reference](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/deployment-and-configuration/monitoring-and-instrumentation/annotate)
 
 ## References
 
