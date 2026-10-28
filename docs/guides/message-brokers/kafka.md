@@ -57,6 +57,12 @@ speedctl infra replay orders-consumer --snapshot-id <snapshot-id> --test-config-
 
 To produce to a different broker, add `--test-against '<recorded broker>=<broker host>:<port>'`.
 
+To replay a local proxymock recording in your cluster without Speedscale cloud, pass the same filter to `proxymock cluster replay start`. Add `--test-config <id>` to use a workspace test config, such as one with the SASL settings below:
+
+```bash
+proxymock cluster replay start -n orders --workload orders-consumer --no-mocks --tests-filter '(command IS "Fetch") AND (location IS "orders")'
+```
+
 ### Brokers that require SASL
 
 Add `generator.kafka` to the test config with the user, password and SASL mechanism the replay authenticates with. The mechanism is `PROTOCOL_SASL_MECHANISM_PLAIN`, `PROTOCOL_SASL_MECHANISM_SCRAM_SHA_256` or `PROTOCOL_SASL_MECHANISM_SCRAM_SHA_512`. Set `tlsMode` to `PROTOCOL_TLS_MODE_REQUIRE` to connect over TLS without verifying the broker's certificate, or to `PROTOCOL_TLS_MODE_VERIFY_FULL` to verify it.
