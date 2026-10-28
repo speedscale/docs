@@ -13,7 +13,7 @@ A proxymock `--load-plan` file is a JSON `GeneratorConfig`. In a cloud version 3
 | Field | Meaning |
 | --- | --- |
 | `loadGroups` | Ordered groups with unique `id` values, optional display `name`, `scope` filters and a `selection`. |
-| `loadSeed` | Seed for reproducible allocation and jitter. Encode uint64 values as strings. |
+| `loadSeed` | Seed for reproducible allocation and jitter. Encode uint64 values as strings. When absent, the seed derives from the test config `replaySeed` if set, otherwise from the snapshot ID. |
 | `loadUnmatchedPolicy` | Explicitly exclude unmatched requests (`LOAD_UNMATCHED_EXCLUDE`) or fail preparation (`LOAD_UNMATCHED_ERROR`). |
 | `loadDrainTimeout` | Time allowed for already-started work to finish after scheduling ends. |
 | `maxVusers` | Generator worker capacity shared through group reservations. |
