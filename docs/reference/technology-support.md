@@ -31,7 +31,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
-| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/). See [details](/guides/capture/bodies#graphql) |
+| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |
 | gRPC              | Protocol | Partial      | Unary and bounded native server streaming. Client streaming, bidi and grpc-web streaming remain separate phases. See [gRPC known limits](/proxymock/grpc/#known-limits) and [native server streaming](/proxymock/grpc/server-streaming/). |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |

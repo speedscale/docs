@@ -71,6 +71,7 @@ A request whose first APQ attempt misses the server's cache is normally followed
 
 ## Where to go next
 
+- [GraphQL in proxymock](../../proxymock/graphql/index.md): record, mock and replay GraphQL on your own machine, generate tests and mocks from a schema, and check a recording's schema coverage and conformance.
 - [Semantic paths](./semantic-paths.md) — the grammar for addressing values inside a GraphQL request.
 - [Editing GraphQL requests](./editing.md) — the GraphQL panel and click-to-transform.
 - [Recipes](./recipes.md) — replacing a variable, re-signing a JWT, stripping `__typename`, JSON embedded in an argument, and migrating legacy chains.
