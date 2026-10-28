@@ -400,6 +400,7 @@ Returns:
 - accuracy: replayed responses that matched the recorded ones (pairs, matched, statusMismatches, bodyMismatches, rate, topFailingEndpoints). Cloud reports also carry the report's own reportSuccessRate.
 - matchRate: outbound calls the mocks answered, from the responder status of each call (HIT, MISS, PASSTHROUGH): total, matched, noMatch, passthrough, rate, noMatchRate, passthroughRate, topMissingSignatures, topMissingHosts. Local replays also carry matchRate.analysis, the offline match-rate analysis of the same run with its projected rate under the active tuning blueprints; its reportRate treats passthrough as a non-match, like matchRate.rate.
 - goals: the goal verdict and each goal's condition and observed value.
+- httpOutput: the test config's httpOutput assertion (the app's outbound HTTP calls against the recording's mocks): status, reason and differences per kind. A local replay is scored from 'mocks_out', the directory the mock server wrote while serving it; without it the replay's own outcome is reported. A cloud report is scored from its http-output-diff.json.
 - sources: the file each section was read from. notes: why a section is null.
 
 'input' is one of: a cloud report id already pulled into the workspace (pull it with pull_report first; this tool never downloads), a pulled workspace (its single report), a pulled report's report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json (written by replay_traffic). A local replay's match rate comes from the mocked-* run (the mock server output) that served it: the run whose RRPairs overlap the replay in time, else the latest one started before the replay, else the newest one with a note that the pairing is a guess. Pass 'mock_run' to name it. matchRate.mockRun and mockRunSelection say which run was used and how. Its analysis matches the mocks tool's analyze action.
@@ -411,6 +412,7 @@ Pass 'baseline' (another input of any kind) to include its score and per-number 
 | `input` | string | **yes** | A pulled cloud report id, a pulled workspace, a report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json. |
 | `baseline` | string | no | Optional second input of any of the same kinds. When set, the result includes the baseline's score and deltas (this score minus the baseline's). |
 | `mock_run` | string | no | Optional mocked-* run directory that served a local input replay, overriding the time-overlap pairing. A path, or a run name inside the workspace. Applies to the input, not the baseline. |
+| `mocks_out` | string | no | Optional directory the mock server wrote while it served a local input replay. Scores the test config's httpOutput assertion. Applies to the input, not the baseline. |
 | `workspace` | string | no | Directory a bare report id is looked up in: the repo root or its proxymock directory. Defaults to the server's working directory. |
 
 ### Author configs

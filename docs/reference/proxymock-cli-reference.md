@@ -236,6 +236,7 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
 - `--spec string` - OpenAPI 3 contract for local recording coverage goals; defaults to the selected workload's workspace contract
 - `--workload string` - Inbound workload for local recording coverage goals when the recording contains several workloads
+- `--mocks-out string` - Directory `proxymock mock` wrote while it served this replay's dependencies; evaluates the test config's [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion and writes `http-output-diff.json` beside the replay verdict (requires `--test-config`)
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 - `-n, --times uint` - Number of times to replay the traffic (default `1`)
 - `-u, --vus uint` - Number of virtual users to run in parallel (default `1`)
