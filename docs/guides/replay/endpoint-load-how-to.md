@@ -80,4 +80,4 @@ Compare stage counts and the drain row, then check session source execution coun
 
 With a compatible installation, follow [Run the same plan in Kubernetes](./endpoint-session-load-plans.md#run-the-same-plan-in-kubernetes). Cloud-backed launch saves and reads back the test config; namespaced launch carries a bounded inline plan in its replay request. Verify the TrafficReplay verdict and the cloud report's delivery, TPS and scoped-goal assertions.
 
-For reproducible testing, retain the plan, recording, component versions, report and independent app evidence. Local success alone does not verify Kubernetes transport or cloud reporting. Full deployment acceptance remains separate from this locally verified workflow.
+For reproducible testing, retain the plan, recording, component versions, report, and independent app evidence. A successful local run does not verify Kubernetes transport or cloud reporting. Check the plan and per-group results in your Kubernetes installation as well.

@@ -8,7 +8,7 @@ sidebar_position: 6
 Load groups give selected traffic its own schedule and goals. For example, raise statement traffic while keeping transaction posts at a steady rate, then check whether posting latency increases. Both workloads run against the same app.
 
 :::info Requirements
-Load plans need v2.5.1012 or later of proxymock, the generator, the operator and the cloud components, so upgrade them together. The proxymock visual editor supports local replay and **Run in cluster**, including inline plans carried by namespaced replay requests. Dashboard controls cover groups, shared arrival pools, budgets, scoped goals and recording previews.
+The load-plan engine is included in proxymock v2.5.1012 and later. Use compatible proxymock, generator, operator, coordinator, and cloud components, and upgrade them together. The proxymock visual editor supports local replay and **Run in cluster**, including inline plans carried by namespaced replay requests. Dashboard controls cover groups, shared arrival pools, budgets, scoped goals, and recording previews.
 :::
 
 For an executable walkthrough, start with [Test one endpoint while stressing another](./endpoint-load-how-to.md). See the [load-plan field reference](../../reference/configuration/endpoint-load-plans.md) for JSON fields, units, ownership and compatibility rules.
@@ -140,7 +140,7 @@ Credential rewrite coverage and recorded login/JWT warnings are advisory. Review
 
 With namespaced mode configured, **Run in cluster** carries the plan in the immutable replay request. The coordinator transfers it to the generator, which replaces the base configuration's schedule fields and then applies the target URI override. Existing request and DLP settings remain in effect. The client does not create a cloud test configuration or add a cloud-login step. The snapshot and base test configuration still need to be available to the installation through its existing replay setup.
 
-Inline plans are limited to 64 KiB in this path. They use replay-request payload version 2; an older coordinator rejects the request instead of ignoring the plan. Use matching updated coordinator and generator images. Requests without an inline plan retain their existing payload and test-configuration-ID behavior. Live acceptance of this path remains a release gate.
+Inline plans are limited to 64 KiB in this path. They use replay-request payload version 2; an older coordinator rejects the request instead of ignoring the plan. Use matching updated coordinator and generator images. Requests without an inline plan retain their existing payload and test-configuration-ID behavior. After upgrading, check the TrafficReplay verdict and per-group results in your installation.
 
 ## Pick the right schedule
 
@@ -220,7 +220,7 @@ cd sessions-demo
 PROXYMOCK_BIN=/absolute/path/to/proxymock make bank-load-workers
 ```
 
-The Kraken endpoint-load validator runs the proxymock matrix and actual Kubernetes operator/generator/report path. For quick local iterations, select `ENDPOINT_LOAD_PATHS=proxymock`; the release gate uses both paths. Mocking the statement dependency can make dependency behavior predictable while preserving the real bank's authentication, ledger and shared-resource contention. Keep the real dependency path in validation for behavior that the mock cannot establish.
+Mocking the statement dependency can make dependency behavior predictable while preserving the real bank's authentication, ledger, and shared-resource contention. Keep a test with the real dependency for behavior that the mock cannot establish. When running in Kubernetes, also check the TrafficReplay verdict and per-group report results.
 
 ## Edit groups in the dashboard
 

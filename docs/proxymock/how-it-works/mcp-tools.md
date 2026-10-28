@@ -16,6 +16,30 @@ This page lists everything the **proxymock** MCP server exposes to an AI coding 
 
 ## Tools
 
+### Bootstrap
+
+#### `inventory`
+
+_Read-only._
+
+List the starting points a repository offers for a first regression test when the service or a new endpoint has no recording yet. Read-only: scans the directory and, when Speedscale cloud is configured, lists the tenant's services. Never contacts a cluster.
+
+Ranks each source by how little the user must supply and how real its values are:
+- 0  existing proxymock recording (extend it with the new requests)
+- 1a Speedscale cloud capture of a matching service (pull_remote_recording)
+- 1b fresh capture in a Kubernetes cluster (offered, never auto-selected: confirm the context and workload with the user)
+- 2  traffic artifacts in the repo: Postman, HAR, GoReplay (import_traffic), k6, Gatling, e2e suites, traffic drivers
+- 3a OpenAPI spec (generate, then rewrite its placeholders)
+- 3b protobuf, 3c GraphQL schema (write the requests from the spec)
+- 4  the code itself, always the filler for the new behavior
+
+Returns the ranked table, the recommended base and filler, and the same data as JSON. Every source is only a driver: replay its requests through record_traffic_start so tests and mocks land in one recording.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `offline` | boolean | no | Skip the Speedscale cloud service lookup. Defaults to false. |
+| `root` | string | no | Directory to inventory, relative to the working directory. Usually the service's directory; default '.'. |
+
 ### Record
 
 #### `record_traffic_start`
@@ -102,6 +126,45 @@ Set 'test_config' to run a test config authored in this workspace as the base co
 | `verify-fix` | boolean | no | Read recorded-error to observed-success mismatches as a confirmed fix rather than a regression. Narrow which endpoints count with 'expect'. |
 | `vus` | number | no | Number of concurrent virtual users generating load (default 1). Set higher (e.g. 10) together with 'for' or 'times' to run a load test. Each virtual user replays the full traffic set independently. |
 
+#### `replay_debug`
+
+Step through a replay one request at a time. 'start' runs the app on this machine; a session in a cluster is started by the cluster tool's replay-start with debug=true, and one through Speedscale cloud by the cloud_replay tool's start with debug=true, after which every other action here drives that session instead. The generator prepares exactly as replay_traffic does, then PARKS before the first recorded request; each command sends some of the recording and reports, per request, what was sent, what came back versus the recording, which assertions passed, which transforms fired and what variables they changed, plus the report so far. Finishing produces the same report a plain replay does, over what was sent. Select the operation with 'action'.
+
+- 'start': begin a session. Takes the same inputs as replay_traffic (in-directory, test-against, out-directory, test-config, tests-filter, rewrite-host, ...) plus 'pause_on' (breakpoints every run-to stops at), 'idle_timeout' and 'start_at'. Load parameters (vus, sessions, stages, for, times, load-test, load-plan) are refused: a session sends one request at a time, once, in recorded order. Returns once the session is parked (the target answered its readiness probe) or the process exited.
+- 'state': where the session is: phase (PREPARING, PARKED, STEPPING, RUNNING_TO, FINISHING, DONE), cursor (the recorded message number sent next), total, sent, skipped, idle deadline, and the newest step results after 'after_seq'.
+- 'step': send the next 'count' requests (default 1) and return their step results.
+- 'run_to': send requests until a breakpoint fires or the recording ends. 'until' names the breakpoints (assertion-fail, status-mismatch, send-fail, msg:N; 'failure' means the first three); the session's 'pause_on' apply too. With 'to_end' it ignores every breakpoint and runs to the end, which turns the session into an ordinary full replay. Returns the step results, the last of which says why it stopped. A long run returns after 'wait_seconds' with the session still running; call 'state' to keep reading.
+- 'skip': pass over the next 'count' requests without sending them. Variables are not touched, so a later request that needed a skipped extraction fails the way it would in a partial run.
+- 'jump': skip everything before 'msg_num' and park there. Cannot move backwards.
+- 'finish': end the session at the cursor. Skipped requests are not failures. Waits for the process to exit and names replay-verdict.json in the output directory.
+- 'abort': cancel the session and stop the process; no verdict is written.
+
+A parked session with no command for 'idle_timeout' (default 30m, max 4h) finishes itself. The step log is also written to &lt;out-directory&gt;/.debug/steps.jsonl. One session per server at a time; an agent that wants a mock for the app's dependencies starts mock_server_start first, as for replay_traffic.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | Which session operation to run: start, state, step, run_to, skip, jump, retry, set_var, finish or abort. retry sends the pair before the cursor again from the variables it was first sent with (after a mock or variable fix); set_var writes a variable before the next pair and is logged as a step. |
+| `after_seq` | number | no | action=state: return only step results newer than this step seq (default: the last 5). |
+| `count` | number | no | action=step or skip: how many requests (default 1). |
+| `idle_timeout` | string | no | action=start: Go duration after which a session with no command finishes itself (default 30m0s, max 4h0m0s). |
+| `in-directory` | array | no | action=start: directories containing the test RRPair files, read recursively. Required for start. |
+| `log-to` | string | no | action=start: file path to redirect all proxymock output to |
+| `mocks` | array | no | action=start: recorded outbound services (host:port or hostname; '*' for every one) an embedded mock server answers for during the session, so each step reports its mock hits and misses and run_to can stop on 'mock-miss'. The app started with the command gets the proxy settings; unlisted hosts stay real. Omit to leave the app on its real dependencies. |
+| `msg_num` | number | no | action=jump: the recorded message number to park at. |
+| `name` | string | no | action=set_var: the variable to write, as a transform would (for example a token a later request loads). |
+| `no-out` | boolean | no | action=start: do not write observed requests/responses or a verdict to disk. |
+| `out-directory` | array | no | action=start: the one directory to write observed replay request/response files and the step log to. Unless otherwise instructed use 'proxymock/results/replayed-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. Keep it under 'results/': output written next to the recordings is read back as input on the next run. |
+| `pause_on` | array | no | action=start: breakpoints every run_to stops at, from assertion-fail, status-mismatch, send-fail, msg:N; 'failure' means the first three. Omit to stop only where run_to's own 'until' says. |
+| `rewrite-host` | boolean | no | action=start: rewrite the HTTP Host header to match the target hostname:port. |
+| `start_at` | number | no | action=start: recorded message number to park at; everything before it is skipped. |
+| `test-against` | array | no | action=start: Where to send the replayed requests. Each entry is a partial or full URL that overrides some or all of the captured URL, and may be scoped to one service as SERVICE=ADDRESS; several entries route several services, the same as repeating 'proxymock replay --test-against'. If not provided, the target depends on the traffic. A single string is still accepted. - If a scheme is provided the scheme of the request will be replaced - If a hostname is provided the hostname of the request will be replaced - If a port is provided the port of the request will be replaced Example test-against addresses: \| Captured URL \| Test Against \| Replay URL \|-----------------------------\|---------------------\|----------- \|https://original.com:443/foo \| http://new.com:8080 \| http://new.com:8080/foo \|https://original.com:443/foo \| http:// \| http://original.com:443/foo \|https://original.com:443/foo \| http://new.com \| http://new.com:443/foo \|https://original.com:443/foo \| new.com \| https://new.com:443/foo \|https://original.com:443/foo \| new.com:8080 \| https://new.com:8080/foo \|https://original.com:443/foo \| :8080 \| https://original.com:8080/foo \|https://original.com:443/foo \| http://:8080 \| http://original.com:8080/foo Database traffic is retargeted by a database address, which also names the database: 'postgres://db:5432/app?sslmode=disable' or 'mysql://db:3306/app?ssl-mode=REQUIRED'. Credentials never go in the address; they come from the environment the database's own client reads (PGUSER/PGPASSWORD, MYSQL_USER/MYSQL_PWD or ~/.my.cnf) or the test config's generator.postgres and generator.mysql. |
+| `test_config` | string | no | action=start: a test config authored in this workspace, a path to a config JSON file, or a built-in Speedscale config name; its goals and assertion groups apply, and its load shape is replaced by the session's. |
+| `tests-filter` | string | no | action=start: filter choosing which recorded RRPairs to replay as tests; everything else is mocked. Default replays inbound traffic. |
+| `to_end` | boolean | no | action=run_to: ignore every breakpoint and send the rest of the recording. |
+| `until` | array | no | action=run_to: breakpoints to stop at (assertion-fail, status-mismatch, send-fail, msg:N, or 'failure' for the first three), in addition to the session's pause_on. |
+| `value` | string | no | action=set_var: the value to write. |
+| `wait_seconds` | number | no | How long step, run_to, skip, jump and finish wait for the session to park (or the process to exit) before returning what it has so far (default 120, max 600). |
+
 #### `send_one`
 
 Send a single RRPair's request to an arbitrary URL and return the live response (status line, headers, and body). The RRPair file is not modified.
@@ -138,6 +201,10 @@ Run:
 | `action` | string | **yes** | Which operation to run. Read-only: 'clusters', 'namespaces', 'workloads', 'defaults', 'status'. Mutating: 'start', 'cancel'. |
 | `build_tag` | string | no | action=start: build tag recorded on the report. |
 | `cluster` | string | no | action=namespaces, workloads and start: the cluster to use, by the name action='clusters' lists. Pass this or 'inspector_id'. |
+| `debug` | boolean | no | action=start: run the replay as a debug session. The workload and mocks are prepared exactly as for a plain replay, then the generator parks before the first recorded request and sends nothing until the replay_debug tool tells it to (step, run_to, skip, jump, finish, abort); the dashboard's report page can drive the same session. Finishing restores the workload like any replay; a session with no command for 'debug_idle_timeout' finishes itself. |
+| `debug_idle_timeout` | string | no | action=start with debug=true: Go duration after which a session with no command finishes itself (default 30m, max 4h). |
+| `debug_pause_on` | array | no | action=start with debug=true: breakpoints every run_to stops at, from assertion-fail, status-mismatch, send-fail, mock-miss, msg:N; 'failure' means the first three. |
+| `debug_start_at` | number | no | action=start with debug=true: recorded message number to park at; everything before it is skipped. |
 | `dry_run` | boolean | no | action=start: resolve and report the cluster, namespace, routes, mocks, snapshot source and test config without pushing a snapshot or a test config, or starting anything. The same check as 'proxymock cloud replay --dry-run'. |
 | `in_directories` | array | no | action=defaults: the recording to read the origin of. action=start: directories holding the RRPair files to push as the snapshot. Defaults to the working directory. With 'snapshot_id' nothing is pushed, so it is refused there unless it locates the workspace a 'test_config' name is read from. |
 | `inspector_id` | string | no | action=namespaces, workloads and start: the cluster to use, by its inspector id. Pass this or 'cluster'. |
@@ -227,6 +294,27 @@ Statements are fingerprinted: literal values and bind parameters are masked as '
 | `in-directory` | array | **yes** | Directories containing RRPair files to inventory (or the candidate/newer run when comparing). Read recursively. Usually these end with 'proxymock' and are in the current repository. |
 | `baseline-directory` | array | no | Optional baseline (older run) directories. When set, the output is a comparison showing how the input directories' SQL workload changed relative to this baseline, e.g. baseline=recorded traffic, in-directory=replayed traffic, or two recordings of different app versions. |
 
+#### `kafka_report`
+
+_Read-only._
+
+Report the health of the Kafka consumer groups recorded in RRPair directories, from the client side: what a broker cannot see.
+
+For each consumer group: its protocol (classic, or consumer for KIP-848), the assignors its members offered, every member with its client ID, rebalance timeout (max.poll.interval.ms) and session timeout, every rebalance with what started it and how long it took, and every partition the app fetched or committed with its last fetch offset, high watermark, lag, committed offset and commit lag. Also how often each client fetched, polled empty and heartbeat.
+
+Findings, each with its group, topic, partition, offset, count and a detail sentence:
+- CONSUMER_LAG: a fetched partition left 10 or more records behind its high watermark
+- STUCK_PARTITION: one offset fetched 3 or more times with no commit past it, a poison pill the consumer keeps seeking back to
+- POLL_TIMEOUT: a member that went longer than max.poll.interval.ms without polling and left, or was dropped from the group
+- OFFSET_RESET: a partition with no committed offset, where auto.offset.reset chose LATEST (records skipped, counted) or EARLIEST
+- REBALANCE: a group that rebalanced more than once
+
+Lag covers only the partitions the recorded clients fetched; it is not whole-group lag. The same report is a snapshot's kafka-report.json artifact.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `in-directory` | array | **yes** | Directories containing RRPair files with recorded Kafka traffic. Read recursively. Usually these end with 'proxymock' and are in the current repository. |
+
 #### `response_diff`
 
 _Read-only._
@@ -247,7 +335,7 @@ Findings are classified (value change, magnitude/sign shift, null flip, type cha
 
 _Read-only._
 
-Find values that drift (vary) across two or more RRPair directories, e.g. a recording vs. a replay, or several replay runs. Returns a JSON DriftReport listing every field whose value changed between sources, with prefilled transform recommendations for stabilizing mock matching.
+Find values that drift (vary) across two or more RRPair directories, e.g. a recording vs. a replay, or several replay runs. Returns a JSON DriftReport listing every field whose value changed between sources, with prefilled transform recommendations for stabilizing mock matching. Covers HTTP and gRPC RRPairs only; other protocols (SQL, Redis, Kafka and the rest) are skipped.
 
 Each source is a directory of RRPair files or a single jsonl file (raw.jsonl from a snapshot, raw_rr.jsonl from a report); the formats can be mixed. Sensitivity controls noise filtering:
 - 'permissive': any field that took on more than one value, anywhere
@@ -312,6 +400,7 @@ Returns:
 - accuracy: replayed responses that matched the recorded ones (pairs, matched, statusMismatches, bodyMismatches, rate, topFailingEndpoints). Cloud reports also carry the report's own reportSuccessRate.
 - matchRate: outbound calls the mocks answered, from the responder status of each call (HIT, MISS, PASSTHROUGH): total, matched, noMatch, passthrough, rate, noMatchRate, passthroughRate, topMissingSignatures, topMissingHosts. Local replays also carry matchRate.analysis, the offline match-rate analysis of the same run with its projected rate under the active tuning blueprints; its reportRate treats passthrough as a non-match, like matchRate.rate.
 - goals: the goal verdict and each goal's condition and observed value.
+- httpOutput: the test config's httpOutput assertion (the app's outbound HTTP calls against the recording's mocks): status, reason and differences per kind. A local replay is scored from 'mocks_out', the directory the mock server wrote while serving it; without it the replay's own outcome is reported. A cloud report is scored from its http-output-diff.json.
 - sources: the file each section was read from. notes: why a section is null.
 
 'input' is one of: a cloud report id already pulled into the workspace (pull it with pull_report first; this tool never downloads), a pulled workspace (its single report), a pulled report's report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json (written by replay_traffic). A local replay's match rate comes from the mocked-* run (the mock server output) that served it: the run whose RRPairs overlap the replay in time, else the latest one started before the replay, else the newest one with a note that the pairing is a guess. Pass 'mock_run' to name it. matchRate.mockRun and mockRunSelection say which run was used and how. Its analysis matches the mocks tool's analyze action.
@@ -323,6 +412,7 @@ Pass 'baseline' (another input of any kind) to include its score and per-number 
 | `input` | string | **yes** | A pulled cloud report id, a pulled workspace, a report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json. |
 | `baseline` | string | no | Optional second input of any of the same kinds. When set, the result includes the baseline's score and deltas (this score minus the baseline's). |
 | `mock_run` | string | no | Optional mocked-* run directory that served a local input replay, overriding the time-overlap pairing. A path, or a run name inside the workspace. Applies to the input, not the baseline. |
+| `mocks_out` | string | no | Optional directory the mock server wrote while it served a local input replay. Scores the test config's httpOutput assertion. Applies to the input, not the baseline. |
 | `workspace` | string | no | Directory a bare report id is looked up in: the repo root or its proxymock directory. Defaults to the server's working directory. |
 
 ### Author configs
@@ -419,27 +509,33 @@ Paths that fail validation are reported as skipped with a reason and do not abor
 
 #### `generate`
 
-Turn an OpenAPI specification into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
+Turn an OpenAPI or protobuf specification or a GraphQL schema into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) or a .proto file and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
+
+For a .proto spec each unary RPC becomes a gRPC over HTTP/2 RRPair, the same shape proxymock records, so the mock server and replay serve it unchanged. Streaming RPCs are listed as skipped. Include and exclude patterns match /package.Service/Method, and tag-filter does not apply. Pass proto-path when the .proto imports files outside its own directory.
+
+A GraphQL schema (SDL in .graphql/.graphqls/.gql, an introspection JSON file, or an http(s) URL to introspect) yields one named operation per root query and mutation field, POSTed to a single endpoint, with variables for its required arguments. Include and exclude patterns match query.&lt;field&gt; and mutation.&lt;field&gt;; subscriptions are listed as skipped.
 
 Use 'direction' to pick what to emit:
 - outbound (default): OUTBOUND mock definitions. Serve them with 'mock_server_start' (proxymock mock) to stand up a mock of the spec's API, or use them as dependency mocks during 'replay_traffic'.
 - inbound: INBOUND test definitions. Drive them at a running implementation of the spec with 'replay_traffic' (proxymock replay).
 - both: an inbound test and an outbound mock per endpoint.
 
-Returns the number of RRPair files generated and the output directory.
+Returns the number of RRPair files generated and the output directory, plus any inbound tests that still send placeholders and any GraphQL operations that were skipped.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML), relative to the working directory. |
+| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML), .proto file, or GraphQL schema (SDL or introspection JSON), relative to the working directory, or an http(s) URL of a GraphQL endpoint to introspect. The type is detected from the file. |
 | `out-directory` | string | **yes** | Directory to write the generated RRPair files to, relative to the working directory. |
 | `direction` | string | no | Which RRPairs to generate: 'outbound' (mocks for the mock server, default), 'inbound' (tests for replay), or 'both'. |
 | `examples-only` | boolean | no | Only generate responses that have an explicit example in the spec, skipping schema-synthesized ones. Defaults to false. |
-| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. |
-| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL. |
-| `include-optional` | boolean | no | Include optional schema properties in generated request/response bodies. Defaults to false. |
-| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. |
+| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. For a .proto, /package.Service/Method globs; for GraphQL, operation globs. |
+| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL or GraphQL schema URL, else localhost. |
+| `include-optional` | boolean | no | Include optional schema properties (proto fields declared optional) in generated request/response bodies. Defaults to false. |
+| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. For a .proto, /package.Service/Method globs such as /orders.v1.Orders/*; for GraphQL, operation globs such as query.* or mutation.createUser. |
+| `path` | string | no | URL path generated GraphQL requests are POSTed to. Defaults to /graphql, or the path of a schema URL. Ignored for OpenAPI and .proto specs. |
 | `port` | number | no | Override the port recorded on generated requests. Defaults to the port from the spec, or 80/443. |
-| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). |
+| `proto-path` | array | no | Import roots for a .proto spec, relative to the working directory, like protoc -I. The spec's own directory is always searched. |
+| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). Rejected for a .proto spec or GraphQL schema, which have no tags. |
 
 #### `import_traffic`
 
@@ -447,7 +543,7 @@ Convert a third-party traffic capture into local RRPair files that proxymock can
 
 Choose the format that matches the source artifact:
 - postman: a Postman collection JSON file (v2.1). Every request becomes an inbound test; requests with a saved example response also become outbound mocks.
-- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock.
+- har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock. Set mocks-only for a browser DevTools HAR whose calls should be answered as mocks behind Playwright journeys.
 - goreplay: a GoReplay capture file (.gor). Every request becomes an inbound test.
 - wiremock: a WireMock project directory or .zip. Every stub mapping becomes an outbound mock.
 - http-wire: a directory or .zip of raw HTTP wire-format files (Req&lt;n&gt;.txt / Res&lt;n&gt;.txt). Every request/response pair becomes an outbound mock.
@@ -458,6 +554,7 @@ Returns the number of tests and mocks written and a sample of the RRPair file pa
 | --- | --- | --- | --- |
 | `format` | string | **yes** | Format of the source artifact: 'postman', 'har', 'goreplay' (single file), or 'wiremock', 'http-wire' (directory or .zip). |
 | `source` | string | **yes** | Path to the input artifact, relative to the working directory. A file for postman/har/goreplay; a directory or .zip for wiremock/http-wire. |
+| `mocks-only` | boolean | no | har only: write only the outbound mocks, for a HAR of the calls a client made (for example a browser DevTools HAR) rather than requests to replay. |
 | `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-&lt;source-name&gt;. |
 | `service-name` | string | no | Service name recorded on all imported RRPairs. Defaults to 'localhost'. |
 | `target-host` | string | no | wiremock/http-wire only: hostname recorded on each imported mock (for http-wire, a fallback when the request has no Host header). |
@@ -650,6 +747,10 @@ Everything here needs only a kubeconfig. The inspect and replay actions are serv
 | `all` | boolean | no | action=replay-status listing: include replays that are no longer running but are still in the cluster. |
 | `build_tag` | string | no | action=replay-start: build tag recorded on the report (the TrafficReplay spec field the operator copies into the test config's cluster.buildTag, so it wins over a test config's own value). Same as cloud_replay 'build_tag'. |
 | `container` | string | no | action=logs: container to read within each pod. Omit for the pod's first container. |
+| `debug` | boolean | no | action=replay-start: run the replay as a debug session. The operator prepares the workload and mocks exactly as for a plain replay, then the generator parks before the first recorded request and sends nothing until the replay_debug tool tells it to (step, run_to, skip, jump, finish, abort). Finishing restores the workload like any replay; a session with no command for 'debug_idle_timeout' finishes itself. Needs the TrafficReplay operator (not namespaced=true). |
+| `debug_idle_timeout` | string | no | action=replay-start with debug=true: Go duration after which a session with no command finishes itself (default 30m, max 4h). |
+| `debug_pause_on` | array | no | action=replay-start with debug=true: breakpoints every run_to stops at, from assertion-fail, status-mismatch, send-fail, mock-miss, msg:N; 'failure' means the first three. |
+| `debug_start_at` | number | no | action=replay-start with debug=true: recorded message number to park at; everything before it is skipped. |
 | `force` | boolean | no | Sidecar inject/uninject only: proceed even though a GitOps controller (Argo CD, Flux) manages this workload and will revert the change on its next sync. Only set this when the user has said they accept that. |
 | `ignore_inbound_ports` | string | no | Sidecar inject only: comma-separated inbound ports to leave uncaptured. |
 | `ignore_outbound_ports` | string | no | Sidecar inject only: comma-separated outbound ports to leave uncaptured. |
