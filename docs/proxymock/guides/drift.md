@@ -17,16 +17,16 @@ Both work on HTTP and gRPC traffic in RRPair directories: recordings, replay res
 
 ## Find the fields that drift
 
-Pass two or more directories. A recording and a replay of it is the most common pair:
+Pass two or more sources. A source is an RRPair directory or a single JSONL file, such as a snapshot's `raw.jsonl` or a report's `raw_rr.jsonl`. A recording and a replay of it is the most common pair:
 
 ```shell
 proxymock drift \
-  --source ./proxymock/recorded-2026-10-16_10-00-00 \
-  --source ./proxymock/results/replayed-2026-10-16_10-15-00 \
+  --source ./proxymock/recorded-<timestamp> \
+  --source ./proxymock/results/replayed-<timestamp> \
   --out drift.json
 ```
 
-proxymock pairs the requests across the sources: a replayed request with the recorded request it came from, and otherwise requests to the same endpoint in the order they happened. It then walks every field of each pair, the method, URL path segments, query parameters, headers, and every JSON leaf of the request and response bodies, and reports each field whose value differs within a pair.
+proxymock pairs the requests across the sources: a replayed request with the recorded request it came from, and otherwise requests to the same endpoint in the order they happened. It then walks every field of each pair, the method, URL path segments, query parameters, headers, the response status code, and every JSON leaf of the request and response bodies, and reports each field whose value differs within a pair.
 
 Each entry in the report names the field location, the endpoints it appeared on, whether it was inbound or outbound, how many distinct values it took, up to five sample values, and example RRPairs. Drift does not guess what a value is; it reports that the value moved and lets you decide whether it is noise.
 
@@ -34,7 +34,7 @@ Each entry in the report names the field location, the endpoints it appeared on,
 
 | Sensitivity | Reports a field when |
 |---|---|
-| `permissive` | It took more than one value anywhere |
+| `permissive` | It changed in at least one pair |
 | `normal` (default) | It changed in more than one pair |
 | `strict` | It took three or more values across more than one pair |
 
@@ -44,7 +44,7 @@ The command writes JSON to stdout, or to the `--out` file. It exits 0 whether or
 
 ### Use what drift finds
 
-- **Mocks that miss.** A request field that drifts, such as a nonce in the body, makes recorded mocks miss. For JSON body fields, each entry includes a ready-made transform that wildcards the field in the mock signature. The [Mocks view and the match-rate tools](./mock-match-rate.md) find and fix the same misses for you.
+- **Mocks that miss.** A request field that drifts, such as a nonce in the body, makes recorded mocks miss. For body fields and headers, each entry includes a ready-made transform that wildcards the field in the mock signature. The [Mocks view and the match-rate tools](./mock-match-rate.md) find and fix the same misses for you.
 - **Assertions that fail on noise.** A response field that drifts between two replays of the same recording, on unchanged code, is noise. Leave it out of your replay assertions.
 - **Two replays that should agree.** Run drift over the results of several replays of one recording. Anything that drifts there is nondeterminism in your service or its data, not a code change.
 
@@ -58,8 +58,8 @@ On the Requests view, open **Actions** and choose **Compare traffic for drift**.
 
 ```shell
 proxymock automation response-diff \
-  --baseline ./proxymock/recorded-2026-10-16_10-00-00 \
-  --candidate ./proxymock/results/replayed-2026-10-16_10-15-00
+  --baseline ./proxymock/recorded-<timestamp> \
+  --candidate ./proxymock/results/replayed-<timestamp>
 ```
 
 It pairs each baseline response with its twin in the candidate run, the same way drift does. Before comparing, it learns which response fields are volatile in each run, from two signals:
@@ -78,9 +78,9 @@ Those fields are filtered out, and every other field is compared. Stable persona
 | `field_removed`, `field_added` | A field disappeared or appeared |
 | `endpoint_gone`, `endpoint_new` | A request appears in only one run |
 
-Findings are ranked regressions first, then removals, then additions. Add `-o json` for a machine-readable report. When nothing changed, the output says how many responses were compared and how many volatile fields were filtered.
+Findings are ranked regressions first, then removals, then additions. The output is JSON by default. Add `-o pretty` for a readable digest; when nothing changed, it says how many responses were compared and how many volatile fields were filtered.
 
-The command exits 0 whether or not it finds differences, and 2 when either run has no HTTP or gRPC responses to compare. `response-diff` from the CLI needs a Speedscale enterprise account; see [Initialize proxymock](./initialize.md#enterprise-account).
+The command exits 0 whether or not it finds differences, and 2 when either run has no HTTP or gRPC responses to compare, or when every response on one side was changed by chaos rules. `response-diff` from the CLI needs a Speedscale enterprise account; see [Initialize proxymock](./initialize.md#enterprise-account).
 
 ## For AI agents
 

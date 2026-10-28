@@ -75,17 +75,19 @@ Speedscale Enterprise automatically handles changing responses and is smart enou
 
 ## Can a mock respond as slowly as the real dependency?
 
-Yes. By default a mock answers immediately, which is fast for tests but hides timeouts, retries and other slow-path code. `--mock-timing` makes each mocked response wait:
+Yes. By default a mock answers immediately, which is fast for tests but hides timeouts, retries and other slow-path code. `--mock-timing` makes each mocked HTTP response wait:
 
 - `none`, the default, answers immediately.
 - `recorded` waits as long as the original response took, using the latency stored in each recorded RRPair.
 - A multiplier scales the recorded latency: `5x` is five times slower than recorded, and `.25x` is four times faster.
 
 ```shell
-proxymock mock --in ./proxymock/recorded-2026-10-16_10-00-00 --mock-timing recorded
+proxymock mock --in ./proxymock/recorded-<timestamp> --mock-timing recorded
 ```
 
-To change the wait for one response, edit `duration` or `elapsed` in its RRPair, as described in the [RRPair format](./rrpair-format.md). Latency from [chaos rules](/concepts/chaos.md) is added on top of the mock timing.
+A wait is capped at 30 seconds. Native gRPC calls replay their recorded message timing whatever `--mock-timing` says, unless you pass `--grpc-streaming-immediate`. Other mocked protocols, such as SQL, Redis and Kafka, answer immediately.
+
+To change the wait for one response, edit `duration` or `elapsed` in its Markdown RRPair, as described in the [RRPair format](./rrpair-format.md). A `latency` effect from a [chaos rule](/concepts/chaos.md) changes the wait: a fixed value such as `2s` replaces the mock timing, a factor such as `3x` multiplies it, so it has no effect with `--mock-timing none`, and a range such as `100ms-2s` adds a random amount on top.
 
 The `mock_server_start` MCP tool takes the same options as `mock-timing`, `response-selection` and `mock-reload-interval`. The full flag list is in the [CLI reference](/reference/proxymock-cli-reference.md#mock).
 

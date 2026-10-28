@@ -144,15 +144,22 @@ proxymock mock --map 65432=localhost:5432
 
 - `--app-health-endpoint string` - Wait for an app health endpoint to return HTTP 200 before starting
 - `--app-log-to string` - File path to redirect wrapped application output to
+- `--chaos stringArray` - Inject scoped chaos as `'<filter query>:<effect>=<value>[,...]'`, such as latency, status, connection or body effects; see [chaos](/concepts/chaos.md)
+- `--fault stringArray` - Inject faults as `'<regexp>:action=value[,...]'`; a rate alone injects intermittent 503s
+- `--grpc-streaming-immediate` - Send native gRPC stream messages immediately instead of with their recorded timing
 - `--health-port int` - Port to expose proxymock's own readiness endpoint
 - `--in strings` - Directories to read mock files from recursively (default current directory)
 - `--log-to string` - File path to redirect all proxymock output to
 - `-m, --map stringToString` - Create a reverse proxy mapping for backends
+- `--mock-reload-interval duration` - Reload mock files when they change, checking at this interval such as `1s` (disabled by default)
 - `--mock-timing string` - Response timing behavior: `none`, `recorded`, or a multiplier such as `5x` or `.25x` (default `none`)
 - `--no-out` - Do not write observed mock requests or responses to disk
+- `--no-passthrough` - Return a 404 when no mock matches instead of forwarding the request to the real resource
+- `--observe-real-apis` - Send every request to the real resource, even when a mock matches, and name the recorded request it matched
 - `--out string` - Directory to write observed `MATCH`, `NO_MATCH`, and `PASSTHROUGH` traffic to (default `proxymock/results/mocked-<timestamp>`)
 - `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
 - `--proxy-out-port int` - Port where proxymock listens for outbound connections from your app (default `4140`)
+- `--response-selection string` - Choose among responses recorded for the same signature: `round-robin`, or `random` weighted by how often each was recorded (default `round-robin`)
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 
 ### `replay`

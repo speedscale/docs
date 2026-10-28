@@ -12,11 +12,13 @@ Chat needs a Speedscale [enterprise account](./initialize.md#enterprise-account)
 
 ## Open the assistant
 
-Start `proxymock web` and click **Chat** in the bottom-right corner:
+Start `proxymock web`:
 
 ```shell
 proxymock web
 ```
+
+On an empty workspace, click **Ask the assistant to record traffic for your service**. The floating **Chat** button in the bottom-right corner is hidden by default. To show it in a workspace that already has traffic, run `localStorage.setItem('pmShowChatButton', '1')` in the browser console and reload the page.
 
 The assistant opens with suggestions such as **Summarize this traffic**, **Explain this request** and **Find similar RRPairs**. Press Enter to send, and Shift+Enter for a new line. While it answers, **Send** turns into **Stop**.
 
@@ -32,12 +34,13 @@ Without asking first, the assistant can:
 - Read a replay's status, report and logs.
 - Run the analysis and list recommendations, including a dry run of what applying them would change.
 - Read your Speedscale cloud data: clusters, workloads, snapshots, reports and their recommendations.
-- Open an RRPair, the Blueprints view or the home view for you.
+- Open an RRPair, the Blueprints view or the Requests view for you.
+- Fill in the Replay form, finish an open replay debug session, or set a variable in it.
 
 These actions show an **Approve** card first, and nothing happens until you click it:
 
-- Start a replay, or start, step and resume a [replay debug session](./replay-debugger.md).
-- Create, activate, apply or import a blueprint, or overwrite one from the cloud.
+- Start a replay, or start a [replay debug session](./replay-debugger.md), step it, run it to a breakpoint, or resend the last request.
+- Create, activate, apply or import a blueprint, overwrite one from the cloud, or sync the workspace's blueprints with Speedscale cloud, which pushes local-only blueprints up.
 - Apply recommendations to RRPair files. proxymock backs up the files it changes under `.proxymock/backups/` in the workspace.
 - Update or delete a dataframe.
 - Delete a run.
