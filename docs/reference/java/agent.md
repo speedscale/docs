@@ -14,7 +14,7 @@ Use this guide for Java-agent capture in Kubernetes. For local or CI recording t
 
 The eBPF collector, called nettap, observes network traffic on Kubernetes nodes. Java's standard TLS implementation runs inside the JVM, so Speedscale uses a Java instrumentation agent to capture that traffic. The agent sends captured data to nettap for processing.
 
-The agent loads through the JVM's `-javaagent` startup option. It instruments socket and TLS APIs used by the application. It does not route requests through an HTTP or SOCKS proxy. Your application keeps its existing TLS trust and client certificates during capture.
+The agent loads through the JVM's `-javaagent` startup option, so enabling it requires new pods and a JVM restart. It instruments socket and TLS APIs used by the application. It does not route requests through an HTTP or SOCKS proxy. Your application keeps its existing TLS trust and client certificates during capture.
 
 The agent and eBPF collector coordinate capture to avoid duplicate data. Do not assume eBPF will fill every Java-agent gap automatically. Verify the application's requests and responses after enabling capture.
 

@@ -51,7 +51,8 @@ This section contains practical, step-by-step guides for using Speedscale's API 
 ## Additional Resources
 
 - **[Advanced Filters](./advanced-filters)** - Create sophisticated traffic filters for precise capture
-- **[CLI Usage](./cli)** - Command-line interface for power users
+- **[Command-line tools](../getting-started/command-line-tools.md)** - Choose proxymock or speedctl and find installation, quickstarts, and references
+- **[speedctl capture and replay](./cli.md)** - Existing platform workflows using speedctl
 - **[Ingress Traffic](./ingress)** - Capture cluster ingress traffic
 - **[GraphQL Support](./graphql/index.md)** - Working with GraphQL APIs: operations, semantic paths, transforms and recipes
 - **[JSON Payloads](./json-payloads)** - Handling complex JSON data structures

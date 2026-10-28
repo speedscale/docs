@@ -1,5 +1,7 @@
 ---
-description: "Get started with proxymock CLI to create local mocks and tests for a simple Go application that calls a CNCF projects API, with clear paths for local-only recording and cloud workflows when needed."
+title: proxymock CLI quickstart
+description: "Record traffic, mock dependencies, and replay tests with the proxymock CLI using a demo Go app. Start locally, then choose CI/CD, Kubernetes, or cloud workflows."
+keywords: [CLI, proxymock, command line, quickstart, record, mock, replay]
 sidebar_position: 3
 ---
 
@@ -10,9 +12,9 @@ import LinuxCLIInstall from '../../index/\_cli_linux_minified.mdx'
 import { EditingTestsCard, CICDIntegrationCard, RemoteRecordersCard } from '@site/src/components/Cards';
 import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
 
-# Quickstart (CLI)
+# proxymock CLI quickstart
 
-This guide provides a step-by-step approach to creating a [mock server](/reference/glossary.md#mock-server) and tests for a simple Go application using only the **proxymock** CLI.
+Use the **proxymock CLI** to record a demo Go app, create a [mock server](/reference/glossary.md#mock-server), and replay the recording as tests. This walkthrough uses proxymock alone. For platform installation or an existing speedctl workflow, [choose a command-line tool](/getting-started/command-line-tools/).
 
 :::tip Security model
 - **Local-first:** proxymock keeps recorded traffic local by default.
@@ -123,6 +125,8 @@ Paste the prompt from [Install with your coding agent](../installation.md#instal
 Need another OS like Windows or are you having issues? See advanced [installation](../installation.md).
 
 ## Step 2: Get and register your API key {#api-key}
+
+If speedctl already uses the same account and tenant, [reuse that shared configuration](/getting-started/command-line-tools/#credentials) and continue to [Step 3](#recording). Otherwise initialize proxymock below.
 
 **Easiest path:** Run `proxymock init` with no arguments and use the browser sign-in flow. Your configuration is saved automatically.
 
@@ -349,6 +353,8 @@ This demonstrates how you can test your microservice in isolation.
 - If you want to change the data, simply edit the markdown files
 
 ## Learn More
+
+Keep the [proxymock CLI reference](/reference/proxymock-cli-reference/) handy for command flags. To take this recording beyond your machine, [choose a replay path](../../guides/replay-paths.md) or follow [proxymock in CI/CD](../../guides/cicd.md).
 
 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
   <EditingTestsCard />

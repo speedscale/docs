@@ -1,8 +1,15 @@
 ---
 title: proxymock CLI reference
-description: "Full command reference for the proxymock CLI."
+description: "proxymock CLI commands, flags, and examples for recording, mocking, replaying, and working with local files, Kubernetes clusters, and Speedscale Cloud."
+keywords: [CLI, proxymock, command line, commands, reference]
 sidebar_position: 22
 ---
+
+# proxymock CLI reference
+
+New to proxymock? Start with [installation](../proxymock/getting-started/installation.md), the [CLI quickstart](../proxymock/getting-started/quickstart/quickstart-cli.md), or the [CLI overview](../proxymock/how-it-works/cli.md). To choose between proxymock and speedctl, see [Command-line tools](../getting-started/command-line-tools.md).
+
+For the exact commands and flags shipped with your installed version, run `proxymock --help` or `proxymock <command> --help`.
 
 ## Usage
 
@@ -229,6 +236,7 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
 - `--spec string` - OpenAPI 3 contract for local recording coverage goals; defaults to the selected workload's workspace contract
 - `--workload string` - Inbound workload for local recording coverage goals when the recording contains several workloads
+- `--mocks-out string` - Directory `proxymock mock` wrote while it served this replay's dependencies; evaluates the test config's [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion and writes `http-output-diff.json` beside the replay verdict (requires `--test-config`)
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 - `-n, --times uint` - Number of times to replay the traffic (default `1`)
 - `-u, --vus uint` - Number of virtual users to run in parallel (default `1`)
@@ -266,12 +274,12 @@ Standard replay writes `replay-verdict.json` to the output directory. See [Repla
 
 ### `generate`
 
-Generate RRPair files from an OpenAPI specification.
+Generate RRPair files from an OpenAPI specification or a `.proto` file. The spec type is detected from the file extension. For a `.proto`, see [Generate tests and mocks from a .proto](/proxymock/grpc/generate-from-a-proto).
 
 **Usage**
 
 ```bash
-proxymock generate [flags] <openapi-spec-file>
+proxymock generate [flags] <openapi-spec-file | service.proto>
 ```
 
 **Examples**
@@ -298,18 +306,23 @@ proxymock generate --host api.staging.com api-spec.yaml
 
 # include optional properties in schemas
 proxymock generate --include-optional api-spec.yaml
+
+# generate a gRPC mock and inbound tests from a .proto, one service only
+proxymock generate --direction both -I ./proto --include-paths '/orders.v1.Orders/*' ./proto/orders/v1/orders.proto
 ```
 
 **Flags**
 
-- `--examples-only` - Generate only responses with explicit examples
-- `--exclude-paths string` - Comma-separated path patterns to exclude
-- `--host string` - Override the host from the OpenAPI spec
+- `--direction string` - `inbound` (tests for replay), `outbound` (mocks for mock, the default), or `both`
+- `--examples-only` - Generate only responses with explicit examples; no effect for a `.proto`
+- `--exclude-paths string` - Comma-separated path patterns to exclude (`/package.Service/Method` globs for a `.proto`)
+- `--host string` - Override the host from the OpenAPI spec (default for a `.proto`: `localhost`)
 - `--include-optional` - Include optional properties in generated schemas
-- `--include-paths string` - Comma-separated path patterns to include
+- `--include-paths string` - Comma-separated path patterns to include (`/package.Service/Method` globs for a `.proto`)
 - `-o, --out string` - Output directory for generated RRPair files
 - `--port int` - Override the port for generated requests (default comes from the spec or `80` / `443`)
-- `--tag-filter string` - Generate only endpoints with specific tags
+- `-I, --proto-path stringArray` - Import root for a `.proto` spec, repeatable; the spec's own directory is always searched
+- `--tag-filter string` - Generate only endpoints with specific OpenAPI tags; rejected for a `.proto`
 
 ### `import`
 
@@ -1266,13 +1279,15 @@ proxymock version [flags]
 
 ### `validate`
 
-Validate recorded or replayed HTTP responses against an OpenAPI specification.
+Validate recorded or replayed HTTP responses against an OpenAPI specification, or gRPC responses against a `.proto` file.
 
 ```shell
 proxymock validate --spec ./openapi.yaml --in ./proxymock/recorded-example
+proxymock validate --spec ./proto/orders/v1/orders.proto -I ./proto --in ./proxymock/recorded-example
 ```
 
-- `--spec string` - OpenAPI 3.0+ JSON or YAML specification; defaults to the selected workload's workspace contract and supports OpenAPI 3.1
+- `--spec string` - OpenAPI 3.0+ JSON or YAML specification, or a `.proto` file; defaults to the selected workload's workspace contract and supports OpenAPI 3.1
+- `-I, --proto-path stringArray` - Import root for a `.proto` spec, repeatable
 - `--in string` - Required directory containing RRPair files
 - `--workload string` - Inbound workload to validate; required when the recording has several
 
@@ -1284,19 +1299,21 @@ The validator matches methods and route templates and resolves local and compone
 | `2` | At least one contract violation |
 | `3` | At least one unmatched route, with no contract violations |
 
-Check the number of responses validated as well as the exit code. A run with no applicable HTTP responses does not establish contract coverage. See [OpenAPI validation](/proxymock/guides/openapi.md#validate-recorded-and-replayed-responses).
+Check the number of responses validated as well as the exit code. A run with no applicable HTTP responses does not establish contract coverage. See [OpenAPI validation](/proxymock/guides/openapi.md#validate-recorded-and-replayed-responses) and, for a `.proto`, [Validate and measure coverage](/proxymock/grpc/validate-and-coverage).
 
 ### `coverage`
 
-Report which documented OpenAPI operations, response statuses, and JSON response fields appear in a recording.
+Report which documented OpenAPI operations, response statuses, and JSON response fields appear in a recording. With a `.proto`, operations are gRPC methods, statuses are gRPC status names, and fields are response message fields.
 
 ```shell
 proxymock coverage --in ./proxymock/recorded-example
 proxymock coverage --in ./proxymock/recorded-example --workload orders --json
+proxymock coverage --spec ./proto/orders/v1/orders.proto -I ./proto --in ./proxymock/recorded-example --json
 ```
 
 - `--in string` - Required directory containing RRPair files
-- `--spec string` - OpenAPI 3.0+ JSON or YAML contract; defaults to `proxymock/applications/<workload>.openapi.yaml`
+- `--spec string` - OpenAPI 3.0+ JSON or YAML contract, or a `.proto` file; defaults to `proxymock/applications/<workload>.openapi.yaml`
+- `-I, --proto-path stringArray` - Import root for a `.proto` spec, repeatable
 - `--workload string` - Inbound workload to measure; required when the recording has several
 - `--json` - Print deterministic JSON, including counts and gaps
 

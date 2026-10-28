@@ -1,15 +1,19 @@
 ---
-description: "Explore the CLI Documentation for proxymock to learn how to record, mock, and replay API traffic efficiently in local and CI/CD environments with Speedscale integration"
+title: proxymock CLI overview
+description: "Learn the proxymock CLI workflow for recording traffic, mocking dependencies, and replaying tests, with links to installation, quickstart, and command reference."
+keywords: [CLI, proxymock, command line, record, mock, replay]
 sidebar_position: 1
 ---
 
-# CLI Documentation
+# proxymock CLI overview
 
 ## Overview
 
-`proxymock` enables you to record, visualize, mock, and replay traffic on your local system.
+`proxymock` records traffic, mocks dependencies, and replays tests. Start with the local workflow below, then use the same CLI for [Kubernetes](../guides/cluster.md), [BYOC traffic](/byoc/use-traffic/), or [cloud replays](../guides/replay-paths.md).
 
-For complete getting started instructions, see [Quickstart CLI](../getting-started/quickstart/quickstart-cli.md). To learn how it works, see [Architecture](/proxymock/how-it-works/architecture/). For the full command list, flags, subcommands, and examples, see [proxymock CLI reference](../../reference/proxymock-cli-reference.md).
+If you are choosing between proxymock and speedctl, see [Command-line tools: proxymock and speedctl](/getting-started/command-line-tools/).
+
+For complete getting started instructions, see [proxymock CLI quickstart](../getting-started/quickstart/quickstart-cli.md). To learn how it works, see [Architecture](/proxymock/how-it-works/architecture/). For the full command list, flags, subcommands, and examples, see [proxymock CLI reference](../../reference/proxymock-cli-reference.md).
 
 `proxymock` can record, mock, and replay locally for free, and it also works with Speedscale Enterprise to record from remote systems such as Kubernetes clusters and integrate into CI/CD workflows.
 

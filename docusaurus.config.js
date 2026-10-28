@@ -37,6 +37,10 @@ const config = {
       {
         redirects: [
           {
+            from: "/reference/cli/",
+            to: "/guides/cli/",
+          },
+          {
             from: "/getting-started/poc-prerequisites/",
             to: "/getting-started/evaluation/",
           },
@@ -938,7 +942,11 @@ const config = {
           },
           {
             from: "/proxymock/reference/license/",
-            to: "/proxymock/how-it-works/license/",
+            to: "https://speedscale.com/legal/terms-service/",
+          },
+          {
+            from: "/proxymock/how-it-works/license/",
+            to: "https://speedscale.com/legal/terms-service/",
           },
           {
             from: "/proxymock/reference/repo/",
@@ -1457,8 +1465,8 @@ const config = {
             to: "/proxymock/how-it-works/",
           },
           {
-            from: "/proxymock/grpc/",
-            to: "/proxymock/guides/grpc/",
+            from: "/proxymock/guides/grpc/",
+            to: "/proxymock/grpc/",
           },
           {
             from: "/proxymock/getting-started/quickstart/quickstart-cli/replay/mocks/edit-sig/",

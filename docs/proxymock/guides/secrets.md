@@ -90,6 +90,29 @@ The `aws_auth` transform re-signs AWS requests:
 }
 ```
 
+### OAuth client credentials
+
+The [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform requests a fresh access token from your identity provider during `proxymock replay` and sends it as the `Authorization: Bearer` header. Its `clientSecret` and `clientId` fields each take a literal value or a `${{secret:name/key}}` reference, and proxymock reads a reference from the local secrets directory:
+
+```json
+{
+  "extractor": { "type": "http_req_header", "config": { "name": "Authorization" } },
+  "transforms": [
+    {
+      "type": "oauth_client_credentials",
+      "config": {
+        "tokenUrl":     "https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token",
+        "clientId":     "<client-id>",
+        "clientSecret": "${{secret:entra-oauth/client_secret}}",
+        "scope":        "api://orders-api/.default"
+      }
+    }
+  ]
+}
+```
+
+This resolves `clientSecret` to the contents of `proxymock/secrets/entra-oauth/client_secret` (or `secrets/entra-oauth/client_secret`). The reference must be the whole field value. Trailing line endings in the file are removed for this transform, so a file written with `echo` also works. Put the chain in a [blueprint](/proxymock/guides/blueprints.md) in your workspace, and pass `--require-blueprint <name>` to `proxymock replay` to fail the run if the chain never runs. If you add a `networkAddress` filter to the chain, replay matches it against the address you pass to `--test-against`, not the recorded address. The token request goes from your machine straight to the token URL, so the identity provider does not need to be in the recording.
+
 ## CLI usage
 
 No extra flags are needed. When you run `proxymock mock` or `proxymock replay`, the secrets directory is discovered automatically from the `--in` path:

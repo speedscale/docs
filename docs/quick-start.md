@@ -6,13 +6,12 @@ sidebar_position: 0
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CLIInstall from './getting-started/installation/install/_cli_install.mdx'
-import ApiKey from './getting-started/installation/install/api-key.png'
 import AgentInstall from './getting-started/installation/install/_agent_install.mdx'
 
 # Quick Start
 
 :::info Local installation
-For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. See **[Local Development – Getting Started](/proxymock/)** to install proxymock and get started in about 30 seconds.
+For local development and testing without a cloud cluster, use **proxymock** to run a local mock server and generate tests from your traffic. Follow [Install proxymock CLI](/proxymock/getting-started/installation/) and the [proxymock CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/). For help choosing between proxymock and speedctl, see [Command-line tools](/getting-started/command-line-tools/).
 :::
 
 :::tip Security options
@@ -38,18 +37,20 @@ Speedscale is tested with apps hosted on the local desktop all the way up to hig
 The rest of this guide walks through the same install by hand:
 
 1. Retrieve your API Key
-2. Install CLI (recommended)
+2. Install speedctl CLI (optional for Helm installation)
 3. Install Operator (if required)
 4. Verify Installation
 5. Capture and replay traffic against a demo app
 
 ## Retrieve your API Key
 
-You will need to get your personal API key from your [Profile Page](https://app.speedscale.com/profile). Copy the API key and paste when prompted.
+:::tip Cluster API key
+For Kubernetes deployments, use a service account API key from [Tenant Settings](https://app.speedscale.com/tenant) instead of a personal key, so cluster access is not tied to an employee's account. Ask a tenant admin to create one if needed.
+:::
 
-<img src={ApiKey} width="600"/>
+Copy the service account API key and use it as `apiKey` in the Helm commands below, or paste it when prompted by `speedctl install`.
 
-## Install CLI (optional)
+## Install speedctl CLI (optional) {#install-cli-optional}
 
 <CLIInstall />
 
@@ -80,7 +81,7 @@ for all configuration options available for the Helm chart.
 
 </TabItem>
 
-<TabItem value="cli" label="CLI (Mac/Linux)">
+<TabItem value="cli" label="speedctl (Mac/Linux)">
 
 Run `speedctl install`, choose "Kubernetes" and follow the prompts.
 
@@ -105,7 +106,7 @@ speedctl install --imgpullsecrets my-secret1,my-secret2p
 
 </TabItem>
 
-<TabItem value="cli_windows" label="CLI (Windows)">
+<TabItem value="cli_windows" label="speedctl (Windows)">
 
 If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
 The install wizard will walk you through installing the
@@ -115,7 +116,7 @@ Recommended next step: enable the [eBPF collector](/reference/ebpf-traffic-colle
 to capture traffic in Kubernetes. If eBPF is not suitable for your
 workload or kernel, use the [Sidecar installation](./getting-started/installation/sidecar/install.md) instead.
 
-Speedscale can also be used with [Docker](./getting-started/installation/install/docker.md) and [locally](./guides/cli.md).
+Speedscale can also be used with [Docker](./getting-started/installation/install/docker.md) and [locally with proxymock](/proxymock/getting-started/quickstart/quickstart-cli/).
 
 </TabItem>
 
@@ -155,7 +156,7 @@ Installing via `helm install` is preferred as different GitOps engines treat Hel
 
 :::
 
-You can generate manifests either via Helm or our [CLI](./getting-started/installation/install/cli.md).
+You can generate manifests either via Helm or [speedctl CLI](./getting-started/installation/install/cli.md).
 
 ```
 helm template speedscale-operator speedscale/speedscale-operator \
@@ -194,6 +195,8 @@ If you have any issues installing, check out the [troubleshooting guide](./getti
 :::
 
 # Next Steps
+
+For the proxymock CLI path, continue with [cluster capture and replay commands](/proxymock/guides/cluster/). If proxymock is not installed yet, [install it first](/proxymock/getting-started/installation/); the platform agent install already installs it.
 
 At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
 

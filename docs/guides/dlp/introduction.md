@@ -160,7 +160,7 @@ flowchart TD
 
 In your test environment:
 
-1. **Set Up Speedscale**: Install Speedscale's eBPF collector to capture traffic (see [Installation Guide](../../getting-started/quick-start.md) and [CLI Installation](../../getting-started/installation/install/cli.md))
+1. **Set Up Speedscale**: Install Speedscale's eBPF collector to capture traffic (see [Installation Guide](../../getting-started/quick-start.md) and [speedctl CLI installation](../../getting-started/installation/install/cli.md))
 2. **Capture Traffic**: Collect representative traffic from your test environment
 3. **Create Snapshot**: Generate a snapshot containing the captured traffic
 4. **Review PII Discovery**: Examine recommendations identifying discovered PII

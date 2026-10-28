@@ -9,26 +9,59 @@ permissions:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ steps.preview.outputs.run }}
+      pr_number: ${{ steps.preview.outputs.pr_number }}
+      head_sha: ${{ steps.preview.outputs.head_sha }}
+      publish: ${{ steps.preview.outputs.publish }}
     runs-on: ubuntu-latest
     steps:
-    - name: checkout
+    - name: checkout workflow
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0
         persist-credentials: false
 
+    - name: resolve preview
+      id: preview
+      run: node scripts/resolve-pr-preview.mjs
+
+    - name: checkout PR merge
+      if: steps.preview.outputs.run == 'true'
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: ${{ steps.preview.outputs.ref }}
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: verify tested revision
+      if: steps.preview.outputs.run == 'true'
+      env:
+        EXPECTED_HEAD: ${{ steps.preview.outputs.head_sha }}
+      run: test "$(git rev-parse HEAD^2)" = "$EXPECTED_HEAD"
+
     - name: Setup Node.js
+      if: steps.preview.outputs.run == 'true'
       uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version: '22'
         cache: yarn
 
     - name: writing regression tests
+      if: steps.preview.outputs.run == 'true'
       run: yarn test:writing
 
+    - name: preview routing regression tests
+      if: steps.preview.outputs.run == 'true'
+      run: node --test scripts/tests/resolve-pr-preview.test.mjs
+
     - name: check public writing
+      if: steps.preview.outputs.run == 'true'
       env:
-        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        BASE_SHA: ${{ steps.preview.outputs.base_sha }}
       # The checkout is the merge of the PR into the current base branch, but
       # base.sha is the PR's merge base, which lags main on an older branch.
       # Diffing from it would count everything main gained since as the PR's.
@@ -40,29 +73,36 @@ jobs:
         yarn check:writing --base "$BASE_SHA"
 
     - name: install
+      if: steps.preview.outputs.run == 'true'
       run: yarn --frozen-lockfile --silent
 
     - name: security regression tests
+      if: steps.preview.outputs.run == 'true'
       run: node --test scripts/security-regressions.test.mjs
 
     - name: check redirects
+      if: steps.preview.outputs.run == 'true'
       env:
-        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        BASE_SHA: ${{ steps.preview.outputs.base_sha }}
       run: node scripts/check-redirects.mjs "$BASE_SHA"
 
     - name: update url for preview
+      if: steps.preview.outputs.run == 'true'
       env:
-        PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_NUMBER: ${{ steps.preview.outputs.pr_number }}
       run: ./tools/update_preview_base.sh "pr-$PR_NUMBER"
 
     - name: build
+      if: steps.preview.outputs.run == 'true'
       run: yarn build
 
     # Preserve legacy redirect filenames unsupported by artifact storage.
     - name: package site
+      if: steps.preview.outputs.run == 'true'
       run: tar -czf "$RUNNER_TEMP/docs-site.tar.gz" -C build .
 
     - name: save site artifact
+      if: steps.preview.outputs.run == 'true'
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: docs-site
@@ -72,7 +112,7 @@ jobs:
 
   publish:
     needs: build
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
+    if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -96,6 +136,15 @@ jobs:
             archive.extractall("build", filter="data")
         PYTHON
 
+    - name: verify preview is current
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ needs.build.outputs.pr_number }}
+        EXPECTED_HEAD: ${{ needs.build.outputs.head_sha }}
+      run: |
+        gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
+          jq -e --arg sha "$EXPECTED_HEAD" '.state == "open" and .head.sha == $sha'
+
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
       with:
@@ -104,26 +153,26 @@ jobs:
 
     - name: upload preview
       env:
-        PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_NUMBER: ${{ needs.build.outputs.pr_number }}
       run: aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER"
 
     - name: show url
       env:
-        PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_NUMBER: ${{ needs.build.outputs.pr_number }}
       run: echo "http://$DOWNLOADS_PREVIEW_BUCKET.s3-website-us-east-1.amazonaws.com/pr-$PR_NUMBER/"
 
     - name: Find Comment
       uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
       id: fc
       with:
-        issue-number: ${{ github.event.pull_request.number }}
+        issue-number: ${{ needs.build.outputs.pr_number }}
         comment-author: 'github-actions[bot]'
-        body-includes: Preview available at 'http://${{ env.DOWNLOADS_PREVIEW_BUCKET }}.s3-website-us-east-1.amazonaws.com/pr-${{ github.event.pull_request.number }}/'
+        body-includes: Preview available at 'http://${{ env.DOWNLOADS_PREVIEW_BUCKET }}.s3-website-us-east-1.amazonaws.com/pr-${{ needs.build.outputs.pr_number }}/'
 
     - name: Create or Update comment
       uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
       with:
         comment-id: ${{ steps.fc.outputs.comment-id }} # This will be empty and a new comment will be made if no comment already exists
-        issue-number: ${{ github.event.pull_request.number }}
-        body: Preview available at 'http://${{ env.DOWNLOADS_PREVIEW_BUCKET }}.s3-website-us-east-1.amazonaws.com/pr-${{ github.event.pull_request.number }}/'
+        issue-number: ${{ needs.build.outputs.pr_number }}
+        body: Preview available at 'http://${{ env.DOWNLOADS_PREVIEW_BUCKET }}.s3-website-us-east-1.amazonaws.com/pr-${{ needs.build.outputs.pr_number }}/'
         edit-mode: replace

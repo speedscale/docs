@@ -395,6 +395,38 @@ esac
 
 </Tabs>
 
+## Create a fresh snapshot
+
+Create snapshots in a separate baseline-refresh job, then pass the chosen `SNAPSHOT_ID` to the replay job. The replay steps in this guide read the same `SNAPSHOT_ID` variable. Snapshot creation selects traffic already captured and uploaded; it does not start recording.
+
+With `speedctl` and `SPEEDSCALE_API_KEY` configured as above, use Bash and `jq`. Set `SOURCE_CLUSTER` and `SOURCE_NAMESPACE` to the captured location, and `SERVICE` to the captured service. Set `START_UTC` and `END_UTC` to a UTC window at least five minutes long, for example `2026-10-12T18:00:00Z` through `2026-10-12T18:05:00Z`. Wait for the full window to upload before creating the snapshot; the record-count check rejects empty snapshots.
+
+```bash
+set -euo pipefail
+
+FILTER="(service IS \"$SERVICE\") AND (cluster IS \"$SOURCE_CLUSTER\") AND (namespace IS \"$SOURCE_NAMESPACE\") AND (timerange IS \"$START_UTC\" \"$END_UTC\")"
+SNAPSHOT_JSON=$(speedctl create snapshot \
+  --name "baseline-$(date -u '+%Y%m%dT%H%M%SZ')" \
+  --service "$SERVICE" --start "${START_UTC%Z}" --end "${END_UTC%Z}" \
+  --filter "$FILTER" -o json)
+SNAPSHOT_ID=$(jq -er '.snapshot.id | select(length > 0)' <<< "$SNAPSHOT_JSON")
+
+speedctl wait snapshot "$SNAPSHOT_ID" --timeout 10m -o json
+speedctl get snapshot "$SNAPSHOT_ID" | jq -e \
+  '.status == "Complete" and ((.recordsProcessed | tonumber) > 0)' >/dev/null
+export SNAPSHOT_ID
+```
+
+The filter includes the source and time range because `--filter` replaces the default traffic filters. The timestamp flags omit the trailing `Z` and keep the snapshot metadata consistent. Verify the metadata after waiting: the wait command can return success for some internal failures.
+
+For regular refreshes, add a Snapshot action to a [schedule](/concepts/schedules) with the source filters and lookback window.
+
+If CI must toggle eBPF recording, use the [capture annotation](/reference/ebpf-traffic-collection#enabling-via-annotation) with a runner that has Kubernetes access:
+
+- Verify collection starts before the test suite.
+- Disable capture even when tests fail (GitHub: `if: always()`).
+- Allow the final traffic to upload before creating the snapshot.
+
 ## Use your existing test driver
 
 A replay can start Speedscale service mocks without starting the Speedscale traffic generator. This lets an existing k6, Postman, or other test suite drive the system under test while its outbound dependencies are served from recorded traffic.

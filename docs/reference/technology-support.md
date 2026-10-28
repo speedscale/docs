@@ -31,8 +31,8 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
-| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/). See [details](/guides/capture/bodies#graphql) |
-| gRPC              | Protocol | Full         | See [details](/guides/capture/bodies#grpc)                                             |
+| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |
+| gRPC              | Protocol | Partial      | Unary and bounded native server streaming. Client streaming, bidi and grpc-web streaming remain separate phases. See [gRPC known limits](/proxymock/grpc/#known-limits) and [native server streaming](/proxymock/grpc/server-streaming/). |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |
 | HTTP/S TLS        | Protocol | Full         | See [TLS capture](/guides/tls/)                                                                          |
@@ -54,6 +54,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Basic Auth            | Auth | Full    |                                                                                                  |
 | Bearer JWT            | Auth | Full    | Automatic discovery and replacement. See [JWT guide](../guides/replay/resign-jwt.md)             |
 | Cookies               | Auth | Full    |                                                                                                  |
+| OAuth 2.0 client credentials | Auth | Full | Fresh tokens from your identity provider during replay. See [oauth_client_credentials transform](/guides/transformation/transforms/oauth_client_credentials) |
 
 ### Supported DBMS
 
@@ -155,7 +156,7 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | GCP GKE CloudRun                               |                                                                                         |
 | GCP GKE Standard                               |                                                                                         |
 | Istio                                          | See [guide](../getting-started/installation/install/istio.md)                                                  |
-| MacOS Desktop                                  | See [CLI](../guides/cli.md)                                                             |
+| MacOS Desktop                                  | See [proxymock CLI installation](../proxymock/getting-started/installation.md)                                                             |
 | Microsoft Azure Kubernetes Service (AKS)       |                                                                                         |
 | Postman Collections (v2+)                      | See [guide](/guides/integrations/import/import-postman)                                    |
 | Rancher Desktop                                |                                                                                         |
@@ -163,7 +164,7 @@ Most modern enterpise environments are supported by Speedscale and new ones are 
 | Rancher RKE2                                   | Rancher Marketplace [Helm Chart](https://rancher.com/docs/rancher/v2.6/en/helm-charts/) |
 | Redhat OpenShift                               | See [guide](../getting-started/installation/install/openshift.md)                                              |
 | Virtual Machines (VMWare and others)           | See [guide](../getting-started/installation/install/vm.md)                                                     |
-| Windows Desktop                                | See [CLI](../guides/cli.md)                                                             |
+| Windows Desktop                                | See [proxymock CLI installation](../proxymock/getting-started/installation.md)                                                             |
 
 Speedscale control plane, sidecar and replay system are compatible with all currently supported versions of [Kubernetes](https://kubernetes.io/releases/) and [Istio](https://istio.io/latest/docs/releases/supported-releases/).
 

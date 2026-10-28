@@ -11,6 +11,8 @@ The OpenAPI to RRPair feature in proxymock allows you to instantly generate a co
 
 With a single command, you can convert your OpenAPI spec into a directory of RRPair markdown files. From therer you can use the `proxymock mock` server to respond and `proxymock web` to modify specific responses.
 
+For a gRPC service, the same commands read a `.proto` file. See [Generate tests and mocks from a .proto](../grpc/generate-from-a-proto.md). For a GraphQL service, they read a schema: SDL, an introspection result, or a running endpoint. See [Generate tests and mocks from a schema](../graphql/generate.md).
+
 ## Why Use This Feature?
 
 - **Instant Mock Servers**: No need to record real traffic or write mocks by hand.
