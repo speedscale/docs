@@ -5,7 +5,7 @@ sidebar_position: 0
 
 # Traffic Transformation
 
-Transforms adapt recorded traffic for replay: replace credentials, shift dates, or carry a value from one response into a later request. They can also adjust outbound requests and responses used by mocks.
+Transforms adapt recorded traffic for replay: [replace credentials](/guides/replay/replace-credentials.md), shift dates, or carry a value from one response into a later request. They can also adjust outbound requests and responses used by mocks.
 
 ## Choose your workflow
 

@@ -128,9 +128,10 @@ proxymock recommendations reject --id 3f9a1c2e8b7d4056
 | Your recording carries… | Use… |
 |---|---|
 | `Authorization: Bearer <token>` (OAuth / JWT) | This recommendation workflow |
+| `Authorization: Bearer <token>` from a third-party identity provider, or with no login in the recording | [Replace credentials](/guides/replay/replace-credentials.md#in-proxymock-web) with **Fetch a fresh token** |
 | `Authorization: Basic <base64>` (HTTP Basic) | [Basic auth credentials swap](./credentials-swap.md) |
 
-Basic auth needs different credentials per environment, so it swaps from a CSV you edit. Bearer auth needs the *live* token from this run correlated forward, which is exactly what the recommendation automates.
+Basic auth needs different credentials per environment, so it swaps from a CSV you edit. Bearer auth needs the *live* token from this run correlated forward, which is exactly what the recommendation automates when the recording contains a login your app serves. When the token comes from an identity provider the replay mocks, Replace credentials requests a fresh token from the provider instead.
 
 ## Another example: dynamic resource IDs
 

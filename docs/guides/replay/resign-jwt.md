@@ -8,8 +8,8 @@ sidebar_position: 8
 
 Most real-world APIs require authentication. The most common type of authentication we see is JWT/OAuth2. This guide shows you how to train Speedscale to automatically re-sign JWTs for your Service Under Test (SUT).
 
-:::note
-This workflow is currently in queue for complete automation by Speedscale engineering. If you'd like to view the new design and weigh in let us know in the [community](https://slack.speedscale.com). For now, please follow these instructions. The new system will be backwards compatible.
+:::tip
+To fix expired credentials once for every replay of a snapshot, from the dashboard, schedules and CI, use [Replace credentials](/guides/replay/replace-credentials.md). It re-signs JWTs, fetches fresh tokens or pastes a replacement from the snapshot's **Credentials** tab. This page covers re-signing with a transform you edit yourself, and the one-off options the replay wizard applies to a single replay, including JWKS re-signing.
 :::
 
 ## How do I know my app needs to resign JWTs?
@@ -75,7 +75,7 @@ Now, run your replay and you're ready to go!
 
 ## Request a new token with OAuth client credentials
 
-Re-signing only works when you hold the key that signs your tokens. When your service accepts tokens from an identity provider you do not control, such as Microsoft Entra ID, Okta, Auth0 or Keycloak, the replay can request a fresh token from that provider instead. The replay launcher and the replay wizard build an [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform for you: the generator requests a token with the OAuth 2.0 client credentials grant and sends it as the `Authorization: Bearer` header to the services you choose.
+Re-signing only works when you hold the key that signs your tokens. When your service accepts tokens from an identity provider you do not control, such as Microsoft Entra ID, Okta, Auth0 or Keycloak, the replay can request a fresh token from that provider instead. The replay launcher and the replay wizard build an [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform for you: the generator requests a token with the OAuth 2.0 client credentials grant and sends it as the `Authorization: Bearer` header to the services you choose. This option applies to one replay. To request a fresh token in every replay of the snapshot, save a [Replace credentials](/guides/replay/replace-credentials.md#fetch-a-fresh-token) blueprint with **Fetch a fresh token** instead.
 
 ### Recognize the problem
 
