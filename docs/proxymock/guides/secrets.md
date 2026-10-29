@@ -92,7 +92,7 @@ The `aws_auth` transform re-signs AWS requests:
 
 ### OAuth client credentials
 
-The [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform requests a fresh access token from your identity provider during `proxymock replay` and sends it as the `Authorization: Bearer` header. Its `clientSecret` and `clientId` fields each take a literal value or a `${{secret:name/key}}` reference, and proxymock reads a reference from the local secrets directory:
+[Replace credentials](/guides/replay/replace-credentials.md#in-proxymock-web) in proxymock web writes the secret file and the blueprint for you. The [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform, an alias of [`token_fetch`](/guides/transformation/transforms/token_fetch.md), requests a fresh access token from your identity provider during `proxymock replay` and sends it as the `Authorization: Bearer` header. Its `clientSecret` and `clientId` fields each take a literal value or a `${{secret:name/key}}` reference, and proxymock reads a reference from the local secrets directory:
 
 ```json
 {

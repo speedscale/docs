@@ -65,7 +65,7 @@ Saved rules normally live in `proxymock/blueprints/`. Replay and mock commands s
 
 Blueprints are reusable across recordings in a workspace. You do not need to recreate one to bind it to a new snapshot ID. Activation and matching filters determine whether it contributes changes. Keep filters narrow when a workspace contains traffic for several services.
 
-The [workspace layout reference](../how-it-works/workspace-layout.md#blueprints) describes storage and diagnostics. Use [secret references](./secrets.md) for credentials and preserve any dataframes the transforms depend on when moving configuration between machines.
+The [workspace layout reference](../how-it-works/workspace-layout.md#blueprints) describes storage and diagnostics. Use [secret references](./secrets.md) for credentials, or let [Replace credentials](/guides/replay/replace-credentials.md#in-proxymock-web) build a credential blueprint and save its secrets for you, and preserve any dataframes the transforms depend on when moving configuration between machines.
 
 ## Reuse with Speedscale Cloud
 

@@ -13,7 +13,7 @@ import RRPairAuthHeader from './credentials-swap/rrpair-detail-authorization.png
 
 # Swap HTTP Basic Auth Credentials Between Environments
 
-A recording captured against a development environment almost never carries credentials your staging or test target will accept. The **Basic auth credentials swap** automation in proxymock web rewrites the `Authorization: Basic …` header on every recorded request at replay time, using a CSV dataframe you can edit per recorded user.
+A recording captured against a development environment almost never carries credentials your staging or test target will accept. The **Basic auth credentials swap** automation in proxymock web rewrites the `Authorization: Basic …` header on every recorded request at replay time, using a CSV dataframe you can edit per recorded user. It is the Basic auth method of [Replace credentials](/guides/replay/replace-credentials.md#in-proxymock-web), which also fetches, pastes or re-signs bearer tokens.
 
 This guide walks through the full path: record traffic in one environment, ship it to a staging machine via S3, swap the credentials, and replay against a different backend.
 

@@ -74,7 +74,7 @@ proxymock replay --in ./proxymock --out ./results/bank-endpoints \
   --load-plan ./bank-endpoints.json --test-against http://localhost:3000
 ```
 
-Use an app and accounts prepared for repeated transactions. Independent requests do not replay login automatically. Replace recorded credentials using the existing Automations workflow when needed.
+Use an app and accounts prepared for repeated transactions. Independent requests do not replay login automatically. Replace recorded credentials with [Replace credentials](/guides/replay/replace-credentials.md#in-proxymock-web) when needed.
 
 ## Rotate complete banking journeys
 
@@ -112,7 +112,7 @@ proxymock replay --in ./proxymock --out ./results/bank-sessions \
 
 The start budget limits the whole group to ten starts. It is not a per-worker budget. A complete session can contain several HTTP requests, so ten session starts do not imply ten requests.
 
-Use **Sessions > Replay readiness** to review the population and **Automations > Replace credentials** to prepare transformations. Existing response-variable transformations carry live login tokens into later requests within the same execution. Recorded-login ordering and uncertain credentials produce advisory warnings; they do not prevent you from trying the replay. Actual authentication failures remain failed requests. An optional `identityVerification` policy can check the live JWT claim and expected identity; configure it for the application's authentication scheme.
+Use **Sessions > Replay readiness** to review the population and **Actions > Replace credentials** ([guide](/guides/replay/replace-credentials.md#in-proxymock-web)) to prepare transformations. Existing response-variable transformations carry live login tokens into later requests within the same execution. Recorded-login ordering and uncertain credentials produce advisory warnings; they do not prevent you from trying the replay. Actual authentication failures remain failed requests. An optional `identityVerification` policy can check the live JWT claim and expected identity; configure it for the application's authentication scheme.
 
 Expand **Recorded credentials** in the compiled preview to see configured replacement coverage. Counts use the selected requests and source actors, including complete journeys. They recognize matching constant, variable-load, HTTP-auth and JWT re-signing chains for every recorded Authorization or Cookie header value. Cloned slots do not multiply these counts. The preview does not execute the chains, resolve variables or verify target accounts. Custom credential locations and other transforms remain unassessed; coverage remains advisory.
 
