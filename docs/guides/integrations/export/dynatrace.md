@@ -131,7 +131,7 @@ There are two places to configure:
 
 Make these changes in the configuration managed by your deployment process, whether you use Helm, Argo CD, Flux, or Kubernetes manifests. Finish active replays before rolling out the changes.
 
-### 1. Exclude a dedicated Speedscale namespace
+### 1. Exclude the namespace
 
 In your existing DynaKube, add a namespace exclusion for each enabled injection feature. The example below uses `applicationMonitoring` and the default Speedscale namespace, `speedscale`:
 
@@ -156,7 +156,7 @@ Append the same `NotIn` expression to each applicable selector:
 
 Create missing selector fields as needed. Apply or sync the updated DynaKube through your usual deployment process. These selectors affect webhook injection; ActiveGate Kubernetes monitoring and OneAgent host monitoring continue.
 
-### 2. Annotate Speedscale replay infrastructure
+### 2. Exclude replay pods through Helm
 
 Replay infrastructure also runs in application namespaces, so excluding only the Speedscale namespace does not cover it. Add this entry to the existing **Speedscale Operator chart values**, preserving any other `globalAnnotations` entries:
 
