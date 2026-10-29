@@ -17,6 +17,28 @@ Use search to find a specific report:
 
 Click into any report to see more detailed information.
 
+## Which version ran
+
+Every report records the container image the system under test was running, so you can tell which build a replay exercised without asking whoever launched it.
+At replay start the operator reads the target workload's pod template and stamps the image on the report tags.
+
+| Tag | Value |
+| --- | --- |
+| `sutImage` | The primary container's image repository, for example `ghcr.io/acme/orders` |
+| `sutImageTag` | The primary container's image tag, or its digest when the reference is pinned by digest alone |
+| `sutContainers` | A JSON array with the `name`, `image` and `tag` of every application container in the pod, in pod order |
+
+The primary container is the first container in the pod that is not a known sidecar.
+Speedscale's own proxy and the Istio and Linkerd sidecars are recognized by image and container name and left out of `sutContainers`.
+A Job with an app container and an exporter lists both, with the app container as the primary.
+
+The image tag appears beside the build tag in the report list and on the report page, and the report list can be filtered by it.
+From the CLI, `speedctl get report <report-id>` prints the tags with the rest of the report and `speedctl get reports --image-tag <tag>` lists the replays that ran that tag.
+
+The tags stay empty when there is no pod to read: a replay against a `customURL` target, and a local proxymock replay.
+Reports created before this was added are not backfilled.
+The `buildTag` on the replay is still yours to set, so you can record a commit hash or pipeline id next to the image the cluster actually ran.
+
 ## AI-Generated Summary
 
 Each replay report includes an AI-generated summary at the top that highlights the most important findings. The summary provides a plain-language overview of what happened during the replay, calls out key failures or regressions, and suggests where to focus your attention. This is the fastest way to understand replay results without reading through every detail.
