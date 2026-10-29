@@ -15,9 +15,15 @@ The generator sends the token request straight to the token URL. The identity pr
 - **Side:** request side, in generator chains.
 - **Requires:** Speedscale v2.5.1198 or later, including the operator in the replay cluster, so the generator it starts includes the transform.
 
-## Quick Start
+## From the dashboard
 
-Request a token with the client credentials grant and send it as the `Authorization` header. The client secret comes from the Kubernetes Secret `orders-client` in the replay namespace:
+You rarely need to write this transform by hand. Open the snapshot's **Credentials** tab, select **Replace credentials** on the credential, choose **Fetch a fresh token**, and pick **OAuth client credentials**, **curl command** or **Postman request**. Speedscale saves a credential blueprint with a `token_fetch` chain and adds it to every replay of matching traffic. The [Replace credentials guide](/guides/replay/replace-credentials.md#fetch-a-fresh-token) walks through each field.
+
+![The Replace credentials wizard configuring OAuth client credentials, which builds a token_fetch chain](../../replay/replace-credentials/wizard-configure.png)
+
+## Write it by hand
+
+To add the chain yourself, in the transform editor or a proxymock blueprint, request a token with the client credentials grant and send it as the `Authorization` header. The client secret comes from the Kubernetes Secret `orders-client` in the replay namespace:
 
 ```json
 {

@@ -35,6 +35,8 @@ Open the snapshot and select the **Credentials** tab. A count on the tab shows h
 | Recorded value | **Expired** with the expiry time, **Valid until**, **Unknown expiry** for opaque tokens, or **Static password** for Basic auth. |
 | Coverage | **Not covered**, or the name of the blueprint that replaces it. |
 
+![The Credentials tab of a snapshot, showing an expired Bearer JWT from Microsoft Entra ID covered by a blueprint](./replace-credentials/credentials-tab.png)
+
 Expand a row to see the token's issuer and claims. For a token from Microsoft Entra ID, Okta or another identity provider that was issued to an app rather than a user, the tab suggests fetching a fresh token.
 
 If the tab says the snapshot was analyzed before credential detection, only JWTs are listed. Reanalyze the snapshot to find Basic and opaque bearer tokens too.
@@ -48,6 +50,8 @@ Select **Replace credentials** on the credential's row. The wizard has four step
 3. **Configure**: fill in the method's settings, described in [Choose a method](#choose-a-method).
 4. **Save**: check what the replay will do and which traffic the blueprint applies to, then select **Save blueprint**, or **Save and replay** to open the replay wizard for this snapshot.
 
+![The Save step: the blueprint name, what the replay will do, and the traffic it applies to](./replace-credentials/wizard-save.png)
+
 The Save step describes the blueprint in plain words under **What the replay will do**, and **View as a transform chain** shows the exact chain it adds. Values you save as constants are masked there. **Name** is filled in with a default such as `Fetch token for orders-api` that follows your method and scope until you type your own. The name labels the blueprint in the Credentials tab, on reports and in replay events; it does not change what the blueprint does.
 
 You can also open the wizard from a replay report: from the **Credentials in this replay** card on the Overview tab, or from **Fix with Replace credentials** on an expired-JWT recommendation.
@@ -55,6 +59,8 @@ You can also open the wizard from a replay report: from the **Credentials in thi
 ## Choose a method
 
 The methods available depend on the kind of credential:
+
+![The Method step for a Bearer JWT: Fetch a fresh token, Paste a replacement and Resign the recorded token](./replace-credentials/wizard-method.png)
 
 | Credential | Fetch a fresh token | Paste a replacement | Resign the recorded token | Swap credentials |
 |---|---|---|---|---|
@@ -65,6 +71,8 @@ The methods available depend on the kind of credential:
 ### Fetch a fresh token
 
 The replay requests a new token from the issuer, caches it, and sends `Authorization: Bearer <new token>` instead of the recorded token. One token is shared by every vUser in a generator and replaced shortly before it expires. The token request goes from the generator straight to the issuer, so the identity provider does not have to be in the recording and is never mocked. Choose where the token request comes from:
+
+![The Configure step for OAuth client credentials, with the token URL, client ID and scope filled in from a recorded Entra ID token](./replace-credentials/wizard-configure.png)
 
 | Source | Use it when | What to enter |
 |---|---|---|
@@ -116,11 +124,15 @@ Select **Pick secret** to choose an existing Secret and key. When a replay start
 
 **Constant**. The **Fetch a fresh token** client secret and the **Paste a replacement** token can instead be saved as typed. Select **Constant** and paste the value; the field is masked, with a button to show it. The replay then needs no Kubernetes Secret.
 
+![A client secret saved as a constant, with the plain-text warning and a masked field](./replace-credentials/constant-client-secret.png)
+
 :::warning
 A constant is stored in the blueprint in plain text. Anyone in your tenant who can view transforms can read it. Use a Kubernetes secret for production credentials, and constants for test tokens and quick experiments.
 :::
 
 A constant **Paste a replacement** value can also contain [embedded syntax](/guides/transformation/embedded-syntax.md), resolved for every request:
+
+![A replacement token saved as a constant, with the note about embedded keywords](./replace-credentials/paste-constant.png)
 
 - `${{env_var:API_TOKEN}}` reads an environment variable in the generator.
 - `${{name}}` reads a variable from the [variable cache](/guides/transformation/variables.md), for example one an earlier chain stored.
@@ -165,11 +177,13 @@ A blueprint does not apply in these cases:
 The replay report shows what happened to credentials:
 
 - The **Credentials in this replay** card on the Overview tab says **Replaced with** and the blueprint names when every token request worked.
-- If a token request failed, the card says **could not get a token**, with the identity provider's error. The replay sent the recorded tokens instead. The secret itself is never shown.
+- If a token request failed, the card says **could not get a token**, with the identity provider's error, and offers **Edit blueprint**. The replay sent the recorded tokens instead. The secret itself is never shown.
 - If requests carried an expired recorded token and no blueprint covered them, the card says **Expired tokens sent to** the service, with **Fix with Replace credentials**.
 - The report's events include `CredentialBlueprintsApplied` with the blueprint names, or a warning when blueprints could not be loaded or the cluster's operator is too old.
 
-Transform errors from a blueprint's chains appear in the report's transform issues, labeled with the blueprint's name.
+![A replay report's Credentials in this replay card after a token request was rejected with invalid_client](./replace-credentials/report-card-failed.png)
+
+Transform errors from a blueprint's chains also appear on the report's **Transform Issues** tab, labeled with the blueprint's name.
 
 ## Edit or delete a blueprint
 
@@ -186,7 +200,7 @@ The kinds and methods are the same as in the dashboard: **Swap credentials** for
 - **Secrets stay in your workspace.** When you type a client secret or paste a token, proxymock web writes it to `proxymock/secrets/<name>/<key>` and the blueprint keeps only the `${{secret:name/key}}` reference. There is no Constant option. In a curl command or Postman request, write `${{secret:name/key}}` yourself, as in the dashboard. See [proxymock Secrets](/proxymock/guides/secrets.md).
 - **Test token request** sends the token request once from your machine and reports whether a token came back and how long it is valid. The token itself is never shown. It is not available for the auth call in the recording.
 - **Basic auth** swaps each recorded user for a replay user from a dataframe you edit. See [Basic auth credentials swap](/proxymock/guides/credentials-swap.md).
-- **Scope** is a host and a path prefix. Leave both empty and the blueprint applies to every request in the workspace that carries the credential.
+- **Scope** is a host and a path prefix. Leave both empty and the blueprint applies to every request in the workspace.
 
 The wizard saves an active [blueprint](/proxymock/guides/blueprints.md) in `proxymock/blueprints/`. It applies to replays started from proxymock web and to `proxymock replay`. `proxymock cloud replay` pushes the snapshot with the blueprint merged in, and `proxymock cluster replay` merges it into the staged snapshot, except for Basic auth swaps, which read a dataframe; use `proxymock cloud replay` for those. In a cluster, a `${{secret:name/key}}` reference reads the Kubernetes Secret with that name and key in the replay namespace: the files in `proxymock/secrets` are not uploaded, so create the Secret there first.
 

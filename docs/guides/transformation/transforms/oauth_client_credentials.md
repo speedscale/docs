@@ -14,9 +14,15 @@ The generator sends the token request straight to the token URL. The identity pr
 - **Side:** request side, in generator chains.
 - **Requires:** Speedscale cloud, operator and generator v2.5.1184 or later. The operator in the replay cluster must be at least that version so the generator it starts includes the transform.
 
+## From the dashboard
+
+Open the snapshot's **Credentials** tab, select **Replace credentials** on the credential, choose **Fetch a fresh token** and **OAuth client credentials**, and fill in the token URL, client ID, scope and client secret. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you. Speedscale saves a credential blueprint that requests a fresh token in every replay of matching traffic. See [Replace credentials](/guides/replay/replace-credentials.md#fetch-a-fresh-token).
+
+![The Replace credentials wizard configuring OAuth client credentials](../../replay/replace-credentials/wizard-configure.png)
+
 ## Quick Start
 
-Extract the `Authorization` header and replace it with a token fetched from your identity provider. The client secret comes from a Kubernetes Secret named `entra-oauth` in the replay namespace:
+To write the chain yourself, extract the `Authorization` header and replace it with a token fetched from your identity provider. The client secret comes from a Kubernetes Secret named `entra-oauth` in the replay namespace:
 
 ```json
 {
