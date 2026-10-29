@@ -19,19 +19,33 @@ Click into any report to see more detailed information.
 
 ## Which version ran
 
-Every report records the container image the system under test was running, so you can tell which build a replay exercised without asking whoever launched it. At replay start the operator reads the target workload's pod template and stamps the image on the report tags.
+Every report records the container image the system under test was running, so you can tell which build a replay exercised without asking whoever launched it. At replay start the operator reads the target workload's pod template and records the image, then fills in what the pods actually ran once one is up.
+
+The report list filters and sorts on two tags:
 
 | Tag | Value |
 | --- | --- |
 | `sutImage` | The primary container's image repository, for example `ghcr.io/acme/orders` |
 | `sutImageTag` | The primary container's image tag, or its digest when the reference is pinned by digest alone |
-| `sutContainers` | A JSON array with the `name`, `image` and `tag` of every application container in the pod, in pod order |
+
+The report itself carries a structured `sutBuild` for the primary container and a `sutContainers` list with one entry per application container in the pod, in pod order. Each entry has the container name, image repository, tag, digest when the reference pins one, and the CPU and memory requests and limits. The primary container's entry also records:
+
+| Field | Value |
+| --- | --- |
+| `imageDigest` | The registry digest of the image the container actually ran, read from the pod's container status, so two rollouts of a reused tag such as `latest` can be told apart. Empty for an image that was never pulled from a registry, such as one built on the node |
+| `podTemplateHash` and `node` | The running pod's template hash and node, read from the first pod on the stamped image |
+| `version` | The pod template's `app.kubernetes.io/version` label when set |
+| `revision` | The Deployment or Argo Rollout revision annotation when set |
+| `replicas` | The replica count the workload asked for |
+| `configHash` | A hash over the container's command, args, environment, envFrom sources, volume mounts and their sources, and any `checksum/*` annotation on the pod template. The same image with a different `configHash` is a configuration change. Only the hash is stored, never a value |
 
 The primary container is the first container in the pod that is not a known sidecar. Speedscale's own proxy and the Istio and Linkerd sidecars are recognized by image and container name and left out of `sutContainers`. A Job with an app container and an exporter lists both, with the app container as the primary.
 
-The image tag appears beside the build tag in the report list and on the report page, and the report list can be filtered by it. From the CLI, `speedctl get report <report-id>` prints the tags with the rest of the report and `speedctl get reports --image-tag <tag>` lists the replays that ran that tag.
+The image tag appears beside the build tag in the report list and on the report page, where hovering it shows the containers, digest, revision, replicas, node and config hash. The report list can be filtered by image tag. From the CLI, `speedctl get report <report-id>` prints `sutBuild` and `sutContainers` with the rest of the report and `speedctl get reports --image-tag <tag>` lists the replays that ran that tag.
 
-The tags stay empty when there is no pod to read: a replay against a `customURL` target, and a local proxymock replay. Reports created before this was added are not backfilled. The `buildTag` on the replay is still yours to set, so you can record a commit hash or pipeline id next to the image the cluster actually ran.
+Captured traffic carries the same identity. Every RRPair recorded through the sidecar or through nettap is tagged with `sutImage`, `sutImageTag` and, when the pod status reports a registry digest, `sutImageDigest` for the container that served it, so a snapshot says which build it was recorded from and a report says which build it tested. nettap resolves that container from the process on the eBPF path and from the container name the operator injects beside the Java agent, so a pod with several application containers tags each request with the container that served it.
+
+The fields stay empty when there is no pod to read: a replay against a `customURL` target, and a local proxymock replay. Reports and snapshots created before this was added are not backfilled. The `buildTag` on the replay is still yours to set, so you can record a commit hash or pipeline id next to the image the cluster actually ran.
 
 ## AI-Generated Summary
 
