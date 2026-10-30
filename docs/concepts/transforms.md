@@ -54,6 +54,25 @@ flowchart LR
     insertText --> extractJson --> body
 ```
 
+### Read-only chains
+
+Some chains exist only to observe a value, not to change it. A chain that reads a JWT claim and tags the session with it is one example: the claim cannot be turned back into a JWT, so writing it back would replace the `Authorization` header with the claim. Set `readOnly` on the chain to skip the re-insert step entirely.
+
+```json
+{
+  "readOnly": true,
+  "extractor": { "type": "http_req_header", "config": { "name": "Authorization" } },
+  "transforms": [
+    { "type": "jwt_claim", "config": { "claim": "email" } },
+    { "type": "tag_session" }
+  ]
+}
+```
+
+A read-only chain still runs every transform forward, so side effects such as `tag_session`, `variable_store` and signature changes happen as usual. Nothing is written back into the RRPair, and transforms that do their work during the re-insert step, such as `smart_replace`, `map` and `var_load`, have no effect.
+
+Chains that redact data with `dlp_field` or `dlp_json` cannot be read-only, because redaction is applied when the chain writes back. Saving a DLP rule with such a chain is rejected, and the forwarder writes back any redaction chain regardless of the setting.
+
 ## Where to Transform Traffic
 
 Modify traffic and see the effects with the transform editor.

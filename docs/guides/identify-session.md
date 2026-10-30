@@ -36,6 +36,8 @@ This transform cahin will isolate the `email` HTTP Query Parameter and use it as
 :::note
 If your app relies on JWTs then you can think them as being interchangeable with sessions. However, if you have a human readable user ID tucked into the JWT claims then that could also be considered a session. To extract an ID like this you can use the [JSONPath](./transformation/extractors/json_path.md) extractor pointed at the claim:
 ![jwt claim](./identify-session/jwt-claim.png)
+
+Set `readOnly` on that chain so the forwarder tags the session and keeps the token as captured. See [Read-only chains](../concepts/transforms.md#read-only-chains).
 :::
 
 ## Apply to Forwarder
