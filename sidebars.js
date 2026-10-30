@@ -167,6 +167,7 @@ const sidebars = {
             "guides/creating-a-snapshot",
             "guides/creating-filters",
             "guides/recommendations",
+            "guides/security-findings",
             "guides/resend-rrpair",
             "guides/cluster-map",
             "guides/compare-rrpairs",

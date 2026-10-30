@@ -125,17 +125,42 @@ Operator configuration is explained in greater detail in the [installation](../.
 
 # Workloads
 
-![workloads](./infra/workloads.png)
+Open a cluster from **Infrastructure** and its workloads are the first thing you see. Use **List** and **Map** to switch between the grid and the cluster map. Filter the grid with **Search workloads**, the **Namespace** picker and **Capture health**, which starts on **Instrumented** so you see the workloads Speedscale is capturing. Choose **All workloads** to see the rest.
 
-The Workloads tab shows all workloads in a namespace and their capture status. New deployments should use eBPF capture. The sidecar fields remain visible for existing sidecar deployments.
+| Column | What it shows |
+|---|---|
+| **Workload** | Name and workload type |
+| **Namespace** | The workload's namespace |
+| **Ready** | Ready pods out of total pods |
+| **Capture** | **eBPF**, **eBPF + Java TLS**, **Sidecar** or **Not enabled** |
+| **Health** | For eBPF: **Healthy**, **Degraded**, **Unhealthy**, **Unavailable** or **Unknown**. For a sidecar, **View sidecar health** opens its details when something is wrong |
+| **Container Logs** | Logs of the workload's main container |
+| **Sidecar Logs** | Logs of a legacy sidecar, when the workload has one |
 
-*Name* - Kubernetes name label for the workload
-*Injected* - true if the legacy Speedscale sidecar is attached
-*TLS Out* - true if legacy sidecar TLS unwrapping is enabled
-*Container Logs* - click to view the logs of the main workload container (enhanced debugging capability)
-*Sidecar Logs* - click to view the logs of the Speedscale sidecar (enhanced debugging capability)
-*Sidecar Health* - a simple alert/caution indicator for the sidecar configuration and recording health
-*Request CPU/Memory* - indicate how many resources are requested by the workload
+The last column links to the workload's traffic on the Traffic page.
+
+### Turn capture on for one workload
+
+Click a workload to open its panel. The top shows the capture mode, namespace, ready pods and the nodes it runs on. For eBPF workloads it also shows how many collectors are ready, the reason for the current health, and a **Next step**. The **Events** tab lists the workload's Kubernetes events.
+
+On the **Capture** tab, choose a **Capture Mode**: **Disabled**, **eBPF** or **Sidecar**. Choosing a mode shows its settings but does not turn anything on until you set them and click **Update**.
+
+- **eBPF** settings are **Enable eBPF Capture**, **Enable TLS Capture for Java** and **Ignore Ports**. eBPF capture attaches to the running workload, so turning it on or off does not restart pods. Java TLS capture adds a Java agent to the workload definition, which rolls its pods, and turning it off removes the agent again. When the cluster's collector is not set up for eBPF, the eBPF card is disabled and reads **Not supported**, and a workload already set to eBPF shows the `helm upgrade` command that enables it.
+- **Sidecar** settings map to the `sidecar.speedscale.com/*` annotations. Sidecar capture is not recommended for new installations; prefer eBPF.
+
+**Update** replaces the workload's Speedscale capture annotations with the ones for the chosen mode. For eBPF that is `capture.speedscale.com/enabled`, plus `capture.speedscale.com/ignore-ports` and `capture.speedscale.com/java-agent` when you set them. **Disabled** removes them all. Changing capture needs the Maintainer role.
+
+### Turn eBPF capture on or off for many workloads
+
+**Manage eBPF capture** in the toolbar changes eBPF capture for a whole set of workloads at once:
+
+1. Choose **Enable eBPF** or **Disable eBPF**.
+2. Pick one or more **Namespaces**. A workload in any of them is included.
+3. Optionally narrow the set with a **Pod template label selector** such as `app=checkout,environment=staging`. Every condition must match, and it matches the pod template labels, not the workload's own labels.
+4. Click **Preview matching workloads**. The preview counts the matches, how many will change and how many are skipped, with the reason for each skip.
+5. Click the **Enable eBPF on N workloads** button (or **Disable**) to apply the preview.
+
+The change is a one-time action on the previewed workloads: workloads created later are not included, and application pods are not restarted. **Applied** means the cluster acknowledged the annotation, not that traffic is being captured yet, so check the **Health** column afterwards. It covers Deployments, StatefulSets, DaemonSets, Jobs and Argo Rollouts. A preview expires after 15 minutes. A preview that matches more than 500 workloads, skipped ones included, or spans more than 100 namespaces is refused, so narrow the scope. Sidecar workloads are skipped; switch those one at a time. Disabling eBPF on a workload with Java TLS capture stops that capture too, but leaves the Java agent installed.
 
 ### Capture management best practices
 - Start with non-critical workloads to validate configuration
