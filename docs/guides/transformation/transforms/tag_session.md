@@ -96,10 +96,25 @@ res_body() → json_path(path="session") → var_store(name=session_id) → tag_
 
 `var_store` passes the token through, so `tag_session` still sees it. The session value is now both tagged on the RRPair and available to later RRPairs via `var_load`.
 
+### Example 5 - Tag from a JWT claim without changing the header
+
+```json
+{
+  "readOnly": true,
+  "extractor": { "type": "http_req_header", "config": { "name": "Authorization" } },
+  "transforms": [
+    { "type": "jwt_claim", "config": { "claim": "email" } },
+    { "type": "tag_session" }
+  ]
+}
+```
+
+`jwt_claim` turns the bearer token into one claim, and a JWT cannot be rebuilt from that claim. Without `readOnly` the chain writes the claim back and the `Authorization` header becomes `alice@example.com`. With it the session is tagged and the header stays as captured. See [Read-only chains](../../../concepts/transforms.md#read-only-chains).
+
 ## Common Misconceptions
 
 1. **"`tag_session` modifies the field its chain targets."**
-   No. The original bytes pass through. The session slot on the RRPair picks up the new value; the targeted field stays the same.
+   No. The original bytes pass through. The session slot on the RRPair picks up the new value; the targeted field stays the same. Earlier steps in the chain still write back, so a step that cannot be reversed, such as `jwt_claim`, changes the field unless the chain is `readOnly`.
 
 2. **"It tags the entire transformation session."**
    No. It tags the **single RRPair** the chain ran on. Other RRPairs in the same replay are tagged only if their own chains call `tag_session` with a matching value.
@@ -122,6 +137,7 @@ res_body() → json_path(path="session") → var_store(name=session_id) → tag_
 | Only some RRPairs are tagged | Chain filters excluded the others, or the source field is missing on those RRPairs | Add a fallback chain that targets a different field, or remove the filter |
 | Session tag overwritten with the wrong value | A second `tag_session` chain ran on the same RRPair | Use filters so only one chain tags per RRPair |
 | Quoted JSON value used as session tag | Extractor returned a JSON-quoted string | Strip quotes with `trim` or `regex` before `tag_session` |
+| `Authorization` header replaced by a claim value | A `jwt_claim` step wrote its claim back over the token | Set `readOnly` on the chain |
 
 ## Related Transforms
 
