@@ -28,6 +28,20 @@ Use **Traffic** to inspect requests and responses, selecting inbound or outbound
 
 Correctness failures may require an application fix or a new recording. Change transforms only when the difference is an expected consequence of replaying in a different context. For a complete local iteration loop, see [Replay Tuning](/proxymock/guides/replay-tuning.md).
 
+## Preview a chain on real traffic
+
+The chain editor on a snapshot's **Traffic** tab runs the chain you are editing against one recorded request. It shows the value pulled from the source, the output of each step, and what a replay sends after the value is written back. The preview updates as you edit, before you save or reanalyze the snapshot.
+
+The sample is the request open in the traffic list. If none is open, the editor picks the first request in the chain's subset where the source has a value. Use the arrows next to the sample to check other requests. Chains filtered by service have no automatic sample, so open a request first.
+
+Chains above the one you are editing run first, as they do during a replay, so a chain that rewrites the same value changes what this chain receives. A chain above that fails does not stop the preview, because a replay carries on past it too. The editor names the failed chain instead.
+
+What a replay sends can differ from the last step's output. Writing back runs each step's inverse in reverse order, so a `base64` chain re-encodes the value, and `var_load` applies its variable only at this point. A [read-only chain](/concepts/transforms.md#read-only-chains) writes nothing back.
+
+A few transforms only act during a replay. [`token_fetch`](./transforms/token_fetch.md) does not call the token endpoint in a preview, so the value passes through that step unchanged. The preview does not show `smart_replace` mappings or signature matching, because those take effect across a whole request after every chain has run.
+
+A step that fails shows its error on that step, and the steps after it show as not run. A step can also succeed with an empty value, such as a `json_path` whose path is absent when `create` is left on, and the editor flags that too.
+
 ## Extractors and Transforms
 
 Each chain extracts a value, applies its transforms in order, then writes the result back. See [Basic Principles](/concepts/transforms.md#basic-principles) for the execution model and [Where to Transform Traffic](/concepts/transforms.md#where-to-transform-traffic) for generator and responder placement.
