@@ -62,6 +62,7 @@ jobs:
       if: steps.preview.outputs.run == 'true'
       env:
         BASE_SHA: ${{ steps.preview.outputs.base_sha }}
+        PUBLIC_WRITING_CONFIDENTIAL_TERMS: ${{ secrets.PUBLIC_WRITING_CONFIDENTIAL_TERMS }}
       # The checkout is the merge of the PR into the current base branch, but
       # base.sha is the PR's merge base, which lags main on an older branch.
       # Diffing from it would count everything main gained since as the PR's.

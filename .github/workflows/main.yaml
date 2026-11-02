@@ -30,7 +30,11 @@ jobs:
     - name: check public writing
       env:
         BASE_SHA: ${{ github.event.before }}
-      run: yarn check:writing --base "$BASE_SHA"
+        PUBLIC_WRITING_CONFIDENTIAL_TERMS: ${{ secrets.PUBLIC_WRITING_CONFIDENTIAL_TERMS }}
+      # Fork PRs cannot read this secret, so main is the gate that must have it.
+      run: |
+        test -n "$PUBLIC_WRITING_CONFIDENTIAL_TERMS"
+        yarn check:writing --base "$BASE_SHA"
 
     - name: install
       run: yarn --frozen-lockfile --silent

@@ -5,12 +5,28 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 
+const CONFIDENTIAL_TERMS_ENV = "PUBLIC_WRITING_CONFIDENTIAL_TERMS";
+
+// This repository is public, so the terms come from CI configuration as a
+// "|"-separated list, and findings never print the term that matched.
+function confidentialRules() {
+  const terms = (process.env[CONFIDENTIAL_TERMS_ENV] ?? "")
+    .split("|")
+    .map((term) => term.trim())
+    .filter(Boolean)
+    .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  if (terms.length === 0) return [];
+  return [
+    {
+      name: "confidential customer",
+      pattern: new RegExp(`\\b(?:${terms.join("|")})\\b`, "g"),
+      message: "replace the prohibited customer reference",
+      redact: true,
+    },
+  ];
+}
+
 const HARD_RULES = [
-  {
-    name: "confidential customer",
-    pattern: /\b(?:Home Depot|Chick-fil-A|CFA)\b/g,
-    message: "replace the prohibited customer reference",
-  },
   {
     name: "product capitalization",
     pattern:
@@ -301,7 +317,7 @@ export function analyzeFile(file, content, selectedLines) {
     const lineNumber = index + 1;
     if (!selectedLines.has(lineNumber) || !visible[index].trim()) continue;
 
-    for (const rule of HARD_RULES) {
+    for (const rule of [...confidentialRules(), ...HARD_RULES]) {
       for (const match of matches(rule.pattern, visible[index])) {
         addFinding(
           findings,
@@ -309,7 +325,7 @@ export function analyzeFile(file, content, selectedLines) {
           lineNumber,
           "error",
           rule.name,
-          match[0],
+          rule.redact ? "[redacted]" : match[0],
           rule.message,
         );
       }

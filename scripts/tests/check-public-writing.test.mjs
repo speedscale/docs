@@ -12,6 +12,8 @@ import {
 } from "../validation/check-public-writing.mjs";
 import { runPushed } from "../validation/check-pushed-writing.mjs";
 
+process.env.PUBLIC_WRITING_CONFIDENTIAL_TERMS = "Acme Corp|ACME|Sm.th";
+
 const allLines = (content) =>
   new Set(content.split("\n").map((_, index) => index + 1));
 
@@ -24,7 +26,7 @@ test("ignores violations on untouched lines", () => {
 });
 
 test("blocks objective terminology and capitalization violations", () => {
-  const content = "Proxymock uses ground truth from Home Depot.\n";
+  const content = "Proxymock uses ground truth from Acme Corp.\n";
   const findings = analyzeFile(
     "docs/example.md",
     content,
@@ -61,7 +63,7 @@ test("allows separate paragraphs and list items", () => {
 
 test("ignores fenced and inline code", () => {
   const content =
-    "```text\nSpeedScale and Home Depot\n```\nUse `SpeedScale` as test input.\n";
+    "```text\nSpeedScale and Acme Corp\n```\nUse `SpeedScale` as test input.\n";
   assert.equal(
     analyzeFile("docs/example.md", content, allLines(content)).length,
     0,
@@ -176,15 +178,36 @@ test("ignores multiline HTML comments and JSX attributes", () => {
   assert.equal(findings[0].match, "Proxymock");
 });
 
-test("matches the confidential CFA acronym case-sensitively", () => {
-  const content = "A cfa is different from CFA.\n";
+test("matches confidential terms literally and case-sensitively", () => {
+  const content = "An acme and a Smith differ from ACME.\n";
   const findings = analyzeFile(
     "docs/example.md",
     content,
     allLines(content),
   );
   assert.equal(findings.length, 1);
-  assert.equal(findings[0].match, "CFA");
+  assert.equal(findings[0].rule, "confidential customer");
+});
+
+test("never reports the confidential term that matched", () => {
+  const content = "Built for ACME.\n";
+  const [finding] = analyzeFile("docs/example.md", content, allLines(content));
+  assert.equal(finding.match, "[redacted]");
+  assert.doesNotMatch(JSON.stringify(finding), /ACME/);
+});
+
+test("skips the confidential rule when no terms are configured", () => {
+  const configured = process.env.PUBLIC_WRITING_CONFIDENTIAL_TERMS;
+  delete process.env.PUBLIC_WRITING_CONFIDENTIAL_TERMS;
+  try {
+    const content = "Built for ACME.\n";
+    assert.deepEqual(
+      analyzeFile("docs/example.md", content, allLines(content)),
+      [],
+    );
+  } finally {
+    process.env.PUBLIC_WRITING_CONFIDENTIAL_TERMS = configured;
+  }
 });
 
 test("reports style patterns as warnings", () => {
@@ -251,7 +274,7 @@ test("discovers docs surfaces, including the generated MCP reference", () => {
 test("ignores tilde fences while checking admonition prose", () => {
   const content = [
     "~~~text",
-    "SpeedScale and Home Depot",
+    "SpeedScale and Acme Corp",
     "~~~",
     "",
     ":::note",
@@ -323,7 +346,7 @@ test("checks committed push content without reading uncommitted files", () => {
     }).trim();
 
     fs.writeFileSync(readme, "Install Proxymock.\n");
-    fs.writeFileSync(path.join(root, "docs", "untracked.md"), "Home Depot.\n");
+    fs.writeFileSync(path.join(root, "docs", "untracked.md"), "Acme Corp.\n");
 
     const input = `refs/heads/feature ${localSha} refs/heads/feature ${remoteSha}\n`;
     const result = runPushed(root, input);

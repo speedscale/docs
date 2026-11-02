@@ -83,7 +83,9 @@ When deleting pages, always add redirects to `docusaurus.config.js` to prevent b
 
 Public prose follows the rules in this section. Run `yarn check:writing` before pushing. The command checks added lines by default, `--base <sha>` selects a comparison base, and `--all` audits all tracked public-writing files.
 
-The hard gate rejects confidential-customer names, product-capitalization errors, retired terminology, generator signatures, hard-wrapped prose, and em dashes in changed public prose. Style patterns remain warnings. The checker, rule IDs, severity boundary, diagnostics, and shared fixtures must stay compatible with the website checker. Repository-specific changes should be limited to file discovery and Docusaurus Markdown/MDX sanitization until both integrations move to a versioned shared package.
+The hard gate rejects confidential-customer names, product-capitalization errors, retired terminology, generator signatures, hard-wrapped prose, and em dashes in changed public prose. Style patterns remain warnings. The checker, rule IDs, severity boundary, diagnostics, and shared fixtures must stay compatible with the website checker. Repository-specific changes should be limited to file discovery, Docusaurus Markdown/MDX sanitization, and loading confidential terms from configuration until both integrations move to a versioned shared package.
+
+This repository is public, so never commit confidential customer names, including in tests. The checker reads them from the `PUBLIC_WRITING_CONFIDENTIAL_TERMS` Actions secret, as a `|`-separated list, and redacts the matched term in its output. Local runs and fork PRs skip this rule, and the check on `main` fails if the secret is missing.
 
 The generated `docs/proxymock/how-it-works/mcp-tools.md` page is checked like any other page. Its prose comes from the proxymock MCP registry in the speedscale repository, so fix a finding there (`speedctl/mcp`) and regenerate; do not edit the page by hand.
 
