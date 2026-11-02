@@ -58,35 +58,14 @@ Select your environment below and all instructions will update accordingly. If y
 
 ## Before you begin
 
-<Tabs groupId="environment">
-  <TabItem value="mac" label="🍎 macOS">
-    Make sure you have:
-    - A terminal or command prompt open to run proxymock
-    - A separate terminal or command prompt open to run the demo app
-    - [git](https://git-scm.com/downloads) installed
-    - [go version 1.23.1](https://go.dev/doc/install) or newer installed
-  </TabItem>
-  <TabItem value="linux" label="🐧 Linux">
-    Make sure you have:
-    - A terminal or command prompt open to run proxymock
-    - A separate terminal or command prompt open to run the demo app
-    - [git](https://git-scm.com/downloads) installed
-    - [go version 1.23.1](https://go.dev/doc/install) or newer installed
-  </TabItem>
-  <TabItem value="codespaces" label="☁️ Codespaces">
-    Make sure you have:
-    - A GitHub account with access to Codespaces
-    - The mock-lab Codespace running (note that go and proxymock are pre-installed)
-    - Two terminal windows open in your Codespace
-  </TabItem>
-  <TabItem value="binary" label="🔧 Other">
-    Make sure you have:
-    - A terminal or command prompt open to run proxymock
-    - A separate terminal or command prompt open to run the demo app
-    - [git](https://git-scm.com/downloads) installed
-    - [go version 1.23.1](https://go.dev/doc/install) or newer installed
-  </TabItem>
-</Tabs>
+For a local setup, have these prerequisites ready:
+
+- **Git:** [Install Git](https://git-scm.com/downloads) to clone the demo repository.
+- **Go 1.23.1 or later:** [Install Go](https://go.dev/doc/install) to run the demo application.
+- **proxymock CLI:** Follow the [installation instructions](../installation.md) in [Step 1](#install), then activate it in [Step 2](#api-key).
+- **Two terminal windows or tabs:** Terminal 1 runs the demo app with proxymock. Terminal 2 sends test traffic and later runs replay. Leave Terminal 1 open while working in Terminal 2.
+
+**Using Codespaces instead?** Start from the [mock-lab Codespace](https://github.com/speedscale/mock-lab) as described above. It already includes Git, Go, proxymock, and the demo repository. Open two terminals in the Codespaces editor. See [GitHub's Codespaces documentation](https://docs.github.com/en/codespaces/overview) if you need help getting started.
 
 ```mermaid
 flowchart LR
@@ -146,30 +125,40 @@ If you want the language-specific landing pages after this Go-first quickstart, 
 
 ## Step 3: Install the demo app and start recording {#recording}
 
+Use **Terminal 1** for the recorder and demo app. For a local setup, clone the repository into your home directory so both terminals can use the same paths. Keep this terminal running when you move to Step 4.
+
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
     ```shell
-    git clone https://github.com/speedscale/mock-lab && cd mock-lab/languages/go && proxymock record -- go run .
+    cd "$HOME"
+    git clone https://github.com/speedscale/mock-lab
+    cd "$HOME/mock-lab/languages/go"
+    proxymock record -- go run .
     ```
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
     ```shell
-    git clone https://github.com/speedscale/mock-lab && cd mock-lab/languages/go && proxymock record -- go run .
+    cd "$HOME"
+    git clone https://github.com/speedscale/mock-lab
+    cd "$HOME/mock-lab/languages/go"
+    proxymock record -- go run .
     ```
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
-    If you're using the mock-lab Codespace, the repository is already cloned. Navigate to `languages/go` and start recording:
+    The repository is already cloned in the Codespace. Switch to its Go demo directory:
 
     ```shell
-    cd languages/go
+    cd /workspaces/mock-lab/languages/go
     export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
     proxymock record -- go run .
     ```
-
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
     ```shell
-    git clone https://github.com/speedscale/mock-lab && cd mock-lab/languages/go && proxymock record -- go run .
+    cd "$HOME"
+    git clone https://github.com/speedscale/mock-lab
+    cd "$HOME/mock-lab/languages/go"
+    proxymock record -- go run .
     ```
   </TabItem>
 </Tabs>
@@ -186,35 +175,34 @@ Press ctrl-c to interrupt
 
 ## Step 4: Run test transactions {#run-tests}
 
-Start a _new_ terminal and run the following command.
+Open **Terminal 2**, leaving the recorder running in Terminal 1. First change into the **mock-lab repository root**, then run the traffic script.
 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
-    ```shell jsx title="Run in new terminal window"
-    # from the mock-lab repo root
+    ```shell jsx title="Terminal 2: mock-lab repository root"
+    cd "$HOME/mock-lab"
     ./lab/tests/run_tests.sh --recording
     ```
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
-    ```shell jsx title="Run in new terminal window"
-    # from the mock-lab repo root
+    ```shell jsx title="Terminal 2: mock-lab repository root"
+    cd "$HOME/mock-lab"
     ./lab/tests/run_tests.sh --recording
     ```
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
-    ```shell jsx title="Run in new terminal window"
-    # from the mock-lab repo root
+    ```shell jsx title="Terminal 2: mock-lab repository root"
+    cd /workspaces/mock-lab
     ./lab/tests/run_tests.sh --recording
     ```
 
     :::note Codespaces Port Forwarding
     Make sure port 4143 is forwarded in your Codespace. You should see it automatically forwarded in the Ports tab.
     :::
-
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
-    ```shell jsx title="Run in new terminal window"
-    # from the mock-lab repo root
+    ```shell jsx title="Terminal 2: mock-lab repository root"
+    cd "$HOME/mock-lab"
     ./lab/tests/run_tests.sh --recording
     ```
   </TabItem>
@@ -249,6 +237,8 @@ You will also see some additional output in the original proxymock terminal wind
 
 ## Step 5: View recording results {#view-recording}
 
+In **Terminal 1**, use the Go demo directory (`$HOME/mock-lab/languages/go` locally, or `/workspaces/mock-lab/languages/go` in Codespaces) for these inspection commands.
+
 There should be a new directory in the `proxymock` subdirectory inside `mock-lab/languages/go`. (An offline recording is also committed at `lab/proxymock/recording` if you'd rather skip recording and jump straight to mocking.)
 
 ```shell
@@ -273,7 +263,7 @@ User-Agent: curl/8.7.1
 
 ## Step 6: Run mock server and tests {#run-mocks}
 
-Go back to your original terminal (running `proxymock record`), stop proxymock by running CTRL-C and then start a mock server:
+Go back to **Terminal 1**, still in the Go demo directory (`$HOME/mock-lab/languages/go` locally or `/workspaces/mock-lab/languages/go` in Codespaces). Press Ctrl-C to stop the recorder, then start the mock server:
 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
@@ -304,28 +294,30 @@ Your demo app will now start using the local mock server.
 When running `proxymock mock` your app no longer requires access to backend systems. The app will talk locally to proxymock instead of outside APIs.
 :::
 
-Now exercise your demo app by running the same tests we ran before - except using the recording instead of a script. proxymock takes the recorded inbound requests and re-uses them as tests.
-
-Open your second terminal window and run the following:
+Now run replay in **Terminal 2**. Step 4 left this terminal in the repository root, so first change into the **Go demo directory** where proxymock saved the recording. Keep the mock server running in Terminal 1.
 
 <Tabs groupId="environment">
   <TabItem value="mac" label="🍎 macOS">
-    ```shell
+    ```shell jsx title="Terminal 2: Go demo directory"
+    cd "$HOME/mock-lab/languages/go"
     proxymock replay --test-against http://localhost:8080
     ```
   </TabItem>
   <TabItem value="linux" label="🐧 Linux">
-    ```shell
+    ```shell jsx title="Terminal 2: Go demo directory"
+    cd "$HOME/mock-lab/languages/go"
     proxymock replay --test-against http://localhost:8080
     ```
   </TabItem>
   <TabItem value="codespaces" label="☁️ Codespaces">
-    ```shell
+    ```shell jsx title="Terminal 2: Go demo directory"
+    cd /workspaces/mock-lab/languages/go
     proxymock replay --test-against http://localhost:8080
     ```
   </TabItem>
   <TabItem value="binary" label="🔧 Other (Detailed)">
-    ```shell
+    ```shell jsx title="Terminal 2: Go demo directory"
+    cd "$HOME/mock-lab/languages/go"
     proxymock replay --test-against http://localhost:8080
     ```
   </TabItem>
