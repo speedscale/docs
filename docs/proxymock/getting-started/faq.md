@@ -15,7 +15,7 @@ Yes. The **proxymock** cli is available as a native Windows executable. Alternat
 
 ## What is the difference between proxymock and Speedscale Enterprise?
 
-**proxymock** is a local tool that allows you to create a mock server from a recording of your application's traffic. It is a great way to get started with traffic replay. **proxymock** is free and the UI is open source. It DOES NOT require a subscription to Speedscale Enterprise. The backend for **proxymock** is actually a local Speedscale Enterprise mock server and so it is already enterprise-grade even though it's free.
+**proxymock** is a proprietary CLI for recording, mocking, and replaying API traffic locally or in CI. Free use is subject to the eligibility requirements in the [Speedscale Terms of Service](https://speedscale.com/legal/terms-service/).
 
 Speedscale Enterprise is a cloud platform that allows you to create, manage, and scale mock servers. It allows you to record from a real production environment and bring that environment back to your desktop. That is a paid product that requires a subscription (and helps fund **proxymock** development).
 

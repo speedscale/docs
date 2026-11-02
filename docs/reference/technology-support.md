@@ -31,8 +31,8 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
-| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/). See [details](/guides/capture/bodies#graphql) |
-| gRPC              | Protocol | Full         | Unary RPCs. Streaming RPCs are partial: see [gRPC known limits](/proxymock/grpc/#known-limits). See [details](/guides/capture/bodies#grpc) |
+| GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |
+| gRPC              | Protocol | Partial      | Unary and bounded native server streaming. Client streaming, bidi and grpc-web streaming remain separate phases. See [gRPC known limits](/proxymock/grpc/#known-limits) and [native server streaming](/proxymock/grpc/server-streaming/). |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |
 | HTTP/S TLS        | Protocol | Full         | See [TLS capture](/guides/tls/)                                                                          |
@@ -51,10 +51,10 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Technology            | Type | Support | Notes                                                                                            |
 | --------------------- | ---- | ------- | ------------------------------------------------------------------------------------------------ |
 | AWS Signature (SigV4) | Auth | Full    | Automatic discovery and replacement. See [aws_auth transform](/guides/transformation/transforms/aws_auth) |
-| Basic Auth            | Auth | Full    |                                                                                                  |
-| Bearer JWT            | Auth | Full    | Automatic discovery and replacement. See [JWT guide](../guides/replay/resign-jwt.md)             |
+| Basic Auth            | Auth | Full    | Swap the recorded user for a replay user. See [Replace credentials](/guides/replay/replace-credentials.md)                         |
+| Bearer JWT            | Auth | Full    | Automatic discovery and replacement. See [Replace credentials](/guides/replay/replace-credentials.md) and the [JWT guide](../guides/replay/resign-jwt.md) |
 | Cookies               | Auth | Full    |                                                                                                  |
-| OAuth 2.0 client credentials | Auth | Full | Fresh tokens from your identity provider during replay. See [oauth_client_credentials transform](/guides/transformation/transforms/oauth_client_credentials) |
+| OAuth 2.0 client credentials | Auth | Full | Fresh tokens from your identity provider during replay. See [Replace credentials](/guides/replay/replace-credentials.md) and the [token_fetch transform](/guides/transformation/transforms/token_fetch) |
 
 ### Supported DBMS
 

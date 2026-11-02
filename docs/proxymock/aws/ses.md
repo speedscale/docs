@@ -101,21 +101,17 @@ Your application will behave as if it's sending emails through AWS SES, but no a
 
 ## Modifying Responses
 
-To modify the responses manually, you can find the appropriate RRPair file and edit the contents. However, to automate data transformation you can use the transform system provided by [Speedscale enterprise](https://app.speedscale.com). To edit your snapshot, upload it to the cloud:
+To change a response by hand, edit its RRPair file. To change values on every run, save the transforms in a [blueprint](/proxymock/guides/blueprints.md) instead. Active blueprints in the workspace apply during `proxymock mock` and `proxymock replay` without rewriting the recording. They use the same [transform engine](/concepts/transforms.md) as Speedscale Cloud, so you do not need to upload the snapshot.
+
+[Create and Verify Blueprints](/proxymock/guides/blueprints.md) shows how to save transforms from `proxymock web`, preview their changes, and confirm they ran. Use a responder response chain to change the mock response returned to your app, or a responder request chain to change the request used for mock matching.
+
+If your team already keeps a Traffic Transform Template in Speedscale Cloud, pull it into the workspace:
 
 ```sh
-proxymock cloud push snapshot
+proxymock cloud pull transform <id>
 ```
 
-A link to your snapshot will be provided. You can then transform your snapshot in an automated fashion using the Speedscale UI. This is not necessary if you want to make spot modifications in the markdown file.
-
-You can download your modified snapshot from the cloud if you added transforms:
-
-```sh
-proxymock cloud pull snapshot <id>
-```
-
-You will notice a new `.metadata` directory containing your transform definitions. When you run `proxymock mock` again the transforms will be applied to your mock.
+The template is written to `proxymock/blueprints/<id>.json`, and the next `proxymock mock` applies it.
 
 ## Common Use Cases
 

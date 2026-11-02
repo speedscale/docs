@@ -74,6 +74,18 @@ proxymock replay \
   --fail-if 'latency.p99 > 500'
 ```
 
+To check the calls your service makes to its dependencies, add an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion to the test config and pass the directory `proxymock mock` wrote while it served the replay:
+
+```shell
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8080 \
+  --test-config outbound \
+  --mocks-out ./proxymock/results/mocked-1
+```
+
+A difference from the recorded calls fails the goal verdict and exits `1`, and the differences are written to `http-output-diff.json` in the replay output. `proxymock replay score <replay-dir> --mocks-out <dir>` scores a finished replay the same way.
+
 Use the actual blueprint name. A violated `--fail-if` condition exits `1`. These metrics and blueprint checks answer different questions from the per-pair verdict; requiring a blueprint proves that at least one of its chains ran, not that the response was correct.
 
 ## Output and load-mode limits

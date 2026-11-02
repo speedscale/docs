@@ -48,10 +48,17 @@ if (stubs.length === 0) {
   process.exit(1);
 }
 
-// Reject browser URL normalization tricks before publishing any redirects.
-const offsite = stubs.filter(
-  ([, target]) => !target.startsWith("/") || target.startsWith("//") || /[\\\x00-\x20\x7f&]/.test(target),
-);
+// Only the two retired license pages may redirect offsite, to the canonical terms.
+const publicTermsSources = new Set([
+  "proxymock/how-it-works/license/index.html",
+  "proxymock/reference/license/index.html",
+]);
+const publicTermsTarget = "https://speedscale.com/legal/terms-service/";
+
+const offsite = stubs.filter(([key, target]) => {
+  if (publicTermsSources.has(key) && target === publicTermsTarget) return false;
+  return !target.startsWith("/") || target.startsWith("//") || /[\\\x00-\x20\x7f&]/.test(target);
+});
 if (offsite.length > 0) {
   console.error("refusing to publish non-relative redirect targets:");
   for (const [key, target] of offsite) console.error(`  ${key} -> ${target}`);

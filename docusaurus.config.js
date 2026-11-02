@@ -942,7 +942,11 @@ const config = {
           },
           {
             from: "/proxymock/reference/license/",
-            to: "/proxymock/how-it-works/license/",
+            to: "https://speedscale.com/legal/terms-service/",
+          },
+          {
+            from: "/proxymock/how-it-works/license/",
+            to: "https://speedscale.com/legal/terms-service/",
           },
           {
             from: "/proxymock/reference/repo/",

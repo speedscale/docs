@@ -9,14 +9,20 @@ The `oauth_client_credentials` transform requests a fresh access token from an O
 
 The generator sends the token request straight to the token URL. The identity provider does not have to appear in the recorded traffic, and the token does not have to be a JWT: any string the token endpoint returns is used as is.
 
-- **Transform type name (config/API):** `oauth_client_credentials`
+- **Transform type name (config/API):** `oauth_client_credentials`, an alias of [`token_fetch`](./token_fetch.md) with `grant` set to `client_credentials`. Use `token_fetch` when the token request is not a client credentials call.
 - **Shorthand format (display):** `oauth_client_credentials(tokenUrl=...,clientId=...,scope=...,tokenPath=...)`. The client secret is never shown.
 - **Side:** request side, in generator chains.
 - **Requires:** Speedscale cloud, operator and generator v2.5.1184 or later. The operator in the replay cluster must be at least that version so the generator it starts includes the transform.
 
+## From the dashboard
+
+Open the snapshot's **Credentials** tab, select **Replace credentials** on the credential, choose **Fetch a fresh token** and **OAuth client credentials**, and fill in the token URL, client ID, scope and client secret. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you. Speedscale saves a credential blueprint that requests a fresh token in every replay of matching traffic. See [Replace credentials](/guides/replay/replace-credentials.md#fetch-a-fresh-token).
+
+![The Replace credentials wizard configuring OAuth client credentials](../../replay/replace-credentials/wizard-configure.png)
+
 ## Quick Start
 
-Extract the `Authorization` header and replace it with a token fetched from your identity provider. The client secret comes from a Kubernetes Secret named `entra-oauth` in the replay namespace:
+To write the chain yourself, extract the `Authorization` header and replace it with a token fetched from your identity provider. The client secret comes from a Kubernetes Secret named `entra-oauth` in the replay namespace:
 
 ```json
 {
@@ -44,7 +50,7 @@ Create the Secret before you start the replay:
 kubectl create secret generic entra-oauth --from-literal=client_secret='<client secret>' -n <replay namespace>
 ```
 
-A recorded `Authorization: Bearer eyJ...` header goes out as `Authorization: Bearer <fresh token>`. Add a filter to the chain when only some services should receive the token. The [Re-sign JWTs guide](/guides/replay/resign-jwt.md#request-a-new-token-with-oauth-client-credentials) shows how the dashboard builds this chain for you.
+A recorded `Authorization: Bearer eyJ...` header goes out as `Authorization: Bearer <fresh token>`. Add a filter to the chain when only some services should receive the token. [Replace credentials](/guides/replay/replace-credentials.md#fetch-a-fresh-token) builds an equivalent chain for every replay of matching traffic, and the [Re-sign JWTs guide](/guides/replay/resign-jwt.md#request-a-new-token-with-oauth-client-credentials) covers the one-off option for a single replay.
 
 ## How It Works
 
@@ -219,11 +225,13 @@ Add a filter so the chain runs only for requests sent to one host. The dashboard
 2. **"Every vUser fetches its own token."** No. One token per credential set is shared by every vUser in a generator and refreshed before it expires.
 3. **"It adds an Authorization header to every request."** No. A request recorded without the header is left alone, and with the default `prefix` only `Bearer` values are replaced.
 4. **"Analysis calls my identity provider."** No. Only the replay itself sends token requests.
-5. **"The client secret is stored with the snapshot."** Only when you write a literal value into the config. With a `${{secret:name/key}}` reference, only the reference is stored. The dashboard only accepts a secret reference.
+5. **"The client secret is stored with the snapshot."** Only when you write a literal value into the config. With a `${{secret:name/key}}` reference, only the reference is stored. [Replace credentials](/guides/replay/replace-credentials.md#kubernetes-secret-or-constant) saves a secret reference unless you choose to save the client secret as a constant.
 
 ## Related
 
-- [Re-sign JWTs guide](/guides/replay/resign-jwt.md#request-a-new-token-with-oauth-client-credentials): configure this transform from the dashboard.
+- [Replace credentials](/guides/replay/replace-credentials.md): save a blueprint that fetches a fresh token in every replay of matching traffic.
+- [`token_fetch`](./token_fetch.md): the same transform with any token request, from curl, Postman or your own config.
+- [Re-sign JWTs guide](/guides/replay/resign-jwt.md#request-a-new-token-with-oauth-client-credentials): configure this transform for a single replay from the dashboard.
 - [proxymock Secrets](/proxymock/guides/secrets.md#oauth-client-credentials): local secret files for proxymock replays.
 - [`jwt_resign`](./jwt_resign.md), [`constant`](./constant.md), [`smart_replace_recorded`](./smart_replace_recorded.md), [`aws_auth`](./aws_auth.md): other ways to handle credentials during replay.
 - [`http_req_header`](../extractors/http_req_header.md): the extractor normally paired with this transform.

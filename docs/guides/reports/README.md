@@ -53,3 +53,25 @@ The report **Overview** opens with four checks:
 Each check links to the report view that explains it. Completion alone does not prove response correctness. If no goals are configured, a green status does not prove that performance thresholds were checked.
 
 When goals fail, the Overview shows their metric, expected value, and actual value. Use this evidence to distinguish a missed latency or throughput target from a replay setup problem. See [Report Status](./status.md) and [Performance Details](./performance-details.md).
+
+## Outbound HTTP calls
+
+When the test config has an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion, the **Accuracy** tab shows **Outbound HTTP calls** next to the Kafka output and SQL results.
+
+A summary says whether the app's outbound calls matched the recording, with the recorded and replayed call counts and how many times the replay ran the recorded tests. If the comparison could not run, an error says why, and a warning appears when the list of differences was truncated.
+
+The table lists each difference with its kind, host, method, endpoint, field, expected and actual values, and how many calls it covers.
+
+## Mock accuracy by host
+
+The **Mocked Responses** tab shows a **Mock accuracy by host** table under the Mock Accuracy cards. For each dependency host the app called, it lists the calls the mocks matched, did not match, and passed through to the live service, and the host's accuracy.
+
+Hosts named in an `httpOutput` assertion's `mockRequired` are marked as required. A required host with any unmatched or passthrough calls is marked as not mocked and listed first.
+
+The table appears for reports analyzed after per-host counts were added.
+
+## Chaos rules
+
+When the test config has chaos rules, the **Mocked Responses** tab shows a **Chaos rules** table. For each rule it lists its configured percent and expected share, the requests that matched it while it was active, the responses it perturbed, and how those responses were sent: completed, withheld, reset, partial or write-failed.
+
+With a [`chaosFired`](/reference/configuration/assertions/chaosfired.md) assertion, the table also shows each rule's allowed fired range and verdict: within band, out of band, not exercised, or required and not exercised. If the rules could not be judged, an error says why.

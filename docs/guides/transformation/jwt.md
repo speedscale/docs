@@ -46,6 +46,10 @@ When replaying traffic, there are three major categories of JWT challenges:
 
 Note: The Speedscale responder generally does not authenticate JWTs, so category 3 can typically be ignored. **This document focuses on categories 1 and 2**: handling JWTs produced by the SUT and requesting new JWTs from external services.
 
+:::tip
+To fix expired JWTs once for every replay of a snapshot, from the dashboard, schedules and CI, use [Replace credentials](/guides/replay/replace-credentials.md). The options on this page are set in the replay wizard for a single replay.
+:::
+
 ## Using the Replay Wizard
 
 Speedscale provides a replay wizard that simplifies the process of configuring JWT handling for your replays. The wizard automatically detects OAuth handshakes in your captured traffic and identifies JWTs that may be expired.

@@ -47,8 +47,8 @@ A scope that matches nothing is the most common chaos misconfiguration, so per-r
 
 | Effect | Values | Notes |
 | --- | --- | --- |
-| `latency` | `2s`, `3x`, `100ms-2s` | Fixed, a multiple of the recorded latency, or a jitter range |
-| `status` | `500`, `503`, … | Replaces the status the client receives |
+| `latency` | `2s`, `3x`, `100ms-2s` | Fixed, a multiple of the recorded latency, or a jitter range added to the recorded latency |
+| `status` | `500`, `500\|503`, … | Replaces the status the client receives; a `\|` separated set picks one code per firing |
 | `connection` | `refuse`, `reset`, `stall`, `drop` | Breaks the connection; `drop` cuts mid-response |
 | `body` | `corrupt`, `truncate`, `truncate:<bytes>` | Invalid JSON, or a well-formed shorter body |
 | `header` | `Name:Value` | Adds or sets a response header |
@@ -56,6 +56,8 @@ A scope that matches nothing is the most common chaos misconfiguration, so per-r
 | `payload` | (takes no value) | Perturbs one field *inside* the body; see below |
 
 Effects compose. `latency=2s,status=503` does both.
+
+Where an effect has a value to choose, the choice comes from the same keyed roll that fired the rule (see [How a rule is applied](#how-a-rule-is-selected-and-applied-during-a-replay)). `status=500|503|429` returns each of the three codes across a run, a jitter range such as `100ms-2s` spreads its delays across the whole range including both ends, and a fuzz perturbation picks among its boundary values. The same seed, request signature and occurrence always produce the same value.
 
 #### Payload chaos
 
@@ -80,6 +82,8 @@ It has no `--chaos` string form and is not in the rule editor yet, so it is writ
 ```
 
 The extractor is the ordinary extractor vocabulary, so any `json_path` that addresses `http.res.bodyBase64.` works. Perturbations are `PERTURBATION_NULL`, `PERTURBATION_FUZZ_NUMBER`, `PERTURBATION_FUZZ_STRING`, `PERTURBATION_TYPE_FLIP` (a number becomes the string of it), `PERTURBATION_DELETE_KEY`, and `PERTURBATION_TRANSFORMS` to apply a transform chain instead.
+
+The fuzz perturbations write boundary values rather than random noise. `PERTURBATION_FUZZ_NUMBER` writes one of `0`, `-1`, `2147483648`, `-2147483649` and `9007199254740993`, and `PERTURBATION_FUZZ_STRING` writes one of an empty string, the string `"null"`, a string of JSON delimiters, and a multi-byte string. Which one is drawn per firing from the keyed roll, so different seeds and different occurrences reach different boundaries. `NULL`, `DELETE_KEY` and `TYPE_FLIP` have no choice to make and write the same thing every time.
 
 Two deliberate limits. Requests are never perturbed: the responder is mocking a dependency, and the request is your application's own output, not something chaos is entitled to damage. And a path that descends into JSON embedded in a JSON string is **refused rather than skipped**, because a payload effect that quietly perturbs nothing is worse than one that errors: the marker would still claim `effect=payload` and the run would look like it had tested something.
 
@@ -152,7 +156,7 @@ Keeping chaos on the test config rather than on the replay is what makes a chaos
 
 If more than one source applies to the same local run, the order is `--chaos` first, then the saved `chaos.json`, then whatever the test config already carried. Because the engine is first-match-wins, that ordering *is* the precedence: the most explicit and most ephemeral rules get first refusal on the traffic.
 
-Rules with no `seed=` of their own inherit the test config ID as their seed, so two replays of the same test config make the same decisions without anyone configuring reproducibility.
+Rules with no `seed=` of their own use the test config's [`replaySeed`](../reference/configuration/README.md#replay-seed) when it is set, otherwise the test config ID, so two replays of the same test config make the same decisions without anyone configuring reproducibility.
 
 ```mermaid
 flowchart TD
@@ -173,7 +177,7 @@ flowchart TD
 
 **First match wins, including when the roll declines.** The first rule whose window is open and whose scope matches *claims* the request. If that rule's `percent` roll then says no, the response goes out untouched and evaluation stops there rather than falling through to later rules. So a `percent=50` rule at the top does not leave the other half of the traffic for the rule below it, it leaves that half unperturbed. This is what the preview calls **shadowed**.
 
-**The roll is keyed, not random.** It is an fnv64a hash over the seed, the rule id, the request signature, the occurrence count, and the effect index, with no clock in it. That is what makes the Nth call to a given endpoint always get the same verdict. The occurrence counter lives in the responder process, per rule and signature, so it keeps incrementing across every request the run sends. `sticky` skips the counter so all occurrences of a signature share one verdict, and a `@<percent>` toxicity suffix rolls independently per effect by mixing the effect index into the key.
+**The roll is keyed, not random.** It is an fnv64a hash over the seed, the rule id, the request signature, the occurrence count, and the effect index, with no clock in it. That is what makes the Nth call to a given endpoint always get the same verdict. The occurrence counter lives in the responder process, per rule and signature, so it keeps incrementing across every request the run sends. `sticky` skips the counter so all occurrences of a signature share one verdict, and a `@<percent>` toxicity suffix rolls independently per effect by mixing the effect index into the key. Effect values (which status code, how much jitter, which fuzz boundary) are drawn from the same key with the name of the choice mixed in, so two choices in one rule do not move together, and two rules never share a draw because the rule id is part of the key.
 
 **Effects apply before the body is encoded.** Payload effects have to perturb the body while it is still structured, so the engine runs ahead of encoding and the marker is attached last. The engine is consulted exactly once per response: asking twice would advance the occurrence counter and give the two questions different answers.
 
@@ -243,7 +247,7 @@ One thing that looks wrong and is not: the **recorded pair keeps its pre-chaos s
 
 `seed=` makes a run repeatable, with a caveat worth stating plainly.
 
-The roll is a pure function of the rule, the request signature, and the occurrence count, so the Nth lookup of a given request always gets the same verdict. It is **not** a promise that two runs are identical: a run that issues a different number of requests for a signature diverges after that point.
+The roll is a pure function of the seed, the rule, the request signature, and the occurrence count, so the Nth lookup of a given request always gets the same verdict and the same effect values. It is **not** a promise that two runs are identical: a run that issues a different number of requests for a signature diverges after that point.
 
 That is stronger than ordering-based reproducibility, which is worthless when the responder serves requests concurrently, and weaker than full determinism. In practice it means a failure you find this way is one you can hand to a teammate along with the command that produced it.
 
@@ -283,7 +287,7 @@ An existing configuration folds into a single match-all rule whose effects each 
 
 ### Effect selection is seeded and reproducible
 
-The 404-versus-500 choice and the factor-versus-fixed latency choice were both `time.Now().UnixNano() % 2`, which correlated with arrival time and made a run impossible to reproduce. Both are now derived from a seeded hash of the rule, request signature and occurrence.
+The 404-versus-500 choice and the factor-versus-fixed latency choice were both `time.Now().UnixNano() % 2`, which correlated with arrival time and made a run impossible to reproduce. The status code is now drawn from the seeded hash of the rule, request signature and occurrence, so `badStatusCodes` returns both 404 and 500 across a run and the same seed returns the same code for the same request.
 
 One consequence is worth calling out: when a configuration sets **both** `randomHighLatencyFactor` and `randomHighLatencyMs`, the factor now always wins, where the old coin flip alternated between them.
 

@@ -37,14 +37,61 @@ This sort of outbound traffic would typically be part of a mock when running a r
 1. [speedctl](/reference/glossary.md#speedctl) is installed
 1. [Create a snapshot](/guides/creating-a-snapshot.md) containing the traffic you need.
 
-## Replay from UI (Recommended)
+## Replay in your cluster
 
-The simplest way to replay Kafka traffic is using the replay wizard in the Speedscale UI. The wizard provides a guided experience for configuring and running replays directly against your Kafka brokers in-cluster. Speedscale automatically handles Kafka message production during replay, eliminating the need for manual setup or scripting.
+The generator replays a consumer's recorded `Fetch` responses as records produced to the broker the consumer read from, so the consumer reads the same records again. A consumer's `Fetch` traffic is outbound, so a replay mocks it by default. Choose it as the replay's tests first.
 
-For detailed instructions, see the [replay wizard guide](/guides/replay/README.md).
+**1. Choose the Fetches to replay** when you create the snapshot. This filter replays the records the consumer read from the `orders` topic:
+
+```bash
+speedctl create snapshot --name orders-consumer --service orders-consumer --tests-filter '(command IS "Fetch") AND (location IS "orders")'
+```
+
+In the dashboard, open the snapshot and use **Choose replay tests** instead. [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md) covers the filter syntax.
+
+**2. Replay the snapshot.** Each record is produced to the broker its `Fetch` came from, with its recorded key, value, headers, partition, CreateTime and compression codec:
+
+```bash
+speedctl infra replay orders-consumer --snapshot-id <snapshot-id> --test-config-id <test-config-id> --no-mocks
+```
+
+To produce to a different broker, add `--test-against '<recorded broker>=<broker host>:<port>'`.
+
+To replay a local proxymock recording in your cluster without Speedscale cloud, pass the same filter to `proxymock cluster replay start`. Add `--test-config <id>` to use a workspace test config, such as one with the SASL settings below:
+
+```bash
+proxymock cluster replay start -n orders --workload orders-consumer --no-mocks --tests-filter '(command IS "Fetch") AND (location IS "orders")'
+```
+
+### Brokers that require SASL
+
+Add `generator.kafka` to the test config with the user, password and SASL mechanism the replay authenticates with. The mechanism is `PROTOCOL_SASL_MECHANISM_PLAIN`, `PROTOCOL_SASL_MECHANISM_SCRAM_SHA_256` or `PROTOCOL_SASL_MECHANISM_SCRAM_SHA_512`. Set `tlsMode` to `PROTOCOL_TLS_MODE_REQUIRE` to connect over TLS without verifying the broker's certificate, or to `PROTOCOL_TLS_MODE_VERIFY_FULL` to verify it.
+
+When a replay mocks Kafka, the mock answers your app's SASL handshake itself. It accepts PLAIN with any credentials. SCRAM needs `responder.kafka` with the password your app uses, because the client checks the server's signature.
+
+Use secret references for passwords, because a literal value is stored with the test config. Speedscale mounts every secret the test config references into the generator and the mock, so the secret only has to exist in the namespace of the workload you replay:
+
+```json
+{
+  "generator": {
+    "kafka": {
+      "username": "${{secret:kafka-credentials/username}}",
+      "password": "${{secret:kafka-credentials/password}}",
+      "saslMechanism": "PROTOCOL_SASL_MECHANISM_SCRAM_SHA_512"
+    }
+  },
+  "responder": {
+    "kafka": {
+      "username": "${{secret:kafka-credentials/username}}",
+      "password": "${{secret:kafka-credentials/password}}",
+      "saslMechanism": "PROTOCOL_SASL_MECHANISM_SCRAM_SHA_512"
+    }
+  }
+}
+```
 
 :::note
-The latency reported on the report in the UI is the time to produce messages to the broker, not the full latency for downstream applications to consume them.
+The latency reported on the report is the time to produce messages to the broker, not the full latency for downstream applications to consume them.
 :::
 
 ## Replay with proxymock
@@ -72,6 +119,8 @@ For example:
 ```bash
 proxymock replay --in ./proxymock/snapshot-abc123 --test-against localhost:9092
 ```
+
+To replay a local proxymock recording, choose the Kafka calls to replay with `--tests-filter`, such as `(command IS "Fetch") AND (location IS "orders")` for what a consumer read from `orders`. See [Replay Kafka traffic](../../proxymock/kafka/replay.md).
 
 ### Output
 
@@ -569,62 +618,34 @@ python main.py --csv out.csv --topic my-topic --brokers localhost:9092 --respect
 
 ## Recording Kafka Traffic with proxymock {#recording}
 
-You can record Kafka traffic locally using proxymock's `--map` flag. This creates a reverse proxy that captures the Kafka wire protocol between your application and the broker.
+You can record Kafka traffic locally with proxymock's `--map` flag, which puts a reverse proxy between your application and the broker. Kafka clients connect to the bootstrap address only once and then to the address the broker advertises, so the broker needs a listener that advertises proxymock's port, or only the bootstrap calls are recorded:
 
-### Start the Recorder
+```properties
+listeners=PLAINTEXT://127.0.0.1:9092,RECORD://127.0.0.1:9094
+advertised.listeners=PLAINTEXT://127.0.0.1:9092,RECORD://localhost:19094
+listener.security.protocol.map=PLAINTEXT:PLAINTEXT,RECORD:PLAINTEXT
+```
 
 ```bash
-proxymock record --map 19092=localhost:9092
+proxymock record --map 19094=kafka://localhost:9094
+KAFKA_BOOTSTRAP_SERVERS=localhost:19094 ./my-app
 ```
 
-This tells proxymock to listen on port 19092 and forward Kafka traffic to the real broker on port 9092.
-
-### Configure Your Application
-
-Point your Kafka client at the mapped port:
-
-```bash
-export KAFKA_BOOTSTRAP_SERVERS=localhost:19092
-./my-app
-```
-
-Or in your application configuration (Spring Boot example):
-
-```yaml
-spring:
-  kafka:
-    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
-```
-
-Then start with the mapped port:
-
-```bash
-KAFKA_BROKERS=localhost:19092 java -jar target/my-app.jar
-```
-
-### What Gets Recorded
-
-proxymock captures the Kafka binary wire protocol including `ApiVersions`, `Metadata`, `Produce`, `Fetch`, `FindCoordinator`, `JoinGroup`, `SyncGroup`, and other API operations. Each request/response pair is stored as an RRPair file.
+[Record Kafka traffic](../../proxymock/kafka/record.md) explains the listener, the broker ports proxymock recognizes, SASL, and what each recorded call holds. To see how your consumer groups behaved in the recording, including lag, rebalances, poll timeouts and stuck partitions, run `proxymock kafka-report`; see [Kafka consumer-group health](../../proxymock/kafka/consumer-group-health.md).
 
 ## Mocking Kafka with proxymock {#mocking}
 
-After recording Kafka traffic, you can mock the broker for local development and testing. This lets your application run without a real Kafka broker.
+After recording Kafka traffic, you can mock the broker for local development and testing, so your application runs without a real Kafka broker:
 
 ```bash
-proxymock mock
+proxymock mock --in proxymock/recorded-<timestamp> --map 19094=kafka://localhost:9094
 ```
 
-proxymock starts a Kafka mock provider on the port from the recording (typically 9092). Your application connects normally and receives recorded responses.
-
-To map to a different port:
-
-```bash
-proxymock mock --map 19092=localhost:9092
-```
+Producers get their acknowledgements, consumers join their group and read the recorded records, and offset commits succeed. See [Mock a Kafka broker](../../proxymock/kafka/mock-kafka.md).
 
 ## Kubernetes and eBPF {#kubernetes}
 
-In Kubernetes environments, Speedscale's eBPF collector (`nettap`) captures Kafka traffic automatically at the kernel level — no `--map` configuration, proxy settings, or application changes required. The collector uses kprobes and uprobes to observe TCP and TLS traffic directly, including Kafka's binary wire protocol.
+In Kubernetes environments, Speedscale's eBPF collector (`nettap`) captures Kafka traffic automatically at the kernel level, with no `--map` configuration, proxy settings or application changes. The collector uses kprobes and uprobes to observe TCP and TLS traffic directly, including Kafka's binary wire protocol.
 
 This means the `--map` workflow described above applies to **local development** only. When your application is deployed in Kubernetes with the Speedscale operator, Kafka traffic is captured transparently alongside all other protocols.
 
