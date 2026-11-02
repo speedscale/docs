@@ -196,6 +196,13 @@ test("never reports the confidential term that matched", () => {
   assert.doesNotMatch(JSON.stringify(finding), /ACME/);
 });
 
+test("redacts confidential terms in every finding type", () => {
+  const content = "Built for ACME\nwith recorded API traffic.\n";
+  const findings = analyzeFile("docs/example.md", content, allLines(content));
+  assert.ok(findings.some((finding) => finding.rule === "hard-wrapped prose"));
+  assert.doesNotMatch(JSON.stringify(findings), /ACME/);
+});
+
 test("skips the confidential rule when no terms are configured", () => {
   const configured = process.env.PUBLIC_WRITING_CONFIDENTIAL_TERMS;
   delete process.env.PUBLIC_WRITING_CONFIDENTIAL_TERMS;

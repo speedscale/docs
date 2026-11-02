@@ -8,20 +8,24 @@ import fs from "node:fs";
 const CONFIDENTIAL_TERMS_ENV = "PUBLIC_WRITING_CONFIDENTIAL_TERMS";
 
 // This repository is public, so the terms come from CI configuration as a
-// "|"-separated list, and findings never print the term that matched.
-function confidentialRules() {
+// "|"-separated list, and findings never print them.
+function confidentialPattern() {
   const terms = (process.env[CONFIDENTIAL_TERMS_ENV] ?? "")
     .split("|")
     .map((term) => term.trim())
     .filter(Boolean)
     .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  if (terms.length === 0) return [];
+  if (terms.length === 0) return null;
+  return new RegExp(`\\b(?:${terms.join("|")})\\b`, "g");
+}
+
+function confidentialRules(pattern) {
+  if (!pattern) return [];
   return [
     {
       name: "confidential customer",
-      pattern: new RegExp(`\\b(?:${terms.join("|")})\\b`, "g"),
+      pattern,
       message: "replace the prohibited customer reference",
-      redact: true,
     },
   ];
 }
@@ -312,12 +316,13 @@ export function analyzeFile(file, content, selectedLines) {
   const lines = content.split(/\r?\n/);
   const visible = visibleLines(file, lines);
   const findings = [];
+  const confidential = confidentialPattern();
 
   for (let index = 0; index < visible.length; index += 1) {
     const lineNumber = index + 1;
     if (!selectedLines.has(lineNumber) || !visible[index].trim()) continue;
 
-    for (const rule of [...confidentialRules(), ...HARD_RULES]) {
+    for (const rule of [...confidentialRules(confidential), ...HARD_RULES]) {
       for (const match of matches(rule.pattern, visible[index])) {
         addFinding(
           findings,
@@ -325,7 +330,7 @@ export function analyzeFile(file, content, selectedLines) {
           lineNumber,
           "error",
           rule.name,
-          rule.redact ? "[redacted]" : match[0],
+          match[0],
           rule.message,
         );
       }
@@ -385,7 +390,11 @@ export function analyzeFile(file, content, selectedLines) {
     }
   }
 
-  return findings;
+  if (!confidential) return findings;
+  return findings.map((finding) => ({
+    ...finding,
+    match: finding.match.replace(confidential, "[redacted]"),
+  }));
 }
 
 export function parseAddedLines(diff) {
