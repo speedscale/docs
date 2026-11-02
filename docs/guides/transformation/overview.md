@@ -30,13 +30,13 @@ Correctness failures may require an application fix or a new recording. Change t
 
 ## Preview a chain on real traffic
 
-The chain editor on a snapshot's **Traffic** tab runs the chain you are editing against one recorded request. It shows the value pulled from the source, the output of each step, and what a replay sends after the value is written back. The preview updates as you edit, before you save or reanalyze the snapshot.
+The chain editor on a snapshot's **Traffic** tab runs the chain you are editing against one recorded request. It shows the value pulled from the source, the output of each step, and what a replay uses after the value is written back. The preview updates as you edit, before you save or reanalyze the snapshot.
 
-The sample is the request open in the traffic list. If none is open, the editor picks the first request in the chain's subset where the source has a value. Use the arrows next to the sample to check other requests. Chains filtered by service have no automatic sample, so open a request first.
+The sample is the request you last opened in the traffic list. If you have not opened one, the editor picks the first request in the chain's subset where the source has a value. Use the arrows next to the sample to check other requests. Chains filtered by service have no automatic sample, so open a request first.
 
 Chains above the one you are editing run first, as they do during a replay, so a chain that rewrites the same value changes what this chain receives. A chain above that fails does not stop the preview, because a replay carries on past it too. The editor names the failed chain instead.
 
-What a replay sends can differ from the last step's output. Writing back runs each step's inverse in reverse order, so a `base64` chain re-encodes the value, and `var_load` applies its variable only at this point. A [read-only chain](/concepts/transforms.md#read-only-chains) writes nothing back.
+What a replay uses can differ from the last step's output. Writing back runs each step's inverse in reverse order, so a `base64` chain re-encodes the value, and `var_load` applies its variable only at this point. A [read-only chain](/concepts/transforms.md#read-only-chains) writes nothing back.
 
 A few transforms only act during a replay. [`token_fetch`](./transforms/token_fetch.md) does not call the token endpoint in a preview, so the value passes through that step unchanged. The preview does not show `smart_replace` mappings or signature matching, because those take effect across a whole request after every chain has run.
 
