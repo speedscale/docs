@@ -23,6 +23,7 @@ or with the [reference docs](/reference/configuration/README.md).
 * Cluster-specific settings like whether to collect logs, include a sidecar or cleanup stale containers
 * Assertions like whether to check response bodies or status codes
 * Goals like the number of requests that can fail before the report is considered a failure
+* Readiness roles like which metric families must reach a floor letter for the report's verdict to be Ready (see the [Readiness guide](/guides/readiness/))
 
 ## Why store this in a template?
 
