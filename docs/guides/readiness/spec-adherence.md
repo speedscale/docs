@@ -97,7 +97,7 @@ The detail ends with up to two cumulative steps, each taking the highest-count o
 
 A step reads like "GET /v2/orders/\{id\} returns total as a string; the spec says number. That fails 184 calls; conformance 91% to 97%." followed by the letter it buys and whether it clears the floor.
 
-![One step under What moves the letter: adding the missing field takes conformance from 73.78% to 81.22% and the letter from F to D](./readiness-spec-moves.png)
+![What moves the letter with two steps: the first takes the letter from F to D, and the second raises the measure but is marked Stays D because it does not reach the next rung](./readiness-spec-moves.png)
 
 Accepted findings are already out of the measure and never appear in a step.
 
