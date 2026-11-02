@@ -32,6 +32,8 @@ The detail names the assertion type, the endpoint and the field, for example "..
 
 **Detail on the report.** "N of M assertions failed." with the pass rate as the measure, for example "99.7% pass".
 
+![The Regression detail for a D: how the grade was computed, what it takes to reach the floor, and one finding per failed assertion type and endpoint with an Accept button](./readiness-regression-detail.png)
+
 Accepting a finding counts its assertions as passed; the denominator does not change.
 
 The Requests action opens the Accuracy tab of the report.
@@ -106,6 +108,8 @@ The family grades n/a with "The replay touched no database." when neither exists
 
 The Statements action opens the Mocked Responses tab.
 
+![The Data layer detail for an A: 99.97% of database calls matched a mock, with the one statement that did not listed as a finding](./readiness-data-layer-detail.png)
+
 ## Runtime health
 
 **Measures** what Kubernetes said about the system under test while the replay ran.
@@ -130,7 +134,11 @@ The family grades n/a with "The replay did not run in a Kubernetes cluster." for
 
 **Findings.** One per kind of warning, per service rather than per pod since pod names change on every rollout: `restart`, `crash_loop`, `oom_kill` and `readiness_wait`, each counted.
 
-**Detail on the report.** "N restarts, N crash loops, N OOM kills, N readiness probe failures." with the measure "N restarts".
+**Detail on the report.** "2 restarts, 0 crash loops, 1 OOM kill, 0 readiness probe failures."
+
+The measure names what set the letter: "never became ready", "1 OOM kill", "2 restarts" (restarts and crash loops together) or "3 readiness waits", and "0 restarts" when nothing happened.
+
+The trend chart for this family always plots restarts and crash loops.
 
 Accepting a finding takes that many events out of the count.
 

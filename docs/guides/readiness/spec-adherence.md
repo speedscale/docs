@@ -18,6 +18,8 @@ The spec belongs to the service, not to a test config, because one test config c
 
 Open the service page and use the **Contract** section above Endpoints.
 
+![The Contract section of a service page: the attached OpenAPI document, where it came from, its hash, and the Download, Replace and Remove actions](./readiness-contract.png)
+
 An admin can attach an OpenAPI 3.x document (`.yaml`, `.yml` or `.json`, 3 MiB or smaller), replace it, download it or remove it.
 
 A document that is not valid OpenAPI 3.x is refused.
@@ -29,6 +31,8 @@ Replays analyzed from then on grade against the new document.
 Reports already graded keep their grade, and every stored version stays available under its hash.
 
 A spec pushed with a snapshot by proxymock shows as version 0 with the snapshot it came from.
+
+Pushing a snapshot with `proxymock cloud push snapshot --spec <file> --workload <service>` attaches the document to the service itself, so it replaces the current contract for every later replay of that service, not only for that snapshot.
 
 ## What counts as conforming
 
@@ -69,11 +73,15 @@ The family detail groups the open findings by who has to act.
 
 **Accepted** holds the findings an [acceptance](./acceptances.md) covers; accepting a finding counts its calls as conforming.
 
+![Spec adherence findings grouped under Fix in code and Update the spec, each with its check, its count and whether it is new since the previous report](./readiness-spec-findings.png)
+
 ## What the detail shows
 
 The headline reads like "97.5% conform; B at >= 97%. The floor is B at 97%."
 
 The detail sentence is "N of M replayed calls conform to `<spec>`: X hit an undocumented endpoint, Y returned an undocumented status, Z failed a schema check."
+
+![The Checks table: pairs checked, conforming, skipped and failing each check, with the change since the previous graded report](./readiness-spec-checks.png)
 
 A **Checks** table lists the pair counts behind the measure: pairs checked, conforming, skipped, with valid requests, with valid responses, on an undocumented endpoint, with an undocumented status, with a schema violation, the distinct undocumented endpoints and statuses, and the operations the spec documents against the ones the replay exercised.
 
@@ -88,6 +96,8 @@ Findings are marked "new since report X" or "also on report X" by comparing with
 The detail ends with up to two cumulative steps, each taking the highest-count open findings out of the measure.
 
 A step reads like "GET /v2/orders/\{id\} returns total as a string; the spec says number. That fails 184 calls; conformance 91% to 97%." followed by the letter it buys and whether it clears the floor.
+
+![One step under What moves the letter: adding the missing field takes conformance from 73.78% to 81.22% and the letter from F to D](./readiness-spec-moves.png)
 
 Accepted findings are already out of the measure and never appear in a step.
 

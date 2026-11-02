@@ -32,13 +32,13 @@ One sentence sums up the range, for example "Not ready for the last 2 replays, a
 
 Beside it: how many replays were Ready, when the last Ready replay ran and at which build, and which families hold the latest report at Not ready.
 
-**What moved in this range** lists each family whose letter changed between two consecutive columns, with the measure before and after, when the final letter began its run and whether the move was lifted by an acceptance rather than a code fix.
+**What moved in this range** lists each family whose letter changed between two consecutive columns, with the measure before and after ("Unchanged at 98% pass" when the letter moved and the measure did not, as it does after a boundary change), when the final letter began its run and whether the move was lifted by an acceptance rather than a code fix.
 
 ## The grid
 
 Columns are replays, oldest on the left.
 
-![The readiness trend for a service: a headline sentence, then a grid of family letters per replay with a verdict on each column and numbered marks where grading changed](./readiness-trend.png)
+![The readiness trend filtered to one build: Not ready on the latest replay after two ready, a grid of family letters per replay with a verdict on each column, and numbered marks where grading changed](./readiness-trend.png)
 
 Rows are the grading changes (numbered marks), the verdict on each replay, a letter per family in scorecard order, then confidence and its three factors (mock fidelity, coverage, reruns agreeing).
 
@@ -52,7 +52,7 @@ A column stored before confidence and measures were kept shows letters only, wit
 
 Numbered marks are changes to how grading works, so letters to the left of a mark were given under the earlier rules and are not re-graded.
 
-![What moved in the range beside the numbered list of changes that affected grading: config, chaos rule and build changes](./readiness-trend-changes.png)
+![What moved in the range beside the numbered list of changes that affected grading: chaos rules removed, a role changed, chaos rules added](./readiness-trend-changes.png)
 
 Marks come from the reports and the acceptance ledger; nothing is typed in by hand.
 
@@ -69,6 +69,8 @@ Marks come from the reports and the acceptance ledger; nothing is typed in by ha
 A "Spec replaced" mark is reserved for the Spec adherence family and is not produced yet.
 
 ## Behind the letters
+
+![Charts under Behind the letters: Regression against its 98% floor and Performance against its 2000 ms floor across four replays](./readiness-trend-series.png)
 
 For each family whose letter moved in the range, a chart draws the measure under the letter against its floor: the pass rate, the match rate, the latency in milliseconds, the restarts.
 

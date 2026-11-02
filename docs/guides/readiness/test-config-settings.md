@@ -82,7 +82,7 @@ Changed bounds apply from the next replay; the preview cannot re-pair the calls 
 
 The right-hand panel re-grades the last five reports that ran with this config using the draft on the left and shows the saved grade beside the draft's: the verdict, the score and every letter that changes.
 
-![The preview panel: recent reports with their family letters, the saved grade and the grade under the draft](./readiness-preview.png)
+![The preview panel with a draft that makes Spec adherence block: two Ready reports turn Not ready under the draft, highlighted, and the summary counts them](./readiness-preview.png)
 
 Nothing is written until you save.
 

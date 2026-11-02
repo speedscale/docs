@@ -89,7 +89,7 @@ A changed probe between two consecutive reports shows as an "Auth probe" mark on
 
 The measure reads "0 open findings" or "7 open, worst high".
 
-![The Security detail for an A: zero open findings over the calls scanned, and the auth probe sending eight requests without the Authorization header and none answering 2xx](./readiness-security-detail.png)
+![The Security scan and checks for a D: seven open findings, worst high, over 1059 calls, with the token DLP class seen in responses](./readiness-security-detail.png)
 
 The detail sentence is "N open findings over M replayed HTTP calls: a critical, b high, c medium, d low." followed by the DLP classes seen in responses and one sentence about the probe:
 
@@ -98,11 +98,19 @@ The detail sentence is "N open findings over M replayed HTTP calls: a critical, 
 - "The auth probe did not run: `<error>`."
 - "The auth probe sent 12 requests to 12 endpoints with the Authorization header removed; 2 endpoints answered 2xx."
 
+![The same detail for a clean run: zero open findings, and the auth probe sending eight requests without the Authorization header with none answering 2xx](./readiness-security-probe-result.png)
+
 The detail page shows the open findings by severity, the worst open severity, the calls scanned inbound and outbound, the auth probe line with the statuses it treats as a refusal, the sensitive data classes with the rule that decided them, and a Checks table of the checks that found something, worst severity first.
 
 ## What moves the letter
 
+![Security findings grouped under Auth probe, Data exposure, Transport and Hardening, with a high finding for a token in a login response and low findings for missing headers](./readiness-security-findings.png)
+
 Up to two steps, worst severity first, each naming one finding: "`<finding>` Fixing or accepting it leaves the worst open severity at high; Security F to D."
+
+![One step under What moves the letter: removing the token from the login response leaves only low findings and takes the letter from D to B](./readiness-security-moves.png)
+
+A step that leaves another finding of the same severity open ends "Security stays D" and is marked Stays D, so you can see that it needs the next step too.
 
 When two findings share the worst severity, the first step leaves the letter where it is and the second moves it.
 

@@ -23,6 +23,8 @@ The verdict word sits at the top of the Readiness tab, in the Readiness column o
 
 Under the verdict word, the summary sentence says which report the Trend family compared with, for example "Compared with report 8f3c... of Oct 24, 2026 14:02 UTC." or "No previous graded report in the trend window to compare with."
 
+![A Ready report: every blocking family at or above its floor, with an advisory family below its floor listed under Worth knowing before you ship](./readiness-report-ready.png)
+
 A Not ready report lists "What gets this build to ready": one line per blocking family with its current letter, its floor and the measure it needs to reach.
 
 Advisory families never appear there; the ones below their floor are listed under "Worth knowing before you ship".

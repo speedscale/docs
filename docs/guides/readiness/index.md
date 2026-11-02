@@ -22,7 +22,7 @@ Local proxymock replays and replays that never reach the Speedscale cloud are no
 
 ## Where readiness appears
 
-![The Readiness tab of a report: a Not ready verdict, the path back to ready, and a tile for each family split into blocking and advisory](./readiness-report.png)
+![The Readiness tab of a report: a Not ready verdict held by Regression and Resilience, the path back to ready, and a tile for each family split into blocking and advisory](./readiness-report.png)
 
 - **The Readiness tab of a replay report.** Right after Overview. The verdict, the score and confidence, a tile per family, "What gets this build to ready", the ledger of how each grade was earned and what fed the grades. See [How a report is graded](./how-grading-works.md).
 - **The Readiness column on the reports grid.** The verdict word and score for each graded report. Hidden by default; switch it on in the column picker. The list cannot be sorted or filtered on it yet.

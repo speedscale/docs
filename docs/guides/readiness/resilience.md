@@ -50,7 +50,7 @@ A value at or below zero takes the default.
 |---|---|
 | "The test config has no chaos rules; nothing was injected to judge resilience." | No rules. The detail offers Edit chaos rules, which opens the Traffic tab of the test config. |
 | "Nothing was mocked in this replay, so no chaos rule could fire." | Rules on a generator-only replay. |
-| "The test config has N chaos rules but none fired; no mocked call matched them." | Nothing matched the rules' scope. |
+| "The test config has N chaos rules but none fired; no mocked call matched them." | Nothing matched the rules' scope, or a rule's window opened after the load finished. A window counts from when load starts; see [bounded windows](/concepts/chaos#bounded-windows). |
 | "N faults injected but none fell inside an inbound request to judge." | No fault could be paired. |
 
 ## Findings and check ids
@@ -82,7 +82,7 @@ While any endpoint is not recovered the letter is at most D, and the threshold s
 
 The measure reads "92.31% of faults handled".
 
-![The Resilience detail for an F: how the grade was computed, what moves the letter, and the faults injected with what the service did with them](./readiness-resilience-detail.png)
+![The Resilience detail for an F: faults handled, retry and latency amplification, recovery, the bounds applied, and what each chaos rule matched, fired and faulted](./readiness-resilience-detail.png)
 
 The detail sentence is "N faults from M chaos rules fell inside K requests; H were handled (X%): a answered 5xx or not at all, b retried more than 3 times, c ran over 2x the injected delay." followed by one of:
 
@@ -97,7 +97,9 @@ A rule whose matched count the responder did not report shows "not reported".
 
 ## What moves the letter
 
-Up to two steps, the recovery cap first and then the biggest buckets: "`<finding>` Fixing or accepting it brings Resilience to 90% of faults handled; D to C."
+Up to two steps, the recovery cap first and then the biggest buckets: "`<finding>` Fixing or accepting it brings Resilience to 90% of faults handled; letter D to C."
+
+A step that raises the measure without reaching the next rung ends "letter stays F" and is marked Stays F, so you can see that it needs the next step too.
 
 The Mocks action opens the Mocked Responses tab, where the perturbed mocked calls are listed.
 
