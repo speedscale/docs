@@ -89,6 +89,8 @@ A changed probe between two consecutive reports shows as an "Auth probe" mark on
 
 The measure reads "0 open findings" or "7 open, worst high".
 
+![The Security detail for an A: zero open findings over the calls scanned, and the auth probe sending eight requests without the Authorization header and none answering 2xx](./readiness-security-detail.png)
+
 The detail sentence is "N open findings over M replayed HTTP calls: a critical, b high, c medium, d low." followed by the DLP classes seen in responses and one sentence about the probe:
 
 - "The auth probe is off in the test config; graded from static checks only."

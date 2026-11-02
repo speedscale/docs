@@ -20,6 +20,8 @@ Performance and Trend produce no findings, so nothing can be accepted on them.
 
 Open the family's detail on the Readiness tab of a report and find the finding under its group.
 
+![The Accept a finding dialog: the scope to accept, the end date, and a What changes panel showing the new measure and letter while the verdict stays Not ready](./readiness-accept-finding.png)
+
 **Accept** opens the dialog for that one finding; **Accept findings...** switches the list to a selection mode where you pick findings one at a time, or by path or by check, and accept them together.
 
 The dialog asks for:

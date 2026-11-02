@@ -38,6 +38,8 @@ Beside it: how many replays were Ready, when the last Ready replay ran and at wh
 
 Columns are replays, oldest on the left.
 
+![The readiness trend for a service: a headline sentence, then a grid of family letters per replay with a verdict on each column and numbered marks where grading changed](./readiness-trend.png)
+
 Rows are the grading changes (numbered marks), the verdict on each replay, a letter per family in scorecard order, then confidence and its three factors (mock fidelity, coverage, reruns agreeing).
 
 A blocking letter below its floor is marked as holding the verdict at Not ready; a lifted letter and a baselined column are marked too.
@@ -49,6 +51,8 @@ A column stored before confidence and measures were kept shows letters only, wit
 ## Marks
 
 Numbered marks are changes to how grading works, so letters to the left of a mark were given under the earlier rules and are not re-graded.
+
+![What moved in the range beside the numbered list of changes that affected grading: config, chaos rule and build changes](./readiness-trend-changes.png)
 
 Marks come from the reports and the acceptance ledger; nothing is typed in by hand.
 

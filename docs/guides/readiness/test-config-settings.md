@@ -22,6 +22,8 @@ Past reports keep the grades they were given.
 
 One row per family, in scorecard order, with four columns.
 
+![The Readiness tab of a test config: one row per family with its input, grading scale, role and weight, including the Resilience chaos bounds](./readiness-thresholds.png)
+
 | Column | What it holds |
 |---|---|
 | Family and its input | The family's name, what it grades from and when it is available, for example "Needs an OpenAPI document attached to the service". |
@@ -43,6 +45,8 @@ A summary line under the table counts how many families block, advise and are of
 ### Security auth probe
 
 Under the Security row.
+
+![The auth probe settings under the Security row: the on switch, the header removed, the cookie blanked instead, the statuses that count as refused and the most endpoints to probe](./readiness-security-probe.png)
 
 The probe replays authenticated endpoints once more with the credential removed and expects the service to refuse them; see [Security](./security.md#the-auth-probe).
 
@@ -77,6 +81,8 @@ Changed bounds apply from the next replay; the preview cannot re-pair the calls 
 ## Preview against recent reports
 
 The right-hand panel re-grades the last five reports that ran with this config using the draft on the left and shows the saved grade beside the draft's: the verdict, the score and every letter that changes.
+
+![The preview panel: recent reports with their family letters, the saved grade and the grade under the draft](./readiness-preview.png)
 
 Nothing is written until you save.
 

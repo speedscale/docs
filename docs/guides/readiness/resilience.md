@@ -57,6 +57,8 @@ A value at or below zero takes the default.
 
 The endpoint pattern of a finding is the inbound endpoint and the field path is the chaos rule's id; the detail names the rule.
 
+![Resilience findings under Not handled, one row per inbound endpoint with the check, the number of requests and an Accept button](./readiness-resilience-findings.png)
+
 | Check id | Meaning |
 |---|---|
 | `error_passed_through` | The request answered 5xx or not at all while the fault lasted: "GET /orders/\{id\} answered 503 while chaos rule "payments down" returned 503 from api.payments.io POST /v1/charge." |
@@ -78,7 +80,9 @@ While any endpoint is not recovered the letter is at most D, and the threshold s
 
 ## What the detail shows
 
-The measure reads "92% of faults handled".
+The measure reads "92.31% of faults handled".
+
+![The Resilience detail for an F: how the grade was computed, what moves the letter, and the faults injected with what the service did with them](./readiness-resilience-detail.png)
 
 The detail sentence is "N faults from M chaos rules fell inside K requests; H were handled (X%): a answered 5xx or not at all, b retried more than 3 times, c ran over 2x the injected delay." followed by one of:
 

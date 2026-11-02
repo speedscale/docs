@@ -31,6 +31,8 @@ Advisory families never appear there; the ones below their floor are listed unde
 
 Ten metric families are graded, each with its own collector, measure and letter.
 
+![The grade ledger on the Readiness tab: each family with its letter, role, measure, threshold, how long the letter has held and its status](./readiness-ledger.png)
+
 | Family | Headline measure | Grades n/a when |
 |---|---|---|
 | Regression | Assertion pass rate | No assertions ran in this replay. |
