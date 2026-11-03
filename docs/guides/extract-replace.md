@@ -93,7 +93,7 @@ Keep in mind that the CSV file will be stored in Speedscale’s user data reposi
 
 Navigate to the Speedscale UI and locate the snapshot you used in Step 1.
 1.	**Open the Snapshot:** Find your snapshot in the Speedscale dashboard.
-2.	**Go to Transform Tab:** Click on the snapshot’s transform tab and then the `Variables (Tests)` tab.
+2.	**Open Test variables:** Select the snapshot's **Prepare** tab, then **Test variables** under **Variables**.
 4.  **Create a transform chain:** consisting of these components `source=read_file("s3://<userdata id>") : train_csv()`. In the UI it should look like this:
 
     :::tip Use `dataframe:` for portability across local + cloud

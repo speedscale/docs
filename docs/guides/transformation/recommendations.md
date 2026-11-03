@@ -18,6 +18,8 @@ Selecting a suggestion opens it in the editor in the middle of the page, drawn w
 
 When the same fix applies in several places, such as one header on three hosts, it is one row that says how many places it covers. Select a place above the editor to see its chain and requests. **Accept** adds a chain for every place, and **Ignore** dismisses them all.
 
+![A row for one email fix that covers two places. The chain shows the email value being redacted on a real login response, and the list on the right shows the 118 requests it matches](./recommendations/prepare-merged-row.png)
+
 ### Stepping through the queue
 
 The buttons under the editor drive the review:

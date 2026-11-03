@@ -75,7 +75,7 @@ Chains that redact data with `dlp_field` or `dlp_json` cannot be read-only, beca
 
 ## Where to Transform Traffic
 
-Modify traffic and see the effects with the transform editor.
+Modify traffic and see the effects on a real request with the transform editor on the Prepare tab.
 
 ![transform_editor](./transforms/editor.png)
 
@@ -92,8 +92,8 @@ Variable caches store data extracted from traffic in one location and apply it i
 
 ![generator_variables](./transforms/generator_vars.png)
 
-- **Variables (Tests)** - used to pre-load the variable cache when the generator starts up
-- **Variables (Mocks)** - used to pre-load the variable cache when the responder starts up
+- **Test variables** - used to pre-load the variable cache when the generator starts up
+- **Mock variables** - used to pre-load the variable cache when the responder starts up
 
 :::note
 Test variables are scoped to the [vUser](/reference/glossary.md#vuser). For example, a random string variable would be new and different for each VU, but the same for all requests within the same VU.
@@ -156,7 +156,7 @@ Variables for Tests on the Prepare tab are scoped to the current [vUser](/refere
 
 ![variable_from_rrpair](./transforms/variable_from_rrpair.png)
 
-If you need more of a "global replace" functionality you should use variables from the Variables tab.  Transforms created here are run once at the start of each vUser.
+If you need more of a "global replace" functionality you should use variables from **Test variables** or **Mock variables** on the Prepare tab.  Transforms created here are run once at the start of each vUser.
 
 ![variable_from_variables](./transforms/variable_from_variables_tab.png)
 

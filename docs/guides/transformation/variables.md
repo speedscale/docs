@@ -24,7 +24,7 @@ Variables for Tests on the Prepare tab are scoped to the current [vUser](/refere
 
 ![variable_from_rrpair](./overview/variable_from_rrpair.png)
 
-If you need more of a "global replace" functionality you should use variables from the Variables tab.  Transforms created here are run once at the start of each vUser.
+If you need more of a "global replace" functionality you should use variables from **Test variables** or **Mock variables** on the Prepare tab.  Transforms created here are run once at the start of each vUser.
 
 ![variable_from_variables](./overview/variable_from_variables_tab.png)
 

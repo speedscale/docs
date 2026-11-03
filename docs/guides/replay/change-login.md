@@ -41,22 +41,24 @@ Find this traffic in the traffic viewer, and then use the `Save` button to creat
 
 ### Configuration
 
-From the snapshot viewer, select the `Transforms` tab and you can see your set of `Test` requests that will be sent to the server, and `Mock` transactions to mock out downstream calls. This is how to create this transform:
+From the snapshot page, select the `Traffic` tab and you can see your set of `Tests` requests that will be sent to the server, and `Mocks` transactions to mock out downstream calls. This is how to create this transform:
 * Select the `/oauth/token` transaction
 * Click on the `Request` tab to see the request body
-* Click on the pencil next to `client_id`
+* Click on the pencil next to `client_id` and choose `Modify`
+
+The screenshots in this section show the same steps on a different login request.
 
 ![Select](change-login-select.png)
 
-This will open the `Data Transformation Chain` viewer and you can see it has already selected the JSON Path for your `client_id` key. Now click the `+ Add transform` button and you will see a list of options:
+This will open the transform chain on the `Prepare` tab and you can see it has already selected the JSON Path for your `client_id` key. Now click the `+ Add step` button and you will see a list of options:
 
 ![Transform List](change-login-transform-list.png)
 
-You can see there are many different options available, but for this example select the `Constant` transform which lets you supply your own value, then click `Save`. You can visually see exactly how this value will change by looking at it on the right. Now click `Save` one more time to save the entire chain, and the snapshot will update.
+You can see there are many different options available, but for this example select the `Constant` transform which lets you supply your own value, then click `Done`. You can visually see exactly how this value will change by looking at `Replay uses` under the chain. Now click `Save and reanalyze` to save the chain, and the snapshot will update.
 
 ![Transform Chains](change-login-transform-chains.png)
 
-You can visually see an icon next to the `/oauth/token` transaction which shows that there are transforms applied to that specific request. Now you can run this snapshot to see what the results look like. Try it out on your own snapshot!
+On the `Traffic` tab, the `Changes` column of the `/oauth/token` transaction now shows that there are transforms applied to that specific request. Now you can run this snapshot to see what the results look like. Try it out on your own snapshot!
 
 :::info
 Join slack.speedscale.com to ask real time questions. Our expert engineers are always happy to help with configuration issues.

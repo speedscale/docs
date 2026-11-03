@@ -73,11 +73,11 @@ speedctl push snapshot {SNAPSHOT_ID}
 
 You should now see there are 2 responses:
 
-![Screen Shot 2022-12-21 at 1.18.49 PM.png](mock-scratch/Screen_Shot_2022-12-21_at_1.18.49_PM.png)
+![The snapshot Overview with 2 requests to api.nasa.gov under Mocks](mock-scratch/Screen_Shot_2022-12-21_at_1.18.49_PM.png)
 
-You can view the traffic by going to the `Traffic` tab and selecting the `View traffic` button:
+You can view the traffic by going to the `Traffic` tab and selecting `Mocks`:
 
-![Screen Shot 2022-12-21 at 1.26.07 PM.png](mock-scratch/Screen_Shot_2022-12-21_at_1.26.07_PM.png)
+![The Traffic tab with Mocks selected and the 2 calls to /planetary/apod](mock-scratch/Screen_Shot_2022-12-21_at_1.26.07_PM.png)
 
 Once it loads the traffic you will see the 2 calls, and the 2nd call has the Hello World response:
 
