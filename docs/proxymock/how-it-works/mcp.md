@@ -89,6 +89,8 @@ Most modern AI applications support both approaches, and MCP enables seamless in
 
 The `proxymock init` command should automatically check for the presence of common MCP clients and ask to install. That is all that is usually necessary.
 
+LibreChat is a shared deployment, so it is installed separately with an explicit config path. See [Use proxymock with LibreChat](./librechat.md).
+
 :::info
 
 If the `proxymock init` command fails or you are using an unknown IDE, you can manually configure the proxymock MCP server by modifying your client's `mcp.json`. This should not be necessary for most users.

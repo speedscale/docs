@@ -1194,13 +1194,20 @@ proxymock mcp install
 
 # install the Streamable HTTP MCP server
 proxymock mcp install --http
+
+# install only into one LibreChat deployment
+proxymock mcp install --librechat-config /path/to/librechat.yaml --librechat-work-dir /path/to/workspace --yes
 ```
 
 **Flags**
 
 - `--http` - Install the Streamable HTTP transport (`http://localhost:<port>/mcp`) instead of stdio
-- `--port int` - Port to use when installing the HTTP transport (default `8080`)
+- `--librechat-config string` - Install only into this LibreChat YAML file. See [Use proxymock with LibreChat](../proxymock/how-it-works/librechat.md)
+- `--librechat-url string` - LibreChat's HTTP(S) MCP endpoint, reachable from its deployment. Requires `--librechat-config` and `--http` or `--sse`
+- `--librechat-work-dir string` - Absolute workspace path LibreChat runs the stdio server in. Requires `--librechat-config`
+- `--port int` - Port to use when installing the HTTP transport (default `7799`)
 - `--sse` - Deprecated. Install the legacy SSE transport; use `--http` instead
+- `-y, --yes` - Install into every detected client without prompting
 
 ### `mcp json`
 
