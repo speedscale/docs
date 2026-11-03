@@ -53,19 +53,7 @@ proxymock init
 
 ## 2) Install the Speedscale Operator (if not installed)
 
-If your cluster doesn’t have the Speedscale Operator and Forwarder yet, install them first. Full instructions live here: [/getting-started/installation/install/kubernetes-operator/](/getting-started/installation/install/kubernetes-operator/)
-
-Quick Helm example:
-
-```bash
-helm repo add speedscale https://speedscale.github.io/operator-helm/
-helm repo update
-helm install speedscale-operator speedscale/speedscale-operator \
-  -n speedscale \
-  --create-namespace \
-  --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-  --set clusterName=<YOUR-CLUSTER-NAME>
-```
+If your cluster does not have the Speedscale operator and forwarder yet, follow the [standard operator installation](/getting-started/installation/install/kubernetes-operator/). Choose your installation method, enable eBPF, and complete the verification steps before continuing here.
 
 Once installed and reachable, proxymock web will detect the Forwarder and enable Observability and live features via Kubernetes port-forwarding.
 

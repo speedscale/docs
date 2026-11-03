@@ -1,5 +1,6 @@
 ---
 title: Namespaced Limitations & Compatibility
+sidebar_label: Limitations and compatibility
 description: "What the namespaced Speedscale install does not do: supported workload kinds, replay resource contention, opt-in metrics enrichment, mesh support, and image pinning."
 sidebar_position: 1.7
 ---
