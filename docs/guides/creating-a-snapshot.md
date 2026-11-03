@@ -69,6 +69,8 @@ The snapshot page has four tabs: **Overview**, **Traffic**, **Prepare** and **Re
 
 Select a request to read it in the pane beside the list. A request to a mock also has a **Signature** tab, which shows what the mock server matches on. **Recorded** and **After transforms** show one version at a time. **Compare** shows both side by side, highlights what changed, and widens the pane. The **Expand** icon fills the page with the pane, which helps on a small screen, and **Esc** collapses it. It is also on the request viewer on the main **Traffic** page and in reports. **After transforms** and **Compare** show saved transforms, not changes still waiting in **Prepare**.
 
+If a snapshot was last analyzed before the **Changes** column existed, a notice above the list says it needs a fresh analysis. Looking at the snapshot does not change it. Select **Reanalyze** to rebuild its mocks and tests with the current analyzer, which can also narrow its time span to the recorded traffic. Unlock a locked snapshot first.
+
 In **Prepare**, review each suggestion and credential, its proposed transform chain, and the requests that chain matches. Open them in **Traffic** to check the scope. A warning that a chain matches no traffic means its filters need review before the chain can affect a replay. See [Traffic Transformation](./transformation/overview.md).
 
 ![The Prepare tab: the list of suggestions, the selected transform chain with its values on a real request, and the requests it matches](./transformation/recommendations/prepare-merged-row.png)
