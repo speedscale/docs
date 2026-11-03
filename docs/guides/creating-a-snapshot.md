@@ -79,6 +79,7 @@ Restoring removes the deletion entries and triggers reanalysis. The list and tra
 
 ## Endpoint Grouping
 The **Endpoints** view on the **Traffic** tab groups URLs that fall in the same category automatically. In the following picture, every `/api/v3/breachedaccount/{account}` URL has been grouped into one row to give a better view of the results.
+
 ![The Endpoints view with /api/v3/breachedaccount/(.*) grouped into one row](../Auto-Endpoint-Grouping.png)
 
 You can also define this grouping yourself with **Manage Regexes** in that view, or in the snapshot definition. For example, adding the following `endpoint_regexes` to the snapshot definition groups all `v1` API calls into one row.
