@@ -35,6 +35,7 @@ There are several sections within a Test Config:
 1. **Sidecar** - Set sidecar secrets for replays running inside a Kubernetes cluster
 1. **Assertions** - Set expected responses from the application
 1. **Goals** - Set thresholds which will constitute a failed test report
+1. **Readiness** - Set which readiness families block the verdict, their floors, weights and boundaries, and the acceptance policy (see the [Readiness guide](/guides/readiness/test-config-settings))
 1. **Advanced** - A text representation of the test config
 
 Some sections contain more details on the following pages.
