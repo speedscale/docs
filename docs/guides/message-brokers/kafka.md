@@ -47,7 +47,7 @@ The generator replays a consumer's recorded `Fetch` responses as records produce
 speedctl create snapshot --name orders-consumer --service orders-consumer --tests-filter '(command IS "Fetch") AND (location IS "orders")'
 ```
 
-In the dashboard, open the snapshot and use **Choose replay tests** instead. [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md) covers the filter syntax.
+In the dashboard, open the snapshot's **Traffic** tab and use **Choose replay tests** instead. [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md) covers the filter syntax.
 
 **2. Replay the snapshot.** Each record is produced to the broker its `Fetch` came from, with its recorded key, value, headers, partition, CreateTime and compression codec:
 
