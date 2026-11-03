@@ -29,13 +29,16 @@ Open the snapshot and select the **Prepare** tab. A count on the tab shows how m
 
 | Detail | What it shows |
 |---|---|
-| Credential | The kind: **Bearer JWT** (a signed token with claims), **Bearer (opaque)** (a bearer token that is not a JWT) or **Basic** (a `username:password` header). |
-| Where | The service, host and path the credential was sent to. |
-| Requests | How many recorded requests carry it. |
-| Recorded value | **Expired** with the expiry time, **Valid until**, **Unknown expiry** for opaque tokens, or **Static password** for Basic auth. |
+| Title | The kind: **Bearer JWT** (a signed token with claims), **Bearer (opaque)** (a bearer token that is not a JWT) or **Basic** (a `username:password` header). |
 | Coverage | **Not covered**, or the name of the blueprint that replaces it. |
+| Where | The header and path the credential was sent to. |
+| Recorded value | The start of the recorded credential. |
+| Status | **Expired** with the expiry time, **Valid until**, **Unknown expiry** for opaque tokens, or **Static password** for Basic auth. |
+| Service | The service or host that received it. |
 
-![A snapshot's credentials, showing an expired Bearer JWT from Microsoft Entra ID covered by a blueprint](./replace-credentials/credentials-tab.png)
+The row in the list shows how many recorded requests carry the credential.
+
+![The Prepare tab, showing a Bearer JWT that no blueprint covers yet](./replace-credentials/credentials-tab.png)
 
 Select a credential to see the token's issuer and claims. For a token from Microsoft Entra ID, Okta or another identity provider that was issued to an app rather than a user, the page suggests fetching a fresh token.
 
