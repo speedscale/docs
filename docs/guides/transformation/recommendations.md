@@ -16,6 +16,8 @@ The Prepare tab has one list, grouped by state: **To review**, **In this snapsho
 
 Selecting a suggestion opens it in the editor in the middle of the page, drawn with a dashed line to show that it is only proposed. The editor shows each step of the transform chain and what that step produces on a real request. The list on the right shows the requests the chain matches.
 
+When the same fix applies in several places, such as one header on three hosts, it is one row that says how many places it covers. Select a place above the editor to see its chain and requests. **Accept** adds a chain for every place, and **Ignore** dismisses them all.
+
 ### Stepping through the queue
 
 The buttons under the editor drive the review:
