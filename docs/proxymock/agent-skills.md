@@ -20,7 +20,7 @@ Paste this prompt into your coding agent:
 Install the Speedscale agent skills from https://github.com/speedscale/skills. If you are Claude Code, run `/plugin marketplace add speedscale/skills` and then `/plugin install speedscale@speedscale-skills`. Otherwise run `npx skills add speedscale/skills`. If neither works, download every folder under skills/ in that repo into your skills directory. Then list the skills you installed and what each is for.
 ```
 
-If you already have proxymock, `proxymock mcp install --yes` installs every skill for Claude Code, and `proxymock mcp skills export --dir <your agent's skills directory>` installs them for any other agent. `proxymock mcp skills list` shows which are installed and whether they are current.
+If you already have proxymock, select a client explicitly: `proxymock mcp install --client claude-code --skills` installs MCP and bundled skills for that client in the current project. Use `--skills-only` to omit MCP, `--scope user` for a global installation, and `--dry-run` to preview paths. Managed installs preserve edited or unowned files. Inspect project skills with `proxymock mcp skills list --dir ./.claude/skills`. The separate `proxymock mcp skills export --dir <directory>` command writes to an explicit directory and replaces existing files.
 
 If you use the ChatGPT desktop app with Codex, follow the [ChatGPT section of the skills README](https://github.com/speedscale/skills#chatgpt-desktop-app).
 
