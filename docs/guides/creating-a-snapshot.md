@@ -61,9 +61,11 @@ If other teams or CI pipelines depend on a snapshot, you can lock it from the **
 
 ## Tune and inspect a snapshot
 
-The current snapshot page groups work into **Summary**, **Tuning**, **Traffic**, **Agents**, **Recommendations**, and **Replays**. Older screenshots may show separate Tests, Mocks, or Transforms tabs. Use the direction control in **Traffic** to switch between inbound and outbound requests.
+The snapshot page has four tabs: **Overview**, **Traffic**, **Prepare** and **Replays**. Older screenshots may show separate Summary, Tuning, Credentials, Tests, Mocks or Transforms tabs.
 
-In **Tuning**, inspect a recommendation, its proposed transform chains, and the traffic affected by each chain. Open the affected traffic in **Traffic** to check the scope. A warning that a chain matches no traffic means its filters need review before the chain can affect a replay. See [Traffic Transformation](./transformation/overview.md).
+**Overview** says whether the snapshot is ready to replay and shows what it recorded. **Traffic** is for looking at requests: select Tests, Mocks or one dependency across the top, and use Endpoints, Sessions, Database, Kafka and Findings to read the same traffic in other ways.
+
+In **Prepare**, review each suggestion and credential, its proposed transform chain, and the requests that chain matches. Open them in **Traffic** to check the scope. A warning that a chain matches no traffic means its filters need review before the chain can affect a replay. See [Traffic Transformation](./transformation/overview.md).
 
 ### Restore deleted traffic
 

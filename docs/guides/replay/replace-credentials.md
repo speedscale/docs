@@ -14,7 +14,7 @@ A recording captures the exact credentials your clients sent: bearer tokens, JWT
 ## When you need it
 
 - Replayed requests get `401` or `403` responses that the recording did not have.
-- The snapshot's **Credentials** tab lists a credential as **Expired**, with **Not covered** under Coverage.
+- The snapshot's **Prepare** tab lists a credential under **To review**, as **Expired** and **Not covered**.
 - A replay report shows **Expired tokens sent to** a service on its Overview tab.
 - A replay report's recommendations include an expired JWT, with a **Fix with Replace credentials** button.
 
@@ -25,9 +25,9 @@ A recording captures the exact credentials your clients sent: bearer tokens, JWT
 
 ## Find the credentials in a snapshot
 
-Open the snapshot and select the **Credentials** tab. A count on the tab shows how many credentials need attention. The tab lists every credential found in the `Authorization` header of the snapshot's inbound requests:
+Open the snapshot and select the **Prepare** tab. A count on the tab shows how many items need attention. Credentials that no blueprint replaces come first under **To review**, and covered ones are under **In this snapshot**. The list holds every credential found in the `Authorization` header of the snapshot's inbound requests:
 
-| Column | What it shows |
+| Detail | What it shows |
 |---|---|
 | Credential | The kind: **Bearer JWT** (a signed token with claims), **Bearer (opaque)** (a bearer token that is not a JWT) or **Basic** (a `username:password` header). |
 | Where | The service, host and path the credential was sent to. |
@@ -35,11 +35,11 @@ Open the snapshot and select the **Credentials** tab. A count on the tab shows h
 | Recorded value | **Expired** with the expiry time, **Valid until**, **Unknown expiry** for opaque tokens, or **Static password** for Basic auth. |
 | Coverage | **Not covered**, or the name of the blueprint that replaces it. |
 
-![The Credentials tab of a snapshot, showing an expired Bearer JWT from Microsoft Entra ID covered by a blueprint](./replace-credentials/credentials-tab.png)
+![A snapshot's credentials, showing an expired Bearer JWT from Microsoft Entra ID covered by a blueprint](./replace-credentials/credentials-tab.png)
 
-Expand a row to see the token's issuer and claims. For a token from Microsoft Entra ID, Okta or another identity provider that was issued to an app rather than a user, the tab suggests fetching a fresh token.
+Select a credential to see the token's issuer and claims. For a token from Microsoft Entra ID, Okta or another identity provider that was issued to an app rather than a user, the page suggests fetching a fresh token.
 
-If the tab says the snapshot was analyzed before credential detection, only JWTs are listed. Reanalyze the snapshot to find Basic and opaque bearer tokens too.
+If the page says the snapshot was analyzed before credential detection, only JWTs are listed. Reanalyze the snapshot to find Basic and opaque bearer tokens too.
 
 ## Replace a credential
 
@@ -187,7 +187,7 @@ Transform errors from a blueprint's chains also appear on the report's **Transfo
 
 ## Edit or delete a blueprint
 
-On the snapshot's **Credentials** tab, select **Edit blueprint** on a covered credential. The wizard opens on the Configure step with the saved settings; a value saved as a constant opens with **Constant** selected. Save your changes, and the next replay of any matching snapshot uses them.
+On the snapshot's **Prepare** tab, select a covered credential under **In this snapshot**, then select **Edit blueprint**. The wizard opens on the Configure step with the saved settings; a value saved as a constant opens with **Constant** selected. Save your changes, and the next replay of any matching snapshot uses them.
 
 To stop a blueprint applying, open it with **Edit blueprint** and select **Delete blueprint**, then confirm. Replays of matching traffic send the recorded credentials again.
 
