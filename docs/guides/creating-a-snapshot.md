@@ -67,7 +67,7 @@ The snapshot page has four tabs: **Overview**, **Traffic**, **Prepare** and **Re
 
 ![The Traffic tab: Tests and Mocks across the top, the list of requests, and a Changes column that marks the requests with suggestions](./snapshot-traffic.png)
 
-Select a request to read it in the pane beside the list. **Recorded** and **After transforms** show one version at a time. **Compare** shows both side by side, highlights what changed, and widens the pane. **After transforms** and **Compare** show saved transforms, not changes still waiting in **Prepare**.
+Select a request to read it in the pane beside the list. **Recorded** and **After transforms** show one version at a time. **Compare** shows both side by side, highlights what changed, and widens the pane. **Expand** fills the page with the pane, which helps on a small screen, and **Esc** collapses it. **After transforms** and **Compare** show saved transforms, not changes still waiting in **Prepare**.
 
 In **Prepare**, review each suggestion and credential, its proposed transform chain, and the requests that chain matches. Open them in **Traffic** to check the scope. A warning that a chain matches no traffic means its filters need review before the chain can affect a replay. See [Traffic Transformation](./transformation/overview.md).
 
