@@ -21,12 +21,30 @@ These workflows use the same [transform engine](/concepts/transforms.md), [extra
 
 1. Run a small replay against your test application.
 2. Inspect inbound accuracy failures and outbound mock misses separately. Open the relevant request to understand which value changed.
-3. Open the snapshot's **Tuning** tab. Review a recommendation, the transform chains it proposes, and the traffic affected by each chain.
+3. Open the snapshot's **Prepare** tab. Review a recommendation, the transform chains it proposes, and the traffic affected by each chain.
 4. Apply a targeted change, then replay again to check the result.
 
 Use **Traffic** to inspect requests and responses, selecting inbound or outbound traffic as needed. A chain that matches no traffic cannot fix the replay. Check its filter and execution side before adding more transforms.
 
 Correctness failures may require an application fix or a new recording. Change transforms only when the difference is an expected consequence of replaying in a different context. For a complete local iteration loop, see [Replay Tuning](/proxymock/guides/replay-tuning.md).
+
+## Preview a chain on real traffic
+
+The chain editor on a snapshot's **Prepare** tab runs the selected chain against one recorded request. It shows the value pulled from the source, the output of each step, and what a replay uses after the value is written back. The preview works on a suggestion before you accept it, and it updates as you edit, before you save or reanalyze the snapshot.
+
+![The Prepare tab showing a data.email chain with its value at each step, next to the list of requests it matches](./overview/chain-preview.png)
+
+The sample comes from the list of matching requests beside the chain. The editor starts on the first request in that list where the source has a value. Click another request to preview the chain on it. Chains filtered by service have no list, so they have no preview.
+
+Chains above the one you are editing run first, as they do during a replay, so a chain that rewrites the same value changes what this chain receives. A suggestion runs after every chain already on its side, which is where accepting it puts it. A chain above that fails does not stop the preview, because a replay carries on past it too.
+
+What a replay uses can differ from the last step's output. Writing back runs each step's inverse in reverse order, so in the example above `json_path` puts the redacted email back into the response body. A `base64` chain re-encodes the value, and `var_load` applies its variable only at this point. A [read-only chain](/concepts/transforms.md#read-only-chains) writes nothing back.
+
+A few transforms only act during a replay. [`token_fetch`](./transforms/token_fetch.md) does not call the token endpoint in a preview, so the value passes through that step unchanged. The preview does not show `smart_replace` mappings or signature matching, because those take effect across a whole request after every chain has run.
+
+![An X-Request-Id chain where the smart_replace step shows Unchanged and the next step generates the value a replay uses](./overview/chain-preview-step-values.png)
+
+A step that fails shows its error on that step, and the steps after it show as not run. A step can also succeed with an empty value, such as a `json_path` whose path is absent when `create` is left on, and the editor flags that too.
 
 ## Extractors and Transforms
 
@@ -52,6 +70,6 @@ A Traffic Transform Template saves a Cloud transform configuration for use with 
 2. Save the configuration as a template.
 3. Select the saved template for another snapshot and review its filters, variables, and credentials before replaying.
 
-The video shows an earlier dashboard layout. Current snapshot tuning is under **Tuning**, and requests are under **Traffic**.
+The video shows an earlier dashboard layout. Current snapshot tuning is under **Prepare**, and requests are under **Traffic**.
 
 For local reuse, save a [blueprint](/proxymock/guides/blueprints.md). A recording's snapshot ID does not bind a local blueprint; active rules can apply to other recordings in the workspace when their filters match.
