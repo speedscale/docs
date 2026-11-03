@@ -155,7 +155,7 @@ To load or regression test the database itself, flip that for the database traff
 | proxymock CLI | `--tests-filter '(direction IS OUT) AND (tech IS Postgres)'`, or `tech IS MySQL`, on `proxymock replay` |
 | AI assistant (proxymock MCP) | Ask for it, or pass the `tests-filter` parameter of the `replay_traffic` tool |
 | proxymock web | The **Tests filter** field on the Replay tab |
-| Speedscale dashboard | **Choose replay tests** in the snapshot's actions menu, then pick the database under **Outbound dependencies** |
+| Speedscale dashboard | **Choose replay tests** on the snapshot's **Traffic** tab, then pick the database under **Outbound dependencies** |
 
 To keep your app's inbound tests too, use `(direction IS IN) OR (tech IS Postgres)`, or `tech IS MySQL`. [Choose What a Replay Tests](../guides/choose-replay-tests.md) covers the filter syntax, saving a filter with the workspace, promoting a single file, and the removed **reverse services** setting that tests filters replace.
 
@@ -447,7 +447,7 @@ With it, the demo's user `INSERT` went from nearly every statement failing with 
 
 For traffic recorded in Kubernetes, you can run the same regression and load tests from the dashboard. You can also upload a local recording with `proxymock cloud push snapshot`.
 
-1. Open the snapshot and choose **Choose replay tests** from its actions menu. The action is available once the snapshot has finished analyzing and is not locked.
+1. Open the snapshot's **Traffic** tab and select **Choose replay tests**. The action is available once the snapshot has finished analyzing and is not locked.
 2. Select **Outbound dependencies** and check the database, shown as its host and port with the detected technology. Check **Also keep inbound tests** if you want your app's inbound traffic replayed as well. The dialog previews the filter it will save.
 3. Save. The snapshot is reanalyzed, the snapshot page shows the active selection as **Replay tests:** followed by the filter, and the database appears as a service you can replay against. To go back, choose **Inbound traffic (default)** and save. A selection that was set outside the dashboard is shown as read-only filter text with a **Reset to default** button.
 4. Add the database credentials to the test config's `generator.postgres` or `generator.mysql` section, with the password as a secret reference.

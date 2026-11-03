@@ -23,7 +23,7 @@ We can also see here that Speedscale has identified the type of backends these a
 
 ![Replay](./responders/replay.png)
 
-Now we can run a replay using one of the three options presented here. Note that by default, both inbound and outbound traffic is generated and mocked respectively. If you want to run a workload with just the mocked backend for development but not run a full test replay, skip to [responder only mode](#responder-only).
+Now we can run a replay with the **Replay** button, or choose **How to replay** from the menu beside it for the other ways shown here. Note that by default, both inbound and outbound traffic is generated and mocked respectively. If you want to run a workload with just the mocked backend for development but not run a full test replay, skip to [responder only mode](#responder-only).
 
 ![Report](./responders/report.png)
 
@@ -43,8 +43,6 @@ Sometimes you don't want to mock everything in the environment. There are three 
 
 1. *Disable an entire mock* - You can accomplish this by turning off the mock by unchecking it in the replay wizard:
 ![ReplayMockDisabled](./responders/replay_mock_disabled.png)
-You can also disable a mock from the snapshot summary page so that it is disabled for all replays utilizing that snapshot:
-![SnapshotMockDisabled](./responders/snapshot_mock_disabled.png)
 
 2. *Allow passthrough requests* - If you want to mock known requests but allow unrecognized transactions to continue to the original destination you can use `passthrough` mode. Just check the passthrough operation in your test config under the Mocks section:
 ![TestConfigPassthrough](./responders/tc_passthrough.png)

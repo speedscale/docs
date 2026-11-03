@@ -49,7 +49,7 @@ Now that you have identified the subset of traffic that you would like to replay
 
 A traffic snapshot is created from the selected traffic when running a replay so the same set of traffic can be reviewed and replayed again.
 
-![Snapshot](./snapshot.png)
+![The Overview tab of a snapshot: whether it is ready to replay, its Tests and Mocks, and its latency and throughput](./snapshot.png)
 
 In addition to these details, a Service Map visually represents the inbound and outbound traffic, and how the replay will be orchestrated.
 
@@ -61,9 +61,17 @@ If other teams or CI pipelines depend on a snapshot, you can lock it from the **
 
 ## Tune and inspect a snapshot
 
-The current snapshot page groups work into **Summary**, **Tuning**, **Traffic**, **Agents**, **Recommendations**, and **Replays**. Older screenshots may show separate Tests, Mocks, or Transforms tabs. Use the direction control in **Traffic** to switch between inbound and outbound requests.
+The snapshot page has four tabs: **Overview**, **Traffic**, **Prepare** and **Replays**.
 
-In **Tuning**, inspect a recommendation, its proposed transform chains, and the traffic affected by each chain. Open the affected traffic in **Traffic** to check the scope. A warning that a chain matches no traffic means its filters need review before the chain can affect a replay. See [Traffic Transformation](./transformation/overview.md).
+**Overview** says whether the snapshot is ready to replay and shows what it recorded. **Traffic** is for looking at requests: select Tests, Mocks or one dependency across the top, and use Endpoints, Sessions, Database, Kafka and Findings to read the same traffic in other ways.
+
+![The Traffic tab: Tests and Mocks across the top, the list of requests, and a Changes column that marks the requests with suggestions](./snapshot-traffic.png)
+
+Select a request to read it in the pane beside the list. A request to a mock also has a **Signature** tab, which shows what the mock server matches on. **Recorded** and **After transforms** show one version at a time. **Compare** shows both side by side, highlights what changed, and widens the pane. The **Expand** icon fills the page with the pane, which helps on a small screen, and **Esc** collapses it. It is also on the request viewer on the main **Traffic** page and in reports. **After transforms** and **Compare** show saved transforms, not changes still waiting in **Prepare**.
+
+In **Prepare**, review each suggestion and credential, its proposed transform chain, and the requests that chain matches. Open them in **Traffic** to check the scope. A warning that a chain matches no traffic means its filters need review before the chain can affect a replay. See [Traffic Transformation](./transformation/overview.md).
+
+![The Prepare tab: the list of suggestions, the selected transform chain with its values on a real request, and the requests it matches](./transformation/recommendations/prepare-merged-row.png)
 
 ### Restore deleted traffic
 
@@ -72,10 +80,11 @@ If the snapshot has deleted RRPairs, its traffic toolbar offers **Restore delete
 Restoring removes the deletion entries and triggers reanalysis. The list and traffic grid refresh afterward. The dialog lists IDs rather than the deleted request bodies. Snapshot write restrictions still apply, including locks and operations already in progress. If the control is unavailable on an older deployment, check that the backend supports snapshot restoration.
 
 ## Endpoint Grouping
-As shown in the following picture, there's an auto URL grouping mechanism to group URLs that fall in the same category. For example, all `/user/{uuid}/registration` URLs have been grouped in the Latency Summary table to give a better view of the results.
-![Auto Endpoint Grouping](../Auto-Endpoint-Grouping.png)
+The **Endpoints** view on the **Traffic** tab groups URLs that fall in the same category automatically. In the following picture, every `/api/v3/breachedaccount/{account}` URL has been grouped into one row to give a better view of the results.
 
-But this grouping can also be defined manually in Snapshot definitions. For example, adding the following `endpoint_regexes` to Snapshot definitions will result in grouping all `v1` API calls into one row in the Latency Summary table.
+![The Endpoints view with /api/v3/breachedaccount/(.*) grouped into one row](../Auto-Endpoint-Grouping.png)
+
+You can also define this grouping yourself with **Manage Regexes** in that view, or in the snapshot definition. For example, adding the following `endpoint_regexes` to the snapshot definition groups all `v1` API calls into one row.
 ```json
 "endpoint_regexes":[
    {
@@ -84,7 +93,6 @@ But this grouping can also be defined manually in Snapshot definitions. For exam
    }
 ]
 ```
-![Endpoint Grouping](../Endpoint-Grouping.png)
 
 
 ## Transform Traffic

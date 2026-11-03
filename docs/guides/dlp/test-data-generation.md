@@ -66,7 +66,7 @@ If automatic recommendations don't meet your needs, or you want to create test d
 
 ### Manual Recommendation Process
 
-1. **Identify REDACTED Tokens**: Open your snapshot and either open the Recommendations tab to view automatic recommendations, or edit the snapshot Transform Chains manually to pinpoint a data token. Note the JSONPath locations and field names where tokens appear.
+1. **Identify REDACTED Tokens**: Open your snapshot and open the Prepare tab, then either review the automatic recommendations under **To review**, or edit the snapshot transform chains manually to pinpoint a data token. Note the JSONPath locations and field names where tokens appear.
 
 2. **Determine Test Data Type**: Based on the field names, context, and your knowledge of the data structure, determine what type of test data should replace each token.
 

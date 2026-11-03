@@ -87,7 +87,7 @@ Click on a service to see more detail.  In the traffic viewer you can adjust tra
 
 The number in each box is the number of transactions for the particular inbound or outbound service. Calculating the exact volume in bytes of a particular set of traffic requires creating a snapshot. Press the *Save* button to create a snapshot. 
 
-Select the three dot menu in the top right of the snapshot summary and select "View tags." The *raw.jsonl_size* contains the amount of ingest in bytes used by this specific traffic set.
+Select the three dot menu in the top right of the snapshot page and select "View tags." The *raw.jsonl_size* contains the amount of ingest in bytes used by this specific traffic set.
 
 ![snapshot tags](./pricing-faq/snapshot-tags.png)
 

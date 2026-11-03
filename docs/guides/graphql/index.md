@@ -25,7 +25,7 @@ This is a convention, not a protocol sniff. GraphQL has no distinguishing conten
 
 For GraphQL, the columns that normally carry a URL and a method carry the operation instead. `Operation` (internally, the RRPair's command) shows the operation type — `query`, `mutation` or `subscription` — and `Endpoint` (the location) shows the operation name. An anonymous operation falls back to the top-level field names it selects.
 
-![graphql_snapshot](./graphql-snapshot.png)
+![The Traffic tab of a GraphQL snapshot: Operation shows query or mutation, and Endpoint shows the operation name](./graphql-snapshot.png)
 
 This is what makes GraphQL traffic navigable at all: every operation multiplexes over one URL, so grouping by URL would put an entire API into a single row. It also means an endpoint filter — the kind a transform chain or a mock is scoped with — matches on the operation name, not on `/graphql`.
 

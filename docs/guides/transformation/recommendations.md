@@ -8,71 +8,59 @@ sidebar_position: 6
 
 Speedscale detects common patterns like OAuth handshakes and recommends remedies. This is a good place to start if you're trying to figure out how to increase your accuracy.
 
-Every snapshot has two places to work with them:
+Every snapshot has one place to work with them: the **Prepare** tab. The count on the tab is how many items are waiting on you, and the **Overview** tab says the same thing with a button that takes you there.
 
-| Where | What it's for |
-|---|---|
-| **Tuning** tab | Working through recommendations one at a time, seeing the request each one is about before you decide |
-| **Recommendations** tab | Browsing and searching the full list, and applying several at once |
+## Working through recommendations in the Prepare tab
 
-The **Summary** tab shows a *Tuned* readiness card with the number still outstanding; its link takes you to the Tuning tab.
+The Prepare tab has one list, grouped by state: **To review**, **In this snapshot**, **Ignored** and **Variables**. Expired credentials come first in **To review** because they block a replay, then suggestions ordered by how much traffic each one touches.
 
-## Working through recommendations in the Tuning tab
+Selecting a suggestion opens it in the editor in the middle of the page, drawn with a dashed line to show that it is only proposed. The editor shows each step of the transform chain and what that step produces on a real request. The list on the right shows the requests the chain matches.
 
-The Tuning tab is a review queue. It shows one recommendation at a time, the transform chain that recommendation would add, and the actual request the recommendation is about, opened to the exact field it acts on.
+When the same fix applies in several places, such as one header on three hosts, it is one row that says how many places it covers. Select a place above the editor to see its chain and requests. **Accept** adds a chain for every place, and **Ignore** dismisses them all.
 
-The queue is ordered by blast radius, so the recommendation touching the most traffic is the first one you see.
+![A row for one email fix that covers two places. The chain shows the email value being redacted on a real login response, and the list on the right shows the 118 requests it matches](./recommendations/prepare-merged-row.png)
 
 ### Stepping through the queue
 
-The toolbar at the top drives the review:
+The buttons under the editor drive the review:
 
-- **‹ ›** move the cursor. The counter reads `2 of 7`, and where a recommendation names more than one request, a second line reads `request 3 of 10`.
-- **Accept** applies the recommendation's transform chain to the snapshot.
-- **Ignore** dismisses it. It stops appearing in the queue and in the outstanding count.
-- **Skip** leaves it undecided and moves past the whole recommendation, not just to its next request.
+- **Accept** stages the suggestion's transform chain. It moves to **In this snapshot**, marked as unsaved.
+- **Ignore** dismisses it. It moves to **Ignored**, where you can restore it, and stops counting as waiting.
+- **Skip** leaves it undecided and moves to the next one.
+
+Accepted suggestions and any other edits stay staged until you select **Save and reanalyze** in the bar at the bottom of the page, so clearing a long queue reanalyzes the snapshot once. **Discard** drops everything staged.
 
 Keyboard shortcuts match proxymock's, so the two products behave the same way:
 
 | Key | Action |
 |---|---|
-| `J` or `→` | Next |
-| `K` or `←` | Previous |
+| `J` | Next |
+| `K` | Previous |
 | `Y` | Accept |
 | `N` | Ignore |
 | `S` | Skip |
 
-:::tip
-Next walks the requests inside a recommendation before moving to the next recommendation, so you can hold `J` and read the whole review without stopping at each boundary.
-:::
-
 ### Seeing where a recommendation applies
 
-A recommendation usually touches many requests, and the analyzer records up to ten of them as examples. The **Where it applies** list shows those, and selecting one moves the viewer beside it to that request: the right half of the pair, the right sub-tab, and the field itself scrolled into view and marked.
+Select any request in the list on the right to preview the chain on it. The values along the chain update, and **Replay uses** shows what the replay will send.
 
 This is how you check that a fix generalizes. One example tells you the recommendation found *something*; stepping through several tells you it found the right thing everywhere.
 
-Some recommendations name no request at all. `X-Request-Id` and SASL authentication are detected from traffic patterns rather than from specific requests. Those say so, and their chain still applies to the traffic its filters match.
-
-A recommendation can also target a whole body rather than one field, which the pane states rather than leaving you to wonder why no line is highlighted.
+**Open all in Traffic** shows every matching request in the Traffic tab.
 
 ### Sharing what you're looking at
 
-The cursor lives in the URL, so a link to a snapshot's Tuning tab carries the recommendation and the request you were on. Paste it to a colleague and they land where you are. Browser back and forward step the cursor.
+The selected row lives in the URL, so a link to a snapshot's Prepare tab carries the item you were on. Paste it to a colleague and they land where you are.
 
-## Browsing the full list in the Recommendations tab
+## Findings about your application
 
-The Recommendations tab lists every recommendation with search and filtering, split into **Transform Recommendations** (fixes Speedscale can apply) and **Traffic Recommendations** (findings about the application under test, which you fix in your own code).
-
-![recommendations](./recommendations/examples.png)
-
-Each card shows the traffic filter it matches and the transform chain it would add. **Apply Fix** applies it; **Ignore** dismisses it. **Apply All on This Page** applies every supported recommendation currently listed.
+Some recommendations are findings about the application under test, which you fix in your own code. These are on the **Traffic** tab under **Findings**, with search and filtering, and each one links to its related requests.
 
 ## After you apply
 
-An applied recommendation appears in the transform editor for the snapshot as if you had entered it by hand. You are free to modify the transforms it created, and Speedscale will not reset them.
+An accepted recommendation appears under **In this snapshot** as if you had entered it by hand. You are free to modify the transforms it created, and Speedscale will not reset them.
 
-Applying is recorded on the snapshot, so a recommendation already applied shows as **Applied** and cannot be applied a second time. To back one out, remove its chain in the transform editor.
+To back one out, select its chain, open its menu, and select **Delete transform**.
 
 Recommendations are also used automatically by the upcoming plan-and-solve agent to increase accuracy in a snapshot. Usually they fix deterministic problems like 4xx HTTP errors.
 

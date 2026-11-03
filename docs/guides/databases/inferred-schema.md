@@ -11,7 +11,7 @@ Use it to learn an unfamiliar service, to check which columns a migration would 
 
 ## Open it
 
-Open a snapshot, then choose **Database schema** in its traffic panel, next to **Requests**, **Variables** and **Latency**.
+Open a snapshot's **Traffic** tab, then choose **Database**, next to **Requests**, **Endpoints** and **Sessions**.
 
 The summary counts the tables and columns found, the statements and executions they came from, and the database engines. **Without a table** counts statements such as `BEGIN`, `SET` or `SELECT 1` that name no table.
 
@@ -31,7 +31,7 @@ Constraints the traffic revealed, in a `CREATE TABLE` or in an error such as a u
 
 Below the columns, the statements that touch the table are listed busiest first with how often each ran. Select a column to narrow the list to the statements that touch that column, and open one of a statement's example requests to see the call itself.
 
-![The Database schema pane of a snapshot: 1 table, 3 columns, 4 statements, 96 executions, Postgres. The records table has columns id (varchar, UNIQUE, 72 reads, 24 writes), value (varchar or text, 12 reads, 36 writes) and updated_at (unknown, 36 writes), and its INSERT, DELETE, SELECT and UPDATE statements with example requests](./inferred-schema/schema.png)
+![The Database view of a snapshot: 1 table, 7 columns, 5 statements, 360 executions, Postgres. The user_service.users table has columns such as id (int8, 256 reads), email and username (varchar, 282 reads, 26 writes), and its statements are listed below with example requests](./inferred-schema/schema.png)
 
 ## How it is inferred
 

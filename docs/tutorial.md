@@ -250,15 +250,17 @@ You can also see that the accuracy isn't 100%. We can drill down into a specific
 
 The JWT we get from the login request is different which is expected. If we were replaying in a different environment, we might need different credentials entirely for the login request. Another pattern might be a set of traffic where we don't have a login request and instead we need to [resign the JWT](./guides/replay/resign-jwt.md) from our captured traffic. This is where [Transforms](./concepts/transforms.md) come into play and we can edit our captured data to parameterize parts of it. As an example, we can transform our snapshot to edit the password.
 
-![Transform](./guides/end-to-end/login-transform.png)
+Find the request on the snapshot's **Traffic** tab and open **Request**, then click the pencil icon next to the field you want to edit, which in our case is the password. Choose **Modify**.
 
-When you find the request in the transform editor, you can click the pencil icon next to the field you want to edit which in our case is the password.
+![The pencil menu on the password field of a login request, with Modify password](./guides/end-to-end/login-transform.png)
 
-![Transform](./guides/end-to-end/login-transform-modal.png)
+This opens the transform chain on the **Prepare** tab. Select **Add step** and pick a transform.
 
-For now we'll just replace it with a constant but there are all sorts of options that can be chained together.
+![The transform picker in the chain, with Constant selected](./guides/end-to-end/login-transform-modal.png)
 
-![Changed](./guides/end-to-end/login-new.png)
+For now we'll just replace it with a constant but there are all sorts of options that can be chained together. **Replay uses** shows what the replay will send. Select **Save and reanalyze** to keep the change.
+
+![The finished chain, where the password becomes a constant and Replay uses shows the new request body](./guides/end-to-end/login-new.png)
 
 We just did a transform for the traffic coming into our app during a replay. We can also use transforms for mocks in case we have to parameterize fields like session ids, dates, etc. Check out [this guide](./guides/replay/mocks/edit-sig.md) for a deep dive.
 

@@ -61,7 +61,7 @@ The values in the first column should represent IDs we see in our API traffic sn
 
 ### Step 1: Identify Existing IDs
 
-1. Navigate to the snapshot summary Transform Editor. If you don't already have a snapshot you can create one as part of the [tutorial](../../getting-started/tutorial.md)
+1. Open the snapshot's **Prepare** tab. If you don't already have a snapshot you can create one as part of the [tutorial](../../getting-started/tutorial.md)
 2. Identify the ID that you would like to replace. For this example, we'll replace the set of values in the CSV above. They are found scattered throughout the traffic in HTTP Headers and request bodies.
 3. Here is an example of such an ID in the RRPair viewer:
 
@@ -79,7 +79,7 @@ speedctl push userdata new_data.csv
 
 Smart Replace works using the Speedscale transform system but you don't need to understand the broader system to use this feature. Many tasks you would have normally accomplished with scripting can be accomplished with Smart Replace and for everything more complicated there are [transforms](/guides/transformation/overview).
 
-Before executing our replay, we want to train the system to perform our replacement. To do that, we add a `train_csv` transform to our snapshot in the Variables (Tests) section. From the snapshot transform editor, add this chain `empty <-> train_csv()`. It should look something like this in the UI.
+Before executing our replay, we want to train the system to perform our replacement. To do that, we add a `train_csv` transform to our snapshot under **Test variables** on the Prepare tab. Add this chain `empty <-> train_csv()`. It should look something like this in the UI.
 
 ![transform_example](./smart-replace/transform_example.png)
 

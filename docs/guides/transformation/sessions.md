@@ -18,9 +18,9 @@ Now click on the `Info` tab on that same RRPair. You can tell that Speedscale de
 
 ![session_id](./sessions/session_id.png)
 
-When a snapshot is created data about the sessions will be aggregated into a summary. The list of detected tokens/sessions can be viewed in the snapshot summary page under `Tokens`:
+When a snapshot is created data about the sessions will be aggregated into a summary. The list of detected tokens/sessions can be viewed from the snapshot's **⋮** menu with **View Tokens**:
 
-![snapshot_summary](./sessions/token_summary.png)
+![The Tokens panel, with tokens grouped by type and the location of each one](./sessions/token_summary.png)
 
 One of the most common uses for sessions during replay is [smart_replace](./smart-replace.md). When a session is tagged by smart_replace, Speedscale will detect and re-use that token wherever it is used in subsequent calls.
 
