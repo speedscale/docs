@@ -33,6 +33,8 @@ The result reports exported requests, skipped records and omitted response examp
 
 HTTP/S methods, paths, raw query ordering/escaping, repeated query parameters, empty bodies and UTF-8 JSON/text bodies are supported. Recorded response status and supported text bodies are retained as examples. URL re-encoding and redirect following are disabled in the exported request settings.
 
+Supported HTTP content encodings are decoded before export. Content-Encoding, Content-Length and Transfer-Encoding are removed from the decoded request and response example so their headers match the exported body. An undecodable request is skipped; an undecodable saved response is reported as omitted while preserving the usable request. Source files remain unchanged.
+
 Bruno's runner merges headers by name. Repeated list-valued request headers are combined with commas for Accept, Accept-Encoding, Accept-Language, Cache-Control, If-Match, If-None-Match, Pragma, Prefer, Trailer, Via and Warning. Repeated credential headers become one replacement placeholder. Other repeated request headers cause the request to be skipped rather than losing a value silently. Host, Content-Length, Transfer-Encoding and Connection request headers are omitted so the client can generate transport headers for the target service.
 
 Non-HTTP protocols and binary or multipart request bodies are skipped. An unsupported or incomplete saved response is reported as omitted while retaining the usable request. The original RRPairs keep data that Bruno cannot represent. This workflow does not translate Postman scripts or tests.
