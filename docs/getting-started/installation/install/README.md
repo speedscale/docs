@@ -9,7 +9,7 @@ Choose the setup that matches where you want to work:
 
 | Environment | Start here |
 |---|---|
-| Local development with proxymock | [Install proxymock CLI](/proxymock/getting-started/installation/) |
+| Local development with proxymock | [Install proxymock CLI](../../../proxymock/getting-started/installation.md) |
 | Kubernetes | [Choose a Kubernetes installation](./kubernetes.md) |
 | Docker | [Docker](./docker.md) |
 | AWS ECS or Fargate | [AWS ECS/Fargate](./ecs.md) |

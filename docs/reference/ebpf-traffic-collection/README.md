@@ -147,7 +147,7 @@ If your organization cannot use Helm tooling at all, [contact Speedscale Support
 
 For a new deployment, follow the [standard operator installation](/getting-started/installation/install/kubernetes-operator/) first. Its Helm and manifest examples enable eBPF; the speedctl method links to the configuration below.
 
-For an existing installation, add the following settings to the values file you keep for the release, preserving its API key reference, cluster name, and platform overrides:
+For an existing installation, add the following settings to the values file you keep for the release, preserving its API key reference, cluster name, and platform overrides. If you installed with `speedctl install` or `--set` flags and have no values file, export the current values first with `helm -n speedscale get values speedscale-operator -o yaml > current-values.yaml`:
 
 ```yaml
 ebpf:

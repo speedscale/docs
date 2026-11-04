@@ -22,7 +22,7 @@ First choose where your traffic is now and where you want to test it. Traffic re
 | BYOC bucket to your machine or cluster | 1. [Install proxymock CLI](../proxymock/getting-started/installation.md). 2. [Pull BYOC traffic](../byoc/use-traffic.md). 3. [Choose where the replay runs](../proxymock/guides/replay-paths.md). |
 | Recorded traffic to CI/CD | 1. [Record locally](../proxymock/getting-started/quickstart/quickstart-cli.md) or [pull a cloud snapshot](../proxymock/guides/cloud-snapshot-local.md#pull). 2. Follow [proxymock CI/CD setup](../proxymock/guides/cicd.md), including its account requirements. |
 | Recordings to a cloud-managed cluster replay | 1. [Install the operator](./installation/install/kubernetes-operator.md) if needed. 2. Use [proxymock cloud replay](../proxymock/guides/replay-paths.md#via-speedscale-cloud). Existing `speedctl infra replay` scripts can follow [Replay with speedctl](../guides/replay/via-speedctl.md). |
-| Platform setup in Kubernetes | Follow the [platform quick start](./quick-start.md). Choose Helm, GitOps, or the [speedctl CLI](./installation/install/cli.md) install method. |
+| Platform setup in Kubernetes | Follow the [standard operator installation](./installation/install/kubernetes-operator.md). Choose Helm, Argo CD, rendered manifests, or the [speedctl CLI](./installation/install/cli.md) install method. |
 | Existing script to Speedscale Cloud resources | Install [speedctl CLI](./installation/install/cli.md), [reuse your tenant credentials](#credentials), and use `speedctl --help` for its commands. |
 
 ## Start with proxymock

@@ -68,7 +68,20 @@ Create the tutorial's local cluster if you do not already have one:
 minikube start -p speedscale-tutorial --driver=docker --memory=4g
 ```
 
-Then follow the [standard operator installation](/getting-started/installation/install/kubernetes-operator/). In its `speedscale-values.yaml`, set `clusterName: speedscale-tutorial`, keep `ebpf.enabled: true`, and add `deployDemo: ""` so the next chapter can deploy this tutorial's app. Complete the guide's verification steps before continuing.
+Then install the operator with the tutorial's settings. This assumes your service account API key is in `$SPEEDSCALE_API_KEY`; the [standard operator installation](/getting-started/installation/install/kubernetes-operator/) explains the options.
+
+```bash
+helm repo add speedscale https://speedscale.github.io/operator-helm/
+kubectl create namespace speedscale
+kubectl -n speedscale create secret generic speedscale-apikey \
+  --from-literal=SPEEDSCALE_API_KEY="$SPEEDSCALE_API_KEY" \
+  --from-literal=SPEEDSCALE_APP_URL=app.speedscale.com
+helm install speedscale-operator speedscale/speedscale-operator -n speedscale \
+  --set apiKeySecret=speedscale-apikey --set clusterName=speedscale-tutorial \
+  --set deployDemo="" --set ebpf.enabled=true
+```
+
+Complete the guide's [verification steps](/getting-started/installation/install/kubernetes-operator/#verify-installation) before continuing.
 
 </details>
 

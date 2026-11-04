@@ -35,25 +35,15 @@ Speedscale is tested with apps hosted on the local desktop all the way up to hig
 
 Follow the [standard operator installation](./installation/install/kubernetes-operator.md) for the full procedure, then return here to start the tutorial. If cluster policy prevents cluster-scoped grants, choose the [namespace-scoped installation](./installation/install/kubernetes-namespaced.md) instead. Compare both paths in [Kubernetes installation options](./installation/install/kubernetes.md).
 
-## Retrieve your API Key
-
-Use a service account API key from [Tenant Settings](https://app.speedscale.com/tenant). The [operator guide](./installation/install/kubernetes-operator.md#retrieve-your-api-key) explains how to provision it for the selected installation method.
-
 ## Install speedctl CLI (optional) {#install-cli-optional}
 
 <CLIInstall />
 
 ## Install Speedscale Operator (optional)
 
-Choose [Helm](./installation/install/kubernetes-operator.md?method=helm#install-method), [speedctl](./installation/install/kubernetes-operator.md?method=cli#install-method), [Argo CD](./installation/install/kubernetes-operator.md?method=argocd#install-method), or [rendered manifests](./installation/install/kubernetes-operator.md?method=gitops#install-method) in the operator guide. Review [platform requirements](./installation/install/kubernetes.md#check-your-platform-requirements) before installing on a specialized Kubernetes platform.
+<a id="retrieve-your-api-key"></a><a id="optional-adding-image-pull-secrets"></a><a id="verify-installation"></a>
 
-### Image pull secrets {#optional-adding-image-pull-secrets}
-
-For private registries, see [speedctl image pull secrets](./installation/install/kubernetes-operator.md?method=cli#optional-adding-image-pull-secrets) and [private registry images](./installation/install/kubernetes-operator.md#private-registry-images).
-
-### Verify Installation
-
-Follow [Verify installation](./installation/install/kubernetes-operator.md#verify-installation) to check the components before proceeding to the tutorial.
+Use a service account API key from [Tenant Settings](https://app.speedscale.com/tenant), then choose [Helm](./installation/install/kubernetes-operator.md?method=helm#install-method), [speedctl](./installation/install/kubernetes-operator.md?method=cli#install-method), [Argo CD](./installation/install/kubernetes-operator.md?method=argocd#install-method), or [rendered manifests](./installation/install/kubernetes-operator.md?method=gitops#install-method) in the [operator guide](./installation/install/kubernetes-operator.md#retrieve-your-api-key). Review [platform requirements](./installation/install/kubernetes.md#check-your-platform-requirements) before installing on a specialized Kubernetes platform. For private registries, see [image pull secrets](./installation/install/kubernetes-operator.md?method=cli#install-method) and [private registry images](./installation/install/kubernetes-operator.md#private-registry-images). Follow [Verify installation](./installation/install/kubernetes-operator.md#verify-installation) before proceeding to the tutorial.
 
 # Next Steps
 

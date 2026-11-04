@@ -28,7 +28,7 @@ Check [platform requirements](./kubernetes.md#check-your-platform-requirements) 
 
 ## Retrieve your API key
 
-For manual installation, use a service account API key so the cluster's access is independent of an employee's account. With the Helm, Argo CD, and rendered-manifest methods, create the namespace and load the key from a protected file into a Secret:
+For manual installation, use a service account API key so the cluster's access is independent of an employee's account. With the Helm, Argo CD, and rendered-manifest methods, create the namespace and load the key from a protected file into a Secret. Write the file without a trailing newline, for example `printf %s "$KEY" > /secure/path/to/key`; a newline becomes part of the key and authentication fails:
 
 ```bash
 kubectl create namespace speedscale
@@ -94,7 +94,7 @@ speedctl install --imgpullsecrets my-secret1,my-secret2
 </TabItem>
 <TabItem value="argocd" label="Argo CD">
 
-Create the API key Secret in the destination cluster before syncing the application. Apply the same cluster name and platform values to `source.helm.values`. Set `targetRevision` to the chart version you reviewed in the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md).
+Create the API key Secret in the destination cluster before syncing the application. If Argo CD creates the namespace, add `CreateNamespace=true` to `syncPolicy.syncOptions`, and make sure the Secret (for example a SealedSecret or ExternalSecret) syncs before this Application, such as in an earlier sync wave, because the operator needs it at startup. Apply the same cluster name and platform values to `source.helm.values`. Set `targetRevision` to the chart version you reviewed in the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md).
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -158,10 +158,18 @@ Check that the operator and forwarder pods are running:
 kubectl -n speedscale get pods
 ```
 
-Pod names vary by installation. When eBPF is enabled, also check its DaemonSet:
+Expect at least the operator and forwarder pods in `Running` state; the suffixes differ on your cluster:
+
+```text
+NAME                                    READY   STATUS    RESTARTS   AGE
+speedscale-forwarder-xxxxxxxxxx-xxxxx   1/1     Running   0          5s
+speedscale-operator-xxxxxxxxxx-xxxxx    1/1     Running   0          15s
+```
+
+When eBPF is enabled, also check the collector pods:
 
 ```bash
-kubectl -n speedscale get daemonset speedscale-nettap
+kubectl -n speedscale get pods -l app=speedscale-nettap
 ```
 
 If proxymock is installed, check component readiness, connectivity, and your kubeconfig permissions:
