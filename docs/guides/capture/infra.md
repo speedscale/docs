@@ -126,27 +126,46 @@ Click a cluster to open it. The same layout applies to every view:
 - A toolbar with the namespace, search and filters on the left, and Refresh on the far right.
 - A click on any row opens its details in a panel on the right.
 
-Lists start at **All namespaces** and show a Namespace column. Your namespace choice follows you between tabs and stays in the page URL, so you can share a link to it. **All namespaces** loads one namespace at a time in the background, and any namespace that fails to load is called out with a way to retry.
+Lists start at **All namespaces**. Your namespace choice follows you between tabs and stays in the page URL, so you can share a link to it. **All namespaces** loads one namespace at a time in the background, and any namespace that fails to load is called out with a way to retry.
 
 ## Workloads
 
-The Workloads tab shows every workload the inspector can see and its capture status. New deployments should use eBPF capture. Sidecar status remains visible for existing sidecar deployments.
+The Workloads tab shows every workload the inspector can see, grouped by namespace. Each heading says how much of that namespace is capturing, and namespaces with something capturing start open. Pick one namespace to get a flat list. New deployments should use eBPF capture. Sidecar status remains visible for existing sidecar deployments.
 
-*Workload* - Kubernetes name and type
+*Workload* - Kubernetes name, and the type when it is not a deployment
 
 *Ready* - ready pods out of the total
 
-*Capture* - **eBPF**, **eBPF + Java TLS**, **Sidecar** or **Not enabled**
+*Capture* - the capture mode, which is also where you change it. A note appears only when there is something to say, such as a collector problem, **No ready pods** or **No recent signals**.
 
-*Capture health* - for eBPF workloads, the health of the cluster's collectors, which is shared by every eBPF workload. For sidecars, the sidecar's own recording health. A workload with no ready pods says so here.
+*Open* - **Logs**, **Traffic**, and a menu with capture settings, events and the workload's JSON
 
-*Open* - links to the workload's **Logs** and **Traffic**
+Filter the list to **All**, **Capturing**, **Needs attention** or **Not enabled**, with a count on each. **Needs attention** includes workloads affected by a collector problem, sidecars reporting Caution or Alert, and capturing workloads with no ready pods.
 
-Filter the list to **Capturing**, **Needs attention**, **Not enabled** or **All**, with a count on each. **Needs attention** includes workloads affected by a collector problem, sidecars reporting Caution or Alert, and capturing workloads with no ready pods. If nothing in the cluster is capturing yet, the tab opens on **All**.
+Speedscale's own workloads, such as replay responders and the operator, are hidden and left out of the counts unless they are capturing. Use **Show them** below the list to see them.
 
-Click a workload to change its capture mode and read its Kubernetes events. The **Logs** tab streams its logs and switches between the container and the sidecar when the workload has one.
+### Changing capture
 
-Use **List** and **Map** to switch to the [cluster map](../cluster-map.md). **Manage eBPF capture**, at the top of the page, changes capture for many workloads at once.
+Use **Turn on**, or the capture mode on any row, to pick a mode. Each mode states what it costs:
+
+- **eBPF** starts or stops right away and does not restart pods. A notification offers **Undo**.
+- **eBPF + Java TLS** adds a Java agent so TLS traffic in Java apps is captured too. Adding or removing the agent restarts the pods, so it asks you first.
+- **Sidecar** injects a proxy and restarts the pods. It opens the workload's settings so you can review them before you apply. Sidecar capture is being retired, so choose eBPF for new workloads.
+- **Off** stops capture. It restarts the pods only when that removes the Java agent or the sidecar.
+
+To change many workloads at once, select rows or a whole namespace with the checkboxes and use **Turn on eBPF** or **Turn off eBPF**. A preview shows what will change and why anything is skipped, and nothing changes until you apply it. Bulk changes only switch eBPF, so sidecar workloads are skipped. Turning off eBPF in bulk stops Java capture too but leaves the agent installed, and the workload's settings say so.
+
+**Select by label**, below the list, does the same for a pod template label selector across the namespaces you choose.
+
+### Workload details
+
+Click a workload to open it in a panel beside the list. Use the arrows in the panel, or the up and down arrow keys, to move to the next workload. In a narrow window, the panel opens over the list instead.
+
+- **Capture** has the four modes, and the ignored ports for eBPF or the settings for a sidecar. When you change something, a footer says what will happen and whether pods restart, with **Apply** next to it.
+- **Logs** streams the workload's logs and switches between the container and the sidecar when the workload has one. **Widen panel** gives long lines more room.
+- **Events** shows Kubernetes events for the workload.
+
+Use **List** and **Map** to switch to the [cluster map](../cluster-map.md).
 
 ### Capture management best practices
 - Start with non-critical workloads to validate configuration
