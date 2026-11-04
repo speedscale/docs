@@ -1,6 +1,7 @@
 ---
 title: Export traffic to Bruno
 description: Turn recorded HTTP traffic into a native Bruno OpenCollection with local files and explicit credential placeholders.
+sidebar_position: 16
 ---
 
 # Export traffic to Bruno
