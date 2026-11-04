@@ -107,60 +107,46 @@ To enable remote data collection, please follow one of the installation [guides]
 
 Navigate to the [infrastructure](https://app.speedscale.com/infrastructure) page to view remote collectors. In most cases this will be a list of Kubernetes operators.
 
-![clusters](./infra/cluster.png)
+*Cluster/hostname* - name assigned during operator installation. A cluster installed outside the `speedscale` namespace also shows where it is installed.
 
-*Cluster/hostname* - name assigned during operator installation
-*namespace* - the Kubernetes namespace the operator is running in (usually speedscale)
-*version* - the operator version and an upgrade indicator
+*Capture* - eBPF collector health, such as **eBPF healthy** with the number of collectors ready, or **Sidecar only** when eBPF is not installed.
 
-If you click on an operator you will see a list of tabs with different cluster attributes.
+*Operator* - the running version, and **Behind** with the latest version when a newer release exists. A newer release does not mean this cluster can install it. Open the cluster's Operator tab to see what it can do.
 
-# Configurations
+*Start Time* - when the operator last started.
 
-![configurations](./infra/configurations.png)
+Filter the list to **Needs attention**, **eBPF** or **Sidecar only**. A cluster needs attention when its capture has a problem or its operator is behind.
 
-This tab shows the configuration of the operator itself. The operator provides a deprecated mechanism for altering remote configuration that will show up in the *overrides* column. When populate, the override value is used over the main value. This feature will be removed at later date.
+## Inside a cluster
 
-Operator configuration is explained in greater detail in the [installation](../../getting-started/installation/install/kubernetes-operator.md) guides.
+Click a cluster to open it. The same layout applies to every view:
 
-# Workloads
+- A status readout with **Capture**, **Workloads** and **Operator**. It uses the same words as the cluster list. A slot changes color only when it needs you, and then it names the next step, such as **Show 3 affected workloads** or **Review upgrade**.
+- Tabs for **Workloads**, **Service map**, **Replays**, **Events**, **Resources** and **Operator**.
+- A toolbar with the namespace, search and filters on the left, and Refresh on the far right.
+- A click on any row opens its details in a panel on the right.
 
-Open a cluster from **Infrastructure** and its workloads are the first thing you see. Use **List** and **Map** to switch between the grid and the cluster map. Filter the grid with **Search workloads**, the **Namespace** picker and **Capture health**, which starts on **Instrumented** so you see the workloads Speedscale is capturing. Choose **All workloads** to see the rest.
+Lists start at **All namespaces** and show a Namespace column. Your namespace choice follows you between tabs and stays in the page URL, so you can share a link to it. **All namespaces** loads one namespace at a time in the background, and any namespace that fails to load is called out with a way to retry.
 
-| Column | What it shows |
-|---|---|
-| **Workload** | Name and workload type |
-| **Namespace** | The workload's namespace |
-| **Ready** | Ready pods out of total pods |
-| **Capture** | **eBPF**, **eBPF + Java TLS**, **Sidecar** or **Not enabled** |
-| **Health** | For eBPF: **Healthy**, **Degraded**, **Unhealthy**, **Unavailable** or **Unknown**. For a sidecar, **View sidecar health** opens its details when something is wrong |
-| **Container Logs** | Logs of the workload's main container |
-| **Sidecar Logs** | Logs of a legacy sidecar, when the workload has one |
+## Workloads
 
-The last column links to the workload's traffic on the Traffic page.
+The Workloads tab shows every workload the inspector can see and its capture status. New deployments should use eBPF capture. Sidecar status remains visible for existing sidecar deployments.
 
-### Turn capture on for one workload
+*Workload* - Kubernetes name and type
 
-Click a workload to open its panel. The top shows the capture mode, namespace, ready pods and the nodes it runs on. For eBPF workloads it also shows how many collectors are ready, the reason for the current health, and a **Next step**. The **Events** tab lists the workload's Kubernetes events.
+*Ready* - ready pods out of the total
 
-On the **Capture** tab, choose a **Capture Mode**: **Disabled**, **eBPF** or **Sidecar**. Choosing a mode shows its settings but does not turn anything on until you set them and click **Update**.
+*Capture* - **eBPF**, **eBPF + Java TLS**, **Sidecar** or **Not enabled**
 
-- **eBPF** settings are **Enable eBPF Capture**, **Enable TLS Capture for Java** and **Ignore Ports**. eBPF capture attaches to the running workload, so turning it on or off does not restart pods. Java TLS capture adds a Java agent to the workload definition, which rolls its pods, and turning it off removes the agent again. When the cluster's collector is not set up for eBPF, the eBPF card is disabled and reads **Not supported**, and a workload already set to eBPF shows the `helm upgrade` command that enables it.
-- **Sidecar** settings map to the `sidecar.speedscale.com/*` annotations. Sidecar capture is not recommended for new installations; prefer eBPF.
+*Capture health* - for eBPF workloads, the health of the cluster's collectors, which is shared by every eBPF workload. For sidecars, the sidecar's own recording health. A workload with no ready pods says so here.
 
-**Update** replaces the workload's Speedscale capture annotations with the ones for the chosen mode. For eBPF that is `capture.speedscale.com/enabled`, plus `capture.speedscale.com/ignore-ports` and `capture.speedscale.com/java-agent` when you set them. **Disabled** removes them all. Changing capture needs the Maintainer role.
+*Open* - links to the workload's **Logs** and **Traffic**
 
-### Turn eBPF capture on or off for many workloads
+Filter the list to **Capturing**, **Needs attention**, **Not enabled** or **All**, with a count on each. **Needs attention** includes workloads affected by a collector problem, sidecars reporting Caution or Alert, and capturing workloads with no ready pods. If nothing in the cluster is capturing yet, the tab opens on **All**.
 
-**Manage eBPF capture** in the toolbar changes eBPF capture for a whole set of workloads at once:
+Click a workload to change its capture mode and read its Kubernetes events. The **Logs** tab streams its logs and switches between the container and the sidecar when the workload has one.
 
-1. Choose **Enable eBPF** or **Disable eBPF**.
-2. Pick one or more **Namespaces**. A workload in any of them is included.
-3. Optionally narrow the set with a **Pod template label selector** such as `app=checkout,environment=staging`. Every condition must match, and it matches the pod template labels, not the workload's own labels.
-4. Click **Preview matching workloads**. The preview counts the matches, how many will change and how many are skipped, with the reason for each skip.
-5. Click the **Enable eBPF on N workloads** button (or **Disable**) to apply the preview.
-
-The change is a one-time action on the previewed workloads: workloads created later are not included, and application pods are not restarted. **Applied** means the cluster acknowledged the annotation, not that traffic is being captured yet, so check the **Health** column afterwards. It covers Deployments, StatefulSets, DaemonSets, Jobs and Argo Rollouts. A preview expires after 15 minutes. A preview that matches more than 500 workloads, skipped ones included, or spans more than 100 namespaces is refused, so narrow the scope. Sidecar workloads are skipped; switch those one at a time. Disabling eBPF on a workload with Java TLS capture stops that capture too, but leaves the Java agent installed.
+Use **List** and **Map** to switch to the [cluster map](../cluster-map.md). **Manage eBPF capture**, at the top of the page, changes capture for many workloads at once.
 
 ### Capture management best practices
 - Start with non-critical workloads to validate configuration
@@ -168,38 +154,38 @@ The change is a one-time action on the previewed workloads: workloads created la
 - Use selective workload targets rather than cluster-wide capture
 - Regularly review and remove capture targets that are no longer needed
 
-# Secrets
+## Service map
 
-The Secrets tab shows the name and key value of secrets in the namespace. **Critical security feature**: Unlike true Kubernetes management solutions, no secrets are transferred out of the cluster and cannot be remotely inspected. This ensures sensitive data remains secure within your environment.
+The Service map tab draws the services in this cluster from observed traffic. It follows the namespace filter and has its own time range. Search dims the services that do not match. Click a service to open its traffic.
 
-# Services
+## Replays
 
-The list of Kubernetes network services available in the namespace, including:
-- Service discovery and endpoints
-- Network policies and ingress configurations
-- Load balancer and service mesh integration
+Use this tab to view replays. Speedscale utilizes a Custom Resource Definition called a `trafficreplay` to manage cluster replays. This view shows these resources whether currently active or not. Click a replay to see its status, snapshot, report and full definition, and use **Cancel replay** to remove it.
 
-# Events
+## Events
 
-Similar to watching the logs, you can also view events. This provides enhanced debugging capabilities for remote users by centralizing event monitoring in a user-friendly interface. Pay attention to this section to detect pod problems like CrashLoopBackoff.
+Similar to watching the logs, you can also view Kubernetes events, which helps you detect pod problems like CrashLoopBackOff. Filter to **Warnings** and search by reason, object or message. Click an event to read its full message and, when it belongs to a workload, open that workload.
 
-**Event analysis features:**
-- Real-time event monitoring with filtering and search capabilities
-- Historical event analysis for troubleshooting past issues
-- Cross-reference events with workload and collector behavior
-- Export capabilities for offline analysis
+**All namespaces** shows up to 100 events per namespace. Select a namespace to see up to 500.
 
-# Replays
+## Resources
 
-![replays](./infra/replays.png)
+The Resources tab has four sections:
 
-Use this tab to view currently running replays. Speedscale utilizes a Custom Resource Definition called a `trafficreplay` to manage cluster replays. This view shows CRDs in the namespace, whether currently active or not. Use the trash can icon to delete any running replays.
+- **Nodes** lists each node with its status, workload count, instance type, region and capacity. Click a node to see the workloads running on it and its full description as JSON or text.
+- **Services** lists the Kubernetes network services, with their type, cluster IP, external IP and ports.
+- **Config maps** lists config maps with their number of keys. Click one to read its values or download it as JSON.
+- **Secrets** lists the name and key names of secrets. **Critical security feature**: Unlike true Kubernetes management solutions, no secret values are transferred out of the cluster and they cannot be remotely inspected. This ensures sensitive data remains secure within your environment.
 
-**Active traffic replay monitoring:**
-- Running test scenarios with real-time status
-- Traffic replay progress and completion indicators
-- Performance metrics and results analysis
-- Error rates and failure detection
+## Operator
+
+The Operator tab has three sections:
+
+- **Health** shows collector status and installation details, and collects eBPF diagnostics. On a cluster without eBPF, it shows the command that enables it.
+- **Upgrades** shows the installed and latest versions, and plans an upgrade when this cluster can install one. When it cannot, it lists each reason.
+- **Settings** shows the configuration of the operator itself and lets you search it. The operator provides a deprecated mechanism for altering remote configuration. When populated, the override value is used over the main value. This feature will be removed at a later date.
+
+Operator configuration is explained in greater detail in the [installation](../../getting-started/installation/install/kubernetes-operator.md) guides.
 
 ## Getting Started with Cluster Inspector
 
@@ -211,7 +197,7 @@ Use this tab to view currently running replays. Speedscale utilizes a Custom Res
 
 ### Accessing the Inspector
 
-The Cluster Inspector is accessible through the Speedscale web interface under the **Observe** section. Navigate to your cluster view and select the cluster name to begin exploring your Kubernetes environment through the tabular interface.
+The Cluster Inspector is accessible through the Speedscale web interface under **Infrastructure**. Select the cluster name to begin exploring your Kubernetes environment through the tabular interface.
 
 ### Initial Setup
 
