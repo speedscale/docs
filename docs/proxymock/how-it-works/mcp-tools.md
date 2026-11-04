@@ -8,7 +8,7 @@ sidebar_position: 7
 
 > **Generated file: do not edit by hand.** Run `proxymock mcp docs` to regenerate it from the MCP server's live tool registry.
 
-This page lists everything the **proxymock** MCP server exposes to an AI coding assistant. Install it with `proxymock mcp install` (see [Model Context Protocol](./mcp.md)). You rarely call these by name. Describe what you want and the assistant picks the right tool.
+This page lists everything the **proxymock** MCP server exposes to an AI coding assistant. Select your coding agent and installation scope in [Model Context Protocol](./mcp.md) before installing the MCP server or skills. You rarely call these by name. Describe what you want and the assistant picks the right tool.
 
 - **Tools** are actions the assistant invokes on its own (record, replay, analyze). Ones marked _read-only_ never change your files or services.
 - **Prompts** are workflows you trigger explicitly (often as slash commands).
@@ -566,18 +566,26 @@ Convert local RRPair files into a third-party format. This is the OUTBOUND direc
 
 Choose the target format:
 - postman: a Postman collection JSON file, for driving requests from Postman.
+- bruno: a native OpenCollection 1.0 YAML directory, verified with Bruno CLI 4.3.0. Open it in Bruno and select the local environment. Credential headers become empty placeholders; review/mask body and query secrets before exporting.
 - k6: a k6 load-test JavaScript file.
 - locust: a Python locustfile for HTTP load testing. Run with --host to target the test deployment.
 - gatling: a Gatling simulation Java file.
 - datadog-synthetics: a Datadog Synthetics test bundle written to disk (local files only; this tool never publishes to Datadog).
 
-Reads RRPair files from one input directory and writes a single output artifact. To go the other way (a third-party artifact to RRPairs) use import_traffic.
+Reads RRPair files from one input directory and writes an output file or collection directory. To go the other way (a third-party artifact to RRPairs) use import_traffic.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | string | **yes** | Format to export to: 'postman', 'k6', 'gatling', 'locust', or 'datadog-synthetics'. |
+| `format` | string | **yes** | Format to export to: 'postman', 'k6', 'gatling', 'locust', 'bruno', or 'datadog-synthetics'. |
 | `in-directory` | string | **yes** | Directory of recorded RRPair files to export, relative to the working directory (read recursively). |
-| `out` | string | no | Output file (or bundle directory for datadog-synthetics). Defaults per format: collection.json, k6.js, LoadSimulation.java, locustfile.py, or a datadog-synthetics-&lt;dir&gt; bundle. |
+| `base-url` | string | no | Bruno only: replace recorded origins with an HTTP/S origin in the local environment. |
+| `inbound-only` | boolean | no | Bruno only: defaults true; set false to include outbound HTTP/S calls. |
+| `limit` | number | no | Bruno only: maximum exported requests in recorded order; 0 or -1 means unlimited. |
+| `out` | string | no | Output file or directory. Bruno defaults to ./bruno (native collection); other defaults: collection.json, k6.js, LoadSimulation.java, locustfile.py, or a datadog-synthetics-&lt;dir&gt; bundle. |
+| `overwrite` | boolean | no | Bruno only: explicitly replace a previous proxymock collection, including local edits. Defaults false. |
+| `scheme` | string | no | Bruno only: override the recorded URL scheme. |
+| `secret-headers` | string | no | Bruno only: comma-separated additional credential header names to replace with empty placeholders. Authorization/Cookie are always replaced. |
+| `service` | string | no | Bruno only: export requests for this host. |
 
 ### Cloud
 
