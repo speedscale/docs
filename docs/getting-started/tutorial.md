@@ -32,7 +32,7 @@ Make sure you navigate to the `java` subdirectory within the `demo` repository.
 
 <TabItem value="Kubernetes">
 
-1. [Install the operator](./quick-start.md#install-speedscale-operator-optional)
+1. [Install the operator](./installation/install/kubernetes-operator.md)
 2. Recommended: enable the [eBPF collector](/reference/ebpf-traffic-collection) to capture traffic without proxies or app changes. Follow the Helm-based setup to target the demo namespace/workload.
    - Fallback: if eBPF is not suitable in your cluster, deploy the demo app with the Speedscale sidecar by running:
 

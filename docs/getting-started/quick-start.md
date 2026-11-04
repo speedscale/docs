@@ -2,8 +2,6 @@
 description: "Get started with Speedscale in Kubernetes using the Operator, with eBPF collection as the default path and goproxy sidecars as a fallback when needed."
 sidebar_position: 2
 ---
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import CLIInstall from './installation/install/_cli_install.mdx'
 import AgentInstall from './installation/install/_agent_install.mdx'
 
@@ -35,21 +33,7 @@ Speedscale is tested with apps hosted on the local desktop all the way up to hig
 
 ## Prefer to install manually? {#install-manually}
 
-The rest of this guide walks through the same install by hand:
-
-1. Retrieve your API Key
-2. Install speedctl CLI (optional for Helm installation)
-3. Install Operator (if required)
-4. Verify Installation
-5. Capture and replay traffic against a demo app
-
-## Retrieve your API Key
-
-:::tip Cluster API key
-For Kubernetes deployments, use a service account API key from [Tenant Settings](https://app.speedscale.com/tenant) instead of a personal key, so cluster access is not tied to an employee's account. Ask a tenant admin to create one if needed.
-:::
-
-Copy the service account API key and use it as `apiKey` in the Helm commands below, or paste it when prompted by `speedctl install`.
+Follow the [standard operator installation](./installation/install/kubernetes-operator.md) for the full procedure, then return here to start the tutorial. If cluster policy prevents cluster-scoped grants, choose the [namespace-scoped installation](./installation/install/kubernetes-namespaced.md) instead. Compare both paths in [Kubernetes installation options](./installation/install/kubernetes.md).
 
 ## Install speedctl CLI (optional) {#install-cli-optional}
 
@@ -57,162 +41,9 @@ Copy the service account API key and use it as `apiKey` in the Helm commands bel
 
 ## Install Speedscale Operator (optional)
 
-For a local proxymock workflow, continue with the [proxymock CLI quickstart](/proxymock/getting-started/quickstart/quickstart-cli/). The rest of this document installs a Kubernetes-based demo.
+<a id="retrieve-your-api-key"></a><a id="optional-adding-image-pull-secrets"></a><a id="verify-installation"></a>
 
-If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then you can install using these instructions. If you are not running in Kubernetes, or are running with a more specialized enterprise distribution please select environment-specific [instructions](./installation/install/README.md) in this section.
-
-:::info Cannot deploy a Helm chart?
-Helm does not need to run in your cluster. You can render the chart to plain Kubernetes YAML with `helm template`, commit the output to your GitOps repository, or use it as a Kustomize base. See the **GitOps** tab below for an example.
-
-If your organization cannot use Helm tooling at all, [contact Speedscale Support](mailto:support@speedscale.com), ask in the [Speedscale Community](https://slack.speedscale.com), or reach out to your account team. We can help produce Kustomize-compatible or other custom manifests for your cluster policies.
-:::
-
-<Tabs>
-
-<TabItem value="helm" label="Helm" default>
-
-Make sure you have [Helm 3](https://helm.sh/docs/intro/install/) installed. Then,
-
-```
-helm repo add speedscale https://speedscale.github.io/operator-helm/
-helm repo update
-helm install speedscale-operator speedscale/speedscale-operator \
-	-n speedscale \
-	--create-namespace \
-	--set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-	--set clusterName=<YOUR-CLUSTER-NAME>
-```
-
-Navigate to the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md)
-for all configuration options available for the Helm chart.
-
-For a resource-by-resource explanation of installation, upgrades, hooks, and CRD handling, see the [Helm install and upgrade lifecycle](/reference/helm#install-and-upgrade-lifecycle).
-
-</TabItem>
-
-<TabItem value="cli" label="speedctl (Mac/Linux)">
-
-Run `speedctl install`, choose "Kubernetes" and follow the prompts.
-
-The install wizard will walk you through installing the
-[Speedscale Kubernetes Operator](./installation/install/kubernetes-operator.md).
-
-Recommended next step: enable the [eBPF collector](/reference/ebpf-traffic-collection)
-to capture traffic in Kubernetes without proxies or app changes. If your
-environment or workload cannot use eBPF, fall back to the
-[Sidecar installation](./installation/sidecar/install.md).
-
-### (Optional) Adding Image Pull Secrets
-
-If you need custom image pull secrets (for example, if you're re-hosting
-Speedscale images in a dedicated registry), you may provide one or more secret
-names with the `--imgpullsecrets` argument, and the secrets will be attached to
-the service account.
-
-```
-speedctl install --imgpullsecrets my-secret1,my-secret2p
-```
-
-</TabItem>
-
-<TabItem value="cli_windows" label="speedctl (Windows)">
-
-If using Kubernetes run `speedctl install`, choose "Kubernetes" and follow the prompts.
-The install wizard will walk you through installing the
-[Speedscale Kubernetes Operator](./installation/install/kubernetes-operator.md).
-
-Recommended next step: enable the [eBPF collector](/reference/ebpf-traffic-collection)
-to capture traffic in Kubernetes. If eBPF is not suitable for your
-workload or kernel, use the [Sidecar installation](./installation/sidecar/install.md) instead.
-
-Speedscale can also be used with [Docker](./installation/install/docker.md) and [locally with proxymock](/proxymock/getting-started/quickstart/quickstart-cli/).
-
-</TabItem>
-
-<TabItem value="argocd" label="ArgoCD">
-
-Use the following ArgoCD manifest as an example. Make sure to use the latest `targetRevision` as shown on the [Helm repository](https://github.com/speedscale/operator-helm/blob/main/README.md).
-
-```
-project: default
-source:
-  repoURL: 'https://speedscale.github.io/operator-helm/'
-  targetRevision: <YOUR-VERSION>
-  helm:
-    parameters:
-      - name: apiKeySecret
-        value: speedscale-apikey
-    values: |-
-      apiKeySecret: speedscale-apikey
-      clusterName: <YOUR-CLUSTER-NAME>
-  chart: speedscale-operator
-destination:
-  namespace: speedscale
-  name: in-cluster
-syncPolicy:
-  automated: {}
-  syncOptions:
-    - CreateNamespace=true
-```
-
-</TabItem>
-
-<TabItem value="gitops" label="GitOps">
-
-:::caution
-
-Installing via `helm install` is preferred as different GitOps engines treat Helm charts differently and Helm guarantees an order of operations during the install.
-
-Review the [rendered manifest and GitOps lifecycle differences](/reference/helm#rendered-manifests-and-gitops) before enabling automated sync. A rendered chart contains hook resources, but applying the YAML does not reproduce Helm's hook ordering.
-
-:::
-
-You can generate manifests either via Helm or [speedctl CLI](./installation/install/cli.md).
-
-```
-helm template speedscale-operator speedscale/speedscale-operator \
-	-n speedscale \
-	--create-namespace \
-	--set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-	--set clusterName=<YOUR-CLUSTER-NAME> > ./speedscale-operator.yaml
-```
-
-Then store `speedscale-operator.yaml` in git so it is deployed to your cluster.
-
-The rendered file can also be referenced as a Kustomize resource:
-
-```yaml title="kustomization.yaml"
-resources:
-  - speedscale-operator.yaml
-```
-
-Re-render the manifest when upgrading Speedscale so chart changes and image versions stay current. If your policies prohibit Helm tooling even for offline rendering, [contact Speedscale Support](mailto:support@speedscale.com) for a Kustomize-compatible or custom manifest.
-
-</TabItem>
-
-</Tabs>
-
-### Verify Installation
-
-Make sure the operator pods are running properly:
-
-```
-kubectl -n speedscale get pods
-```
-
-Note: The Operator will start at least 2 pods (the operator itself and the Speedscale Forwarder) after it starts. On your cluster the ids of the pods will be different.
-
-```
-NAME                                    READY   STATUS    RESTARTS   AGE
-speedscale-forwarder-xxxxxxxxxx-xxxxx   1/1     Running   0          5s
-speedscale-operator-xxxxxxxxxx-xxxxx    1/1     Running   0          15s
-```
-
-:::tip
-
-If you have any issues installing, check out the [troubleshooting guide](./installation/install/troubleshooting.md) or contact support on [slack](https://slack.speedscale.com)
-
-:::
+Use a service account API key from [Tenant Settings](https://app.speedscale.com/tenant), then choose [Helm](./installation/install/kubernetes-operator.md?method=helm#install-method), [speedctl](./installation/install/kubernetes-operator.md?method=cli#install-method), [Argo CD](./installation/install/kubernetes-operator.md?method=argocd#install-method), or [rendered manifests](./installation/install/kubernetes-operator.md?method=gitops#install-method) in the [operator guide](./installation/install/kubernetes-operator.md#retrieve-your-api-key). Review [platform requirements](./installation/install/kubernetes.md#check-your-platform-requirements) before installing on a specialized Kubernetes platform. For private registries, see [image pull secrets](./installation/install/kubernetes-operator.md?method=cli#install-method) and [private registry images](./installation/install/kubernetes-operator.md#private-registry-images). Follow [Verify installation](./installation/install/kubernetes-operator.md#verify-installation) before proceeding to the tutorial.
 
 # Next Steps
 

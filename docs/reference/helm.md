@@ -8,7 +8,7 @@ sidebar_position: 8
 This document describes the configuration options available for the Speedscale Operator Helm [chart](https://github.com/speedscale/operator-helm). The Speedscale Operator is a Kubernetes operator that watches for deployments and can inject proxies to capture traffic or set up isolation test environments.
 
 :::info Alternative manifest workflows
-If cluster policy prevents direct Helm deployments, render the chart to plain Kubernetes YAML with `helm template`, then manage that output directly or as a Kustomize base. The [GitOps quick-start example](/getting-started/quick-start#install-speedscale-operator-optional) shows this workflow.
+If cluster policy prevents direct Helm deployments, render the chart to plain Kubernetes YAML with `helm template`, then manage that output directly or as a Kustomize base. The [rendered-manifest installation example](/getting-started/installation/install/kubernetes-operator/?method=gitops#install-method) shows this workflow.
 
 If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:support@speedscale.com), ask in the [Speedscale Community](https://slack.speedscale.com), or reach out to your account team for help creating Kustomize-compatible or other custom manifests.
 :::
@@ -47,18 +47,7 @@ If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:supp
 
 ## Quick Start
 
-```bash
-# Add the Speedscale Helm repository
-helm repo add speedscale https://speedscale.github.io/operator-helm/
-helm repo update
-
-# Install the chart with required values
-helm install speedscale-operator speedscale/speedscale-operator \
-  -n speedscale \
-  --create-namespace \
-  --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-  --set clusterName=<YOUR-CLUSTER-NAME>
-```
+Follow the [standard Kubernetes operator installation](/getting-started/installation/install/kubernetes-operator/) for credentials, method selection, and verification. To compare cluster-scoped and namespace-scoped modes, see [Kubernetes installation options](/getting-started/installation/install/kubernetes/).
 
 ## Namespaced mode
 
