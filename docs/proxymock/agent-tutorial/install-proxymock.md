@@ -54,7 +54,7 @@ tags: decoded=true, match=HIT, msgNum=1, ...
 - **The agent cannot see the proxymock tools yet.** An agent loads a new MCP server when it starts. Restart the agent in the same directory (in Claude Code, `claude --continue` keeps the conversation). In Cursor, reload the window or start a new chat.
 - **You have an older proxymock.** The skill upgrades it with the same method it was installed with. If you build proxymock yourself, its version ends in `-g` and a commit hash, and the skill leaves it alone.
 - **Homebrew installs a version older than the latest release.** Homebrew refreshes its copy of the tap at most once a day, so a release from the last few hours can be missing. Run `brew update`, then `brew upgrade speedscale/tap/proxymock`.
-- **`proxymock mcp skills list` reports skills as not installed or outdated.** Pass `--dir ./.claude/skills` for the project installation. The default still checks the legacy user directory `~/.claude/skills`. Plugin installations have a separate location.
+- **`proxymock mcp skills list` reports skills as not installed or outdated.** Pass `--dir ./.claude/skills` for the project installation. The default still checks the legacy user directory `~/.claude/skills`. Skills installed through the Claude Code plugin live in the plugin's own directory, so this command does not list them.
 - **`proxymock version` shows no config file.** `proxymock init` did not finish. Run it again in your terminal.
 - **You already have proxymock from Homebrew.** Do not also run the install script. The skill keeps the install you have.
 
@@ -72,6 +72,7 @@ sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)
 proxymock init
 
 # Preview, then connect the selected agent (Claude Code in this example)
+# Run these from your application repository: project scope writes .mcp.json and .claude/skills in the current directory
 proxymock mcp install --client claude-code --skills --dry-run
 proxymock mcp install --client claude-code --skills --yes
 

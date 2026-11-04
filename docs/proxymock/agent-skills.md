@@ -64,4 +64,4 @@ These skills form the proxymock quality loop. They run locally and need no Speed
 
 ## Related
 
-`install-speedscale` connects the proxymock MCP server to your agent. See [Model Context Protocol (MCP)](./how-it-works/mcp.md) for how that server works.
+`install-speedscale` can connect the proxymock MCP server to your agent. It asks which client and scope you want, previews the paths, and installs only that selection. See [Model Context Protocol (MCP)](./how-it-works/mcp.md) for how that server works.

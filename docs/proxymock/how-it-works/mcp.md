@@ -94,15 +94,17 @@ proxymock mcp install --client claude-code --skills --dry-run
 proxymock mcp install --client claude-code --skills
 ```
 
-Replace `claude-code` with `cursor`, `claude-desktop`, `vscode`, `gemini`, `opencode`, `kilo-code`, `hermes-agent`, `codex` or `kiro`. The selected client must be detected. Interactive confirmation defaults to decline and shows the scope, transport, MCP config path and skills path.
+Replace `claude-code` with `cursor`, `claude-desktop`, `vscode`, `gemini`, `opencode`, `kilo-code`, `hermes-agent`, `codex` or `kiro`. The selected client must be detected. Plain `proxymock mcp install` in a terminal still prompts for each detected client. Interactive confirmation defaults to decline and shows the scope, transport, MCP config path and skills path.
 
 Omit `--skills` for MCP only. Use `--skills-only` for bundled skills without MCP. Skills are supported for Claude Code, Codex, Kiro, Kilo Code and Hermes Agent. Other selected clients receive MCP registration only.
 
 ### Scope and unattended setup
 
-The default `--scope auto` prefers the current project for Cursor, Claude Code, VSCode, Gemini, OpenCode, Codex and Kiro. Other clients use user scope, shown before confirmation. Choose `--scope project` to reject global-only destinations, or `--scope user` when you deliberately want a global integration. Run project setup from the application repository.
+The default `--scope auto` prefers the current project for Cursor, Claude Code, VSCode, Gemini, OpenCode, Codex and Kiro. Other clients use user scope, shown before confirmation. Choose `--scope project` to reject global-only destinations, or `--scope user` when you deliberately want a global integration. Run project setup from the application repository. Skills support project scope only for Claude Code, Codex and Kiro. Kilo Code and Hermes Agent skills are user scope only, and `--scope project` is rejected for them.
 
-For unattended setup, `--yes` only skips confirmation. It never selects clients:
+Project registrations store the bare `proxymock` command so committed files carry no home-directory paths. Each teammate needs `proxymock` on their `PATH`. Decide deliberately whether to commit or ignore `.mcp.json` and `.claude/skills`.
+
+For unattended setup, `--yes` only skips confirmation and never selects clients. In a non-interactive session such as CI or an agent, confirmation is also skipped when `--client` or `--all-clients` is given:
 
 ```bash
 proxymock mcp install --client codex --skills --yes
