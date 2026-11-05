@@ -4,7 +4,7 @@ title: Creating a Snapshot
 description: "Create, tune, and restore snapshot traffic in Speedscale for repeatable API replay tests."
 ---
 
-<iframe src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<iframe title="Speedscale Traffic Viewer tutorial" src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 ## Observe Traffic
 

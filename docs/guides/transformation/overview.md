@@ -64,7 +64,7 @@ A Traffic Transform Template saves a Cloud transform configuration for use with 
 
 ### How to Use Transform Templates
 
-<iframe src="https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<iframe title="Traffic Transform Templates tutorial" src="https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 1. Configure transforms for a snapshot and verify them with a replay.
 2. Save the configuration as a template.
