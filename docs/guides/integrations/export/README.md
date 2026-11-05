@@ -13,10 +13,11 @@ Speedscale exporters cover three workflows:
 
 Use the vendor guides for [Datadog](./datadog.md), [Dynatrace](./dynatrace.md), and [New Relic](./new-relic.md) to configure live OpenTelemetry export. Each vendor is a separate destination channel with its own collector, credentials, filters, retries, and on/off control.
 
-Traffic-format exporters work from either a Speedscale Cloud snapshot or local RRPair files:
+Traffic-format exporters work from either a Speedscale Cloud snapshot or local RRPair files. Bruno is local only and has no `speedctl export snapshot` equivalent:
 
 | Format | Cloud snapshot | Local proxymock recording |
 | --- | --- | --- |
+| [Bruno](/proxymock/guides/bruno) | Not available | `proxymock export bruno` |
 | [Gatling](./gatling.md) | `speedctl export snapshot --type gatling` | `proxymock export gatling` |
 | [k6](./grafana.md) | `speedctl export snapshot --type k6` | `proxymock export k6` |
 | [Locust](./locust.md) | `speedctl export snapshot --type locust` | `proxymock export locust` |
