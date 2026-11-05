@@ -25,7 +25,7 @@ The `install-speedscale` skill:
 
 - Runs its preflight check, which finds no reachable cluster, so it takes the "cluster, but no cluster yet" path.
 - Starts a minikube cluster in Docker while it works on the rest: `minikube start -p speedscale-tutorial --driver=docker --memory=4g`. minikube points kubectl's current context at the new cluster.
-- Installs proxymock if it is missing, connects the proxymock MCP server to your agent and installs the Speedscale skills (`proxymock mcp install --yes`). It also adds the MCP server to the other coding agents it finds on your machine and says which.
+- Installs proxymock if it is missing, then asks which agent should receive MCP and bundled skills. It previews the selected paths and scope before running an explicitly scoped command, such as `proxymock mcp install --client claude-code --skills --yes`. Other coding agents are unchanged.
 - Proves proxymock works on your machine: records one call to example.com and answers it from a mock (`match=HIT`).
 - Checks your Speedscale tenant with `speedctl check` and repeats the tenant name back to you.
 - Stores your API key in the cluster as the Secret `speedscale/speedscale-apikey`, piped straight from your proxymock config, so it never appears in the output or in Helm values.

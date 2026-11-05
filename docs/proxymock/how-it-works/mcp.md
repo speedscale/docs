@@ -85,42 +85,58 @@ Most modern AI applications support both approaches, and MCP enables seamless in
   <CommunitySupportCard />
 </div>
 
-## Re-installing the MCP Server
+## Install or remove an agent integration
 
-The `proxymock init` command should automatically check for the presence of common MCP clients and ask to install. That is all that is usually necessary.
+Agent setup is optional and separate from `proxymock init`. It needs no Speedscale account. Select the client and preview the paths before applying changes:
 
-:::info
-
-If the `proxymock init` command fails or you are using an unknown IDE, you can manually configure the proxymock MCP server by modifying your client's `mcp.json`. This should not be necessary for most users.
-
-```json
-{
-    "mcpServers": {
-        "proxymock": {
-            "command": "/Users/me/.speedscale/proxymock",
-            "args": [
-                "mcp"
-            ],
-            "type": "stdio"
-        }
-    }
-}
+```bash
+proxymock mcp install --client claude-code --skills --dry-run
+proxymock mcp install --client claude-code --skills
 ```
 
-Additionally, you can re-detect and install by running `proxymock mcp install`.
+Replace `claude-code` with `cursor`, `claude-desktop`, `vscode`, `gemini`, `opencode`, `kilo-code`, `hermes-agent`, `codex` or `kiro`. The selected client must be detected. Plain `proxymock mcp install` in a terminal still prompts for each detected client. Interactive confirmation defaults to decline and shows the scope, transport, MCP config path and skills path.
 
-If proxymock runs somewhere your IDE cannot launch it directly (a remote dev box, a container), start it as a network server with `proxymock mcp run --http` and point the client at the Streamable HTTP endpoint instead. `proxymock mcp install --http` or `proxymock mcp json --http` produce the matching entry:
+Omit `--skills` for MCP only. Use `--skills-only` for bundled skills without MCP. Skills are supported for Claude Code, Codex, Kiro, Kilo Code and Hermes Agent. Other selected clients receive MCP registration only.
 
-```json
-{
-    "mcpServers": {
-        "proxymock": {
-            "type": "http",
-            "url": "http://localhost:8080/mcp"
-        }
-    }
-}
+### Scope and unattended setup
+
+The default `--scope auto` prefers the current project for Cursor, Claude Code, VSCode, Gemini, OpenCode, Codex and Kiro. Other clients use user scope, shown before confirmation. Choose `--scope project` to reject global-only destinations, or `--scope user` when you deliberately want a global integration. Run project setup from the application repository. Skills support project scope only for Claude Code, Codex and Kiro. Kilo Code and Hermes Agent skills are user scope only, and `--scope project` is rejected for them.
+
+Project registrations store the bare `proxymock` command so committed files carry no home-directory paths. Each teammate needs `proxymock` on their `PATH`. Decide deliberately whether to commit or ignore `.mcp.json` and `.claude/skills`.
+
+For unattended setup, `--yes` only skips confirmation and never selects clients. In a non-interactive session such as CI or an agent, confirmation is also skipped when `--client` or `--all-clients` is given:
+
+```bash
+proxymock mcp install --client codex --skills --yes
+proxymock mcp install --all-clients --yes
 ```
 
-The older `--sse` flag still works but is deprecated: the HTTP server serves the legacy `/sse` endpoint on the same port, so existing SSE configurations keep connecting.
-:::
+The second command explicitly selects every detected client and omits skills. `proxymock mcp install --yes` without client selection now exits without writes. Migrate scripts to a named client or an explicit `--all-clients` choice. The older `mcp --install` flag is deprecated; use the scoped subcommand.
+
+Codex project setup writes `.codex/config.toml` and optional `.agents/skills`. The host still decides whether to trust project configuration. Installation never approves hooks or changes host trust settings.
+
+### Preserve edits and remove an integration
+
+Managed installation leaves unowned or edited skills unchanged and refuses to overwrite an unowned or edited proxymock MCP entry. Keep the ownership record next to the client config (the config filename plus `.proxymock-install.json`). Older installations without a record remain unchanged; use `proxymock mcp json` for a manual config block instead of deleting unfamiliar entries.
+
+To remove owned artifacts, use the same client and scope as the install:
+
+```bash
+proxymock mcp uninstall --client claude-code --skills --dry-run
+proxymock mcp uninstall --client claude-code --skills
+```
+
+Omit `--skills` to remove only the MCP registration. Edited files and unrelated client settings remain. Initializing or upgrading the CLI does not silently restore removed integrations.
+
+### Network transport and manual setup
+
+Local stdio is the default. For a remote dev box or container, use matching HTTP settings on the server and installer:
+
+```bash
+proxymock mcp run --http --port 7799
+proxymock mcp install --client claude-code --http --port 7799
+```
+
+The installer writes `http://localhost:7799/mcp`. If the host runs elsewhere, use `proxymock mcp json --http --port 7799` and configure a reachable address in the client. The older `--sse` transport is deprecated.
+
+Restart the selected agent after setup. For clients the installer does not recognize, `proxymock mcp json` prints a config block without changing files.
