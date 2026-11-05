@@ -1,0 +1,201 @@
+{
+  "observedAt": "2026-11-05T17:27:39.466Z",
+  "base": "http://127.0.0.1:31843",
+  "stage": "after",
+  "observations": [
+    {
+      "name": "snapshot",
+      "width": 1440,
+      "url": "http://127.0.0.1:31843/guides/creating-a-snapshot/",
+      "status": 200,
+      "title": "Creating a Snapshot | Speedscale Docs",
+      "iframe": {
+        "title": "Speedscale Traffic Viewer tutorial",
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "582",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 407.5,
+          "width": 640,
+          "height": 360
+        },
+        "pageWidth": 1440
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "Speedscale Traffic Viewer tutorial",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "A",
+        "text": "Guides"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.591473,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "transform",
+      "width": 1440,
+      "url": "http://127.0.0.1:31843/guides/transformation/overview/",
+      "status": 200,
+      "title": "Traffic Transformation | Speedscale Docs",
+      "iframe": {
+        "title": "Traffic Transform Templates tutorial",
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "360",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 407.5,
+          "width": 640,
+          "height": 360
+        },
+        "pageWidth": 1440
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "Traffic Transform Templates tutorial",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "A",
+        "text": "​"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.781877,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "snapshot",
+      "width": 390,
+      "url": "http://127.0.0.1:31843/guides/creating-a-snapshot/",
+      "status": 200,
+      "title": "Creating a Snapshot | Speedscale Docs",
+      "iframe": {
+        "title": "Speedscale Traffic Viewer tutorial",
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "582",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 14.390625,
+          "width": 361.21875,
+          "height": 315
+        },
+        "pageWidth": 390
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "Speedscale Traffic Viewer tutorial",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "BUTTON",
+        "text": "On this page"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.721379,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "transform",
+      "width": 390,
+      "url": "http://127.0.0.1:31843/guides/transformation/overview/",
+      "status": 200,
+      "title": "Traffic Transformation | Speedscale Docs",
+      "iframe": {
+        "title": "Traffic Transform Templates tutorial",
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "360",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 14.390625,
+          "width": 361.21875,
+          "height": 315
+        },
+        "pageWidth": 390
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "Traffic Transform Templates tutorial",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "A",
+        "text": "​"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.619588,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "cleanup": "All owned browser contexts and browser closed. No authentication, remote objects or response stubs."
+}

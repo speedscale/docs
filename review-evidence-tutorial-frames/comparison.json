@@ -1,0 +1,5 @@
+{
+  "result": "pass",
+  "cases": 4,
+  "comparison": "All captured iframe attributes and rendered rectangles/page widths match the published baseline except title. All four native Tab/Enter playback checks pass; Chromium AX frames have descriptive names."
+}

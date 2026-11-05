@@ -1,0 +1,201 @@
+{
+  "observedAt": "2026-11-05T17:26:56.934Z",
+  "base": "https://docs.speedscale.com",
+  "stage": "before-layout",
+  "observations": [
+    {
+      "name": "snapshot",
+      "width": 1440,
+      "url": "https://docs.speedscale.com/guides/creating-a-snapshot/",
+      "status": 200,
+      "title": "Creating a Snapshot | Speedscale Docs",
+      "iframe": {
+        "title": null,
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "582",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 407.5,
+          "width": 640,
+          "height": 360
+        },
+        "pageWidth": 1440
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "A",
+        "text": "Guides"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.366028,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "transform",
+      "width": 1440,
+      "url": "https://docs.speedscale.com/guides/transformation/overview/",
+      "status": 200,
+      "title": "Traffic Transformation | Speedscale Docs",
+      "iframe": {
+        "title": null,
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "360",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 407.5,
+          "width": 640,
+          "height": 360
+        },
+        "pageWidth": 1440
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "A",
+        "text": "​"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.551237,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "snapshot",
+      "width": 390,
+      "url": "https://docs.speedscale.com/guides/creating-a-snapshot/",
+      "status": 200,
+      "title": "Creating a Snapshot | Speedscale Docs",
+      "iframe": {
+        "title": null,
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "582",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 14.390625,
+          "width": 361.21875,
+          "height": 315
+        },
+        "pageWidth": 390
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "BUTTON",
+        "text": "On this page"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.687357,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    },
+    {
+      "name": "transform",
+      "width": 390,
+      "url": "https://docs.speedscale.com/guides/transformation/overview/",
+      "status": 200,
+      "title": "Traffic Transformation | Speedscale Docs",
+      "iframe": {
+        "title": null,
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "src": "https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1",
+        "width": "640",
+        "height": "360",
+        "allow": "autoplay; fullscreen; picture-in-picture",
+        "allowfullscreen": false,
+        "tabindex": null,
+        "frameborder": "0",
+        "rect": {
+          "x": 14.390625,
+          "width": 361.21875,
+          "height": 315
+        },
+        "pageWidth": 390
+      },
+      "accessibleFrameLines": [
+        "    - iframe"
+      ],
+      "axFrames": [
+        {
+          "role": "Iframe",
+          "name": "",
+          "ignored": false
+        }
+      ],
+      "keyboardStart": {
+        "tag": "A",
+        "text": "​"
+      },
+      "tabsToPlay": 1,
+      "playback": [
+        {
+          "paused": false,
+          "currentTime": 2.374984,
+          "readyState": 4,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "cleanup": "All owned browser contexts and browser closed. No authentication, remote objects or response stubs."
+}
