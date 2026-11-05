@@ -26,7 +26,7 @@ proxymock export bruno \
 
 Open the output directory in Bruno and select its `local` environment. Set the empty credential variables to values for the target dev service. Without `--base-url`, each recorded origin gets a distinct environment variable. The export includes metadata ports when the captured Host field does not contain the port.
 
-The command defaults to inbound traffic. Use `--inbound-only=false` to include outbound HTTP/S calls. `--service`, `--scheme` and `--limit` restrict the collection; `--limit 0` or `-1` exports all eligible unique request/response examples. Limits keep the first unique examples in recorded order.
+The command defaults to inbound traffic. Use `--inbound-only=false` to include outbound HTTP/S calls. `--service` filters by host, and `--limit` caps the exported requests; `--limit 0` or `-1` exports all eligible unique request/response examples. Limits keep the first unique examples in recorded order. Use `--scheme http` or `--scheme https` to override the recorded URL scheme, not to filter requests by protocol.
 
 The result reports exported requests, skipped records and omitted response examples by reason. Each host gets its own group; stable content hashes distinguish request/response variants. Exact duplicates after credential replacement are counted and omitted. Filenames are content hashes and `seq` follows recorded order, so requests run in the order they were captured.
 
