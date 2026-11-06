@@ -72,6 +72,8 @@ Run `scripts/regression-test.sh` before each change. The first run creates the b
 - **Your teammates do not get the recording.** Check `.gitignore` before you commit. mock-lab ignores `proxymock/recorded-baseline/`, so the agent listed the new files to commit and left the choice of a `.gitignore` exception to you.
 - **The recording holds sensitive values.** Check it before you commit it. In the demo the only sensitive-looking values were the app's own random demo tokens in 7 `Authorization` headers.
 
+For a service with no traffic script, or a new endpoint the recording has never seen, see [Bootstrap a regression test with no recording](../guides/bootstrap-regression-test.md).
+
 See [Gate CI on replay results](../guides/replay-verdicts.md) and [CI/CD](../guides/cicd.md) to run the gate in a pipeline.
 
 <details>
