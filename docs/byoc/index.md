@@ -64,9 +64,9 @@ Follow [BYOC on ECS/Fargate](./examples/ecs.md) to configure Cloud filtering bef
 
 <span id="prerequisites"></span>
 
-1. **Prepare your tenant.** Use the dashboard or speedctl for tenant values, filters, and DLP configuration IDs. The Forwarder downloads rules from Speedscale unless local rule files are available.
+1. **Prepare your tenant.** Use the dashboard or speedctl for tenant values, filters, and DLP configuration IDs. Direct storage can use local Forwarder rule files; named collector exporters fetch their own filter and DLP configurations from the tenant.
 2. **Prevent Cloud export before capture.** Direct storage uses `primaryTransport: byoc`. Collector export needs a drop-all Cloud filter assigned to the Forwarder's `filterRule`, or `SPEEDSCALE_FILTER_RULE` on ECS. The default `standard` filter sends RRPairs to Cloud. Keep the named exporter's own filter configured to retain traffic.
-3. **Choose where to redact.** Forwarder DLP applies before export, using tenant configuration IDs or local files. `proxymock import --dlp-config` redacts local imports without changing bucket objects. See [DLP](/guides/dlp/) and [local rules](/proxymock/guides/local-rules.md).
+3. **Choose where to redact.** Configure DLP before export for each destination. Direct storage uses a tenant configuration ID or local Forwarder files; collector export uses each named exporter's DLP configuration ID. `proxymock import --dlp-config` redacts local imports without changing bucket objects. See [DLP](/guides/dlp/) and [local rules](/proxymock/guides/local-rules.md).
 4. **Keep replay in your data boundary.** Use a local-source namespaced replay for direct storage, or import and replay locally for collector export. Dashboard and Cloud replays upload snapshots to Speedscale Cloud.
 
 ## What you operate
