@@ -154,6 +154,9 @@ speedctl wait report <report-id>
 
 # List recent reports for a specific service
 speedctl get reports --service my-service
+
+# List replays that ran a specific container image tag
+speedctl get reports --image-tag v1.4.131
 ```
 
 ### Using the UI
