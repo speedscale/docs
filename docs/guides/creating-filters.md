@@ -24,11 +24,11 @@ Here's how you create and apply them:
 
 ![Filters](./creating-filters/select-filters.png)
 
-3. Click the **Create Filter** button in the top right of the filter section:
+3. Open the filter editor from the **Filters** bar and click **Save as filter rule** at the bottom left:
 
 ![Create Filter](./creating-filters/create-filter.png)
 
-4. Give the filter a unique ID (no spaces) - make sure to remember it.
+4. Give the filter a unique ID (no spaces), and make sure to remember it.
 
 ![Filter Name](./creating-filters/filter_name.png)
 
