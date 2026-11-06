@@ -143,6 +143,37 @@ The standalone `analyze_mock_matches`, `accept_mock_recommendation`, and `simila
 
 See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full parameter documentation, and the [Replay Tuning guide](replay-tuning.md) for the script-based variant of this workflow.
 
+## In proxymock web
+
+The same loop runs in `proxymock web`, for when you would rather see the misses than read a report. The browser, the CLI and the agent share one analysis and write the same per-service tuning blueprint, so a fix applied in one shows up in the others.
+
+### Fix misses in the Mocks view
+
+Open **Mocks** in the sidebar. Choose the run to check under **Replay** and the recording it was mocked from under **Recorded**. proxymock web picks the newest of each and analyzes as soon as both are set, so there is no button to press. The analysis runs offline from the RRPair files and needs no replay report: a plain recording works too, though the **Report** gauge stays empty until you pick a replay or mock run.
+
+The two gauges are the two rates from [How it works](#how-it-works). **Projected** is what the next run would score with the active blueprints. **Report** is the recorded verdicts, which only change after a real replay.
+
+Under **To fix**, each card is a group of misses that one fix would collapse, scoped by a filter on the endpoint. Click a transform on the card to apply it to every request in the group:
+
+- **Wildcard** for a rotating URL segment.
+- **Mask** or **Replay recorded** for a field that changes between runs.
+- **Ignore param** to drop a query parameter from the signature.
+- **Key on params** to match a SQL statement on its parameters.
+
+**More…** lets you pick a different transform. **Apply all recommended** applies the recommended fix for every group at once and leaves correlations (**Bind**) for you to review. Every applied fix is listed under **Applied** with an **Undo** button, and **Undo all** removes them all. The Projected gauge updates after each change.
+
+The collapsed **Stateful endpoints**, **Volatile response fields**, **Created ids** and **Credentials & session** sections are the advisories described in [Good to know](#good-to-know). They explain misses that no signature fix should hide.
+
+### See why one request missed
+
+Open a request marked **no match** in the Requests grid, and its **Similar** tab opens first. It ranks the recorded signatures of the snapshots pulled into the workspace (`snapshot-<id>` folders) that this request came closest to, with the active blueprints applied to both sides.
+
+Each candidate is a field-by-field table of this request's value and the recorded value, each before and after blueprints, with the drifting fields first. When every field agrees, the card says the request will match on the next replay.
+
+On a drifting row, **Apply fix** accepts the analyzer's recommendation for that field, and **Add blueprint** lets you choose the transform yourself. The tab ranks again as soon as a blueprint is added, so you can watch the red rows clear. **Diff body** compares the two request bodies side by side, and **Open** shows the recorded request in the grid.
+
+When the workspace has no pulled snapshot, for example after a local `proxymock record` or after pulling only a report, the tab ranks against the run's own matched requests and says so. Pull the report with its source snapshot to compare against the recording.
+
 ## From the command line
 
 Every step the agent runs through the `mocks` tool is also a `proxymock match-rate` verb, over the same workspace and the same blueprints. The analysis and the ids are identical, so you can drive the loop by hand or wire it into a script when you would rather not involve an agent:
@@ -168,7 +199,7 @@ proxymock match-rate similar --id proxymock/report-.../responder/abc123.md
 - Each fix is **scoped by a filter** (the group's endpoint), so a wildcard on one rotating route can't collapse unrelated endpoints into false matches.
 - Fixes using `smart_replace_recorded` can't be credited by the offline projection (they need recorded data at replay time) — the agent notes them for the confirming run instead of churning.
 - A value that a **prior response** issued — a pagination cursor, a freshly-created id, an issued token — is surfaced as a **correlate** recommendation: *bind* it (carry the value from the response into the later request), don't mask it, because masking a cursor collapses every page onto page 1. mock-lab's `GET /v1/feed` cursor flow shows this when the app runs against the lab reference server (`DOWNSTREAM_URL=http://localhost:8090` pointed at `../../lab/server`); `accept all` masks the volatile values and leaves correlations for you to review.
-- An endpoint the recording answered with **more than one response** for the *same* request — a poll that goes pending→done, or a growing collection — is called out under **Stateful endpoints**. A mock matches on the request signature, so it can only replay the first recorded response and the client would freeze on the stale one. This is a warning, not a fix: no masking helps, because the request itself doesn't change; the endpoint needs a *sequenced* mock. mock-lab's `GET /v1/job/status` (against the lab reference server) shows this — its `status` cycles while the request stays identical.
+- An endpoint the recording answered with **more than one response** for the *same* request, such as a poll that goes pending→done or a growing collection, is called out under **Stateful endpoints**. A mock matches on the request signature, so it hands out the recorded responses in turn (round-robin by default) whatever state the client is in, and a poll may never see the state it expects. This is a warning, not a fix: no masking helps, because the request itself doesn't change; the endpoint needs a *sequenced* mock. mock-lab's `GET /v1/job/status` (against the lab reference server) shows this: its `status` cycles while the request stays identical.
 - A rotating id in a URL path that was **created earlier in the session** — issued by a `POST`/`PUT`/`PATCH` response (a `Location` header or a body id) and then used in a later request's path — is called out under **Created ids** (a CREATE→USE list) and is *not* offered a wildcard. Wildcarding `/orders/*` would match ids the mock never issued; at mock time the client reuses the id the mock returned, so the request matches on its own. mock-lab's `POST /v1/orders` → `GET /v1/orders/{id}` flow shows this against the lab reference server.
 - Auth and session correlations — an OAuth token, a rotated session cookie, a CSRF double-submit, an `ETag`→`If-None-Match` — are collected under **Credentials & session**. These ride in headers, which are *outside* the mock signature, so they never cause a mock miss and get no fix here; but the credential-carrying ones authenticate the caller, so a *validating* replay must correlate them — the advisory flags those for review and points at credential setup. mock-lab's `POST /v1/auth/token` → `GET /v1/me` (bearer + session cookie) flow shows this against the lab reference server.
 - Response fields that vary across *identical* requests but are just noise — a timestamp, a server-issued id, a rate-limit counter — are separated out as **volatile response fields** (a NOISE list) rather than making the endpoint look stateful. They're found by observation, not a format rule, so app-specific noise is caught too; a mock ignores them, but they're worth knowing for response-diff / assertion tuning. mock-lab's `GET /v1/job/status` carries a rotating `checkedAt` alongside its real `status`, and `GET /v1/time` returns only a rotating `now` — the first stays stateful with `checkedAt` flagged noise, the second isn't flagged at all.
