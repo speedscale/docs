@@ -88,7 +88,7 @@ The replay flags you already use (`--in`, `--test-against`, `--out`, `--test-con
 | Flag | Meaning |
 |---|---|
 | `--debug` | Park the generator before the first request and wait for commands |
-| `--debug-listen` | Address the session is driven from. Default `127.0.0.1:0`, which picks a free port |
+| `--debug-listen` | Address the session is driven from. Default `127.0.0.1:0`, which picks a free port. It must be a loopback address, and the session refuses requests whose `Host` or `Origin` names another site |
 | `--debug-pause-on` | Breakpoints every run-to stops at: `assertion-fail`, `status-mismatch`, `send-fail` or `msg:N`. Repeatable. `failure` means the first three |
 | `--debug-idle-timeout` | Finish the session when no command arrives for this long. Default `30m`, maximum `4h` |
 | `--debug-start-at` | Park at this recorded message number and skip everything before it |

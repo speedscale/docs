@@ -130,13 +130,23 @@ Omit `--skills` to remove only the MCP registration. Edited files and unrelated 
 
 ### Network transport and manual setup
 
-Local stdio is the default. For a remote dev box or container, use matching HTTP settings on the server and installer:
+Local stdio is the default. To serve HTTP on the same machine, use matching settings on the server and installer:
 
 ```bash
 proxymock mcp run --http --port 7799
 proxymock mcp install --client claude-code --http --port 7799
 ```
 
-The installer writes `http://localhost:7799/mcp`. If the host runs elsewhere, use `proxymock mcp json --http --port 7799` and configure a reachable address in the client. The older `--sse` transport is deprecated.
+The installer writes `http://localhost:7799/mcp`. The server listens on `127.0.0.1` only, and it refuses requests whose `Host` or `Origin` header names another site, so a web page you visit cannot call it.
+
+On a remote dev box or container, pick the address with `--host` and set an access token with `--token` or `PROXYMOCK_MCP_TOKEN`. A server that listens beyond loopback requires the token, and it prints a random one at startup when you set none.
+
+```bash
+PROXYMOCK_MCP_TOKEN=<token> proxymock mcp run --http --host 0.0.0.0 --port 7799
+```
+
+Print the config block with `proxymock mcp json --http --port 7799`, change the URL to an address the client can reach, and add an `X-Proxymock-Token` header with the token. The older `--sse` transport is deprecated.
+
+A client that sends its own Speedscale API key as `Authorization: Bearer <api-key>` runs as that key's user, and a key that does not resolve gets no cloud access. A client that sends no key uses the login of the machine that runs the server.
 
 Restart the selected agent after setup. For clients the installer does not recognize, `proxymock mcp json` prints a config block without changing files.
