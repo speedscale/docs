@@ -149,4 +149,6 @@ Print the config block with `proxymock mcp json --http --port 7799`, change the 
 
 A client that sends its own Speedscale API key as `Authorization: Bearer <api-key>` runs as that key's user, and a key that does not resolve gets no cloud access. A client that sends no key uses the login of the machine that runs the server.
 
+The same port also serves a [REST API](../guides/rest-api.md) under `/v1` for CI jobs and scripts, with the same token and API key headers.
+
 Restart the selected agent after setup. For clients the installer does not recognize, `proxymock mcp json` prints a config block without changing files.
