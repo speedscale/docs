@@ -75,8 +75,11 @@ proxymock replay \
   --test-against http://localhost:8080 \
   --require-blueprint 'Field Transforms' \
   --fail-if 'requests.failed > 0' \
+  --fail-if 'requests.response-match-pct < 100' \
   --fail-if 'latency.p99 > 500'
 ```
+
+`requests.response-match-pct` is the share of the verdict's pairs that matched, so it fails the run when a response body changes. `requests.result-match-pct` compares status codes only, so a body change does not move it.
 
 To check the calls your service makes to its dependencies, add an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion to the test config and pass the directory `proxymock mock` wrote while it served the replay:
 
@@ -94,6 +97,6 @@ Use the actual blueprint name. A violated `--fail-if` condition exits `1`. These
 
 ## Output and load-mode limits
 
-Baseline, fix-verification, and [semantic comparison](./semantic-comparison.md) need response output. They cannot run with `--no-out` or `--load-test`. High-throughput load mode also omits `requests.result-match-pct` and cannot verify blueprint activity.
+Baseline, fix-verification, and [semantic comparison](./semantic-comparison.md) need response output. They cannot run with `--no-out` or `--load-test`. High-throughput load mode also omits `requests.result-match-pct` and `requests.response-match-pct` and cannot verify blueprint activity. `--no-out` omits `requests.response-match-pct` too.
 
 Keep CI artifacts from failed runs so you can inspect the request, observed response, and verdict together. Do not use the global `--exit-zero` option in a job that relies on exit codes. See the [CI/CD guide](./cicd.md) for pipeline setup and the [CLI reference](/reference/proxymock-cli-reference.md#replay) for options.
