@@ -47,7 +47,8 @@ The API takes two headers, both optional on loopback.
 | Header | What it carries |
 |---|---|
 | `X-Proxymock-Token` | The server's access token. Required when the server listens beyond loopback with `--host`. Set it with `--token` or `PROXYMOCK_MCP_TOKEN`; otherwise the server generates one and writes it to the ready file. |
-| `Authorization: Bearer <API key>` | A Speedscale API key. Cloud operations, such as listing or pulling snapshots, run as that key's user. Without it, the server uses the login of the machine it runs on, from `proxymock init`. |
+| `Authorization: Bearer <API key>` | A Speedscale API key. Cloud operations, such as listing or pulling snapshots, run as that key's user. Without it, the server uses the login of the machine it runs on, from `proxymock init`. A key that does not resolve gets no cloud access, and operations that only touch this machine still work. |
+| `X-Speedscale-App-URL` | The Speedscale cloud the API key belongs to, when it is not `app.speedscale.com`. |
 
 The server checks the `Host` and `Origin` headers of every request and sends no CORS headers, so a web page cannot call it. See [network transport](../how-it-works/mcp.md) for how the guard works.
 
@@ -137,7 +138,9 @@ trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
 until [ -f "$READY_FILE" ]; do sleep 0.2; done
 API=$(jq -r .restUrl "$READY_FILE")
 
-call() { curl -sS -X POST "$API/$1" -H 'Content-Type: application/json' -d "$2"; }
+# Send the job's own key: on a runner already initialized with another account,
+# the server's saved login would answer otherwise.
+call() { curl -sS -X POST "$API/$1" -H 'Content-Type: application/json' -H "Authorization: Bearer $SPEEDSCALE_API_KEY" -d "$2"; }
 
 # A wait can end before a long job does, so poll until the job has finished.
 finish_job() {
