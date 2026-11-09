@@ -263,10 +263,13 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `requests.failed`
 - `requests.per-minute`
 - `requests.per-second`
+- `requests.response-match-pct`
 - `requests.response-pct`
 - `requests.result-match-pct`
 - `requests.succeeded`
 - `requests.total`
+
+`requests.result-match-pct` is the share of requests whose status code matched the recording, the same figure a cloud report shows as its expected status code percentage. A changed response body does not lower it. `requests.response-match-pct` is the share of replayed pairs whose response matched as `replay-verdict.json` scores them, body included, or status only with `--ignore-body-changes`. Gate on it to fail a replay when a body changes. It needs the replayed responses, so it is not reported with `--no-out` or `--load-test`.
 
 Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
 
