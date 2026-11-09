@@ -16,12 +16,13 @@ The API runs on the machine that runs the job, such as a CI runner or a laptop. 
 ## Start the server
 
 ```bash
+rm -f proxymock-ready.json
 proxymock mcp run --http --port 0 --ready-file proxymock-ready.json &
 until [ -f proxymock-ready.json ]; do sleep 0.2; done
 PROXYMOCK_API=$(jq -r .restUrl proxymock-ready.json)
 ```
 
-`--port 0` picks a free port, so jobs that share a runner do not collide. The server writes the ready file only once it accepts connections, so a step can wait for the file and then call the API. The file holds the URLs, the port and, when the server has one, the access token. It is written with mode `0600`.
+`--port 0` picks a free port, so jobs that share a runner do not collide. The server writes the ready file only once it accepts connections, so a step can wait for the file and then call the API. Remove any old ready file first, or a rerun reads the previous server's URL. The file holds the URLs, the port and, when the server has one, the access token. It is written with mode `0600`.
 
 | Field | Value |
 |---|---|
@@ -73,7 +74,7 @@ curl -s -X POST "$PROXYMOCK_API/snapshots/list" \
 
 Operations that can run for minutes, such as `replays/run`, `snapshots/push` and `snapshots/pull`, run as jobs. The call answers `202` with the job and a `Location` header. Poll `GET /v1/jobs/{id}` until `status` is `succeeded`, `failed` or `canceled`, and read the operation's result from the job's `result` field.
 
-Add `?wait=<seconds>` to the call or to the poll to block until the job finishes, for at most 600 seconds per request. A call that finishes within the wait answers `200` with the finished job.
+Add `?wait=<seconds>` to the call or to the poll to block until the job finishes, for at most 600 seconds per request. A call that finishes within the wait answers `200` with the finished job. One that does not answers `202` with the job still running, so a script keeps polling until `status` changes.
 
 ```bash
 curl -s -X POST "$PROXYMOCK_API/replays/run?wait=600" \
@@ -129,26 +130,39 @@ sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)
 export PATH="$PATH:$HOME/.speedscale"
 proxymock init --api-key "$SPEEDSCALE_API_KEY"
 
-proxymock mcp run --http --port 0 --ready-file proxymock-ready.json > proxymock-server.log 2>&1 &
-until [ -f proxymock-ready.json ]; do sleep 0.2; done
-API=$(jq -r .restUrl proxymock-ready.json)
+# A fresh ready file for each run, so a rerun never reads an old server's URL.
+READY_FILE="$(mktemp -d)/proxymock-ready.json"
+proxymock mcp run --http --port 0 --ready-file "$READY_FILE" > proxymock-server.log 2>&1 &
+trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
+until [ -f "$READY_FILE" ]; do sleep 0.2; done
+API=$(jq -r .restUrl "$READY_FILE")
 
 call() { curl -sS -X POST "$API/$1" -H 'Content-Type: application/json' -d "$2"; }
 
+# A wait can end before a long job does, so poll until the job has finished.
+finish_job() {
+  local job="$1"
+  while [ "$(jq -r .status <<<"$job")" = running ]; do
+    job=$(curl -sS "$API/jobs/$(jq -r .id <<<"$job")?wait=600")
+  done
+  printf '%s' "$job"
+}
+
 # 1. Pull the snapshot into the workspace.
-pulled=$(call "snapshots/pull?wait=600" "{\"snapshotId\": \"$SNAPSHOT_ID\"}")
+pulled=$(finish_job "$(call "snapshots/pull?wait=600" "{\"snapshotId\": \"$SNAPSHOT_ID\"}")")
 [ "$(jq -r .status <<<"$pulled")" = succeeded ] || { echo "$pulled"; exit 1; }
 dir=$(jq -r .result.directory <<<"$pulled")
 
-# 2. Start the mock server and point the application at it.
+# 2. Start the mock server and run the application against it. The proxy
+# variables go to the application only: this script's own calls stay direct.
 mocks=$(call mocks/start "{\"inDirectories\": [\"$dir\"]}")
-eval "$(jq -r '.env | to_entries[] | "export \(.key)=\(.value)"' <<<"$mocks")"
-$APP_COMMAND > app.log 2>&1 &
+[ "$(jq -r .running <<<"$mocks")" = true ] || { echo "$mocks"; exit 1; }
+env $(jq -r '.env | to_entries[] | "\(.key)=\(.value)"' <<<"$mocks") $APP_COMMAND > app.log 2>&1 &
 until curl -s -o /dev/null "$APP_URL"; do sleep 0.5; done
 
 # 3. Replay the snapshot and fail the job unless it passed.
-run=$(call "replays/run?wait=600" "{\"inDirectories\": [\"$dir\"], \"testAgainst\": [\"$APP_URL\"], \"outDirectory\": \"proxymock/replayed\"}")
-jq '{status, passed: .result.passed, accuracy: .result.score.accuracy}' <<<"$run"
+run=$(finish_job "$(call "replays/run?wait=600" "{\"inDirectories\": [\"$dir\"], \"testAgainst\": [\"$APP_URL\"], \"outDirectory\": \"proxymock/replayed\"}")")
+jq '{status, error, passed: .result.passed, accuracy: .result.score.accuracy}' <<<"$run"
 [ "$(jq -r .result.passed <<<"$run")" = true ]
 ```
 

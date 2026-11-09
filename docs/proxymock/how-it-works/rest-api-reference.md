@@ -108,8 +108,8 @@ Starts the mock server on the outbound proxy port and answers once it accepts co
 | `inDirectories` | array of string | yes | Directories of recorded RRPairs to answer from. |
 | `outDirectory` | string |  | Directory to write the traffic the mock server served to. Score the replay's outbound calls from it. |
 | `mockTiming` | string |  | Response timing: none, recorded, or a fixed duration. |
-| `faults` | array of string |  | Fault specs, '<regexp>:action=value[,...]'. |
-| `chaos` | array of string |  | Chaos specs, '<filter query>:<effect>=<value>[,...]'. |
+| `faults` | array of string |  | Fault specs, '&lt;regexp&gt;:action=value[,...]'. |
+| `chaos` | array of string |  | Chaos specs, '&lt;filter query&gt;:&lt;effect&gt;=&lt;value&gt;[,...]'. |
 | `responseSelection` | string |  | How to pick among several recorded responses for one request. |
 
 Answers `200` with a [MockServerResult](#mockserverresult).
@@ -139,7 +139,7 @@ Replays recorded traffic against the application under test and scores the resul
 | `outDirectory` | string |  | Directory to write the observed traffic and replay-verdict.json to. Required unless noOut is true. |
 | `noOut` | boolean |  | Write nothing to disk. The result then has no score. |
 | `testConfig` | string |  | Test config ID from the workspace: load shape, goals and assertions. |
-| `failIf` | array of string |  | Fail conditions such as "requests.failed > 0". |
+| `failIf` | array of string |  | Fail conditions such as "requests.failed &gt; 0". |
 | `rewriteHost` | boolean |  | Rewrite the Host header to the testAgainst host. |
 | `testsFilter` | string |  | Filter query selecting which recorded requests to replay. |
 | `vus` | number |  | Virtual users replaying in parallel. |
