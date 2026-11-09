@@ -16,3 +16,13 @@ validate your API key on each run. It does **not** send any information about
 the specific nature of your traffic (like URLs, ports, content or other
 sensitive data). If you don't believe us feel free to sniff the traffic (you
 could do that with **proxymock**) and see for yourself.
+
+## Counts in your tenant's admin digest
+
+When you run **proxymock** while signed in to a Speedscale tenant, your runs may be counted in that tenant's [weekly admin digest](../../reference/weekly-digest.md).
+
+The digest shows counts only, such as how many developers ran **proxymock** last week and how many of them ran it through a coding agent.
+
+It never shows names, and it never shows what was run.
+
+Runs made while not signed in to a tenant are not counted.
