@@ -401,6 +401,7 @@ Each returned image should be `artifactory.example.com/approved/redis:7.4`. If a
 | `secretAccessList` | list | `[]` | Restricts the operator to the named Kubernetes Secrets plus required Speedscale internal Secrets. An empty list permits access to all Secrets in a managed namespace. |
 | `createJKS` | bool | `true` | Controls the pre-install job that creates the `speedscale-jks` Secret using the selected Java runtime. Supports non-root execution and a read-only root filesystem. Disable when JKS is unnecessary or the Secret is pre-provisioned. |
 | `disableSidecarSmartReverseDNS` | bool | `false` | Controls whether the sidecar should disable the smart DNS lookup feature (requires `NET_ADMIN` capability). |
+| `replayComponents.generator.serviceAccountSelectors` | list | `[]` | Label selectors for the existing service accounts a test config's `cluster.generatorServiceAccount` may run the generator as. An account matching any selector is allowed; an empty list allows none. A namespaced install uses `namespaced.replayRuntime.generatorServiceAccountSelectors`. See [Generator service account](/guides/replay/generator-service-account). |
 
 See [Kubernetes Security Requirements](/security/kubernetes-permissions) for the operator RBAC, admission webhook, replay certificate, and eBPF runtime permission summary.
 
