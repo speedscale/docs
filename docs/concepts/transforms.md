@@ -3,6 +3,11 @@ description: "Modify captured requests and responses with shared transform chain
 sidebar_position: 9
 ---
 
+import JwtSecretReferenceImage from './transforms/jwt-secret-reference.jpg';
+import JwtEmbeddedSubjectImage from './transforms/jwt-embedded-subject.jpg';
+
+import ConstantEmbeddedImage from './transforms/constant-embedded.jpg';
+
 # Transforms
 
 <iframe src="https://www.youtube.com/embed/RojqxxHL7oc?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
@@ -168,6 +173,32 @@ If you need more of a "global replace" functionality you should use variables fr
 
 Embed a variable in transform configuration with `${{variable1}}`. For example, a [Constant](/guides/transformation/transforms/constant.md) value of `new_value=${{variable1}}` substitutes the stored value while keeping the `new_value=` prefix.
 
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="Constant step with an embedded variable in the new field">
+
+![Constant step with an embedded variable in the new field](./transforms/constant-embedded.jpg)
+
+</div>
+
+<a href={ConstantEmbeddedImage}>Open screenshot full size</a>
+
 The same syntax works in configuration fields for [JWT Resign](/guides/transformation/transforms/jwt_resign.md). Keep the placeholder in the field whose value should be supplied from a variable.
+
+These two views of the JWT Resign form show a secret reference in `secretPath` and a variable in `sub`. The values are configuration placeholders.
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="JWT Resign secretPath with a documentation secret reference">
+
+![JWT Resign secretPath with a documentation secret reference](./transforms/jwt-secret-reference.jpg)
+
+</div>
+
+<a href={JwtSecretReferenceImage}>Open screenshot full size</a>
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="JWT Resign sub field with the new_sub variable">
+
+![JWT Resign sub field with the new_sub variable](./transforms/jwt-embedded-subject.jpg)
+
+</div>
+
+<a href={JwtEmbeddedSubjectImage}>Open screenshot full size</a>
 
 Embedded values also support environment variables, random strings, files, [user data](/reference/glossary.md#user-data), dataframe lookups and secrets. See [Embedded Syntax](/guides/transformation/embedded-syntax.md) for the complete reference.

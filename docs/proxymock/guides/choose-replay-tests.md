@@ -4,6 +4,8 @@ description: "Use a tests filter to choose which recorded traffic a replay sends
 sidebar_position: 9
 ---
 
+import ReplaySelectionImage from './choose-replay-tests/outbound-postgres.jpg';
+
 # Choose What a Replay Tests
 
 Every replay splits recorded traffic into two roles. **Tests** are sent by the replay to the system under test. **Mocks** are served back to that system when it makes its own calls.
@@ -49,6 +51,16 @@ Two rules trip people up:
 | AI assistant (proxymock MCP) | Ask for it, or pass the `tests-filter` parameter of the `replay_traffic` tool |
 | proxymock web | The **Tests filter** field on the Replay tab |
 | Speedscale dashboard | **Choose replay tests** on the snapshot's **Traffic** tab. Pick the dependencies under **Outbound dependencies**, optionally check **Also keep inbound tests**, and save. The snapshot is reanalyzed and the page shows the active selection as **Replay tests:** followed by the filter. |
+
+The following example selects the recorded Postgres dependency. The filter preview uses the dependency address from the recording.
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '608px'}} tabIndex={0} role="region" aria-label="Choose replay tests with an outbound Postgres dependency selected">
+
+![Choose replay tests with an outbound Postgres dependency selected](./choose-replay-tests/outbound-postgres.jpg)
+
+</div>
+
+<a href={ReplaySelectionImage}>Open screenshot full size</a>
 
 Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database` or `mysql://host:port/database` address; see [Connect to the database](../databases/load-and-regression-testing.md#credentials) for credentials.
 

@@ -4,7 +4,7 @@ title: Locking a Snapshot
 description: "Lock a snapshot so it cannot be renamed, edited, reanalyzed, or deleted until the locking user or an admin unlocks it. Protect snapshots your CI pipelines and demos depend on."
 ---
 
-import SnapshotMenuImage from './replay/append-snapshot.png';
+import SnapshotMenuImage from './capture/filter/snapshot-actions.jpg';
 
 # Locking a Snapshot
 
@@ -22,17 +22,11 @@ Any user can lock a snapshot. Only the user who locked it or an
 2. Click the **⋮** (more actions) menu in the top right corner.
 3. Choose **Lock snapshot**.
 
-<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1400px'}} tabIndex={0} role="region" aria-label="Unlocked snapshot actions menu">
-
-![The unlocked snapshot actions menu, including Lock snapshot](./replay/append-snapshot.png)
-
-</div>
+![The unlocked snapshot actions menu, including Lock snapshot](./capture/filter/snapshot-actions.jpg)
 
 <a href={SnapshotMenuImage}>Open screenshot full size</a>
 
-The snapshot header now shows a **Locked** badge next to the status, and a
-banner names who locked it and when. On the snapshots list a lock icon appears
-next to the snapshot name.
+The snapshot header now shows a **Locked** badge next to the status, and a banner names who locked it and when. On the snapshots list a lock icon appears next to the snapshot name.
 
 While the snapshot is locked, the actions that would change it are disabled in the menu. The menu also shows who holds the lock so you know who to ask.
 

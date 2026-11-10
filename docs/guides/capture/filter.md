@@ -3,7 +3,7 @@ description: "Explore the Speedscale Traffic View to filter and replicate traffi
 sidebar_position: 2
 ---
 
-import ViewTagsImg from '../replay/append-snapshot.png'
+import ViewTagsImg from './filter/snapshot-actions.jpg'
 import RawSizeImg from './filter/raw-size.png'
 
 # Traffic View
@@ -97,11 +97,7 @@ Speedscale cloud is designed to horizontally scale analysis jobs but all systems
 1. Save a snapshot for a minimal amount of time like 15 minutes (the default)
 2. Once this is complete, open the snapshot's **More actions** menu and choose **Inspect data > View tags**. Look for the raw file size.
 
-<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1400px'}} tabIndex={0} role="region" aria-label="Snapshot actions menu">
-
-<img src={ViewTagsImg} alt="Snapshot actions menu with View tags under Inspect data" />
-
-</div>
+<img src={ViewTagsImg} width="248" alt="Snapshot actions menu with View tags under Inspect data" />
 
 <a href={ViewTagsImg}>Open the action menu image full size</a>
 <img src={RawSizeImg} height="300px" alt="The raw-size snapshot tag used for the size estimate in this example" />
