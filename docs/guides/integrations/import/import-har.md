@@ -88,7 +88,7 @@ A cloud import creates a traffic snapshot that can be replayed in a cluster or f
 
 <a href={SnapshotOverviewImage}>Open screenshot full size</a>
 
-Click **View Traffic** to inspect the requests before replay.
+Open the **Traffic** tab to inspect the requests before replay.
 
 ## Replay
 
