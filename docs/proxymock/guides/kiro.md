@@ -76,6 +76,8 @@ Read the reviewed spec from disk. Implement it, run the tests twice, and report 
 
 </div>
 
+You can also use **Run all tasks** in the reviewed spec's task list to start implementation. The approved requirements still govern the selected recording, both unchanged runs and the report.
+
 Kiro should generate the runner from the approved requirements, use the chosen recording for tests and mocks, and save separate results for both runs. It should compare outcomes and coverage between runs without changing the inputs or retrying failures until they pass.
 
 ## 5. Read the report
