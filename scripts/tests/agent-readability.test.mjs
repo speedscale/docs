@@ -64,10 +64,10 @@ test('large sections split into bounded indexes with valid targets', async t => 
   const dir = await mkdtemp(join(tmpdir(), 'agent-index-size-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
   await writeFile(join(dir, 'index.html'), page('https://example.com/', '<h1>Docs</h1>'));
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 110; i++) {
     const path = `reference/page-${i}`;
     await mkdir(join(dir, path), { recursive: true });
-    await writeFile(join(dir, path, 'index.html'), page(`https://example.com/${path}/`, '<h1>Reference</h1>').replace('content="Example reference"', `content="${'Reference '.repeat(1100)}"`));
+    await writeFile(join(dir, path, 'index.html'), page(`https://example.com/${path}/`, '<h1>Reference</h1>').replace('content="Example reference"', `content="${'Reference '.repeat(40)}"`));
   }
   await generateMirrors(dir);
   const index = await readFile(join(dir, 'reference/llms.txt'), 'utf8');
@@ -75,4 +75,24 @@ test('large sections split into bounded indexes with valid targets', async t => 
   assert.match(index, /llms-2.txt/);
   assert.ok((await readFile(join(dir, 'reference/llms-1.txt'), 'utf8')).length < 50000);
   await validateIndexes(dir, 'https://example.com/');
+});
+
+
+test('preview discovery uses its public origin while retaining source canonical metadata', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'agent-preview-origin-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const canonical = 'https://docs.example.com/pr-42/';
+  const publicBaseUrl = 'http://preview.example.com/pr-42/';
+  await writeFile(join(dir, 'index.html'), page(canonical, '<h1>Docs</h1>'));
+  await mkdir(join(dir, 'proxymock'));
+  await writeFile(join(dir, 'proxymock/index.html'), page(canonical + 'proxymock/', '<h1>proxymock</h1><a href="../install/">Install</a>'));
+  await generateMirrors(dir, { publicBaseUrl });
+  const html = await readFile(join(dir, 'proxymock/index.html'), 'utf8');
+  const markdown = await readFile(join(dir, 'proxymock/index.md'), 'utf8');
+  const index = await readFile(join(dir, 'proxymock/llms.txt'), 'utf8');
+  assert.match(html, /type="text\/markdown" href="http:\/\/preview.example.com\/pr-42\/proxymock\/index.md"/);
+  assert.match(markdown, /canonical: "https:\/\/docs.example.com\/pr-42\/proxymock\/"/);
+  assert.match(markdown, /\[Install\]\(http:\/\/preview.example.com\/pr-42\/install\/\)/);
+  assert.doesNotMatch(index, /docs.example.com/);
+  await validateIndexes(dir, publicBaseUrl);
 });

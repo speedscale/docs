@@ -8,10 +8,11 @@ const clean = value => (value || '').replace(/<!--[\s\S]*?(?:-->|$)/g, '').repla
 const canonicalOf = document => document.querySelector('link[rel="canonical"]')?.getAttribute('href');
 const excluded = document => document.querySelector('meta[http-equiv="refresh" i]') || /noindex/i.test(document.querySelector('meta[name="robots"]')?.getAttribute('content') || '');
 
-export function markdownFromHtml(html, { contentSelector = 'main', indexUrl } = {}) {
+export function markdownFromHtml(html, { contentSelector = 'main', indexUrl, pageUrl } = {}) {
   const { document } = parseHTML(html);
   const canonical = canonicalOf(document);
   if (!canonical || excluded(document)) return null;
+  const retrievalUrl = pageUrl || canonical;
   const content = document.querySelector(contentSelector);
   if (!content) return null;
   for (const tablist of content.querySelectorAll('[role="tablist"]')) {
@@ -32,7 +33,7 @@ export function markdownFromHtml(html, { contentSelector = 'main', indexUrl } = 
   for (const node of content.querySelectorAll('[href], [src]')) {
     for (const attr of ['href', 'src']) {
       const value = node.getAttribute(attr);
-      if (value) node.setAttribute(attr, new URL(value, canonical).href);
+      if (value) node.setAttribute(attr, new URL(value, retrievalUrl).href);
     }
   }
   const converter = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
@@ -58,7 +59,7 @@ export function markdownFromHtml(html, { contentSelector = 'main', indexUrl } = 
   });
   const title = document.querySelector('title')?.textContent || '';
   const description = document.querySelector('meta[name="description"]')?.getAttribute('content') || '';
-  const mirrorUrl = new URL('index.md', canonical).href;
+  const mirrorUrl = new URL('index.md', retrievalUrl).href;
   const index = indexUrl || new URL('/llms.txt', canonical).href;
   return '---\ntitle: ' + JSON.stringify(title) + '\ndescription: ' + JSON.stringify(description) + '\ncanonical: ' + JSON.stringify(canonical) + '\n---\n\n' +
     `[Documentation index](${index}) | [Markdown](${mirrorUrl}) | [Canonical page](${canonical})\n\n` + converter.turndown(content.innerHTML).trim() + '\n';
@@ -77,21 +78,23 @@ export async function generateMirrors(dir, options = {}) {
   await walk(dir);
   const rootHtml = await readFile(join(dir, 'index.html'), 'utf8');
   const { document: rootDocument } = parseHTML(rootHtml);
-  const siteBase = canonicalOf(rootDocument);
-  if (!siteBase) throw new Error('The root page must have a canonical URL');
+  const canonicalBase = canonicalOf(rootDocument);
+  if (!canonicalBase) throw new Error('The root page must have a canonical URL');
+  const siteBase = options.publicBaseUrl || canonicalBase;
   const rootIndex = new URL('llms.txt', siteBase).href;
   for (const file of files.sort()) {
     let html = await readFile(file, 'utf8');
     const { document } = parseHTML(html);
     const canonical = canonicalOf(document);
     const path = relative(dir, dirname(file)).split('\\').join('/');
-    const expected = new URL(path ? path + '/' : './', siteBase).href;
+    const expected = new URL(path ? path + '/' : './', canonicalBase).href;
     if (canonical !== expected) continue;
     const section = path.split('/')[0];
     const indexUrl = section ? new URL(section + '/llms.txt', siteBase).href : rootIndex;
-    const markdown = markdownFromHtml(html, { ...options, indexUrl });
+    const pageUrl = new URL(path ? path + '/' : './', siteBase).href;
+    const markdown = markdownFromHtml(html, { ...options, indexUrl, pageUrl });
     if (!markdown) continue;
-    const mirrorUrl = new URL('index.md', canonical).href;
+    const mirrorUrl = new URL('index.md', pageUrl).href;
     html = html.replace(/<link\b(?=[^>]*\brel="(?:alternate|describedby)")(?=[^>]*(?:\btype="text\/markdown"|\bhref="[^"]*\/llms\.txt"))[^>]*>/g, '');
     html = html.replace('</head>', `<link rel="alternate" type="text/markdown" href="${mirrorUrl}"><link rel="describedby" href="${indexUrl}"></head>`);
     await writeFile(file, html);

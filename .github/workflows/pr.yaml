@@ -98,6 +98,8 @@ jobs:
 
     - name: build
       if: steps.preview.outputs.run == 'true'
+      env:
+        DOCS_PUBLIC_BASE_URL: http://docs-preview.speedscale.com.s3-website-us-east-1.amazonaws.com/pr-${{ steps.preview.outputs.pr_number }}/
       run: yarn build
 
     # Preserve legacy redirect filenames unsupported by artifact storage.
