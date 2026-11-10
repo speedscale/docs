@@ -116,10 +116,12 @@ test('license redirects publish the canonical destination as S3 redirect metadat
   });
   assert.equal(result.status, 0, result.stderr);
   const calls = readFileSync(log, 'utf8').trim().split('\n').map((line) => JSON.parse(line));
-  assert.equal(calls.length, 2);
+  assert.equal(calls.length, 4);
   assert.deepEqual(calls.map((args) => args[args.indexOf('--key') + 1]).sort(), [
     'proxymock/how-it-works/license/index.html',
+    'proxymock/how-it-works/license/index.md',
     'proxymock/reference/license/index.html',
+    'proxymock/reference/license/index.md',
   ]);
   for (const args of calls) {
     assert.deepEqual(args.slice(0, 2), ['s3api', 'put-object']);

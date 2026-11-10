@@ -76,6 +76,10 @@ jobs:
       if: steps.preview.outputs.run == 'true'
       run: yarn --frozen-lockfile --silent
 
+    - name: agent readability tests
+      if: steps.preview.outputs.run == 'true'
+      run: yarn test:agents
+
     - name: security regression tests
       if: steps.preview.outputs.run == 'true'
       run: node --test scripts/security-regressions.test.mjs
@@ -154,7 +158,10 @@ jobs:
     - name: upload preview
       env:
         PR_NUMBER: ${{ needs.build.outputs.pr_number }}
-      run: aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER"
+      run: |
+        aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER" --delete --exclude '*.md'
+        aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER/" --exclude '*' --include '*.md' --delete --content-type 'text/markdown; charset=utf-8' --cache-control 'public, max-age=300' --metadata-directive REPLACE
+        aws s3 cp build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER/" --recursive --exclude '*' --include '*.md' --content-type 'text/markdown; charset=utf-8' --cache-control 'public, max-age=300' --metadata-directive REPLACE
 
     - name: show url
       env:
