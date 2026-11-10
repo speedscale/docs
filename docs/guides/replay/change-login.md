@@ -11,9 +11,7 @@ Keep in mind that this is typically not necessary if you are using the Speedscal
 
 ## Objective
 
-Change a credential recorded in production to a test value provided by us. When you have created your transform it should look something like this:
-
-![Transform](change-login-transform.png)
+Change a credential recorded in production to a test value. The Configuration section below shows the selected field, the Constant step, and the resulting transform chain.
 
 ### Install Demo
 

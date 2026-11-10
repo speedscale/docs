@@ -4,27 +4,22 @@ description: "Integrate proxymock into your CI/CD pipeline to enhance deployment
 sidebar_position: 2
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 # CI/CD
 
-Integrate **proxymock** into your CI/CD workflow to enable high-velocity
-deployment with confidence.
+Use proxymock to validate AI-assisted code changes with recorded traffic. Run replay checks in CI after the build and unit tests, and validate the deployed application in its delivery environment before promoting it to production.
 
-Run **proxymock** after your build and unit tests, but before deploying to
-production.
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1100px'}} tabIndex={0} role="region" aria-label="AI-assisted SDLC">
 
-```mermaid
-flowchart LR
-    code["Code"] --> commit["Commit"]
-    commit --> build["Build"]
-    build --> unit["Unit tests"]
-    unit --> replay["proxymock integration tests"]
-    replay --> review["Review"]
-    review --> staging["Staging"]
-    staging --> production["Production"]
-```
+![AI code, AI code review, CI validation, continuous delivery with validation in place, then production](/img/diagrams/ai-sdlc-pipeline.svg)
+
+</div>
+
+<a href={useBaseUrl('/img/diagrams/ai-sdlc-pipeline.svg')}>Open diagram full size</a>
 
 Adding anything to your CI/CD pipeline generally involves the same 3 steps:
 

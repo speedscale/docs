@@ -2,7 +2,7 @@ name: PR Preview
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:
   contents: read
@@ -112,7 +112,7 @@ jobs:
 
   publish:
     needs: build
-    if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+    if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && !github.event.pull_request.draft && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -143,7 +143,7 @@ jobs:
         EXPECTED_HEAD: ${{ needs.build.outputs.head_sha }}
       run: |
         gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
-          jq -e --arg sha "$EXPECTED_HEAD" '.state == "open" and .head.sha == $sha'
+          jq -e --arg sha "$EXPECTED_HEAD" '.state == "open" and .draft == false and .head.sha == $sha'
 
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0

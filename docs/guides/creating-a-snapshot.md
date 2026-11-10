@@ -51,10 +51,6 @@ A traffic snapshot is created from the selected traffic when running a replay so
 
 ![The Overview tab of a snapshot: whether it is ready to replay, its Tests and Mocks, and its latency and throughput](./snapshot.png)
 
-In addition to these details, a Service Map visually represents the inbound and outbound traffic, and how the replay will be orchestrated.
-
-![Service Map](../select-service-map.png)
-
 ### Lock a snapshot
 
 If other teams or CI pipelines depend on a snapshot, you can lock it from the **⋮** menu so it cannot be renamed, edited, reanalyzed, or deleted until the locking user or an Admin unlocks it. See [Locking a Snapshot](/guides/locking-a-snapshot.md).

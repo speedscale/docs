@@ -3,7 +3,7 @@ description: "Explore the Speedscale Traffic View to filter and replicate traffi
 sidebar_position: 2
 ---
 
-import ViewTagsImg from './filter/snapshot-tags.png'
+import ViewTagsImg from '../replay/append-snapshot.png'
 import RawSizeImg from './filter/raw-size.png'
 
 # Traffic View
@@ -95,10 +95,16 @@ Snapshots do not have a fixed size limit but extremely large snapshots can time 
 Speedscale cloud is designed to horizontally scale analysis jobs but all systems have configuration limits. If your snapshot creation is timing out, follow the procedure below to chop it down to a more manageable size. Generally speaking, snapshot size has no limit but practically speaking snapshots over a few gigabytes become unmanageable simply because files that large take time to move. To handle snapshot creation timeouts you can follow the following procedure:
 
 1. Save a snapshot for a minimal amount of time like 15 minutes (the default)
-2. Once this is complete, open the snapshot tags and look for the raw file size.
+2. Once this is complete, open the snapshot's **More actions** menu and choose **Inspect data > View tags**. Look for the raw file size.
 
-<img src={ViewTagsImg} height="300px" alt="Alt text" />
-<img src={RawSizeImg} height="300px" alt="Alt text" />
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1400px'}} tabIndex={0} role="region" aria-label="Snapshot actions menu">
+
+<img src={ViewTagsImg} alt="Snapshot actions menu with View tags under Inspect data" />
+
+</div>
+
+<a href={ViewTagsImg}>Open the action menu image full size</a>
+<img src={RawSizeImg} height="300px" alt="The raw-size snapshot tag used for the size estimate in this example" />
 
 3. Let's assume we want a 1 Gig snapshot since that is fairly easy to work with. We can do some basic multiplication to see that the existing file is roughly 10M and so if we captured 100x as much traffic that would be roughly 1GB. This assumes traffic size is fairly uniform which may or may not be reasonable for your application. Some apps have mid-day spikes so your mileage may vary.
 4. Run the same snapshot with 10x the timeframe (150 minutes or roughly 2.5 hours)

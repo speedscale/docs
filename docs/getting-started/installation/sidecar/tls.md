@@ -144,24 +144,22 @@ In this mode, the sidecar is acting as a passthrough. It copies the traffic to t
 
 ### Outbound
 
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '800px'}} tabIndex={0} role="region" aria-label="Sidecar outbound request and response">
+
 ```mermaid
 sequenceDiagram
-  actor operator
-  actor service
-  participant iptables
-  participant sidecar
-  participant local_root_ca
-  actor example.com
-
-  operator->>local_root_ca: create cluster cert
-  service->>iptables: HTTP request
-  iptables->>sidecar: redirect to sidecar
-  sidecar->>local_root_ca: use cluster cert
-  sidecar->>example.com: real request
-  example.com->>sidecar: unwrap intermediate cert
-  sidecar->>service: return request
-  service->>local_root_ca: use cluster cert
+    participant App as Application
+    participant Sidecar as Sidecar proxy
+    participant Remote as External service
+    Note over App,Remote: Existing sidecar deployments, simplified message flow
+    App->>Sidecar: Outbound request redirected by iptables
+    Sidecar->>Remote: Forward request
+    Remote-->>Sidecar: Response
+    Sidecar-->>App: Return response
+    Note over App,Remote: Certificate trust and TLS setup remain in the accompanying text
 ```
+
+</div>
 
 - The application makes it’s call as normal for instance to `https://example.com:443`
 - The iptables rule modifies the intended destination and changes the port to `4140` where the sidecar is listening, and the sidecar initiates the outbound call transparently to the application (no code change required).

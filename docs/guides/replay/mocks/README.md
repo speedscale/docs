@@ -11,11 +11,13 @@ Mocks, backed by [responders](/reference/glossary.md#responder), can be turned o
 
 ## Viewing the snapshot
 
-![Service Map](./responders/map.png)
+Open the snapshot's **Overview** tab to inspect its **Mocks** card. In **Traffic**, select **Mocks** or one dependency to inspect the recorded calls and responses. See [View Snapshot](../../creating-a-snapshot.md#view-snapshot) for the snapshot layout.
 
-We see here that our service has outbound calls to a variety of 3rd party APIs. We use DynamoDB, Stripe, Hubspot, Plaid and Google Cloud. Our goal is to run a test on this `payment` service without needing to rely on those external APIs. Speedscale allows us to mock these services out and reduce our dependency footprint during testing. A full list of supported technology is listed [here](/reference/technology-support.md). At Speedscale, we refer to these mocks as `responders`.
+In this example, our service has outbound calls to a variety of 3rd party APIs. We use DynamoDB, Stripe, Hubspot, Plaid and Google Cloud. Our goal is to run a test on this `payment` service without needing to rely on those external APIs. Speedscale allows us to mock these services out and reduce our dependency footprint during testing. A full list of supported technology is listed [here](/reference/technology-support.md). At Speedscale, we refer to these mocks as `responders`.
 
-![List](./responders/table.png)
+The following backend-selection view belongs to replay setup. It controls which dependencies are mocked for that replay.
+
+![The replay setup backend selector, listing dependencies and their detected technologies](./responders/table.png)
 
 We can also see here that Speedscale has identified the type of backends these are. For eg. Hubspot is a JSON API and Stripe is similar but we've also identified `Bearer` authorization for the API requests. At this point we could uncheck certain backends if we did not them mocked out. For eg. I may not want to mock out DynamoDB because I have a dev instance setup but I want to mock out Stripe because I don't want to make actual credit card transactions. For now, we'll leave these all checked.
 

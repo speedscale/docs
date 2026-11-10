@@ -4,6 +4,8 @@ title: Locking a Snapshot
 description: "Lock a snapshot so it cannot be renamed, edited, reanalyzed, or deleted until the locking user or an admin unlocks it. Protect snapshots your CI pipelines and demos depend on."
 ---
 
+import SnapshotMenuImage from './replay/append-snapshot.png';
+
 # Locking a Snapshot
 
 A locked snapshot is read-only. Nobody can rename it, edit its traffic or
@@ -19,6 +21,14 @@ Any user can lock a snapshot. Only the user who locked it or an
 1. Open the snapshot from the [snapshots page](https://app.speedscale.com/snapshots).
 2. Click the **⋮** (more actions) menu in the top right corner.
 3. Choose **Lock snapshot**.
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1400px'}} tabIndex={0} role="region" aria-label="Unlocked snapshot actions menu">
+
+![The unlocked snapshot actions menu, including Lock snapshot](./replay/append-snapshot.png)
+
+</div>
+
+<a href={SnapshotMenuImage}>Open screenshot full size</a>
 
 The snapshot header now shows a **Locked** badge next to the status, and a
 banner names who locked it and when. On the snapshots list a lock icon appears

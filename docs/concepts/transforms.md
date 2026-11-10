@@ -41,10 +41,12 @@ Transforms also have a data cache where **variables** can be stored. Variables a
 
 Last, the transformed data is re-inserted into the RRPair in exactly the same location. Each transform runs in reverse order to re-encode the new **token** and place it back in its correct place.
 
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '900px'}} tabIndex={0} role="region" aria-label="Transform extraction and reinsertion">
+
 ```mermaid
 flowchart LR
     subgraph rrpair["RRPair"]
-        header["Record-Timestamp:<br/>Sat, 20 Nov 2019 07:16:26 GMT"]
+        header["Record-Timestamp (example):<br/>Tue, 10 Nov 2026 12:00:00 GMT"]
         body["order-id: 52-3059"]
     end
 
@@ -53,6 +55,8 @@ flowchart LR
     body --> extractJson["Extract JSON"] --> insertText["Insert text"]
     insertText --> extractJson --> body
 ```
+
+</div>
 
 ### Read-only chains
 
@@ -162,21 +166,8 @@ If you need more of a "global replace" functionality you should use variables fr
 
 ### Embedded
 
-Variable values and several special keywords can be embedded within other transform
-configuration fields using the `${{...}}` syntax. The simplest form replaces a placeholder with the
-value of a variable (if known) wherever it is found in the transform configuration. For example, you
-may want to embed a variable inside of a constant to produce `new_value=<some value from variable 1>`:
+Embed a variable in transform configuration with `${{variable1}}`. For example, a [Constant](/guides/transformation/transforms/constant.md) value of `new_value=${{variable1}}` substitutes the stored value while keeping the `new_value=` prefix.
 
-```
-${{variable1}}
-```
+The same syntax works in configuration fields for [JWT Resign](/guides/transformation/transforms/jwt_resign.md). Keep the placeholder in the field whose value should be supplied from a variable.
 
-![constant](./transforms/constant_example.png)
-
-This also works inside of configuration fields in other transforms, like `jwt_resign`:
-
-![jwt_example](./transforms/jwt_example.png)
-
-In addition to plain variables, the syntax supports special keywords for environment variables,
-random strings, files, [user data](/reference/glossary.md#user-data), dataframe lookups, and secrets.
-See [Embedded Syntax](/guides/transformation/embedded-syntax) for the complete reference.
+Embedded values also support environment variables, random strings, files, [user data](/reference/glossary.md#user-data), dataframe lookups and secrets. See [Embedded Syntax](/guides/transformation/embedded-syntax.md) for the complete reference.

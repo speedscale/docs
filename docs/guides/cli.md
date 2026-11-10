@@ -6,6 +6,8 @@ keywords: [CLI, speedctl, command line, capture, replay, mocks]
 sidebar_position: 21
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Capture, replay, and mock with speedctl
 
 This guide uses [speedctl](../getting-started/installation/install/cli.md) to capture traffic into Speedscale Cloud, replay a cloud snapshot, and create local mocks from that snapshot. Use it when your existing workflow calls for speedctl.
@@ -78,13 +80,13 @@ This section is for existing `speedctl replay` workflows using a cloud snapshot.
 
 Once you have captured traffic you can [create a snapshot](./creating-a-snapshot.md) and replay it against your app.
 
-```mermaid
-flowchart LR
-    snapshot["Snapshot traffic"] -.-> generator["Generator"]
-    snapshot -.-> responder["Responder"]
-    generator --> app["Your app"]
-    app --> responder
-```
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '900px'}} tabIndex={0} role="region" aria-label="Replay snapshot data and runtime traffic">
+
+![The snapshot supplies recorded data to the generator and responder; runtime requests travel from generator to application to responder, with responses returning separately](/img/diagrams/replay-snapshot-datastore.svg)
+
+</div>
+
+<a href={useBaseUrl('/img/diagrams/replay-snapshot-datastore.svg')}>Open diagram full size</a>
 
 The captured traffic is loaded into Speedscale components before the replay starts. The [generator](../reference/glossary.md#generator) makes requests to your app and the [responder](../reference/glossary.md#responder) mocks external resources.
 

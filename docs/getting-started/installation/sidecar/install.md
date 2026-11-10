@@ -14,7 +14,28 @@ In Kubernetes, Speedscale employs a sidecar (also known as `goproxy`) to capture
 
 The sidecar or init container uses these ports "intercept" traffic transparently. Here is a basic diagram that shows a client making a call to a service under test, and that service makes subsequent calls to other backend systems. Of course some calls may use an http port like 80 or 8080 (or pick your favorite port), other times the service may use https on port 443 and be using TLS traffic.
 
-![tls](./tls/sidecar.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1400px'}} tabIndex={0} role="region" aria-label="Sidecar traffic routing">
+
+```mermaid
+flowchart LR
+    client["Client<br/>destination :443"]
+    subgraph workload["Existing sidecar deployment"]
+        inbound["Inbound proxy<br/>:4143"]
+        app["Application<br/>:443"]
+        outbound["Outbound proxy<br/>:4140"]
+        inbound -->|"original destination"| app
+        app -->|"redirected outbound"| outbound
+    end
+    client -->|"transparent redirect"| inbound
+    outbound -->|"HTTP :8080"| http["HTTP service"]
+    outbound -->|"HTTPS :443"| https["HTTPS service"]
+    classDef proxy fill:#fff1d7,stroke:#b97616,color:#5c3b0a,stroke-width:1.5px;
+    classDef app fill:#e5f3ed,stroke:#5d9480,color:#204c3e,stroke-width:1.5px;
+    class inbound,outbound proxy;
+    class app app;
+```
+
+</div>
 The Speedscale sidecar proxy, [goproxy](/reference/glossary.md#goproxy), is
 used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
