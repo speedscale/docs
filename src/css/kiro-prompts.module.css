@@ -1,0 +1,12 @@
+.prompt :global(pre),
+.prompt :global(pre code) {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.prompt :global(pre code) {
+  float: none;
+  display: block;
+  min-width: 0;
+  padding-right: 3.5rem;
+}

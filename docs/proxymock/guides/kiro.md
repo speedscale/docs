@@ -4,6 +4,8 @@ description: "Install proxymock in Kiro, review a testing spec, and verify recor
 sidebar_position: 4
 ---
 
+import styles from '@site/src/css/kiro-prompts.module.css';
+
 # Integration testing with Kiro and proxymock
 
 Have Kiro write a testing spec, then implement it using recorded requests and dependency responses. The proxymock tools run the tests and supply native comparison, assertion and schema-coverage results for you to review.
@@ -23,9 +25,13 @@ Use a checked-in, reviewed recording or connect to your own Speedscale Cloud cap
 
 Paste this into Kiro:
 
+<div className={styles.prompt}>
+
 ```text
 Install proxymock using https://docs.speedscale.com/proxymock/getting-started/installation/. Connect its MCP server and Speedscale skills to Kiro in my user settings. Verify the connection and skills, then stop. Keep credentials out of this repository.
 ```
+
+</div>
 
 Complete the browser sign-in if this is your first proxymock setup. Reload Kiro when needed to load the new MCP server. Confirm that the proxymock tools and Speedscale skills are available before continuing. To configure only Kiro manually, use `proxymock mcp install --client kiro --scope user --skills`; `--dry-run` previews its paths. They belong in Kiro's user configuration; the application repository holds the tests and reusable proxymock assets.
 
@@ -35,9 +41,13 @@ If you use an organization-managed Kiro subscription, sign in with that organiza
 
 Start a fresh chat in the application directory. Paste:
 
+<div className={styles.prompt}>
+
 ```text
 Write a short integration-testing spec for this app. Use existing recorded traffic or discover it in Speedscale Cloud or the connected bucket. Mock dependencies, evaluate assertions, measure native OpenAPI coverage and run twice unchanged. Use recorded cases only; report gaps without filling them. Include capture-time DLP and versioned redacted fixtures. Keep the app unchanged. Stop for review.
 ```
+
+</div>
 
 Let Kiro inspect the application and propose the spec before implementation. If several captured workloads match, identify your intended service or cluster. You do not need to start by supplying bucket names or snapshot IDs.
 
@@ -58,9 +68,13 @@ Use this review to keep the required work small. Missing prerequisites should st
 
 Save the reviewed spec files in the project. In the same chat, paste:
 
+<div className={styles.prompt}>
+
 ```text
 Read the reviewed spec from disk. Implement it, run the tests twice, and report the results.
 ```
+
+</div>
 
 Kiro should generate the runner from the approved requirements, use the chosen recording for tests and mocks, and save separate results for both runs. It should compare outcomes and coverage between runs without changing the inputs or retrying failures until they pass.
 
