@@ -65,11 +65,6 @@ if (offsite.length > 0) {
   process.exit(1);
 }
 
-// Negotiated requests use index.md; keep retired routes as HTTP redirects.
-for (const [key, target] of [...stubs]) {
-  if (key.endsWith('/index.html')) stubs.push([key.replace(/index\.html$/, 'index.md'), target]);
-}
-
 console.log(`${stubs.length} redirect stubs -> 301 objects in s3://${bucket}`);
 
 let failed = 0;
@@ -86,7 +81,7 @@ for (let i = 0; i < stubs.length; i += 8) {
         "--bucket", bucket,
         "--key", key,
         "--website-redirect-location", target,
-        "--content-type", key.endsWith('.md') ? "text/markdown; charset=utf-8" : "text/html; charset=utf-8",
+        "--content-type", "text/html; charset=utf-8",
         "--cache-control", "public, max-age=300",
       ], { stdio: ["ignore", "ignore", "inherit"] });
       console.log(`301: ${key} -> ${target}`);

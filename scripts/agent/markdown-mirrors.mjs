@@ -167,11 +167,3 @@ export async function validateIndexes(dir, siteBase) {
   }
   await walk(dir);
 }
-
-export default function markdownMirrors() {
-  return { name: 'speedscale-markdown-mirrors', hooks: {
-    'astro:build:done': async ({ dir, logger }) => {
-      logger.info(`Generated ${await generateMirrors(dir.pathname)} Markdown mirrors and indexes`);
-    },
-  } };
-}
