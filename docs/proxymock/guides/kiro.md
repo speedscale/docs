@@ -14,7 +14,7 @@ Open your application repository in [Kiro IDE](https://kiro.dev/ide/). You need 
 
 For an example, use one of these public repositories:
 
-- [Spring Bedrock demo](https://github.com/speedscale/spring-bedrock-demo): a Java 21 Spring Boot API calling Amazon Bedrock, with an OpenAPI contract and a Kubernetes API client Job. Follow its README for deployment and capture prerequisites.
+- [Spring Bedrock demo](https://github.com/speedscale/spring-bedrock-demo): a Java 21 Spring Boot API calling Amazon Bedrock, with a [finished test report](https://github.com/speedscale/spring-bedrock-demo/blob/main/docs/testing/report.md), [reviewed spec](https://github.com/speedscale/spring-bedrock-demo/blob/main/.kiro/specs/recorded-traffic-integration-tests/spec.md), OpenAPI contract and redacted recording. Its README explains offline replay and optional Kubernetes capture.
 - [mock-lab](https://github.com/speedscale/mock-lab): small applications in several languages with recorded examples. Open the individual language application's directory in Kiro and follow its README.
 
 Use a checked-in, reviewed recording or connect to your own Speedscale Cloud capture or BYOC bucket. Creating fresh Bedrock traffic requires AWS access and makes paid model calls; replaying with recorded dependency mocks should not call Bedrock. For cluster capture, use the example's API client Job against the Kubernetes Service.
@@ -46,7 +46,7 @@ Let Kiro inspect the application and propose the spec before implementation. If 
 Read the requirements, design and tasks. The approved spec should state:
 
 - **Inputs:** select one real recording and freeze it for both runs. Keep the recorded validation cases; create no additional cases or dependency responses.
-- **Mocks:** use recorded dependency responses with passthrough disabled. For Java, use the proxymock app wrapper so proxy and TLS settings reach the JVM. Use dummy AWS credentials for local tests. An unused STS recording is expected when local credentials replace IRSA.
+- **Mocks:** use recorded dependency responses with passthrough disabled. For Java, wrap the actual Java command (`proxymock mock ... -- /path/to/java -jar app.jar`) so proxy and TLS settings reach the JVM. Use dummy AWS credentials for local tests. An unused STS recording is expected when local credentials replace IRSA.
 - **Checks:** evaluate native assertions and compare response status and body for every selected inbound request. Require zero mismatches, zero failed assertions and zero mock MISS or PASSTHROUGH. Derive counts from the recording.
 - **Coverage:** run native `proxymock coverage` against the real OpenAPI file for both recorded and replayed traffic. Show covered/total operations, statuses and fields, plus the uncovered paths. Report gaps without adding cases or changing the contract.
 - **Artifacts:** keep reusable proxymock configuration, the DLP policy and reviewed redacted recordings in Git. Apply DLP before capture export, verify a fresh recording, and review it for private infrastructure details before committing. Ignore disposable outputs rather than all of `proxymock/`.
