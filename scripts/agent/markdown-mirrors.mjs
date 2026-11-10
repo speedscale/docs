@@ -6,9 +6,9 @@ import { join, dirname, relative } from 'node:path';
 
 const clean = value => (value || '').replace(/<!--[\s\S]*?(?:-->|$)/g, '').replace(/<[^>]*>/g, '').replace(/[\r\n]+/g, ' ').replace(/[\[\]]/g, '').trim();
 const canonicalOf = document => document.querySelector('link[rel="canonical"]')?.getAttribute('href');
-const excluded = document => document.querySelector('meta[http-equiv="refresh" i]') || /noindex/i.test(document.querySelector('meta[name="robots"]')?.getAttribute('content') || '');
+const excluded = document => document.querySelector('meta[http-equiv="refresh" i]') || /noindex|(?:^|[\s,])none(?:$|[\s,])/i.test(document.querySelector('meta[name="robots"]')?.getAttribute('content') || '');
 
-export function markdownFromHtml(html, { contentSelector = 'main', indexUrl, pageUrl } = {}) {
+export function markdownFromHtml(html, { contentSelector = 'main', indexUrl, pageUrl, siteBase } = {}) {
   const { document } = parseHTML(html);
   const canonical = canonicalOf(document);
   if (!canonical || excluded(document)) return null;
@@ -30,10 +30,18 @@ export function markdownFromHtml(html, { contentSelector = 'main', indexUrl, pag
     tablist.remove();
   }
   content.querySelectorAll('script, style, nav, svg, [aria-hidden="true"], button[class*="copyButton"], .hash-link, .theme-doc-toc-mobile').forEach(node => node.remove());
+  // Root-relative links stay under the public base so previews do not leave their prefix.
+  const absolute = value => {
+    try {
+      return value.startsWith('/') && !value.startsWith('//') && siteBase ? new URL(value.slice(1), siteBase).href : new URL(value, retrievalUrl).href;
+    } catch {
+      return value;
+    }
+  };
   for (const node of content.querySelectorAll('[href], [src]')) {
     for (const attr of ['href', 'src']) {
       const value = node.getAttribute(attr);
-      if (value) node.setAttribute(attr, new URL(value, retrievalUrl).href);
+      if (value) node.setAttribute(attr, absolute(value));
     }
   }
   const converter = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
@@ -80,7 +88,7 @@ export async function generateMirrors(dir, options = {}) {
   const { document: rootDocument } = parseHTML(rootHtml);
   const canonicalBase = canonicalOf(rootDocument);
   if (!canonicalBase) throw new Error('The root page must have a canonical URL');
-  const siteBase = options.publicBaseUrl || canonicalBase;
+  const siteBase = (options.publicBaseUrl || canonicalBase).replace(/\/?$/, '/');
   const rootIndex = new URL('llms.txt', siteBase).href;
   for (const file of files.sort()) {
     let html = await readFile(file, 'utf8');
@@ -92,7 +100,7 @@ export async function generateMirrors(dir, options = {}) {
     const section = path.split('/')[0];
     const indexUrl = section ? new URL(section + '/llms.txt', siteBase).href : rootIndex;
     const pageUrl = new URL(path ? path + '/' : './', siteBase).href;
-    const markdown = markdownFromHtml(html, { ...options, indexUrl, pageUrl });
+    const markdown = markdownFromHtml(html, { ...options, indexUrl, pageUrl, siteBase });
     if (!markdown) continue;
     const mirrorUrl = new URL('index.md', pageUrl).href;
     html = html.replace(/<link\b(?=[^>]*\brel="(?:alternate|describedby)")(?=[^>]*(?:\btype="text\/markdown"|\bhref="[^"]*\/llms\.txt"))[^>]*>/g, '');
@@ -122,7 +130,7 @@ export async function generateMirrors(dir, options = {}) {
     }
     const folder = join(dir, group);
     await mkdir(folder, { recursive: true });
-    const title = entries.find(page => page.path === group)?.title || group;
+    const title = entries.find(page => page.path === group)?.title || group.replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase());
     const groupUrl = new URL(group + '/llms.txt', siteBase).href;
     index += `- [${title}](${groupUrl}): ${entries.length} ${entries.length === 1 ? 'page' : 'pages'}\n`;
     let section = `# ${title}\n\n[Site index](${rootIndex})\n\n## Pages\n\n`;
@@ -137,13 +145,6 @@ export async function generateMirrors(dir, options = {}) {
   if (options.resources) index += `\n## ${options.resourcesTitle || 'Agent skills'}\n\n` + options.resources.map(line).join('');
   await writeFile(join(dir, 'llms.txt'), index);
   await validateIndexes(dir, siteBase);
-  // Validate every generated local target against the finished build.
-  for (const page of pages) {
-    const target = new URL(page.url);
-    const base = new URL(siteBase);
-    if (target.origin !== base.origin || !target.pathname.startsWith(base.pathname)) throw new Error(`Offsite mirror: ${page.url}`);
-    await access(join(dir, decodeURIComponent(target.pathname.slice(base.pathname.length))));
-  }
   return pages.length;
 }
 

@@ -62,7 +62,7 @@ for (const deployment of ['production', 'preview']) {
     } }));
     await writeFile(join(dir, 'aws'), fakeAws);
     await chmod(join(dir, 'aws'), 0o755);
-    const env = { ...process.env, PATH: dir + ':' + process.env.PATH, DIST_DIR: dist, WEBSITE_BUCKET: 'test-site', PREVIEW_BUCKET: 'test-preview', S3_STATE: statePath };
+    const env = { ...process.env, PATH: dir + ':' + process.env.PATH, S3_STATE: statePath };
     const script = resolve('scripts/deploy-markdown.sh');
     const deploy = () => execFileSync('bash', [script, dist, target], { env, encoding: 'utf8' });
     deploy();
@@ -79,3 +79,11 @@ for (const deployment of ['production', 'preview']) {
     assert.throws(() => execFileSync('bash', [script, dist, target], { env: { ...env, FAIL_MD_SYNC: '1' }, stdio: 'pipe' }));
   });
 }
+
+test('production and preview workflows publish Markdown through the shared deploy script', async () => {
+  for (const workflow of ['main', 'pr']) {
+    const text = await readFile(resolve(`.github/workflows/${workflow}.yaml`), 'utf8');
+    assert.match(text, /bash scripts\/deploy-markdown\.sh build /);
+    assert.doesNotMatch(text, /--include '\*\.md'/);
+  }
+});

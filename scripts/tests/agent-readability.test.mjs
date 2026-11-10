@@ -23,7 +23,7 @@ test('rendered docs preserve anchors, tabs, callouts, tables and multiline code'
 });
 
 test('redirects and noindex pages do not produce content mirrors', () => {
-  for (const head of ['<meta name="robots" content="NOINDEX, follow">', '<meta http-equiv="refresh" content="0; url=/new/">']) {
+  for (const head of ['<meta name="robots" content="NOINDEX, follow">', '<meta name="robots" content="none">', '<meta http-equiv="refresh" content="0; url=/new/">']) {
     assert.equal(markdownFromHtml(page('https://example.com/', '<h1>Excluded</h1>', head)), null);
   }
   assert.equal(markdownFromHtml('<main>Missing canonical</main>'), null);
@@ -95,4 +95,23 @@ test('preview discovery uses its public origin while retaining source canonical 
   assert.match(markdown, /\[Install\]\(http:\/\/preview.example.com\/pr-42\/install\/\)/);
   assert.doesNotMatch(index, /docs.example.com/);
   await validateIndexes(dir, publicBaseUrl);
+});
+
+test('preview Markdown keeps root-relative links under the public base and tolerates malformed URLs', () => {
+  const html = page('https://docs.example.com/proxymock/', '<h1>Reference</h1><a href="/reference/glossary/#mock">Glossary</a><img src="/assets/a.png"><a href="//cdn.example.net/x">CDN</a><a href="https://">Broken</a>');
+  const text = markdownFromHtml(html, { contentSelector: '.theme-doc-markdown', pageUrl: 'http://preview.example.com/pr-42/proxymock/', siteBase: 'http://preview.example.com/pr-42/' });
+  assert.match(text, /\(http:\/\/preview.example.com\/pr-42\/reference\/glossary\/#mock\)/);
+  assert.match(text, /http:\/\/preview.example.com\/pr-42\/assets\/a.png/);
+  assert.match(text, /\(http:\/\/cdn.example.net\/x\)/);
+  assert.match(text, /\[Broken\]\(https:\/\/\)/);
+});
+
+test('public base without a trailing slash still resolves under its path', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'agent-base-slash-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeFile(join(dir, 'index.html'), page('https://docs.example.com/', '<h1>Docs</h1>'));
+  await mkdir(join(dir, 'proxymock'));
+  await writeFile(join(dir, 'proxymock/index.html'), page('https://docs.example.com/proxymock/', '<h1>proxymock</h1>'));
+  await generateMirrors(dir, { publicBaseUrl: 'http://preview.example.com/pr-42' });
+  assert.match(await readFile(join(dir, 'llms.txt'), 'utf8'), /http:\/\/preview.example.com\/pr-42\/proxymock\/llms.txt/);
 });
