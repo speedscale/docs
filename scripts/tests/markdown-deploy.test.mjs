@@ -83,7 +83,15 @@ for (const deployment of ['production', 'preview']) {
 test('production and preview workflows publish Markdown through the shared deploy script', async () => {
   for (const workflow of ['main', 'pr']) {
     const text = await readFile(resolve(`.github/workflows/${workflow}.yaml`), 'utf8');
-    assert.match(text, /bash scripts\/deploy-markdown\.sh build /);
+    assert.match(text, /bash (deploy-tools\/)?scripts\/deploy-markdown\.sh build /);
     assert.doesNotMatch(text, /--include '\*\.md'/);
   }
+});
+
+test('preview publish job checks out the deploy script it runs', async () => {
+  const text = await readFile(resolve('.github/workflows/pr.yaml'), 'utf8');
+  const publish = text.slice(text.indexOf('\n  publish:'));
+  assert.match(publish, /sparse-checkout: scripts\/deploy-markdown\.sh/);
+  assert.match(publish, /path: deploy-tools/);
+  assert.match(publish, /bash deploy-tools\/scripts\/deploy-markdown\.sh build /);
 });

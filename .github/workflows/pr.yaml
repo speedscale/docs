@@ -121,6 +121,7 @@ jobs:
     if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       id-token: write
       pull-requests: write
     env:
@@ -151,6 +152,16 @@ jobs:
         gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
           jq -e --arg sha "$EXPECTED_HEAD" '.state == "open" and .head.sha == $sha'
 
+    # Only the deploy script; the site itself comes from the build artifact.
+    - name: checkout deploy script
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: ${{ needs.build.outputs.head_sha }}
+        path: deploy-tools
+        sparse-checkout: scripts/deploy-markdown.sh
+        sparse-checkout-cone-mode: false
+        persist-credentials: false
+
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
       with:
@@ -162,7 +173,7 @@ jobs:
         PR_NUMBER: ${{ needs.build.outputs.pr_number }}
       run: |
         aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER" --delete --exclude '*.md'
-        bash scripts/deploy-markdown.sh build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER/"
+        bash deploy-tools/scripts/deploy-markdown.sh build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER/"
 
     - name: show url
       env:

@@ -115,3 +115,12 @@ test('public base without a trailing slash still resolves under its path', async
   await generateMirrors(dir, { publicBaseUrl: 'http://preview.example.com/pr-42' });
   assert.match(await readFile(join(dir, 'llms.txt'), 'utf8'), /http:\/\/preview.example.com\/pr-42\/proxymock\/llms.txt/);
 });
+
+test('preview Markdown does not double the prefix on links Docusaurus already prefixed', () => {
+  const html = page('https://docs.example.com/proxymock/', '<h1>Lifecycle</h1><a href="/pr-42/reference/glossary/">Glossary</a><img src="/pr-42/assets/a.png"><a href="/install/">Install</a>');
+  const text = markdownFromHtml(html, { contentSelector: '.theme-doc-markdown', pageUrl: 'http://preview.example.com/pr-42/proxymock/', siteBase: 'http://preview.example.com/pr-42/' });
+  assert.match(text, /\(http:\/\/preview.example.com\/pr-42\/reference\/glossary\/\)/);
+  assert.match(text, /http:\/\/preview.example.com\/pr-42\/assets\/a.png/);
+  assert.match(text, /\(http:\/\/preview.example.com\/pr-42\/install\/\)/);
+  assert.doesNotMatch(text, /pr-42\/pr-42/);
+});

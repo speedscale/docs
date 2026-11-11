@@ -30,10 +30,12 @@ export function markdownFromHtml(html, { contentSelector = 'main', indexUrl, pag
     tablist.remove();
   }
   content.querySelectorAll('script, style, nav, svg, [aria-hidden="true"], button[class*="copyButton"], .hash-link, .theme-doc-toc-mobile').forEach(node => node.remove());
-  // Root-relative links stay under the public base so previews do not leave their prefix.
+  // Root-relative links stay under the public base; links Docusaurus already prefixed keep a single prefix.
+  const basePath = siteBase ? new URL(siteBase).pathname : '/';
   const absolute = value => {
     try {
-      return value.startsWith('/') && !value.startsWith('//') && siteBase ? new URL(value.slice(1), siteBase).href : new URL(value, retrievalUrl).href;
+      if (!value.startsWith('/') || value.startsWith('//') || !siteBase) return new URL(value, retrievalUrl).href;
+      return value.startsWith(basePath) ? new URL(value, siteBase).href : new URL(value.slice(1), siteBase).href;
     } catch {
       return value;
     }
