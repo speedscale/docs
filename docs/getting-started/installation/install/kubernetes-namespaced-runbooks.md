@@ -1,5 +1,6 @@
 ---
 title: Namespaced Uninstall & Recovery Runbooks
+sidebar_label: Uninstall and recovery
 description: "Runbooks for the namespaced Speedscale install: an uninstall blocked by active capture or replay, forceCleanupOnUninstall, uninstall bypasses, coordinator-absent recovery, and a stuck uninstall hook Job."
 sidebar_position: 1.6
 ---

@@ -31,8 +31,8 @@ The mock answers whatever the app sends as long as the request matches a signatu
 | --- | --- |
 | **includeOnly** | Comma-separated hosts or paths. When set, only calls to these are compared. A host can be exact (`api.stripe.com`) or a domain with every host under it (`*.example.com`). A path (`/v1/charges`) matches itself and everything under it, on any host. `api.stripe.com/v1` combines both. |
 | **ignore** | Hosts or paths, in the `includeOnly` form, whose calls are left out of the comparison. |
-| **countTolerance** | How far, in percent, an endpoint's call count may be from the recording's before it is a `COUNT` difference. Defaults to 0. |
-| **maxRetries** | How many times the app may repeat each recorded call before the repeats are a `RETRIES` difference. Defaults to 0. |
+| **countTolerance** | How far, in percent, an endpoint's call count may be from the recording's before it is a `COUNT` or `RETRIES` difference. Defaults to 0. |
+| **maxRetries** | How many times the app may repeat each recorded call, beyond what `countTolerance` allows, before the repeats are a `RETRIES` difference. Defaults to 0. |
 | **mockRequired** | Comma-separated hosts every call to which must be answered by a mock, in the `includeOnly` host form. A miss or passthrough on one of them is a `PASSTHROUGH` difference. |
 
 ### How calls are compared <a href="#how-calls-are-compared" id="how-calls-are-compared"></a>
@@ -56,7 +56,7 @@ Calls are compared for the whole run. There is no attribution of an outbound cal
 | `MISSING` | The recording called an endpoint that the replay never called. |
 | `UNEXPECTED` | The replay called an endpoint that the recording never called. |
 | `COUNT` | Both called the endpoint, but the replay's call count is outside `countTolerance` of the scaled recorded count. |
-| `RETRIES` | The replay repeated a recorded call more times than `maxRetries` allows. Repeats are not counted again as `COUNT`. |
+| `RETRIES` | The replay made more calls of a recorded request than `countTolerance` and `maxRetries` together allow. Repeats are not counted again as `COUNT`. |
 | `ARGUMENT` | A query parameter or body field that is stable in the recording has another value in the replay, or a field was added or dropped. |
 | `PASSTHROUGH` | A call to a `mockRequired` host was missed or passed through to the live service. |
 

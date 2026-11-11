@@ -1,14 +1,18 @@
 ---
 description: "Explore Speedscale's Reports page to analyze replay results, view AI-generated summaries, and access detailed insights on performance and recommendations."
 sidebar_position: 0
+
 ---
 
 
 # Reports
 
 Reports are an artifact of replays and a new report is created for every one.
+
 After a replay is run the associated report will detail how successful the
+
 replay was. Starting at the [reports page](https://app.speedscale.com/reports)
+
 you can find reports sorted with the most recent at the top.
 
 Use search to find a specific report:
@@ -20,6 +24,18 @@ Click into any report to see more detailed information.
 ## AI-Generated Summary
 
 Each replay report includes an AI-generated summary at the top that highlights the most important findings. The summary provides a plain-language overview of what happened during the replay, calls out key failures or regressions, and suggests where to focus your attention. This is the fastest way to understand replay results without reading through every detail.
+
+## Readiness
+
+The Readiness tab, right after Overview, grades the replay for production readiness: a Ready or Not ready verdict, a letter from A to F for each metric family, a weighted score and a confidence factor.
+
+The test config decides which families block the verdict and at which letter.
+
+See the [Readiness guide](../readiness/index.md).
+
+## LLM
+
+A replay that sent streamed LLM requests gets an LLM tab with time to first token, inter-token latency, request latency and token rates, next to the recorded values when the recording had frame timing. See [LLM Streaming Metrics](../replay/llm-streaming-metrics.md#read-the-results).
 
 ## Recommendations
 

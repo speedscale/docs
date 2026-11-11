@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 env:
-  AWS_ROLE: ${{ secrets.AWS_ROLE }}
+  AWS_ROLE: ${{ secrets.AWS_PREVIEW_ROLE || secrets.AWS_ROLE }}
   AWS_REGION: us-east-1
   DOWNLOADS_PREVIEW_BUCKET: docs-preview.speedscale.com
 

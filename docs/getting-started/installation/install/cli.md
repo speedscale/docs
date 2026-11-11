@@ -24,4 +24,4 @@ Run `speedctl --help` to verify that the executable is on your PATH. If proxymoc
 
 ## Next steps
 
-Continue with the [platform quick start](../../quick-start.md#install-speedscale-operator-optional) to install the operator. For capture and replay from an existing speedctl workflow, see [Capture, replay, and mock with speedctl](/guides/cli/). Run `speedctl --help` or `speedctl <command> --help` for commands and flags.
+Continue with the [standard Kubernetes installation](./kubernetes-operator.md?method=cli#install-method) to install the operator. For capture and replay from an existing speedctl workflow, see [Capture, replay, and mock with speedctl](/guides/cli/). Run `speedctl --help` or `speedctl <command> --help` for commands and flags.

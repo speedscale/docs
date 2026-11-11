@@ -48,7 +48,7 @@ Two rules trip people up:
 | proxymock CLI | `proxymock replay --tests-filter '<filter>'` |
 | AI assistant (proxymock MCP) | Ask for it, or pass the `tests-filter` parameter of the `replay_traffic` tool |
 | proxymock web | The **Tests filter** field on the Replay tab |
-| Speedscale dashboard | **Choose replay tests** in the snapshot's actions menu. Pick the dependencies under **Outbound dependencies**, optionally check **Also keep inbound tests**, and save. The snapshot is reanalyzed and the page shows the active selection as **Replay tests:** followed by the filter. |
+| Speedscale dashboard | **Choose replay tests** on the snapshot's **Traffic** tab. Pick the dependencies under **Outbound dependencies**, optionally check **Also keep inbound tests**, and save. The snapshot is reanalyzed and the page shows the active selection as **Replay tests:** followed by the filter. |
 
 Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database` or `mysql://host:port/database` address; see [Connect to the database](../databases/load-and-regression-testing.md#credentials) for credentials.
 

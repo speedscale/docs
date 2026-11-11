@@ -274,6 +274,17 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `requests.result-match-pct`
 - `requests.succeeded`
 - `requests.total`
+- `llm.ttft-p50`, `llm.ttft-p95`, `llm.ttft-max`
+- `llm.e2e-p50`, `llm.e2e-p95`, `llm.e2e-max`
+- `llm.itl-p50`, `llm.itl-p95`, `llm.itl-max`
+- `llm.user-tokens-per-sec-p50`, `llm.user-tokens-per-sec-p95`
+- `llm.output-tokens-per-sec`
+- `llm.output-tokens`
+- `llm.requests`
+- `llm.incomplete`
+- `llm.token-count-approx-pct`
+
+The `llm.*` metrics measure streamed LLM responses; see [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md) for their definitions.
 
 Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
 
@@ -1242,13 +1253,18 @@ proxymock mcp run [flags]
 proxymock mcp run
 
 # run the MCP server over Streamable HTTP (also serves the legacy /sse endpoint)
-proxymock mcp run --http --port 8080
+proxymock mcp run --http --port 7799
+
+# serve a remote dev box; clients send the token in the X-Proxymock-Token header
+PROXYMOCK_MCP_TOKEN=<token> proxymock mcp run --http --host 0.0.0.0
 ```
 
 **Flags**
 
+- `--host string` - Address the HTTP transport listens on (default `127.0.0.1`). Any other address requires an access token
 - `--http` - Serve MCP over Streamable HTTP at `http://localhost:<port>/mcp` instead of stdio. The legacy `/sse` endpoint is served on the same port for older clients
-- `--port int` - Port to use when serving the HTTP transport (default `8080`)
+- `--port int` - Port to use when serving the HTTP transport (default `7799`)
+- `--token string` - Access token clients send in the `X-Proxymock-Token` header. Defaults to `$PROXYMOCK_MCP_TOKEN`. Off loopback, a random token is printed when neither is set
 - `--sse` - Deprecated. Serve the legacy SSE transport; use `--http` instead
 - `--work-dir string` - Working directory to run the MCP server in
 
@@ -1268,6 +1284,45 @@ proxymock completion [command]
 - `fish` - Generate the autocompletion script for fish
 - `powershell` - Generate the autocompletion script for powershell
 - `zsh` - Generate the autocompletion script for zsh
+
+### `web`
+
+Start the embedded web interface for the workspace and open it in your browser.
+
+**Usage**
+
+```bash
+proxymock web [flags]
+```
+
+**Examples**
+
+```bash
+# open the web interface for the current workspace
+proxymock web
+
+# start without a browser and with a fixed access token for scripts
+proxymock web --open=false --token "$PROXYMOCK_WEB_TOKEN"
+curl -H "Authorization: Bearer $PROXYMOCK_WEB_TOKEN" http://127.0.0.1:7788/api/status
+```
+
+**Access token**
+
+Every request to the web server must carry its access token. On start, proxymock prints a URL that ends in `?token=…` and opens it. The browser trades the token for a session cookie, so later links in the same browser work without it. If you open the address without the token, the page asks for the printed URL.
+
+Scripts send the token as `Authorization: Bearer <token>`. The token is random on each start unless you set it with `--token` or `PROXYMOCK_WEB_TOKEN`.
+
+The server also rejects requests from other web origins, and requests addressed to a host name other than `localhost`, an IP address, or the `--host` value. This keeps web pages you visit from reaching your workspace, cluster credentials, or Speedscale API key through the local server.
+
+**Flags**
+
+- `--host string` - Address to bind (default `127.0.0.1`). Any other address makes the server reachable from the network over plain HTTP, and proxymock prints a warning
+- `--in strings` - Directory to read RRPair files from (default `.`)
+- `--open` - Open the browser after start (default `true`)
+- `--port int` - Port to bind (default `7788`). If it is taken, the next free port is used. `0` picks a random port
+- `--token string` - Access token every request must carry. Defaults to `PROXYMOCK_WEB_TOKEN`, then a random token per start
+
+Run `proxymock web --help` for the chat, cluster, and snapshot bucket flags.
 
 ### `version`
 

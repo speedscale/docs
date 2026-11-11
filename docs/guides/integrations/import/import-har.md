@@ -76,14 +76,14 @@ proxymock mock --in ./har-rrpairs
 
 ## View Snapshot
 
-A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot summary.
+A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot.
 
-![Snapshot](../../snapshot.png)
+![The Overview tab of a snapshot: whether it is ready to replay, its Tests and Mocks, and its latency and throughput](../../snapshot.png)
 
 Click **View Traffic** to inspect the requests before replay.
 
 ## Replay
 
-HAR-generated cloud snapshots can be replayed from the snapshot summary. Set **Custom URL** to the service under test because an imported HAR does not have a discovered cluster destination.
+HAR-generated cloud snapshots can be replayed from the snapshot page. Set **Custom URL** to the service under test because an imported HAR does not have a discovered cluster destination.
 
 For the cloud workflow, see the full [replay guide](../../replay/README.md). For local commands, run `proxymock import har --help` and `proxymock replay --help`.

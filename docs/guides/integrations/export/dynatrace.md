@@ -120,55 +120,73 @@ See [Use BYOC traffic with proxymock](/byoc/use-traffic.md) for authentication, 
 
 ## Optional: exclude Speedscale pods from Dynatrace injection
 
-Use these exclusions if you want to keep application pods instrumented while preventing Dynatrace injection into Speedscale components.
+Use these optional exclusions to keep application pods instrumented while preventing Dynatrace injection into Speedscale infrastructure. They are independent of the OTLP export channel configured above.
 
-Finish any active replay first. Commands assume the default Speedscale namespace; substitute yours if different.
+There are two places to configure:
+
+| Scope | Configuration | Why it is needed |
+|-------|---------------|------------------|
+| Dedicated Speedscale namespace | Namespace selectors in the Dynatrace `DynaKube` resource | Excludes infrastructure running in that namespace. |
+| Speedscale replay infrastructure in application namespaces | `globalAnnotations` in the Speedscale Operator chart values | Excludes pods such as generators and collectors while keeping the application under test monitored. |
+
+Make these changes in the configuration managed by your deployment process, whether you use Helm, Argo CD, Flux, or Kubernetes manifests. Finish active replays before rolling out the changes.
 
 ### 1. Exclude the namespace
 
-In your existing DynaKube, append this expression at the paths below. Preserve existing selectors; create missing selector/list fields as needed.
+In your existing DynaKube, add a namespace exclusion for each enabled injection feature. The example below uses `applicationMonitoring` and the default Speedscale namespace, `speedscale`:
 
 ```yaml
-- key: kubernetes.io/metadata.name
-  operator: NotIn
-  values: ["speedscale"]
+spec:
+  oneAgent:
+    applicationMonitoring:
+      namespaceSelector:
+        matchExpressions:
+          - key: kubernetes.io/metadata.name
+            operator: NotIn
+            values: ["speedscale"]
 ```
 
-- `spec.oneAgent.cloudNativeFullStack.namespaceSelector.matchExpressions` **or** `spec.oneAgent.applicationMonitoring.namespaceSelector.matchExpressions`, matching your current mode.
-- `spec.metadataEnrichment.namespaceSelector.matchExpressions`.
+Merge the example into the existing resource, preserving other settings, selector labels, and match expressions. Replace `speedscale` with your dedicated Speedscale namespace. If Speedscale shares a namespace with application workloads, keep that namespace selected and use the pod annotations in step 2.
+
+Append the same `NotIn` expression to each applicable selector:
+
+- `spec.oneAgent.applicationMonitoring.namespaceSelector.matchExpressions`, or `spec.oneAgent.cloudNativeFullStack.namespaceSelector.matchExpressions` for cloud-native full-stack mode.
+- `spec.metadataEnrichment.namespaceSelector.matchExpressions`, if enabled.
 - `spec.otlpExporterConfiguration.namespaceSelector.matchExpressions`, if enabled.
 
-Apply the updated DynaKube. These selectors control webhook injection; they do not disable ActiveGate Kubernetes monitoring or OneAgent host monitoring.
+Create missing selector fields as needed. Apply or sync the updated DynaKube through your usual deployment process. These selectors affect webhook injection; ActiveGate Kubernetes monitoring and OneAgent host monitoring continue.
 
 ### 2. Exclude replay pods through Helm
 
-Replay pods run in the application namespace. Save this as `dynatrace-exclude-values.yaml`:
+Replay infrastructure also runs in application namespaces, so excluding only the Speedscale namespace does not cover it. Add this entry to the existing **Speedscale Operator chart values**, preserving any other `globalAnnotations` entries:
 
 ```yaml
 globalAnnotations:
   dynatrace.com/inject: "false"
 ```
 
-Apply it using your installed release name and chart version:
+Keep `"false"` quoted: annotation values must be strings. `globalAnnotations` is a top-level value of the `speedscale-operator` chart. The separate BYOC Dynatrace collector chart does not configure the Speedscale operator or its replay pods.
 
-```bash
-helm upgrade YOUR_RELEASE_NAME speedscale-operator \
-  --repo https://speedscale.github.io/operator-helm/ \
-  --namespace speedscale \
-  --version YOUR_INSTALLED_CHART_VERSION \
-  --reuse-values -f dynatrace-exclude-values.yaml
-```
+Apply the values through the workflow that owns your installation:
+
+| Deployment workflow | Where to make the change |
+|---------------------|--------------------------|
+| Helm | Merge the entry into the values used for your existing operator release and apply your normal upgrade process. |
+| Argo CD or Flux | Update the operator chart values in your GitOps configuration, commit the change, and sync or reconcile. |
+| Rendered manifests or Kustomize | Regenerate the operator manifests with these chart values, then apply them through your manifest workflow. Preserve the generated operator ConfigMap as well as the pod annotations. |
+
+Retain your existing chart version, namespace, and other installation settings. The operator reads this configuration when creating replay infrastructure; annotating only the operator Deployment does not configure future replay pods. See [Dynatrace injection exclusions in the Helm reference](/reference/helm#dynatrace-injection-exclusions) for the configuration details.
 
 ### 3. Restart and verify
 
-After Dynatrace has reconciled the namespace exclusions:
+Injection decisions apply when pods are created. Updating configuration does not remove instrumentation from existing pods.
 
-```bash
-kubectl -n speedscale rollout restart deployment
-kubectl -n speedscale rollout restart daemonset/speedscale-nettap
-```
+After the DynaKube and operator configuration changes have reconciled:
 
-Wait for Speedscale pods to become Ready, then start a fresh replay. New Speedscale and replay pods should have no `dynatrace-operator` init container or `oneagent-bin` volume. Confirm application pods remain instrumented with OneAgent.
+1. Restart the Speedscale operator so it reads the updated configuration. Recreate existing Speedscale infrastructure pods through your normal rollout process, including nettap if enabled.
+2. Wait for the replacement Speedscale pods to become Ready, then start a fresh replay.
+3. Inspect the new Speedscale infrastructure and replay infrastructure pods. Confirm the replay infrastructure has `dynatrace.com/inject: "false"` under pod `metadata.annotations` and has no Dynatrace-injected init container or volume, such as `dynatrace-operator` or `oneagent-bin`.
+4. Confirm application pods, including the application under test, remain instrumented and continue reporting to Dynatrace.
 
 [Dynatrace namespace and pod exclusion reference](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/deployment-and-configuration/monitoring-and-instrumentation/annotate)
 

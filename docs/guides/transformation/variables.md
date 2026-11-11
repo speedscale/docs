@@ -20,11 +20,11 @@ This is the simplest way to interact with the variable storage system, but not n
 
 ### Scope
 
-Variables created in the Tests tab are scoped to the current [vUser](/reference/glossary.md#vuser) or "thread" within the load generator, which runs through the snapshot traffic at most 1 time. Each vUser has a separate variable cache, just like HTTP clients talking to the same server don't share information.
+Variables for Tests on the Prepare tab are scoped to the current [vUser](/reference/glossary.md#vuser) or "thread" within the load generator, which runs through the snapshot traffic at most 1 time. Each vUser has a separate variable cache, just like HTTP clients talking to the same server don't share information.
 
 ![variable_from_rrpair](./overview/variable_from_rrpair.png)
 
-If you need more of a "global replace" functionality you should use variables from the Variables tab.  Transforms created here are run once at the start of each vUser.
+If you need more of a "global replace" functionality you should use variables from **Test variables** or **Mock variables** on the Prepare tab.  Transforms created here are run once at the start of each vUser.
 
 ![variable_from_variables](./overview/variable_from_variables_tab.png)
 

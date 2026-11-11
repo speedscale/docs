@@ -45,9 +45,7 @@ $ cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/raw.jsonl | head -n 5 | jq '.res
 "payment"
 ```
 
-The first request is from `frontend` and the rest are from `payment`.  The new snapshot shows the inbound and outbound [traffic](/reference/glossary.md#traffic) from both services.
-
-![](./frontend-payment-login-service-map.png)
+The first request is from `frontend` and the rest are from `payment`.  The **Overview** tab of the new snapshot shows the inbound and outbound [traffic](/reference/glossary.md#traffic) from both services.
 
 ### Transforms
 
@@ -55,21 +53,19 @@ The snapshot now contains the `/api/payment/login` request, which means that req
 
 We will create [Transforms](/reference/glossary.md#transform) to [store](/guides/transformation/transforms/variable_store) the `access_token` from the auth response body and [load](/guides/transformation/transforms/variable_load) it into the header field later. Transforms can be created for the snapshot under the `transforms` tab.
 
-Store the access token by selecting the `/api/payment/login` [RRPair](/reference/glossary.md#rrpair) and clicking the pencil by the `access_token` field.
+Store the access token by selecting the `/api/payment/login` [RRPair](/reference/glossary.md#rrpair) on the **Traffic** tab, opening **Response**, clicking the pencil by the `access_token` field and choosing **Modify**.
 
 ![](./transform-login-pencil.png)
 
-Select `Store Variable` to store and enter a variable name.
+On the **Prepare** tab, select **Add step**, pick `Store Variable` and enter a variable name.
 
 ![](./transform-store-var.png)
 
-Now we can manually create a new transform by clicking `Add` at the top of the page.  The new transforms will:
+Now we can manually create a new transform by clicking **New** at the top of the Prepare list.  The new transforms will:
 
 - Match all requests EXCEPT those with endpoint `/api/payment/login`
 - Target the HTTP Request Header `X-Access-Token`
 - Load the variable `access_token` into the header field at index 1, since the full header string is `Bearer [token]`
-
-![](./transform-custom.png)
 
 Now during replay the `X-Access-Token` header for all requests, save the first one, will contain the `access_token` from the response of the `/api/payment/login` request which gives us the flexibility to test with our real service with real, valid authentication.
 

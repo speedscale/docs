@@ -64,6 +64,8 @@ For example, to embed a stored value inside a `constant`:
 Reads an environment variable from the process running the replay. Returns an empty string when the
 variable is unset.
 
+The variable is read only where the replay runs: the generator and responder in your cluster, or proxymock on your machine. A transform preview in the dashboard and snapshot analysis run in Speedscale cloud, which cannot see that environment, so they show `will be loaded at runtime` in place of the value.
+
 ```
 ${{env_var:NAME}}
 ```
@@ -103,6 +105,8 @@ Inserts the **entire** contents of a file. Two sources are supported:
 - a local filesystem path, e.g. `${{file:/var/secrets/token}}`
 - `s3://<name>` to pull a [user data](../../reference/glossary.md#user-data) document from the
   Speedscale cloud, e.g. `${{file:s3://payload.json}}`
+
+A local path is read only where the replay runs: the generator and responder in your cluster, or proxymock on your machine. A transform preview in the dashboard and snapshot analysis show `will be loaded at runtime` for a local path. User data resolves in both places.
 
 This is useful when you want to embed an arbitrary blob — JSON, XML, a token, anything — without
 imposing any structure on it. Unlike a dataframe, the file is not parsed; its raw bytes become the
@@ -168,4 +172,4 @@ ${{secret:NAME/KEY}}
 }
 ```
 
-The `secret:` keyword is recognized by the transforms that handle credentials: [constant](./transforms/constant.md), [jwt_resign](./transforms/jwt_resign.md), [aws_auth](./transforms/aws_auth.md), [oauth_client_credentials](./transforms/oauth_client_credentials.md), and the SASL auth transform. The value is never written to logs or dumps.
+The `secret:` keyword is recognized by the transforms that handle credentials: [constant](./transforms/constant.md), [jwt_resign](./transforms/jwt_resign.md), [aws_auth](./transforms/aws_auth.md), [token_fetch](./transforms/token_fetch.md) and its alias [oauth_client_credentials](./transforms/oauth_client_credentials.md), and the SASL auth transform. [Replace credentials](/guides/replay/replace-credentials.md#kubernetes-secret-or-constant) writes these references for you. The value is never written to logs or dumps.

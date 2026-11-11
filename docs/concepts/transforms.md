@@ -54,9 +54,28 @@ flowchart LR
     insertText --> extractJson --> body
 ```
 
+### Read-only chains
+
+Some chains exist only to observe a value, not to change it. A chain that reads a JWT claim and tags the session with it is one example: the claim cannot be turned back into a JWT, so writing it back would replace the `Authorization` header with the claim. Set `readOnly` on the chain to skip the re-insert step entirely.
+
+```json
+{
+  "readOnly": true,
+  "extractor": { "type": "http_req_header", "config": { "name": "Authorization" } },
+  "transforms": [
+    { "type": "jwt_claim", "config": { "claim": "email" } },
+    { "type": "tag_session" }
+  ]
+}
+```
+
+A read-only chain still runs every transform forward, so side effects such as `tag_session`, `variable_store` and signature changes happen as usual. Nothing is written back into the RRPair, and transforms that do their work during the re-insert step, such as `smart_replace`, `map` and `var_load`, have no effect.
+
+Chains that redact data with `dlp_field` or `dlp_json` cannot be read-only, because redaction is applied when the chain writes back. Saving a DLP rule with such a chain is rejected, and the forwarder writes back any redaction chain regardless of the setting.
+
 ## Where to Transform Traffic
 
-Modify traffic and see the effects with the transform editor.
+Modify traffic and see the effects on a real request with the transform editor on the Prepare tab.
 
 ![transform_editor](./transforms/editor.png)
 
@@ -73,8 +92,8 @@ Variable caches store data extracted from traffic in one location and apply it i
 
 ![generator_variables](./transforms/generator_vars.png)
 
-- **Variables (Tests)** - used to pre-load the variable cache when the generator starts up
-- **Variables (Mocks)** - used to pre-load the variable cache when the responder starts up
+- **Test variables** - used to pre-load the variable cache when the generator starts up
+- **Mock variables** - used to pre-load the variable cache when the responder starts up
 
 :::note
 Test variables are scoped to the [vUser](/reference/glossary.md#vuser). For example, a random string variable would be new and different for each VU, but the same for all requests within the same VU.
@@ -133,11 +152,11 @@ This is the simplest way to interact with the variable storage system, but not n
 
 ### Scope
 
-Variables created in the Tests tab are scoped to the current [vUser](/reference/glossary.md#vuser) or "thread" within the load generator, which runs through the snapshot traffic at most 1 time. Each vUser has a separate variable cache, just like HTTP clients talking to the same server don't share information.
+Variables for Tests on the Prepare tab are scoped to the current [vUser](/reference/glossary.md#vuser) or "thread" within the load generator, which runs through the snapshot traffic at most 1 time. Each vUser has a separate variable cache, just like HTTP clients talking to the same server don't share information.
 
 ![variable_from_rrpair](./transforms/variable_from_rrpair.png)
 
-If you need more of a "global replace" functionality you should use variables from the Variables tab.  Transforms created here are run once at the start of each vUser.
+If you need more of a "global replace" functionality you should use variables from **Test variables** or **Mock variables** on the Prepare tab.  Transforms created here are run once at the start of each vUser.
 
 ![variable_from_variables](./transforms/variable_from_variables_tab.png)
 

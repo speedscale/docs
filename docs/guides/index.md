@@ -45,6 +45,7 @@ This section contains practical, step-by-step guides for using Speedscale's API 
 ## Analysis & Reports
 
 - **[Reports](./reports/)** - Understanding test results and performance metrics
+- **[Readiness](./readiness/)** - The replay readiness scorecard: one verdict per report, a letter per metric family and acceptances
 - **[Traffic Recommendations](./recommendations)** - Automated insights from replay reports
 - **[Resend RRPair](./resend-rrpair)** - Resend and modify captured requests from the traffic viewer
 

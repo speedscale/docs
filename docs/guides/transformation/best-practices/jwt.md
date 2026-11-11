@@ -12,7 +12,7 @@ If you look through your recorded data, you're likely to see one of the followin
 
 ## Request JWT Re-signing
 
-This section pertains to inbound RRPairs (direction=in). If you are seeing 401 or 403 errors during replay, that is a strong indicator you need to re-sign your JWTs. The Speedscale load generator is able to re-sign these requests in two ways:
+This section pertains to inbound RRPairs (direction=in). If you are seeing 401 or 403 errors during replay, that is a strong indicator you need to re-sign your JWTs. The quickest fix is usually [Replace credentials](/guides/replay/replace-credentials.md), which saves the fix once for every replay of the snapshot. The Speedscale load generator is able to re-sign these requests in two ways:
 
 1. **replace** - provide a new JWT to insert into the place of the old one (like you would do in Postman)
 2. **resign** - pull a secret from the local Kubernetes cluster (or file system) and resign the JWT just like a normal client would.

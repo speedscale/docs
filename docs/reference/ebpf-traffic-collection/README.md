@@ -138,26 +138,16 @@ For operator RBAC, admission webhook, and certificate requirements, see [Kuberne
 ## Installation
 
 :::info Helm-restricted environments
-The eBPF collector is installed as Kubernetes resources, so Helm does not need to run in the cluster. You can render the Speedscale chart to plain YAML with `helm template` and manage the result directly or as a Kustomize base; see the [GitOps installation example](/getting-started/quick-start#install-speedscale-operator-optional).
+The eBPF collector is installed as Kubernetes resources, so Helm does not need to run in the cluster. You can render the Speedscale chart to plain YAML with `helm template` and manage the result directly or as a Kustomize base; see the [GitOps installation example](/getting-started/installation/install/kubernetes-operator/?method=gitops#install-method).
 
 If your organization cannot use Helm tooling at all, [contact Speedscale Support](mailto:support@speedscale.com), ask in the [Speedscale Community](https://slack.speedscale.com), or reach out to your account team. We can help create Kustomize-compatible or other custom manifests with the required eBPF DaemonSet, RBAC, configuration, and cluster-specific settings.
 :::
 
 ### Enabling via Helm
 
-To enable eBPF capture, set `ebpf.enabled: true` in your Helm values and define at least one capture target:
+For a new deployment, follow the [standard operator installation](/getting-started/installation/install/kubernetes-operator/) first. Its Helm and manifest examples enable eBPF; the speedctl method links to the configuration below.
 
-```bash
-helm install speedscale-operator speedscale/speedscale-operator \
-  -n speedscale \
-  --create-namespace \
-  --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-  --set clusterName=<YOUR-CLUSTER-NAME> \
-  --set ebpf.enabled=true \
-  -f ebpf-values.yaml
-```
-
-Where `ebpf-values.yaml` contains your capture targets:
+For an existing installation, add the following settings to the values file you keep for the release, preserving its API key reference, cluster name, and platform overrides. If you installed with `speedctl install` or `--set` flags and have no values file, export the current values first with `helm -n speedscale get values speedscale-operator -o yaml > current-values.yaml`:
 
 ```yaml
 ebpf:
@@ -173,6 +163,8 @@ ebpf:
             matchLabels:
               app: my-service
 ```
+
+Apply the updated values following [Upgrade flow](/reference/helm#upgrade-flow), using the edited values file with `helm upgrade`.
 
 You can define multiple targets to capture traffic from different services or namespaces. See the [Helm Values reference](../helm.md) for the full list of eBPF configuration options.
 

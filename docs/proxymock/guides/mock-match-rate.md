@@ -28,7 +28,7 @@ The agent iterates against the projection and you re-run the replay once at the 
 ## Before you begin
 
 - `proxymock` [installed](../getting-started/quickstart/quickstart-cli.md) and initialized (`proxymock init --api-key <key>`)
-- The proxymock MCP server installed for your AI agent: `proxymock mcp install`. For Claude Code this also installs the `improve-mock-match-rate` skill, so `/improve-mock-match-rate` is available as a slash command; other MCP clients get the same workflow as the `improve_mock_match_rate` prompt.
+- The proxymock MCP server installed for your AI agent: `proxymock mcp install --client <client>`. For Claude Code, add `--skills` to also install the `improve-mock-match-rate` skill, so `/improve-mock-match-rate` is available as a slash command. Other MCP clients get the same workflow as the `improve_mock_match_rate` prompt.
 - `git` and Go, for the mock-lab example
 
 ## 1. Record traffic with a rotating value

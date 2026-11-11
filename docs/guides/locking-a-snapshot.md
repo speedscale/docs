@@ -24,9 +24,7 @@ The snapshot header now shows a **Locked** badge next to the status, and a
 banner names who locked it and when. On the snapshots list a lock icon appears
 next to the snapshot name.
 
-While the snapshot is locked, the actions that would change it are disabled in
-the menu, and the **Tune** button is disabled. The menu also shows who holds
-the lock so you know who to ask.
+While the snapshot is locked, the actions that would change it are disabled in the menu. The menu also shows who holds the lock so you know who to ask.
 
 ## Unlock a snapshot
 
