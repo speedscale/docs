@@ -1,6 +1,6 @@
 ---
 title: Spec adherence
-description: "The Spec adherence readiness family checks every replayed HTTP call against the OpenAPI document attached to the service and grades the share that conforms."
+description: "The Spec adherence readiness family checks every replayed HTTP or gRPC call against the OpenAPI document or protobuf schema attached to the service and grades the share that conforms."
 sidebar_position: 3
 ---
 
@@ -8,7 +8,7 @@ sidebar_position: 3
 
 Spec adherence grades how well the replayed traffic matches the service's own API contract.
 
-Every replayed inbound HTTP call is checked against the OpenAPI document attached to the service, and the family's measure is the share of checked calls that conform.
+Every replayed inbound call is checked against the contract attached to the service: an OpenAPI document for HTTP APIs, or a protobuf schema for gRPC APIs. The family's measure is the share of checked calls that conform.
 
 The default role is Off; switch it on in the [test config](./test-config-settings.md) once a spec is attached.
 
@@ -20,11 +20,14 @@ Open the service page and use the **Contract** section above Endpoints.
 
 ![The Contract section of a service page: the attached OpenAPI document, where it came from, its hash, and the Download, Replace and Remove actions](./readiness-contract.png)
 
-An admin can attach an OpenAPI 3.x document (`.yaml`, `.yml` or `.json`, 3 MiB or smaller), replace it, download it or remove it.
+An admin can attach a contract, replace it, download it or remove it. The file must be 3 MiB or smaller and one of these:
 
-A document that is not valid OpenAPI 3.x is refused.
+- An OpenAPI 3.x document: `.yaml`, `.yml` or `.json`. A document that is not valid OpenAPI 3.x is refused.
+- A protobuf schema: a `.proto` file, a `.zip` of `.proto` files with the files they import, or a compiled descriptor set (`.binpb`, `.pb`, `.protoset` or `.desc`, from `buf build -o` or `protoc --include_imports --descriptor_set_out`). A schema that does not compile is refused with the compiler's file and line. A lone `.proto` file can only import the well-known `google/protobuf` files, so a schema with other imports has to be a zip or a descriptor set.
 
-Protocol buffer and GraphQL contracts are not checked yet; the upload is refused with "proto and GraphQL are not checked yet; attach an OpenAPI 3.x document".
+A protobuf schema is stored compiled, as a descriptor set, so its hash is the same however it was uploaded, and **Download** returns that descriptor set. It also gives the service's gRPC traffic its field names in the traffic viewer; see [Read protobuf bodies with your schemas](../capture/protobuf-schemas.md).
+
+GraphQL contracts are not checked yet; the upload is refused with "GraphQL is not checked yet; attach an OpenAPI 3.x document or a protobuf schema".
 
 Replays analyzed from then on grade against the new document.
 
@@ -32,17 +35,19 @@ Reports already graded keep their grade, and every stored version stays availabl
 
 A spec pushed with a snapshot by proxymock shows as version 0 with the snapshot it came from.
 
-Pushing a snapshot with `proxymock cloud push snapshot --spec <file> --workload <service>` attaches the document to the service itself, so it replaces the current contract for every later replay of that service, not only for that snapshot.
+Pushing a snapshot with `proxymock cloud push snapshot --spec <file> --workload <service>` attaches an OpenAPI document to the service itself, so it replaces the current contract for every later replay of that service, not only for that snapshot. A protobuf schema is attached from the service page.
 
 ## What counts as conforming
 
-A call conforms when all four checks hold: its method and path match an operation in the spec, its status code is documented for that operation, its request validates against the operation's request schema and its response validates against the response schema.
+Under an OpenAPI document, a call conforms when all four checks hold: its method and path match an operation in the spec, its status code is documented for that operation, its request validates against the operation's request schema and its response validates against the response schema.
 
 Standard OpenAPI semantics apply, so extra response fields are allowed, and the spec's server base paths are stripped before matching.
 
 Security requirements in the spec are not checked.
 
 gRPC calls under an OpenAPI document and calls with no response are skipped and are not in the checked count.
+
+Under a protobuf schema, a gRPC call conforms when the schema declares its method (`/package.Service/Method`) and every response message matches the method's response type: each field has the wire type its declared type uses, every enum value is one the enum declares, and the message has no field number the type does not declare. A call that ended with a non-OK gRPC status conforms, because any RPC may fail with any status. These are the same rules `proxymock validate` applies to a `.proto`. Calls that are not gRPC are skipped.
 
 ## When the family is n/a
 
