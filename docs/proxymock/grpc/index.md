@@ -56,6 +56,46 @@ Check out this video for a walkthrough of gRPC observability and mocking on the 
 
 <iframe src="https://www.youtube.com/embed/q_bGCCNPLAE?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
+## Read a body as protoscope
+
+The field-number JSON above is what proxymock stores and what you edit, but it is hard to read: the `double` 50.5 appears as `4632304060471443456`. In proxymock web, the Body tab of a gRPC or protobuf request or response opens in a Protoscope view instead. Protoscope is the readable text form of the protobuf wire format from the [protobuf project](https://github.com/protocolbuffers/protoscope). It needs no `.proto`, and it shows every byte of the message. The same call reads:
+
+```
+1: {"acct-1001"}
+2: {"user-7"}
+3: 50.5   # 0x4049400000000000i64
+4: {"DEPOSIT"}
+5: {"5411"}
+```
+
+How to read it:
+
+- `N:` is the field number, the same number as in the JSON key and the `.proto`.
+- `{"..."}` is a length-delimited field holding text. A nested message is shown as its own fields inside `{ }`, indented.
+- A plain whole number is a varint: an integer, a boolean or an enum value.
+- A fixed-width field is shown as the number it most likely holds, here a `double`, with its raw bits in a `#` comment. A suffix of `i32` or `i64` marks a fixed-width value whose size is not otherwise clear. Text after `#` is always a comment.
+- Bytes that are not text or a message are shown as hex in backticks, so nothing in the body is hidden.
+
+Without a `.proto` these are the most likely readings of the wire format, the same ones the JSON view uses. A field can still hold something other than what it looks like, for example a `fixed64` that reads as a `double`, so check the `.proto` when a value looks wrong.
+
+A call that sends or returns several messages, such as a [server stream](./server-streaming.md), shows one block per message:
+
+```
+# message 1 of 2
+1: {"ord-1"}
+2: 1
+
+# message 2 of 2
+1: {"ord-1"}
+2: 3
+```
+
+A message that was compressed on the wire is labelled `(compressed)` and shown decompressed. gRPC-Web trailers are shown as `# trailer` comments after the messages. Very large messages are cut short with a comment saying how much was left out.
+
+Use the Protoscope / Wire JSON switch above the body to change views. Protoscope is for reading only. Switch to Wire JSON to see the stored JSON, to edit, or to start a blueprint with **Add blueprint**. The Raw tab still shows the original bytes.
+
+The Speedscale dashboard shows the same switch in the traffic viewer's Body tab. See [understanding request bodies](../../guides/capture/bodies.md#grpc).
+
 ## Known limits
 
 - **Unary RPCs remain supported.** Bounded native server streaming is captured automatically, and unary calls are recorded exactly as before. A call with one request and a client half-close can round-trip all messages through JSON and streaming Markdown, mock with pacing and recorded status, and replay with every response compared. See [native server streaming](./server-streaming.md) for version requirements and limits.
