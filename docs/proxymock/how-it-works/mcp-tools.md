@@ -555,15 +555,22 @@ Actions:
 - list: the schemas in proxymock/protos/, their services and gRPC methods, and any file that failed to compile.
 - check: for each RRPair file or directory in 'files', the message type each protobuf body resolves to (by gRPC method path, or a Content-Type proto= parameter), the body as named JSON (show=named, the default) or protoscope text (show=protoscope), and the fields that did not match the schema. A body with no schema says why and is shown as protoscope.
 - add: copy the .proto files, directories, zips or descriptor sets in 'files' into proxymock/protos/, with every file they import (found under the input or on proto-path), so the workspace compiles on its own. Nothing is written unless every input compiles. Existing files with other content are only replaced with force=true.
+- map: for protobuf sent over plain HTTP, whose path and Content-Type do not name its message, add a rule to proxymock/protos/mappings.json naming the request and/or response type of calls matching 'path' (a glob; a trailing /** matches anything below), optionally only for 'host' and 'method'. A rule with the same host, method and path is replaced. The types must be declared by a schema in proxymock/protos/.
+- unmap: remove the rule with that host, method and path.
 
 The mapping is read-only: check never changes a recording, and the field-number JSON stays the form transforms and edit_rrpair address.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `action` | string | **yes** | list, check or add. |
+| `action` | string | **yes** | list, check, add, map or unmap. |
 | `files` | array | no | check: RRPair files or directories of them. add: .proto files, directories of .proto files, zips or descriptor sets. Relative to the working directory. |
 | `force` | boolean | no | add: replace files in proxymock/protos/ that have other content. Defaults to false. |
+| `host` | string | no | map, unmap: glob the request host must match. Empty matches any host. |
+| `method` | string | no | map, unmap: HTTP method the request must use. Empty matches any method. |
+| `path` | string | no | map, unmap: glob the request path must match, such as /v1/orders/** . |
 | `proto-path` | array | no | Directories to resolve imports from that proxymock/protos/ does not hold, like protoc -I. Relative to the working directory. |
+| `request` | string | no | map: full message name of the request body. |
+| `response` | string | no | map: full message name of the response body. |
 | `show` | string | no | check: named (default; JSON with .proto field names when a schema matched, else protoscope) or protoscope (the exact wire data, with field names as comments when a schema matched). |
 
 ### Convert

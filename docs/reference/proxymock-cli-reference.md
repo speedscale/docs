@@ -676,6 +676,7 @@ Manage the protobuf schemas in the workspace's `proxymock/protos/` directory. Wi
 
 - `protos list` - List the schemas in `proxymock/protos/` and the services they declare
 - `protos add <file|dir|zip|descriptor-set>...` - Copy schemas into `proxymock/protos/`, with every file they import
+- `protos map <path-glob>` - Name the request and response types of protobuf calls whose path and Content-Type do not, in `proxymock/protos/mappings.json`
 - `protos check <rrpair-file|dir>...` - Show which message type each recorded protobuf body resolves to, or why none did
 
 **Examples**
@@ -688,6 +689,9 @@ proxymock protos list --methods
 # add one file whose imports live in a shared tree
 proxymock protos add ../shared/proto/acme/orders/v1/orders.proto --proto-path ../shared/proto
 
+# name the response type of protobuf calls over plain HTTP
+proxymock protos map '/v1/orders/**' --response acme.orders.v1.Order
+
 # check recorded calls and print each body with its field names
 proxymock protos check proxymock/recorded --show named
 ```
@@ -695,11 +699,14 @@ proxymock protos check proxymock/recorded --show named
 **Flags**
 
 - `-I, --proto-path stringArray` - Directory to resolve imports from that `proxymock/protos/` does not hold, like `protoc -I` (repeatable)
-- `--in strings` - (`list`, `add`) A directory inside the proxymock workspace to use (default `.`)
+- `--in strings` - (`list`, `add`, `map`) A directory inside the proxymock workspace to use (default `.`)
 - `--methods` - (`list`) Also list every gRPC method
 - `--force` - (`add`) Replace files in `proxymock/protos/` that have other content
 - `--show string` - (`check`) Also print each body: `named` (field names, when a schema matched) or `protoscope`
 - `--json` - (`list`, `check`) Write JSON
+- `--host string`, `--method string` - (`map`) Only calls to this host glob, or with this HTTP method
+- `--request string`, `--response string` - (`map`) Full message names of the request and response bodies
+- `--remove` - (`map`) Remove the rule with this host, method and path
 
 ## File management commands
 
