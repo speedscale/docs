@@ -80,6 +80,24 @@ A body resolves to a message type by the first rule that matches:
 
 1. **gRPC and gRPC-Web calls** resolve by the method in the request path, `/package.Service/Method`. The request uses the method's input type and the response its output type. Every message of a stream uses the same type.
 2. **Bare protobuf bodies**, sent with a content type such as `application/x-protobuf`, resolve when the Content-Type names the message: `application/x-protobuf; proto=acme.orders.v1.Order`. The `messageType=` and `type=` parameters work the same way.
+3. **Mapping rules** name the types of protobuf calls that neither of the above covers. See below.
+
+## Map protobuf calls over plain HTTP
+
+Protobuf sent over plain HTTP often has a path like `/v1/orders/42` and a Content-Type of just `application/x-protobuf`, so nothing in the call names its message. Add a mapping rule:
+
+```bash
+# the response of every call under /v1/orders is an Order
+proxymock protos map '/v1/orders/**' --response acme.orders.v1.Order
+
+# only POSTs to one host, with both bodies named
+proxymock protos map /v1/orders --host orders.acme.internal --method POST \
+  --request acme.orders.v1.CreateOrderRequest --response acme.orders.v1.Order
+```
+
+The path is a glob matched segment by segment, where `*` matches one segment, and a trailing `/**` matches the path and anything below it. `--host` is a glob matched against the request host, with or without its port. Rules are tried in the order they were added, and the first one that covers a call wins. A rule with the same host, method and path as an existing one replaces it, and `--remove` removes it.
+
+The types must be declared by a schema in `proxymock/protos/`, so a misspelled name is refused when you add the rule. Rules live in `proxymock/protos/mappings.json`, next to the schemas, and `proxymock protos list` shows them.
 
 ## Read named bodies in proxymock web
 
@@ -88,6 +106,8 @@ In proxymock web, the Body tab of a protobuf request or response adds a **Named*
 - **Named** shows the body as JSON with the `.proto` field names, enum value names and readable numbers. A stream shows one object per message, in an array.
 - **Protoscope** adds the field names as comments, `3: 50.5  # amount`, and still shows every byte.
 - **Wire JSON** is the stored field-number JSON. Blueprints and edits use it.
+
+To add or remove schemas from the browser, open **Protobuf Schemas** under Config. It lists the schemas, files and mapping rules in `proxymock/protos/`. Choose a `.proto` file and enter its import path, such as `acme/orders/v1/orders.proto`, and it is checked against the schemas already there before it is added, so a file that imports one of them is accepted. A zip or a descriptor set must compile on its own. A file that does not compile is refused with its file and line.
 
 Changes to `proxymock/protos/` apply the next time you open a request, without restarting. If a file there does not compile, a warning above the body names it; hover it for the file and line. If your `.proto` files import files kept outside the workspace, start proxymock web with `--proto-path <dir>` (or `-I <dir>`).
 
@@ -105,4 +125,4 @@ The Protoscope view stays exact, so switch to it to see the fields the schema co
 
 ## Let your AI coding assistant read named bodies
 
-The [proxymock MCP server](../how-it-works/mcp-tools.md#protos) has a `protos` tool with the same `list`, `check` and `add` actions. Its `check` action returns each recorded body as named JSON, which an assistant reads far more reliably than field-number JSON. Ask it to "check the recorded gRPC calls against our protos" or to "add the protos in ./proto to the workspace".
+The [proxymock MCP server](../how-it-works/mcp-tools.md#protos) has a `protos` tool with the same `list`, `check`, `add` and `map` actions, plus `unmap`. Its `check` action returns each recorded body as named JSON, which an assistant reads far more reliably than field-number JSON. Ask it to "check the recorded gRPC calls against our protos" or to "add the protos in ./proto to the workspace".
