@@ -46,6 +46,7 @@ proxymock [command]
 - `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
+- `protos` - Manage the protobuf schemas that name the fields of recorded protobuf and gRPC bodies
 - `recommendations` - Work the replay-tuning recommendations the analyzer finds
 - `record` - Record traffic from your app, turning it into RRPair files
 - `replay` - Replay tests to make requests to your app
@@ -666,6 +667,39 @@ proxymock transform test --transform-config my-transforms.json --show ./recorded
 - `--in strings` - Directories or RRPair files to read from (default `.`)
 - `--show string` - (`test`) Print the full before/after transform of this RRPair file instead of the summary
 - `--out string` - (`apply`) Directory to write transformed copies to (must be outside `--in`)
+
+### `protos`
+
+Manage the protobuf schemas in the workspace's `proxymock/protos/` directory. With a service's `.proto` files there, recorded protobuf and gRPC bodies show their real field and enum names in proxymock web, these commands and the MCP `protos` tool. See [Read gRPC bodies with your .proto](../proxymock/grpc/name-fields-with-your-proto.md).
+
+**Subcommands**
+
+- `protos list` - List the schemas in `proxymock/protos/` and the services they declare
+- `protos add <file|dir|zip|descriptor-set>...` - Copy schemas into `proxymock/protos/`, with every file they import
+- `protos check <rrpair-file|dir>...` - Show which message type each recorded protobuf body resolves to, or why none did
+
+**Examples**
+
+```bash
+# add a proto tree, then see what it declares
+proxymock protos add ./proto
+proxymock protos list --methods
+
+# add one file whose imports live in a shared tree
+proxymock protos add ../shared/proto/acme/orders/v1/orders.proto --proto-path ../shared/proto
+
+# check recorded calls and print each body with its field names
+proxymock protos check proxymock/recorded --show named
+```
+
+**Flags**
+
+- `-I, --proto-path stringArray` - Directory to resolve imports from that `proxymock/protos/` does not hold, like `protoc -I` (repeatable)
+- `--in strings` - (`list`, `add`) A directory inside the proxymock workspace to use (default `.`)
+- `--methods` - (`list`) Also list every gRPC method
+- `--force` - (`add`) Replace files in `proxymock/protos/` that have other content
+- `--show string` - (`check`) Also print each body: `named` (field names, when a schema matched) or `protoscope`
+- `--json` - (`list`, `check`) Write JSON
 
 ## File management commands
 
@@ -1300,6 +1334,7 @@ The server also rejects requests from other web origins, and requests addressed 
 
 - `--host string` - Address to bind (default `127.0.0.1`). Any other address makes the server reachable from the network over plain HTTP, and proxymock prints a warning
 - `--in strings` - Directory to read RRPair files from (default `.`)
+- `-I, --proto-path stringArray` - Directory to resolve imports from that the workspace's `proxymock/protos/` does not hold, like `protoc -I` (repeatable)
 - `--open` - Open the browser after start (default `true`)
 - `--port int` - Port to bind (default `7788`). If it is taken, the next free port is used. `0` picks a random port
 - `--token string` - Access token every request must carry. Defaults to `PROXYMOCK_WEB_TOKEN`, then a random token per start

@@ -29,6 +29,7 @@ The unary workflows work from the proxymock CLI and from an AI coding assistant 
 - [Mock a gRPC dependency](./mock-a-grpc-dependency.md): answer a dependency's calls from a recording and fix calls that do not match.
 - [Generate tests and mocks from a .proto](./generate-from-a-proto.md): start a recording from the `.proto` when there is no traffic yet.
 - [Validate and measure coverage](./validate-and-coverage.md): check recorded responses against the `.proto` and see which RPCs, statuses and fields a recording reaches.
+- [Read gRPC bodies with your .proto](./name-fields-with-your-proto.md): add the `.proto` files to the workspace so recorded bodies show real field and enum names in proxymock web, the CLI and your AI coding assistant.
 
 ## How proxymock shows a gRPC call
 
@@ -76,7 +77,7 @@ How to read it:
 - A fixed-width field is shown as the number it most likely holds, here a `double`, with its raw bits in a `#` comment. A suffix of `i32` or `i64` marks a fixed-width value whose size is not otherwise clear. Text after `#` is always a comment.
 - Bytes that are not text or a message are shown as hex in backticks, so nothing in the body is hidden.
 
-Without a `.proto` these are the most likely readings of the wire format, the same ones the JSON view uses. A field can still hold something other than what it looks like, for example a `fixed64` that reads as a `double`, so check the `.proto` when a value looks wrong.
+Without a `.proto` these are the most likely readings of the wire format, the same ones the JSON view uses. A field can still hold something other than what it looks like, for example a `fixed64` that reads as a `double`. [Add the service's `.proto` to the workspace](./name-fields-with-your-proto.md) and the values are read as their declared types, with field names as comments and a Named view beside it.
 
 A call that sends or returns several messages, such as a [server stream](./server-streaming.md), shows one block per message:
 
