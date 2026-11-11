@@ -28,6 +28,8 @@ Speedscale has the schemas of public gRPC APIs built in, so their calls read wit
 
 A schema you upload always wins over a built-in one that declares the same type. The built-in schemas only name traffic in the views; they never grade [Spec adherence](../readiness/spec-adherence.md), which uses the service's own contract.
 
+The `standard` filter rule the forwarder applies by default drops OpenTelemetry export calls, along with other telemetry traffic, before they leave your cluster. To see an app's OTLP exports in Speedscale, apply a [filter rule](../creating-filters.md) without the `/opentelemetry.proto` exclusion. proxymock records them without any filter.
+
 ## Where a schema goes
 
 There are two places, depending on who owns the API:
