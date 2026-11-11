@@ -19,6 +19,18 @@ Without a schema, proxymock shows a protobuf message by field number: `3: 50.5` 
 
 Schemas are applied when a body is shown, not when it is recorded. Adding a schema names traffic you recorded before it, and nothing in your recordings changes.
 
+## Public APIs read with no schema
+
+proxymock has the schemas of public gRPC APIs built in, so calls to them read with their real names before you add anything:
+
+- **Google APIs**: every API in [googleapis](https://github.com/googleapis/googleapis), including Pub/Sub, Spanner, Firestore, Bigtable, Cloud Storage, Cloud Logging, Vertex AI, Gemini and Google Ads.
+- **gRPC**: the [grpc-proto](https://github.com/grpc/grpc-proto) services, such as health checking (`grpc.health.v1.Health`) and server reflection.
+- **OpenTelemetry**: the [OTLP](https://github.com/open-telemetry/opentelemetry-proto) trace, metric and log export services, so an app's telemetry export is readable too.
+
+A schema you add to the workspace always wins over a built-in one that declares the same type, so a team that runs its own fork of `grpc.health.v1` sees its own names. `proxymock protos list` and the Protobuf Schemas page show which upstream commits the built-in schemas come from.
+
+Your own `.proto` files can import the built-in files, such as `google/api/annotations.proto`, `google/api/field_behavior.proto` or `google/rpc/status.proto`, without copying them into the workspace.
+
 ## Add your schemas to the workspace
 
 Schemas live in the workspace's `proxymock/protos/` directory, next to your recordings, so they are reviewed and versioned with them. proxymock reads them from nowhere else.
@@ -37,13 +49,13 @@ buf build -o orders.binpb
 proxymock protos add orders.binpb
 ```
 
-`add` compiles every input first and writes nothing unless all of them compile. It copies each `.proto` file together with every file it imports, so the workspace compiles on its own. The well-known `google/protobuf` files are not copied, because proxymock always has them. A file that already exists in `proxymock/protos/` with other content is only replaced with `--force`.
+`add` compiles every input first and writes nothing unless all of them compile. It copies each `.proto` file together with every file it imports, so the workspace compiles on its own. The well-known `google/protobuf` files are not copied, because proxymock always has them, and neither is a built-in file such as `google/api/annotations.proto` that is not in your proto tree; `add` lists those as `Not copied, built in`. A file that already exists in `proxymock/protos/` with other content is only replaced with `--force`.
 
 You can also copy files into `proxymock/protos/` yourself. The directory is an import root, the same as `protoc -I proxymock/protos`: a file that imports `acme/common/v1/money.proto` expects it at `proxymock/protos/acme/common/v1/money.proto`. These inputs are accepted:
 
 - `.proto` files, anywhere under the directory, compiled together.
 - Zips of `.proto` files.
-- Compiled descriptor sets: `.binpb`, `.pb`, `.protoset` or `.desc`, gzip-compressed or not, from `buf build -o` or `protoc --include_imports --descriptor_set_out`. A descriptor set must include the files it imports.
+- Compiled descriptor sets: `.binpb`, `.pb`, `.protoset` or `.desc`, gzip-compressed or not, from `buf build -o` or `protoc --include_imports --descriptor_set_out`. A descriptor set must include the files it imports, apart from the well-known and built-in ones.
 
 Each schema input is limited to 25 MiB and 5,000 files. If one `.proto` file does not compile, it is skipped and reported with its file and line, and the other files still name your traffic.
 
@@ -60,7 +72,11 @@ protos/  58db9ec25837  2      4         acme.orders.v1.Orders, fraud.v1.FraudChe
   /fraud.v1.FraudChecker/CheckTransaction
 ```
 
-`protos/` is every `.proto` file in the directory, compiled together. A zip or descriptor set is listed under its own file name. The digest identifies the exact schema content, so you can tell which version named a body.
+`protos/` is every `.proto` file in the directory, compiled together. A zip or descriptor set is listed under its own file name. The digest identifies the exact schema content, so you can tell which version named a body. A last line names the built-in schemas:
+
+```
+Built in: googleapis 30c3dcae2b2d, grpc-proto 2768528c9c73, opentelemetry-proto e04129d57b92 (305 packs, version 6d8c966fd59d6d5c). A schema here that declares the same type wins.
+```
 
 ## Check how a recorded call resolves
 
@@ -72,6 +88,14 @@ proxymock protos check proxymock/recorded
 proxymock/recorded/localhost/2026-10-26_16-45-46.515954Z.md  /fraud.v1.FraudChecker/CheckTransaction
   request   fraud.v1.CheckRequest  from protos/ (58db9ec25837, matched by grpc-method)
   response  fraud.v1.CheckResponse  from protos/ (58db9ec25837, matched by grpc-method)
+```
+
+A call to a public API resolves from the built-in schemas, named by the family of files it came from:
+
+```
+proxymock/recorded/pubsub.googleapis.com/2026-11-11_10-02-13.104815Z.md  /google.pubsub.v1.Publisher/Publish
+  request   google.pubsub.v1.PublishRequest  from bundled google/pubsub (c78729d84d92, matched by grpc-method)
+  response  google.pubsub.v1.PublishResponse  from bundled google/pubsub (c78729d84d92, matched by grpc-method)
 ```
 
 Add `--show named` to print each body with its field names, or `--show protoscope` for the exact wire data. Add `--json` for scripts. When a body does not resolve, `check` says why, for example `no schema declares the gRPC method /billing.v1.Billing/Charge`.
@@ -99,15 +123,41 @@ The path is a glob matched segment by segment, where `*` matches one segment, an
 
 The types must be declared by a schema in `proxymock/protos/`, so a misspelled name is refused when you add the rule. Rules live in `proxymock/protos/mappings.json`, next to the schemas, and `proxymock protos list` shows them.
 
+## Read the details of a failed call
+
+A gRPC server can explain a failure in the `grpc-status-details-bin` trailer: a `google.rpc.Status` whose details say which field was invalid, which quota ran out or how long to wait before retrying. proxymock decodes it with the built-in schemas, and with yours when a detail is one of your own messages. `proxymock protos check` prints it under the response:
+
+```
+  response  acme.orders.v1.Order  from protos/ (58db9ec25837, matched by grpc-method)
+            grpc-status-details-bin (google.rpc.Status):
+              {
+                "code": 3,
+                "message": "invalid order",
+                "details": [
+                  {
+                    "@type": "type.googleapis.com/google.rpc.BadRequest",
+                    "field_violations": [
+                      {
+                        "field": "amount",
+                        "description": "must be positive"
+                      }
+                    ]
+                  }
+                ]
+              }
+```
+
+In proxymock web it shows above the response body.
+
 ## Read named bodies in proxymock web
 
 In proxymock web, the Body tab of a protobuf request or response adds a **Named** view, and opens it by default when a schema matches. A badge above the body shows the message type, the schema it came from and its digest. Hover it to see the rule that matched.
 
-- **Named** shows the body as JSON with the `.proto` field names, enum value names and readable numbers. A stream shows one object per message, in an array.
+- **Named** shows the body as JSON with the `.proto` field names, enum value names and readable numbers. A stream shows one object per message, in an array. A badge that reads `bundled google/pubsub` means a built-in schema named the body.
 - **Protoscope** adds the field names as comments, `3: 50.5  # amount`, and still shows every byte.
 - **Wire JSON** is the stored field-number JSON. Blueprints and edits use it.
 
-To add or remove schemas from the browser, open **Protobuf Schemas** under Config. It lists the schemas, files and mapping rules in `proxymock/protos/`. Choose a `.proto` file and enter its import path, such as `acme/orders/v1/orders.proto`, and it is checked against the schemas already there before it is added, so a file that imports one of them is accepted. A zip or a descriptor set must compile on its own. A file that does not compile is refused with its file and line.
+To add or remove schemas from the browser, open **Protobuf Schemas** under Config. It lists the schemas, files and mapping rules in `proxymock/protos/`, and the upstream commits of the built-in schemas. Choose a `.proto` file and enter its import path, such as `acme/orders/v1/orders.proto`, and it is checked against the schemas already there before it is added, so a file that imports one of them is accepted. A zip or a descriptor set must compile on its own. A file that does not compile is refused with its file and line.
 
 Changes to `proxymock/protos/` apply the next time you open a request, without restarting. If a file there does not compile, a warning above the body names it; hover it for the file and line. If your `.proto` files import files kept outside the workspace, start proxymock web with `--proto-path <dir>` (or `-I <dir>`).
 
