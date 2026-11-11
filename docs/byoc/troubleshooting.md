@@ -47,7 +47,17 @@ Prefer `proxymock import gcs`. If an existing workflow requires the XML interope
 
 ## Azure Blob does not work with `import s3`
 
-Azure Blob is not S3-compatible. Use the chart repository's `azure-gather.py` script or choose S3/GCS for a direct proxymock import workflow. See [Storage and observability backends](./backends.md).
+Azure Blob is not S3-compatible. Use `proxymock import azureblob` in proxymock v2.5.1169 or later. Older clients can upgrade or use the chart repository's `azure-gather.py` script.
+
+For an Azure import failure, check all of the following:
+
+- The identity used by proxymock has **Storage Blob Data Reader** on the selected container. A successful `az login` or collector write does not establish reader access.
+- `--azure-account-url` contains the HTTPS storage account URL only; `--bucket` contains the container name.
+- Connection-string authentication uses `AZURE_STORAGE_CONNECTION_STRING` in the process environment and omits `--azure-account-url`.
+- `--prefix` matches actual blob names. The reference Azure chart writes `YYYY/MM/DD/logs_*` at the container root, so omit the S3 chart's `byoc/` prefix.
+- The time window includes a known captured request and the objects have not expired under storage lifecycle rules.
+
+Azure imports use credentials on the proxymock host; Azure cluster-reader discovery is unavailable. See [Azure import setup](./use-traffic.md#azure-blob-storage).
 
 ## Imported traffic will not replay cleanly
 

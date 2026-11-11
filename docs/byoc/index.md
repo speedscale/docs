@@ -44,7 +44,7 @@ Start with [direct storage on Kubernetes](./configure-kubernetes.md#customer-own
 
 Each named Forwarder exporter sends captured traffic as OTLP logs to your collector with its own filter and DLP configuration. You can also add collector export alongside direct storage.
 
-The classic operator enables capture through workload annotations; a namespaced installation uses proxymock sidecar injection. The default S3 and GCS collector layouts use the `byoc/` prefix. Azure Blob and observability destinations require backend-specific retrieval recipes for replay.
+The classic operator enables capture through workload annotations; a namespaced installation uses proxymock sidecar injection. The default S3 and GCS collector layouts use the `byoc/` prefix. Azure Blob supports [native imports](./use-traffic.md#azure-blob-storage) in proxymock v2.5.1169 and later; its reference collector writes blobs at the container root under `YYYY/MM/DD/logs_*`. Observability destinations use the retrieval paths in the [backend guide](./backends.md).
 
 Start with [Kubernetes collector export](./configure-kubernetes.md#1-add-the-helm-repositories) after completing the [checks below](#before-you-capture).
 
