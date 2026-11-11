@@ -14,7 +14,7 @@ Speedscale publishes reference collector charts in the [speedscale-byoc reposito
 | `fluentbit-gcs` | GCS through its S3-compatible API | RRPair logs | None | Yes, native GCS or S3 interoperability |
 | `grafana` | Loki and Grafana | RRPair logs | Other application logs when configured separately | Gather script |
 | `elasticsearch` | Elasticsearch and Kibana | RRPair logs | Other application logs when configured separately | Gather script |
-| `azureblob` | Azure Blob Storage | RRPair logs | None | No; use `azure-gather.py` |
+| `azureblob` | Azure Blob Storage | RRPair logs | None | Yes, `proxymock import azureblob` (v2.5.1169+) |
 | `datadog` | Datadog | RRPair logs | Application traces and metrics sent independently; the Datadog connector can derive APM trace metrics | Trace recipe |
 | `dynatrace` | Dynatrace | RRPair logs | Application traces and metrics sent independently | No |
 | `newrelic` | New Relic | RRPair logs | Application traces and metrics sent independently | No |
@@ -33,9 +33,9 @@ The upstream [`awss3`](https://github.com/open-telemetry/opentelemetry-collector
 
 ## Choose for replayability
 
-Choose Amazon S3 or native GCS when developers and automated agents need to pull a time-bounded capture directly into proxymock. Run an object-storage channel alongside an observability channel when you need both operational correlation and a simple replay path.
+Choose Amazon S3, native GCS, or Azure Blob when developers and automated agents need to pull a time-bounded capture directly into proxymock. Run an object-storage channel alongside an observability channel when you need both operational correlation and a simple replay path.
 
-Loki, Elasticsearch, and Azure Blob require backend-specific gather scripts. Datadog has a [Datadog-to-proxymock recipe](https://github.com/speedscale/speedscale-byoc/tree/main/recipes/datadog-to-replay) for retrieving one trace. Dynatrace and New Relic do not have direct proxymock importers.
+Loki and Elasticsearch require backend-specific gather scripts. Datadog has a [Datadog-to-proxymock recipe](https://github.com/speedscale/speedscale-byoc/tree/main/recipes/datadog-to-replay) for retrieving one trace. Dynatrace and New Relic do not have direct proxymock importers.
 
 ## Observability guides
 
@@ -43,11 +43,11 @@ Loki, Elasticsearch, and Azure Blob require backend-specific gather scripts. Dat
 - [Dynatrace](/guides/integrations/export/dynatrace.md)
 - [New Relic](/guides/integrations/export/new-relic.md)
 
-## Azure Blob limitation
+## Azure Blob imports {#azure-blob-limitation}
 
-Azure Blob Storage does not expose an S3-compatible API. Changing `--s3-endpoint-url` to an Azure Blob URL does not make `proxymock import s3`, the `pull_byoc_bucket` MCP tool, or the proxymock web source picker compatible with it.
+Native Azure Blob traffic imports are available in proxymock v2.5.1169 and later. Use `proxymock import azureblob`, `pull_byoc_bucket` with `storage-provider=azureblob`, or **Azure Blob Storage** in the proxymock web source picker. See [Azure credentials and import examples](./use-traffic.md#azure-blob-storage).
 
-For manual retrieval, use [`scripts/azure-gather.py`](https://github.com/speedscale/speedscale-byoc/blob/main/scripts/azure-gather.py). Choose S3 or GCS if direct proxymock bucket import is a requirement.
+Azure Blob Storage does not expose an S3-compatible API. Use the native Azure provider instead of setting an Azure URL on `import s3`. Older clients can upgrade or use [`scripts/azure-gather.py`](https://github.com/speedscale/speedscale-byoc/blob/main/scripts/azure-gather.py) for manual retrieval.
 
 ## Next step
 
