@@ -66,9 +66,11 @@ echo "Generating ${OUT} from ${BIN} (${VERSION})..." >&2
 
 # The REST API reference and its OpenAPI document come from the same binary.
 # Older releases have no `mcp openapi`; leave the pages as they are then.
+# `mcp openapi --help` cannot tell: for an unknown subcommand cobra prints the
+# parent's help and exits 0, so look for openapi among the subcommands.
 REST_OUT="docs/proxymock/how-it-works/rest-api-reference.md"
 OPENAPI_OUT="static/proxymock/openapi-v1.json"
-if "${BIN}" mcp openapi --help >/dev/null 2>&1; then
+if "${BIN}" mcp --help 2>/dev/null | grep -Eq '^[[:space:]]+openapi[[:space:]]'; then
   echo "Generating ${REST_OUT} and ${OPENAPI_OUT}..." >&2
   mkdir -p "$(dirname "${OPENAPI_OUT}")"
   "${BIN}" mcp openapi > "${OPENAPI_OUT}"
