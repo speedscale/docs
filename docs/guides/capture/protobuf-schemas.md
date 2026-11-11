@@ -24,11 +24,20 @@ Speedscale has the schemas of public gRPC APIs built in, so their calls read wit
 
 - **Google APIs**: every API in [googleapis](https://github.com/googleapis/googleapis), including Pub/Sub, Spanner, Firestore, Bigtable, Cloud Storage, Cloud Logging, Vertex AI, Gemini and Google Ads.
 - **gRPC**: the [grpc-proto](https://github.com/grpc/grpc-proto) services, such as health checking and server reflection.
-- **OpenTelemetry**: the [OTLP](https://github.com/open-telemetry/opentelemetry-proto) trace, metric and log export services.
+- **OpenTelemetry**: the [OTLP](https://github.com/open-telemetry/opentelemetry-proto) trace, metric and log export services, when an app exports over gRPC. OTLP over HTTP (`POST /v1/traces` and the like) carries no method name, so its bodies show in Protoscope only.
 
 A schema you upload always wins over a built-in one that declares the same type. The built-in schemas only name traffic in the views; they never grade [Spec adherence](../readiness/spec-adherence.md), which uses the service's own contract.
 
-The `standard` filter rule the forwarder applies by default drops OpenTelemetry export calls, along with other telemetry traffic, before they leave your cluster. To see an app's OTLP exports in Speedscale, apply a [filter rule](../creating-filters.md) without the `/opentelemetry.proto` exclusion. proxymock records them without any filter.
+### OpenTelemetry exports are filtered out by default
+
+The `standard` filter rule the forwarder applies by default drops telemetry traffic before it leaves your cluster, OpenTelemetry exports included, so it does not crowd out your app's own calls. To capture an app's OTLP exports, apply a copy of the rule without those clauses:
+
+1. Download the `standard` rule: `speedctl pull filter standard`. It is saved to `~/.speedscale/data/filters/standard.json`.
+2. Copy its query string and remove `location CONTAINS "/opentelemetry.proto"`, which drops OTLP over gRPC. To keep OTLP traces sent over HTTP too, also remove `location CONTAINS "/v1/trace"`. OTLP metrics and logs over HTTP are not filtered.
+3. Create the copy under a new name: `speedctl put filter --id standard-with-otlp --query-string '<the edited query>'`. The `standard` rule itself cannot be changed.
+4. Apply it to the cluster: `speedctl infra operator patch --cluster <cluster> --filter-rule standard-with-otlp`.
+
+The rule applies to the whole cluster, so every workload's exports are captured from then on. See [Creating traffic filters](../creating-filters.md) for more on filter rules. proxymock records OTLP exports without any filter.
 
 ## Where a schema goes
 

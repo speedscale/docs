@@ -25,7 +25,7 @@ proxymock has the schemas of public gRPC APIs built in, so calls to them read wi
 
 - **Google APIs**: every API in [googleapis](https://github.com/googleapis/googleapis), including Pub/Sub, Spanner, Firestore, Bigtable, Cloud Storage, Cloud Logging, Vertex AI, Gemini and Google Ads.
 - **gRPC**: the [grpc-proto](https://github.com/grpc/grpc-proto) services, such as health checking (`grpc.health.v1.Health`) and server reflection.
-- **OpenTelemetry**: the [OTLP](https://github.com/open-telemetry/opentelemetry-proto) trace, metric and log export services, so an app's telemetry export is readable too.
+- **OpenTelemetry**: the [OTLP](https://github.com/open-telemetry/opentelemetry-proto) trace, metric and log export services, so an app's telemetry export over gRPC is readable too. For OTLP over HTTP, add [mapping rules](#map-protobuf-calls-over-plain-http) for its paths, shown below.
 
 A schema you add to the workspace always wins over a built-in one that declares the same type, so a team that runs its own fork of `grpc.health.v1` sees its own names. `proxymock protos list` and the Protobuf Schemas page show which upstream commits the built-in schemas come from.
 
@@ -121,7 +121,18 @@ proxymock protos map /v1/orders --host orders.acme.internal --method POST \
 
 The path is a glob matched segment by segment, where `*` matches one segment, and a trailing `/**` matches the path and anything below it. `--host` is a glob matched against the request host, with or without its port. Rules are tried in the order they were added, and the first one that covers a call wins. A rule with the same host, method and path as an existing one replaces it, and `--remove` removes it.
 
-The types must be declared by a schema in `proxymock/protos/`, so a misspelled name is refused when you add the rule. Rules live in `proxymock/protos/mappings.json`, next to the schemas, and `proxymock protos list` shows them.
+OTLP over HTTP posts to fixed paths with a plain `application/x-protobuf` Content-Type, so map them to the built-in OTLP types:
+
+```bash
+proxymock protos map /v1/traces --request opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest \
+  --response opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse
+proxymock protos map /v1/metrics --request opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest \
+  --response opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse
+proxymock protos map /v1/logs --request opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest \
+  --response opentelemetry.proto.collector.logs.v1.ExportLogsServiceResponse
+```
+
+The types must be declared by a schema in `proxymock/protos/` or by the built-in schemas, so a misspelled name is refused when you add the rule. Rules live in `proxymock/protos/mappings.json`, next to the schemas, and `proxymock protos list` shows them.
 
 ## Read the details of a failed call
 
