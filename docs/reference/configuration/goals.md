@@ -30,3 +30,6 @@ true when the replay completes.
 | successful assertions < 99%         | Of the assertions being run, basically all of them should pass. |
 | RPS < 30                            | There is a business requirement that my application can handle at least 30 requests per second. |
 
+## LLM streaming goals
+
+A replay that sends streamed LLM requests reports time to first token, inter-token latency, request latency and token rates, so goals can hold a model server to them, for example `llmTtftP95` too high at `800`. See [LLM Streaming Metrics](../../guides/replay/llm-streaming-metrics.md) for every metric name and its definition.

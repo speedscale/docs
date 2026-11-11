@@ -33,6 +33,10 @@ The test config decides which families block the verdict and at which letter.
 
 See the [Readiness guide](../readiness/index.md).
 
+## LLM
+
+A replay that sent streamed LLM requests gets an LLM tab with time to first token, inter-token latency, request latency and token rates, next to the recorded values when the recording had frame timing. See [LLM Streaming Metrics](../replay/llm-streaming-metrics.md#read-the-results).
+
 ## Recommendations
 
 ![Recommendations panel in a replay report](./report-recommendations.png)

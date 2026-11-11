@@ -267,6 +267,17 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `requests.result-match-pct`
 - `requests.succeeded`
 - `requests.total`
+- `llm.ttft-p50`, `llm.ttft-p95`, `llm.ttft-max`
+- `llm.e2e-p50`, `llm.e2e-p95`, `llm.e2e-max`
+- `llm.itl-p50`, `llm.itl-p95`, `llm.itl-max`
+- `llm.user-tokens-per-sec-p50`, `llm.user-tokens-per-sec-p95`
+- `llm.output-tokens-per-sec`
+- `llm.output-tokens`
+- `llm.requests`
+- `llm.incomplete`
+- `llm.token-count-approx-pct`
+
+The `llm.*` metrics measure streamed LLM responses; see [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md) for their definitions.
 
 Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
 

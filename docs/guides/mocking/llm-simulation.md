@@ -48,6 +48,8 @@ LLM providers enforce rate limits and token quotas. Load tests and batch CI runs
 
 Use real providers when the goal is to evaluate the model itself: prompt quality, provider latency, output quality, or true cost. Use simulation when the goal is to test your application logic: response parsing, fallback handling, UI behavior, throughput, and retry logic.
 
+To measure a model server you run yourself, replay recorded prompts against it instead of mocking it. A replay reports time to first token, inter-token latency and token throughput; see [LLM Streaming Metrics](../replay/llm-streaming-metrics.md).
+
 ## Supported Providers
 
 Speedscale automatically detects and supports popular LLM provider APIs. No special configuration is required.
