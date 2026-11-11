@@ -24,6 +24,8 @@ This section contains how-to guides for practical uses of **proxymock**.
 
 ## Configure and verify replays
 
+- [Integration testing with Kiro](./kiro.md): review a testing spec and generate recorded-traffic tests with dependency mocks, assertions and native schema coverage.
+
 - [Replay a Speedscale Cloud Snapshot Locally](./cloud-snapshot-local.md): pull existing traffic, mock dependencies, and test the app on your laptop.
 
 - [Create and Verify Blueprints](./blueprints.md): save, preview, and check runtime transforms.
