@@ -13,6 +13,10 @@ The load-plan engine is included in proxymock v2.5.1012 and later. Use compatibl
 
 For an executable walkthrough, start with [Test one endpoint while stressing another](./endpoint-load-how-to.md). See the [load-plan field reference](../../reference/configuration/endpoint-load-plans.md) for JSON fields, units, ownership and compatibility rules.
 
+[Watch customized load test plans on YouTube](https://www.youtube.com/watch?v=NqQWsl4uXes).
+
+<iframe title="Customized load test plans" src="https://www.youtube.com/embed/NqQWsl4uXes?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Choose requests or complete sessions
 
 | Selection | What a filter selects | What an execution does |

@@ -146,6 +146,10 @@ The replay was manually canceled by a user before completion.
 
 ## Watch a Replay's Progress
 
+[Watch replay progress tracking on YouTube](https://www.youtube.com/watch?v=YYdB9dFQhU8).
+
+<iframe title="Replay progress tracking" src="https://www.youtube.com/embed/YYdB9dFQhU8?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 The status says where a replay is, and the **Replay progress** panel at the top of the report's **Overview** tab shows why. It is there while the replay runs and after it finishes. While it runs, the elapsed time ticks every second and new progress arrives every few seconds. Afterwards it shows how long the replay ran.
 
 The stepper walks through six stages in order:

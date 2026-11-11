@@ -11,6 +11,10 @@ Speedscale introduces chaos at the API level by manipulating individual request 
 
 The Speedscale chaos approach is complementary to infrastructure experiments provided by tools like [Gremlin](https://www.gremlin.com/) or [Chaos Monkey](https://netflix.github.io/chaosmonkey/).
 
+[Watch application chaos testing using traffic replay on YouTube](https://www.youtube.com/watch?v=ousNu3OZEas).
+
+<iframe title="Application chaos testing using traffic replay" src="https://www.youtube.com/embed/ousNu3OZEas?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Combine chaos with endpoint load
 
 [Endpoint and session load plans](../guides/replay/endpoint-session-load-plans.md) choose which traffic starts and when; chaos rules change request behavior. For example, ramp statement traffic and fail its dependency while keeping transaction posting steady, then remove chaos and check recovery. The [banking how-to](../guides/replay/endpoint-load-how-to.md) includes an executable scoped dependency-failure test.

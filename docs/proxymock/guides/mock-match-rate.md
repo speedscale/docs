@@ -145,6 +145,10 @@ See the [MCP Tools & Prompts Reference](../how-it-works/mcp-tools.md) for full p
 
 ## In proxymock web
 
+[Watch replay tuning in the Mocks view on YouTube](https://www.youtube.com/watch?v=oaD6c8mND9s).
+
+<iframe title="Replay tuning in the Mocks view" src="https://www.youtube.com/embed/oaD6c8mND9s?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 The same loop runs in `proxymock web`, for when you would rather see the misses than read a report. The browser, the CLI and the agent share one analysis and write the same per-service tuning blueprint, so a fix applied in one shows up in the others.
 
 ### Fix misses in the Mocks view
