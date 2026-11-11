@@ -170,13 +170,13 @@ The collapsed **Stateful endpoints**, **Volatile response fields**, **Created id
 
 ### See why one request missed
 
-Open a request marked **no match** in the Requests grid, and its **Similar** tab opens first. It ranks the recorded signatures of the snapshots pulled into the workspace (`snapshot-<id>` folders) that this request came closest to, with the active blueprints applied to both sides.
+Open a request marked **no match** in the Requests grid, and its **Similar** tab opens first. It ranks recorded signatures with the active blueprints applied to both sides. It first uses the replay's source recording, named in `replay-verdict.json`, when that recording is still in the workspace. Otherwise it uses pulled snapshots (`snapshot-<id>` folders), then local recordings (`recorded-*` folders).
 
 Each candidate is a field-by-field table of this request's value and the recorded value, each before and after blueprints, with the drifting fields first. When every field agrees, the card says the request will match on the next replay.
 
 On a drifting row, **Apply fix** accepts the analyzer's recommendation for that field, and **Add blueprint** lets you choose the transform yourself. The tab ranks again as soon as a blueprint is added, so you can watch the red rows clear. **Diff body** compares the two request bodies side by side, and **Open** shows the recorded request in the grid.
 
-When the workspace has no pulled snapshot, for example after a local `proxymock record` or after pulling only a report, the tab ranks against the run's own matched requests and says so. Pull the report with its source snapshot to compare against the recording.
+If no recording signatures are available, the tab falls back to the run's own matched requests and says so. Pull the report with its source snapshot to compare against the recording. A local recording already in the workspace needs no cloud snapshot.
 
 ## From the command line
 

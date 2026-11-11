@@ -6,7 +6,7 @@ sidebar_position: 16
 
 # Chat with Your Traffic
 
-`proxymock web` has an assistant built in. Ask it what a recording contains, why a request failed or which blueprint would fix a mock miss, and it reads the RRPair files in your workspace to answer. It can also act for you: configure and start a replay, step through a replay debug session, create and apply blueprints, and push or pull cloud snapshots. Anything that sends traffic or changes your files waits for you to approve it.
+`proxymock web` has an assistant built in. Ask it what a recording contains, why a request failed or which blueprint would fix a mock miss, and it reads the RRPair files in your workspace to answer. It can also act for you: configure and start a replay, step through a replay debug session, create and apply blueprints, and push or pull cloud snapshots. The actions that require approval are listed below.
 
 Chat needs a Speedscale [enterprise account](./initialize.md#enterprise-account) on the machine running `proxymock web`. Without one you can open the assistant, but sending a message shows where to get a pro account.
 
@@ -35,10 +35,11 @@ Without asking first, the assistant can:
 - Run the analysis and list recommendations, including a dry run of what applying them would change.
 - Read your Speedscale cloud data: clusters, workloads, snapshots, reports and their recommendations.
 - Open an RRPair, the Blueprints view or the Requests view for you.
-- Fill in the Replay form, finish an open replay debug session, or set a variable in it.
+- Fill in the Replay form, except for the wrapped application command and output directory, finish an open replay debug session, or set a variable in it.
 
 These actions show an **Approve** card first, and nothing happens until you click it:
 
+- Set the Replay form's wrapped application command (`user_command`) or output directory (`out_dir`).
 - Start a replay, or start a [replay debug session](./replay-debugger.md), step it, run it to a breakpoint, or resend the last request.
 - Create, activate, apply or import a blueprint, overwrite one from the cloud, or sync the workspace's blueprints with Speedscale cloud, which pushes local-only blueprints up.
 - Apply recommendations to RRPair files. proxymock backs up the files it changes under `.proxymock/backups/` in the workspace.
