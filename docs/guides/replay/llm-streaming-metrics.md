@@ -32,7 +32,7 @@ Every duration is in milliseconds and runs from the moment the request was sent.
 | Time to first token (TTFT) | Until the first frame that carries output: text, reasoning or tool-call arguments. A frame that only names the role, a keepalive or a usage report is not output. |
 | Request latency | Until the last frame that carries output. Usage reports and end markers that follow it do not count. |
 | Inter-token latency (ITL) | (request latency - TTFT) / (output tokens - 1): the decode time after the first token, spread over the remaining tokens. A stream with one token has none. |
-| Tokens per second per user | 1 / ITL: the output rate one user saw. |
+| Tokens per second per user | 1 / ITL with ITL in seconds, which is 1000 / ITL in milliseconds: the output rate one user saw. An ITL of 21 ms is about 47.6 tokens per second. |
 | Output tokens per second | All output tokens divided by the run's LLM window, from the first LLM request sent to the last output token received. |
 | Output tokens | Output tokens across finished streams. |
 | LLM requests | Streams recognized as LLM output. |
