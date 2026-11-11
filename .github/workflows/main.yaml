@@ -35,6 +35,9 @@ jobs:
     - name: install
       run: yarn --frozen-lockfile --silent
 
+    - name: agent readability tests
+      run: yarn test:agents
+
     - name: security regression tests
       run: node --test scripts/security-regressions.test.mjs
 
@@ -100,7 +103,10 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
 
     - name: upload main
-      run: aws s3 sync --delete build "s3://$DOCS_BUCKET"
+      run: aws s3 sync --delete build "s3://$DOCS_BUCKET" --exclude '*.md'
+
+    - name: upload Markdown
+      run: bash scripts/deploy-markdown.sh build "s3://$DOCS_BUCKET/"
 
     # The sync above re-uploads the client-redirect stubs (200 + meta refresh)
     # every deploy; replace them with website-redirect objects so the S3
