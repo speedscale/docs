@@ -11,6 +11,10 @@ A recording captures the exact credentials your clients sent: bearer tokens, JWT
 
 **Replace credentials** fixes this once per credential. You pick how the replay should get a valid credential, and Speedscale saves that choice as a credential blueprint. Every later replay of matching traffic applies the blueprint, whether it starts from the dashboard, a schedule, `speedctl`, `proxymock cloud replay` or the API. The stored snapshot never changes.
 
+[Watch credential replacement on YouTube](https://www.youtube.com/watch?v=uMyq0_1dKh4).
+
+<iframe title="Credential replacement" src="https://www.youtube.com/embed/uMyq0_1dKh4?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## When you need it
 
 - Replayed requests get `401` or `403` responses that the recording did not have.

@@ -9,6 +9,10 @@ import TransformChooser from './replay/transform-chooser.png'
 
 `proxymock replay` sends the operations your server received while you recorded it to a new build of the server, and compares each response with the recorded one. Every operation your clients really sent becomes a test, with no test code to write.
 
+[Watch testing GraphQL on YouTube](https://www.youtube.com/watch?v=YvaoIpXIuus).
+
+<iframe title="Testing GraphQL" src="https://www.youtube.com/embed/YvaoIpXIuus?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Run the replay
 
 Start the build you want to test, then replay the recording at it:

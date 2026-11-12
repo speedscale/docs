@@ -10,6 +10,10 @@ import styles from '@site/src/css/kiro-prompts.module.css';
 
 Have Kiro write a testing spec, then implement it using recorded requests and dependency responses. The proxymock tools run the tests and supply native comparison, assertion and schema-coverage results for you to review.
 
+[Watch the Kiro integration-testing tutorial on YouTube](https://www.youtube.com/watch?v=yrFncPd4Xv8).
+
+<iframe title="Generate integration tests with Kiro and proxymock" src="https://www.youtube.com/embed/yrFncPd4Xv8?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Choose an application
 
 Open your application repository in [Kiro IDE](https://kiro.dev/ide/). You need its runtime, a build/start command, an OpenAPI contract and recorded inbound traffic with the outbound calls needed to mock its dependencies.

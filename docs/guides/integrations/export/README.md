@@ -13,6 +13,12 @@ Speedscale exporters cover three workflows:
 
 Use the vendor guides for [Datadog](./datadog.md), [Dynatrace](./dynatrace.md), and [New Relic](./new-relic.md) to configure live OpenTelemetry export. Each vendor is a separate destination channel with its own collector, credentials, filters, retries, and on/off control.
 
+## Import and export with proxymock
+
+[Watch import and export to load testing tools on YouTube](https://www.youtube.com/watch?v=u5guvequUyE).
+
+<iframe title="Import and export to load testing tools" src="https://www.youtube.com/embed/u5guvequUyE?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 Traffic-format exporters work from either a Speedscale Cloud snapshot or local RRPair files. Bruno is local only and has no `speedctl export snapshot` equivalent:
 
 | Format | Cloud snapshot | Local proxymock recording |
