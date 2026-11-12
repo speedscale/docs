@@ -33,7 +33,7 @@ Make sure you navigate to the `java` subdirectory within the `demo` repository.
 <TabItem value="Kubernetes">
 
 1. [Install the operator](./installation/install/kubernetes-operator.md)
-2. Recommended: enable the [eBPF collector](/reference/ebpf-traffic-collection) to capture traffic without proxies or app changes. Follow the Helm-based setup to target the demo namespace/workload.
+2. Recommended: follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). Enable both capture annotations on the demo Java workload and verify the agent in new pods.
    - Fallback: if eBPF is not suitable in your cluster, deploy the demo app with the Speedscale sidecar by running:
 
 ```bash

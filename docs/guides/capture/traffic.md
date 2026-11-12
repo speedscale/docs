@@ -7,6 +7,8 @@ sidebar_position: 1
 
 # Introduction to Speedscale Traffic Viewer
 
+To start capturing Kubernetes traffic, follow [Kubernetes capture with eBPF and Java Agent](./kubernetes.md). Return here to inspect the recorded requests and responses.
+
 The Speedscale Traffic Viewer is a powerful tool designed to provide developers and operations teams with deep insights into API traffic and service behavior. By visualizing traffic flows in real-time, the Traffic Viewer simplifies the process of analyzing requests, responses, and performance metrics, enabling teams to optimize and troubleshoot their systems effectively.
 
 Key Features:

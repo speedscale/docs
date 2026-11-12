@@ -5,6 +5,8 @@ sidebar_position: 0
 
 # eBPF Traffic Collection
 
+For Kubernetes setup, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). Use this reference for detailed node requirements, runtime permissions, TLS support, and limitations.
+
 ## What is eBPF?
 
 eBPF (extended Berkeley Packet Filter) is a Linux kernel technology that allows running sandboxed programs in
@@ -170,53 +172,11 @@ You can define multiple targets to capture traffic from different services or na
 
 ### Enabling via Annotation
 
-You can also enable eBPF capture on a per-workload basis using Kubernetes annotations. This is useful when you want to target specific deployments without modifying the global Helm configuration:
-
-```bash
-kubectl annotate deployment my-app -n my-namespace \
-  capture.speedscale.com/enabled="true"
-```
-
-To control which ports are captured via eBPF:
-
-```bash
-kubectl annotate deployment my-app -n my-namespace \
-  capture.speedscale.com/ignore-ports="8080,8443"
-```
-
-To disable eBPF capture on a workload:
-
-```bash
-kubectl annotate deployment my-app -n my-namespace \
-  capture.speedscale.com/enabled="false" --overwrite
-```
-
-:::tip
-Annotation-based capture requires that `ebpf.enabled: true` is set in the Helm chart. The annotation controls which workloads are targeted, but the nettap DaemonSet must be running on the node.
-:::
+Follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes#enable-capture-on-the-workload) to set workload annotations, configure port exclusions, add the Java Agent, and preserve settings across redeploys. Annotation-based targeting requires the collector to be enabled and running.
 
 ### Verifying Installation
 
-After enabling eBPF, verify that the nettap DaemonSet is running:
-
-```bash
-kubectl -n speedscale get daemonset
-```
-
-You should see a `nettap` DaemonSet with pods running on each node:
-
-```
-NAME     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-nettap   3         3         3       3             3           <none>          5m
-```
-
-Check the nettap logs to verify probe attachment:
-
-```bash
-kubectl -n speedscale logs daemonset/nettap | grep "probe attached"
-```
-
-The logs will indicate which probe type was selected for each process (kprobe, uprobe, or JVMTI) and whether attachment succeeded.
+Use the [capture verification steps](/guides/capture/kubernetes#verify-capture) to check collector readiness on the workload's nodes, Java Agent injection, and complete captured request/response pairs.
 
 ## Limitations
 
