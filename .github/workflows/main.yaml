@@ -27,6 +27,9 @@ jobs:
     - name: writing regression tests
       run: yarn test:writing
 
+    - name: preview routing regression tests
+      run: node --test scripts/tests/resolve-pr-preview.test.mjs scripts/tests/preview-publish.test.mjs
+
     - name: check public writing
       env:
         BASE_SHA: ${{ github.event.before }}
