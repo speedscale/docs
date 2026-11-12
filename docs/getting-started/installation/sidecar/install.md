@@ -26,9 +26,6 @@ used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
 
-
-
-
 <iframe src="https://www.youtube.com/embed/0bdI6vhNavQ?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 :::tip

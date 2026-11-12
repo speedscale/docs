@@ -172,7 +172,7 @@ You can define multiple targets to capture traffic from different services or na
 
 ### Enabling via Annotation
 
-Follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes#enable-capture-on-the-workload) to set workload annotations, configure port exclusions, add the Java Agent, and preserve settings across redeploys. Annotation-based targeting requires the collector to be enabled and running.
+Follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes#enable-capture-on-the-workload) to set workload annotations, configure port exclusions, add the Java Agent, disable capture, and preserve settings across redeploys. Annotation-based targeting requires the collector to be enabled and running.
 
 ### Verifying Installation
 

@@ -139,7 +139,6 @@ const sidebars = {
           label: "Traffic Capture",
           link: { type: "doc", id: "guides/capture/kubernetes" },
           items: [
-            "guides/capture/kubernetes",
             "guides/capture/traffic",
             "guides/capture/infra",
             "guides/capture/filter",

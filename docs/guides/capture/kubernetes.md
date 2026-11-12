@@ -100,6 +100,17 @@ metadata:
 
 Use comma-separated port numbers from `1` to `65535`. Keep application and dependency ports that you need to record out of this list. Check exclusions when expected traffic is missing; exclusions are separate from whether the collector and Java Agent are ready. See the [capture annotation reference](/reference/kubernetes-annotations#capture-annotations) for supported settings.
 
+### Disable capture
+
+To stop eBPF capture for a workload, set `capture.speedscale.com/enabled: "false"` in its source. For an existing Deployment:
+
+```bash
+kubectl annotate deployment my-app -n my-namespace \
+  capture.speedscale.com/enabled=false --overwrite
+```
+
+To remove the Java Agent, set `capture.speedscale.com/java-agent: "false"` the same way, then roll out new pods and confirm they no longer include the agent init container or the `-javaagent` option. Running JVMs keep the agent until their pods are replaced. Update the Helm/GitOps source as well so reconciliation does not re-enable capture.
+
 ## Preserve capture across redeploys
 
 Save capture annotations in the application source that actually renders the workload: its Helm chart and values, Kustomize patch, or GitOps manifest. Helm values often named `podAnnotations` usually affect only the pod template; inspect the rendered YAML to confirm the annotations appear on the workload's top-level metadata. A one-time `kubectl annotate` changes the live object and does not update that source.
