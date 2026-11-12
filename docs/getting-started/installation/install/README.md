@@ -17,4 +17,6 @@ Choose the setup that matches where you want to work:
 | AWS Elastic Beanstalk | [AWS Elastic Beanstalk](./beanstalk.md) |
 | Google Cloud Run | [Google Cloud Run](./cloudrun.md) |
 
+After installing on Kubernetes, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes) to select workloads and verify captured traffic.
+
 For platform setup and cloud resource automation, [install speedctl](./cli.md). See [Command-line tools](../../command-line-tools.md) for help choosing between speedctl and proxymock.
