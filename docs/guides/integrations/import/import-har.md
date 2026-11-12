@@ -4,6 +4,8 @@ description: "Import browser HAR files into Speedscale Cloud or local proxymock 
 sidebar_position: 4
 ---
 
+import SnapshotOverviewImage from '../../snapshot-overview.jpg';
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -78,9 +80,15 @@ proxymock mock --in ./har-rrpairs
 
 A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot.
 
-![The Overview tab of a snapshot: whether it is ready to replay, its Tests and Mocks, and its latency and throughput](../../snapshot.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1100px'}} tabIndex={0} role="region" aria-label="Snapshot Overview with Tests, Mocks, Requests over time and Latency p95">
 
-Click **View Traffic** to inspect the requests before replay.
+![Snapshot Overview with Tests, Mocks, Requests over time and Latency p95](../../snapshot-overview.jpg)
+
+</div>
+
+<a href={SnapshotOverviewImage}>Open screenshot full size</a>
+
+Open the **Traffic** tab to inspect the requests before replay.
 
 ## Replay
 

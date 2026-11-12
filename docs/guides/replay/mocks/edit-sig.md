@@ -4,6 +4,8 @@ description: Learn how to edit signature mocks in Speedscale to enhance your API
 sidebar_position: 4
 ---
 
+import JsonDeleteImage from './edit-sig/json-delete.jpg';
+
 # Using Transforms for better Mocks
 
 ## Prerequisites
@@ -37,13 +39,21 @@ We could transform the snapshot to always set that pod name to a constant and th
 
 ## Transform
 
-In our snapshot, under `Transforms/Responder (Mocks)` we can see a list of requests and responses that the mocks will use during our tests. We find a request to our RPC `/google.spanner.v1.Spanner/ExecuteStreamingSql` and open the request body section of the request.
+Open the snapshot's **Traffic** tab and select **Mocks**. Find a request to `/google.spanner.v1.Spanner/ExecuteStreamingSql` and open its request body.
 
 ![Request body](./edit-sig/pre-delete.png)
 
-We're going to use the `json_delete` transform which tells the mocks to ignore this field completely when trying to match mock responses.
+Use the field's transform action to open the chain in **Prepare**. For this example, extract the request body and add **JSON Delete** with `path` set to `fieldsMap.11`. This removes the dynamic RequestOptions field before the responder matches the request.
 
-![Transform](./edit-sig/transform.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="JSON Delete step configuration">
+
+![The JSON Delete path field set to fieldsMap.11](./edit-sig/json-delete.jpg)
+
+</div>
+
+<a href={JsonDeleteImage}>Open screenshot full size</a>
+
+Check the chain preview against the recorded request, then select **Done** and **Save and reanalyze**. Keep the path specific to this example; other protobuf messages can use a different field number.
 
 Now you can see that this field is completely removed from the request body.
 

@@ -4,6 +4,8 @@ title: Creating a Snapshot
 description: "Create, tune, and restore snapshot traffic in Speedscale for repeatable API replay tests."
 ---
 
+import SnapshotOverviewImage from './snapshot-overview.jpg';
+
 <iframe title="Speedscale Traffic Viewer tutorial" src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 ## Observe Traffic
@@ -49,11 +51,15 @@ Now that you have identified the subset of traffic that you would like to replay
 
 A traffic snapshot is created from the selected traffic when running a replay so the same set of traffic can be reviewed and replayed again.
 
-![The Overview tab of a snapshot: whether it is ready to replay, its Tests and Mocks, and its latency and throughput](./snapshot.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1100px'}} tabIndex={0} role="region" aria-label="Snapshot Overview with Tests, Mocks, Requests over time and Latency p95">
 
-In addition to these details, a Service Map visually represents the inbound and outbound traffic, and how the replay will be orchestrated.
+![Snapshot Overview with Tests, Mocks, Requests over time and Latency p95](./snapshot-overview.jpg)
 
-![Service Map](../select-service-map.png)
+</div>
+
+<a href={SnapshotOverviewImage}>Open screenshot full size</a>
+
+The **Requests over time** chart separates Tests above zero from Mocks below zero. **Latency · p95** shows the recorded latency over time.
 
 ### Lock a snapshot
 
