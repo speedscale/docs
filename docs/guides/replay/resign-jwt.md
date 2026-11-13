@@ -107,14 +107,14 @@ The option appears when the snapshot has JWT locations, in the **Advanced** sect
 | Client name | A label for you. It is not sent to the token endpoint. |
 | Token URL | The token endpoint, for example `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token`. Required. |
 | Client ID | The OAuth client ID. Required. |
-| Secret name and Key | The Kubernetes Secret and key that hold the client secret, for example `entra-oauth` and `client_secret` (the default key). Only the reference `${{secret:entra-oauth/client_secret}}` is sent to Speedscale; the secret value stays in your cluster. |
+| Client secret | A reference to the Kubernetes Secret and key that hold the client secret, such as `${{secret:entra-oauth/client_secret}}`. Type the reference, or select **Pick secret** to choose the Secret and key from your cluster, starting in the replay namespace. If the Secret does not exist yet, **No secret yet?** shows the `kubectl create secret` command. Only the reference is sent to Speedscale; the secret value stays in your cluster, so the field does not take the secret itself. Required. |
 | Scope | The scope to request. For Microsoft Entra ID this is usually the API's application ID URI followed by `/.default`, for example `api://orders-api/.default`. |
 | Token field in the response | The JSON path of the token in the token response. Defaults to `access_token`. |
 | Send the new token to these services | The services the recorded tokens were sent to, taken from the snapshot's JWT locations. All are selected to start with; choose at least one. |
 
 When a recorded token was issued by Microsoft Entra ID, the form fills in the token URL (`https://login.microsoftonline.com/<tid>/oauth2/v2.0/token`, keeping the authority host of a sovereign cloud), the scope (`<aud>/.default`) and the client ID (`azp` or `appid`) from its claims. Check them before you start.
 
-3. Start the replay. The launcher and the wizard keep the replay from starting until the token URL is an `http` or `https` URL, the client ID, secret name and key are filled in, and at least one service is selected.
+3. Start the replay. The launcher and the wizard keep the replay from starting until the token URL is an `http` or `https` URL, the client ID is filled in, the client secret is a `${{secret:name/key}}` reference, and at least one service is selected.
 
 ### What to expect
 

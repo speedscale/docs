@@ -12,6 +12,10 @@ Every skill ships inside proxymock and is mirrored to the [speedscale/skills](ht
 
 The local skills need [proxymock](./getting-started/installation.md) installed. Cloud replays also need a Speedscale account.
 
+[Watch automatic testing with proxymock MCP skills on YouTube](https://www.youtube.com/watch?v=2SW9cLmQU-U).
+
+<iframe title="Automatic testing with proxymock MCP skills" src="https://www.youtube.com/embed/2SW9cLmQU-U?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Install the skills
 
 Paste this prompt into your coding agent:

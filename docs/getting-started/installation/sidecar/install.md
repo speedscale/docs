@@ -1,11 +1,17 @@
 ---
-title: Sidecar
-description: "Capture network traffic for Kubernetes services using the Speedscale sidecar proxy to enhance API testing and traffic replay capabilities."
+title: Legacy sidecar capture fallback
+description: "Configure proxy sidecar capture for existing installations and environments that cannot use the standard eBPF capture path."
 sidebar_position: 1
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+
+# Legacy sidecar capture fallback
+
+:::warning Environment-specific fallback
+For standard Kubernetes capture, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). Use this proxy sidecar workflow for existing sidecar deployments or environments that cannot meet the eBPF requirements. For a strict namespace-scoped installation without admission webhooks, use [namespaced sidecar capture](/guides/capture/sidecar-namespaced) instead of the annotation workflow below. Sidecar capture redirects application traffic and has its own permissions and TLS configuration.
+:::
 
 In Kubernetes, Speedscale employs a sidecar (also known as `goproxy`) to capture network level traffic for individual services. The sidecar uses two server sockets to capture traffic:
 
@@ -40,11 +46,6 @@ The Speedscale sidecar proxy, [goproxy](/reference/glossary.md#goproxy), is
 used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
-
-:::warning Sidecar capture is deprecated
-For new Kubernetes installations, use the [eBPF collector](/reference/ebpf-traffic-collection). It runs as a DaemonSet, requires no application changes, and captures plaintext and supported TLS traffic without certificate management. Use the sidecar only for an existing deployment or when your workload or cluster does not meet the eBPF requirements.
-:::
-
 
 <iframe src="https://www.youtube.com/embed/0bdI6vhNavQ?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 

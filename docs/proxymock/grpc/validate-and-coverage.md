@@ -48,7 +48,7 @@ The exit code tells CI what happened:
 | `3` | No violations, but at least one call's method is not in the `.proto` (`NO_ROUTE`). |
 | `1` | The check could not run: the `.proto` does not compile, the directory is missing, or it holds no gRPC calls. |
 
-Run it on a recording to learn whether a dependency still matches its contract, or on a replay's output to learn whether your change broke the service's own contract. Pass `-I` with each import root when the `.proto` imports other files.
+Run it on a recording to learn whether a dependency still matches its contract, or on a replay's output to learn whether your change broke the service's own contract. Pass `-I` with each import root when the `.proto` imports other files. `--spec` also takes a directory of `.proto` files, a zip of them or a compiled descriptor set.
 
 ## Measure what a recording covers
 

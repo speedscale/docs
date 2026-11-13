@@ -14,6 +14,10 @@ This guide walks through one failure in the [mock-lab](https://github.com/speeds
 The debugger is local only in this release. It applies to replays that run on this machine, not to replays in your cluster or through Speedscale cloud. See [Limits in this release](#limits-in-this-release).
 :::
 
+[Watch step-by-step session debugging on YouTube](https://www.youtube.com/watch?v=9WygqPty7eQ).
+
+<iframe title="Step-by-step session debugging" src="https://www.youtube.com/embed/9WygqPty7eQ?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## What a debug session is
 
 A debug session is an ordinary replay whose generator parks before every recorded request instead of sending the next one on its own. It loads the recording, applies the test config, probes the target, and then waits for a command. Every command sends some of the recording and reports, per request, what was sent, what came back against the recording, which assertions passed, and which transforms fired.

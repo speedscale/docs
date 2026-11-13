@@ -228,7 +228,7 @@ Set `SPEEDSCALE_API_KEY` as a masked CI/CD variable.
 
 </Tabs>
 
-To gate on response bodies as well as the exit code, check the score: `jq -e '.result.score.accuracy.rate == 100'`. A `failIf` metric such as `requests.failed` counts failed requests, and a body that differs from the recording is not a failed request.
+To gate on response bodies as well, add `requests.response-match-pct < 100` to `failIf`, or check the score: `jq -e '.result.score.accuracy.rate == 100'`. Other `failIf` metrics do not see a changed body. `requests.failed` counts failed requests, and `requests.result-match-pct` compares status codes only.
 
 ## Versioning
 
