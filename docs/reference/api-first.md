@@ -20,6 +20,8 @@ However, many larger enterprises wish to use an existing test orchestration plat
 
 # Exporting Data
 
+For observability-driven automation, the experimental [alert-triggered snapshot receiver](/guides/alert-triggered-snapshots) accepts Grafana notifications and custom Datadog or Dynatrace payloads. It creates snapshots through the existing API using a frozen incident interval and explicit recorded workload binding.
+
 All Speedscale data (request/response pairs, replay results, etc) are exportable using `speedctl pull` or a similar command/API. Most data is exported using JSON or equivalent formats. Speedscale is designed to provide data portability (within your selected security model) between your environments and across your tool ecosystem.
 
 Custom integrations are also available for common platforms like Grafana, New Relic, Datadog and Dynatrace. Join our [slack](https://slack.speedscale.com) to ask about any special situations.
