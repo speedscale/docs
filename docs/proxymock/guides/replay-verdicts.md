@@ -8,6 +8,10 @@ sidebar_position: 10
 
 A replay can finish sending requests while the application returns the wrong result. Standard replay writes `replay-verdict.json` in its output directory so you can inspect the overall verdict and each request's result. Choose a gate explicitly when a mismatch should fail CI.
 
+[Watch replay verdicts on YouTube](https://www.youtube.com/watch?v=0yborMZ4kr4).
+
+<iframe title="Replay verdicts" src="https://www.youtube.com/embed/0yborMZ4kr4?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 Run the examples from your application directory, with the application listening at `http://localhost:8080`. Replace `recorded-example` with a recording that contains inbound requests for it.
 
 ## Save a baseline

@@ -11,7 +11,9 @@ When a new Service-Under-Test (SUT) workload is applied to the cluster, the oper
 
 ## How to check if your replay is running
 
-Here are a few quick things that will help you understand if your replay is running:
+If the replay has a report, start with the [Replay progress panel](../reports/status.md#watch-a-replays-progress) on the report's **Overview** tab. It shows which stage the replay reached, and for a failed or stuck step, the reason, the component's logs and its Kubernetes events.
+
+When there is no report yet, or you want to look in the cluster directly, here are a few quick things that will help you understand if your replay is running:
 
 1. Check the operator logs, you should this message `traffic replay initiated`
 2. Check for `replay` objects in the namespace `kubectl get replay -n NAMESPACE`

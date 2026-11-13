@@ -14,7 +14,7 @@ function previewMetadata(pr, repository) {
     head_sha: pr.head.sha,
     base_sha: pr.base.sha,
     ref: `refs/pull/${pr.number}/merge`,
-    publish: String(pr.head.repo?.full_name === repository && pr.user?.login !== 'dependabot[bot]'),
+    publish: String(!pr.draft && pr.head.repo?.full_name === repository && pr.user?.login !== 'dependabot[bot]'),
   };
 }
 

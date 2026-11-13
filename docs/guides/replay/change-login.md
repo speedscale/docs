@@ -3,6 +3,8 @@ description: "Change usernames in test environments with Speedscale by transform
 sidebar_position: 7
 ---
 
+import ChangeLoginChainImage from './change-login-prepare.jpg';
+
 # Change Username
 
 Generally speaking, login credentials in test environments may not match production logins. This example shows you how to change a production credential (such as a `client_id` or username) into a test environment value.
@@ -11,9 +13,17 @@ Keep in mind that this is typically not necessary if you are using the Speedscal
 
 ## Objective
 
-Change a credential recorded in production to a test value provided by us. When you have created your transform it should look something like this:
+Change a credential recorded in production to a test value. The Configuration section below shows the selected field, the Constant step, and the resulting transform chain.
 
-![Transform](change-login-transform.png)
+The image shows a synthetic banking login: **JSON Path** selects `usernameOrEmail`, and **Constant** replaces it with `new_username`. The `/oauth/token` walkthrough below applies the same steps to `client_id`.
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '690px'}} tabIndex={0} role="region" aria-label="Login identity transform chain">
+
+![A synthetic login identity selected with JSON Path and replaced by the Constant step](./change-login-prepare.jpg)
+
+</div>
+
+<a href={ChangeLoginChainImage}>Open screenshot full size</a>
 
 ### Install Demo
 

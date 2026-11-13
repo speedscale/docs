@@ -20,37 +20,9 @@ The agent and eBPF collector coordinate capture to avoid duplicate data. Do not 
 
 ## Enable capture
 
-Install the Speedscale operator and [eBPF collector](../ebpf-traffic-collection/README.md) first. The collector must be able to run on the workload's nodes.
+Follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes) for operator and collector prerequisites, both capture annotations, supported manifest placement, rollout and JVM restart requirements, port exclusions, persistence across Helm/GitOps redeploys, and verification. Enable `capture.speedscale.com/enabled` and `capture.speedscale.com/java-agent` on the workload's top-level metadata.
 
-Annotate the workload, replacing `my-namespace` and `my-java-app`:
-
-```bash
-kubectl annotate deployment my-java-app -n my-namespace \
-  capture.speedscale.com/enabled=true \
-  capture.speedscale.com/java-agent=true --overwrite
-kubectl rollout status deployment/my-java-app -n my-namespace
-```
-
-The operator adds an init container that copies the agent into a shared volume and adds `-javaagent` to the application's `JAVA_TOOL_OPTIONS`. This requires new pods and a JVM restart. It is not a live attach to an already running JVM.
-
-For a manifest, put the annotations on the workload's `metadata.annotations`:
-
-```yaml
-metadata:
-  annotations:
-    capture.speedscale.com/enabled: "true"
-    capture.speedscale.com/java-agent: "true"
-```
-
-Do not also set `sidecar.speedscale.com/inject: "true"`; the operator rejects that combination. For GKE Autopilot, follow the [Autopilot prerequisites](../../getting-started/installation/install/gke-autopilot.md).
-
-After the rollout:
-
-1. Inspect a new pod. Confirm that the agent init container completed and the application has a `-javaagent` option.
-2. Check application startup logs for agent initialization errors.
-3. Send a request that calls a dependency, then inspect captured traffic. Confirm both the request and response bodies, direction, and TLS classification.
-
-Repeat that check for each transport you depend on, such as HTTP, gRPC, and a database. A successful pod rollout proves the application started; it does not prove complete capture.
+Use the compatibility matrix below to check the application's transport and TLS provider before depending on a recording.
 
 ## Tested compatibility {#compatibility}
 

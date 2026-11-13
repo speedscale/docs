@@ -73,12 +73,19 @@ server](/reference/glossary.md#mock-server) to respond to requests from your
 app.  Mock [signatures](/proxymock/how-it-works/signature.md) are generated from the
 mock artifacts captured earlier.
 
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '850px'}} tabIndex={0} role="region" aria-label="Mocked responses and conditional passthrough">
+
 ```mermaid
 flowchart LR
-  Client[client] --> App[your app 8080] --> PM[proxymock 4140] --> Deps[dependencies API, database, etc]
-  PM --> Local[local directory]
-  style Local fill:#FDE68A,stroke:#D97706,stroke-width:1px,color:#111
+  client["Client"] --> app["Application :8080"]
+  app --> mock["proxymock :4140"]
+  recorded["Recorded mock responses"] -->|"matched response"| mock
+  mock -.->|"unmatched request / passthrough"| dependency["Real dependency"]
+  classDef recorded fill:#e8f4ee,stroke:#679681,color:#224a3a;
+  class recorded recorded;
 ```
+
+</div>
 
 While dependencies can be fully replace by **proxymock**, there is a dotted line
 to indicate "passthrough", which is what happens when a request to the mock

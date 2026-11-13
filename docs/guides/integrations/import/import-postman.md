@@ -4,6 +4,8 @@ description: "Import Postman v2.1 collections into Speedscale Cloud or local pro
 sidebar_position: 5
 ---
 
+import SnapshotOverviewImage from '../../snapshot-overview.jpg';
+
 <iframe src="https://www.youtube.com/embed/jS01DK7R70E?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 This guide imports an existing Postman collection into Speedscale Cloud or local proxymock files. It is useful when a service is new and has no recorded traffic.
@@ -55,9 +57,15 @@ proxymock mock --in ./postman-rrpairs
 
 A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot.
 
-![The Overview tab of a snapshot: whether it is ready to replay, its Tests and Mocks, and its latency and throughput](../../snapshot.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1100px'}} tabIndex={0} role="region" aria-label="Snapshot Overview with Tests, Mocks, Requests over time and Latency p95">
 
-Click **View Traffic** to inspect the Postman requests before replay.
+![Snapshot Overview with Tests, Mocks, Requests over time and Latency p95](../../snapshot-overview.jpg)
+
+</div>
+
+<a href={SnapshotOverviewImage}>Open screenshot full size</a>
+
+Open the **Traffic** tab to inspect the Postman requests before replay.
 
 ## Replay
 

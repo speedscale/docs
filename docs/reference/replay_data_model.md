@@ -3,36 +3,17 @@ description: "Explore the Replay Data Model in Speedscale, detailing snapshot cr
 sidebar_position: 6
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Replay Data Model
 
-```mermaid
-flowchart TB
-    subgraph inputs["Inputs"]
-        direction TB
-        raw["Raw request/response pairs"]
-        transformTemplate["Traffic transform template"]
-    end
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1180px'}} tabIndex={0} role="region" aria-label="Replay data model">
 
-    subgraph snapshot["Snapshot"]
-        direction TB
-        transforms["Traffic transforms"]
-        tokens["Discovered tokens"]
-        rrpairs["Raw request/response pairs"]
-        requests["Client requests"]
-        mocks["Mock responses"]
-    end
+![Traffic and configuration form a snapshot; replaying it produces a report containing metrics, requests and logs](/img/diagrams/replay-data-model-aligned.svg)
 
-    subgraph report["Report"]
-        direction TB
-        testConfig["Test config"]
-        results["Requests, responses, assertions, and metrics"]
-    end
+</div>
 
-    raw --> snapshot
-    transformTemplate --> snapshot
-    snapshot --> report
-    testTemplate["Test config template"] --> report
-```
+<a href={useBaseUrl('/img/diagrams/replay-data-model-aligned.svg')}>Open diagram full size</a>
 
 ### What happens when a snapshot is created?
 

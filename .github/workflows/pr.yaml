@@ -2,7 +2,7 @@ name: PR Preview
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:
   contents: read
@@ -45,7 +45,7 @@ jobs:
 
     - name: Setup Node.js
       if: steps.preview.outputs.run == 'true'
-      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
       with:
         node-version: '22'
         cache: yarn
@@ -76,9 +76,13 @@ jobs:
       if: steps.preview.outputs.run == 'true'
       run: yarn --frozen-lockfile --silent
 
+    - name: agent readability tests
+      if: steps.preview.outputs.run == 'true'
+      run: yarn test:agents
+
     - name: security regression tests
       if: steps.preview.outputs.run == 'true'
-      run: node --test scripts/security-regressions.test.mjs
+      run: node --test scripts/security-regressions.test.mjs scripts/tests/ssg-pool.test.mjs
 
     - name: check redirects
       if: steps.preview.outputs.run == 'true'
@@ -94,6 +98,8 @@ jobs:
 
     - name: build
       if: steps.preview.outputs.run == 'true'
+      env:
+        DOCS_PUBLIC_BASE_URL: http://docs-preview.speedscale.com.s3-website-us-east-1.amazonaws.com/pr-${{ steps.preview.outputs.pr_number }}/
       run: yarn build
 
     # Preserve legacy redirect filenames unsupported by artifact storage.
@@ -103,7 +109,7 @@ jobs:
 
     - name: save site artifact
       if: steps.preview.outputs.run == 'true'
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: docs-site
         path: ${{ runner.temp }}/docs-site.tar.gz
@@ -112,9 +118,10 @@ jobs:
 
   publish:
     needs: build
-    if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+    if: needs.build.outputs.run == 'true' && needs.build.outputs.publish == 'true' && !github.event.pull_request.draft && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       id-token: write
       pull-requests: write
     env:
@@ -123,7 +130,7 @@ jobs:
       DOWNLOADS_PREVIEW_BUCKET: docs-preview.speedscale.com
     steps:
     - name: download site artifact
-      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
       with:
         name: docs-site
         path: site-artifact/
@@ -143,7 +150,17 @@ jobs:
         EXPECTED_HEAD: ${{ needs.build.outputs.head_sha }}
       run: |
         gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" | \
-          jq -e --arg sha "$EXPECTED_HEAD" '.state == "open" and .head.sha == $sha'
+          jq -e --arg sha "$EXPECTED_HEAD" '.state == "open" and .draft == false and .head.sha == $sha'
+
+    # Only the deploy script; the site itself comes from the build artifact.
+    - name: checkout deploy script
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: ${{ needs.build.outputs.head_sha }}
+        path: deploy-tools
+        sparse-checkout: scripts/deploy-markdown.sh
+        sparse-checkout-cone-mode: false
+        persist-credentials: false
 
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
@@ -154,7 +171,9 @@ jobs:
     - name: upload preview
       env:
         PR_NUMBER: ${{ needs.build.outputs.pr_number }}
-      run: aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER"
+      run: |
+        aws s3 sync build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER" --delete --exclude '*.md'
+        bash deploy-tools/scripts/deploy-markdown.sh build "s3://$DOWNLOADS_PREVIEW_BUCKET/pr-$PR_NUMBER/"
 
     - name: show url
       env:

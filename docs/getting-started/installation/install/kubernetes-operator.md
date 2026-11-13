@@ -81,7 +81,7 @@ Keep this values file for upgrades. See the [Helm values reference](/reference/h
 speedctl install
 ```
 
-Choose **Kubernetes** and follow the prompts. This wizard is available on macOS, Linux, and Windows. After installation, follow [Enable eBPF capture](/reference/ebpf-traffic-collection#installation), or use the [sidecar fallback](../sidecar/install.md) if your cluster cannot run eBPF.
+Choose **Kubernetes** and follow the prompts. This wizard is available on macOS, Linux, and Windows. After installation, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes), or use the [sidecar fallback](../sidecar/install.md) if your cluster cannot run eBPF.
 
 ### Image pull secrets {#optional-adding-image-pull-secrets}
 
@@ -190,4 +190,4 @@ If your organization requires approved Redis or Java runtime images, configure `
 
 ## Next steps
 
-Use the [tutorial](../../tutorial.md) to record and replay a demo application, or follow [cluster capture and replay with proxymock](/proxymock/guides/cluster/). See [eBPF capture targets](/reference/ebpf-traffic-collection#enabling-via-helm) to select workloads for capture.
+Use the [tutorial](../../tutorial.md) to record and replay a demo application, or follow [cluster capture and replay with proxymock](/proxymock/guides/cluster/). Follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes) to select workloads, preserve capture across redeploys, and verify requests and responses.

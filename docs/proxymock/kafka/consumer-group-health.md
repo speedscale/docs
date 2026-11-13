@@ -4,6 +4,8 @@ description: "Report how your app's Kafka consumer groups behaved in a proxymock
 sidebar_label: Consumer-group health
 ---
 
+import SnapshotKafkaImage from './consumer-group-health/snapshot-kafka.jpg';
+
 # Kafka consumer-group health and kafka-report
 
 The Kafka consumer-group health report answers "what did my consumers actually do?" from a recording. It reads the client side of your app's Kafka traffic and reports, for each consumer group, who joined and left, how long each rebalance took, how far behind each fetched partition was, and what went wrong. It needs no broker access, admin client or JMX: everything comes from the requests your app sent and the responses it got back.
@@ -105,6 +107,14 @@ When Speedscale analyzes a snapshot that holds Kafka consumer traffic, it builds
 
 - In the dashboard, open the snapshot's **Traffic** tab and choose **Kafka**. The pane shows the findings, then each group's members, rebalances and partitions, and the polling per client. The **Kafka** choice appears only for a snapshot that has a report; reanalyze a snapshot recorded before the report existed to add one.
 - `speedctl pull snapshot <id>` downloads `kafka-report.json` with the snapshot's other artifacts.
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1200px'}} tabIndex={0} role="region" aria-label="Snapshot Kafka view with an offset-reset finding, consumer membership, partitions and polling">
+
+![Snapshot Kafka view with an offset-reset finding, consumer membership, partitions and polling](./consumer-group-health/snapshot-kafka.jpg)
+
+</div>
+
+<a href={SnapshotKafkaImage}>Open screenshot full size</a>
 
 With `-o json`, or in `kafka-report.json`, the report has `caveat`, `start`, `end`, `groups`, `findings` and `clients`. Each group carries `groupId`, `protocol`, `assignors`, `members`, `rebalances` and `partitions`, and each partition `lastFetchOffset`, `highWatermark`, `lag`, `committedOffset`, `commitLag` and `fetches`. Offsets are plain numbers, and a value the recording did not show is left out.
 

@@ -6,7 +6,7 @@ const repository = 'speedscale/docs';
 const headSha = 'a'.repeat(40);
 const baseSha = 'b'.repeat(40);
 const pr = {
-  number: 798, state: 'open', changed_files: 2,
+  number: 798, state: 'open', draft: false, changed_files: 2,
   user: { login: 'github-actions[bot]' },
   head: { sha: headSha, ref: 'feature/docs-update', repo: { full_name: repository } },
   base: { sha: baseSha, ref: 'main', repo: { full_name: repository } },
@@ -18,4 +18,13 @@ test('ordinary PRs retain their merge preview; forks and Dependabot cannot publi
     assert.equal(metadata.run, 'true');
     assert.equal(metadata.publish, String(pull === pr));
   }
+});
+
+test('draft PRs build without publishing a hosted preview', () => {
+  const draft = resolvePreview({ pull_request: { ...pr, draft: true } }, repository);
+  assert.equal(draft.run, 'true');
+  assert.equal(draft.publish, 'false');
+  assert.equal(draft.ref, `refs/pull/${pr.number}/merge`);
+  const ready = resolvePreview({ pull_request: { ...pr, draft: false } }, repository);
+  assert.equal(ready.publish, 'true');
 });
