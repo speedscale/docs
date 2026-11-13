@@ -99,7 +99,7 @@ Two deliberate limits. Requests are never perturbed: the responder is mocking a 
 | `seed=` | Makes the run reproducible; see below |
 | `sticky` | Every occurrence of a signature shares one verdict |
 | `max-latency=` | Lowers the delay ceiling for this rule |
-| `start-after=` | How far into the run the rule becomes active |
+| `start-after=` | How long after load starts the rule becomes active |
 | `duration=` | How long it stays active once it opens |
 | `@<percent>` | Suffix on an effect, giving it its own probability |
 
@@ -118,9 +118,23 @@ That is the difference between *this endpoint is flaky* and *this dependency wen
 > given inventory returns 200, **when** it returns 503 for 30 seconds, **then** the service retries
 > and succeeds again once the window closes.
 
-The window is measured from the **start of the run**, not from when a responder process started. The responder runs as multiple replicas in a cluster, and a per-process clock would open each pod's window at a different moment, smearing the disruption you are trying to observe cleanly.
+In a cluster replay, the window is measured from **when load starts**, which is the moment the generator begins sending traffic.
 
-A consequence worth knowing: if a run has no start time to anchor to, bounded rules **do not fire** rather than running for the whole run, and the responder says so. Giving you the entire run when you asked for thirty seconds would be the more damaging failure.
+It is not measured from when the report was created, because deploying the mocks and rolling your workload can take minutes, and a window that opened during that time would miss all the traffic.
+
+It is not measured from when a responder process started either. The responder runs as multiple replicas in a cluster, and a per-process clock would open each pod's window at a different moment, smearing the disruption you are trying to observe cleanly. Every replica reads the same start time from the report, including a pod that restarts partway through.
+
+| Where the replay runs | The window is measured from |
+| --- | --- |
+| Cluster replay with a generator | When the generator begins sending load |
+| Cluster replay in `responder-only` mode | When the mock responders become ready, since no load is coming |
+| `proxymock` on your machine | When the mock server process starts |
+
+A replica learns that load has started within a few seconds. The window stays where it is, and a rule that should already be open by then starts firing a few seconds late, so give a rule a `start-after` of at least `10s` when the first seconds matter.
+
+Keep the window inside the load. A rule whose window opens after the load has finished never fires, and the responder lists it as having matched no traffic.
+
+If a run never reports when load started, bounded rules **do not fire** rather than running for the whole run, and the responder says so when the run ends. Giving you the entire run when you asked for thirty seconds would be the more damaging failure.
 
 Windows are also the one place wall-clock enters an otherwise clock-free engine. A windowed run is reproducible in its **verdicts** (the Nth occurrence of a request gets the same answer) but not in its exact request *membership*, since which requests land inside the window varies with timing.
 
