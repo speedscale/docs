@@ -3,6 +3,8 @@ description: Configure reusable Cloud transform templates and find the equivalen
 sidebar_position: 0
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Traffic Transformation
 
 Transforms adapt recorded traffic for replay: [replace credentials](/guides/replay/replace-credentials.md), shift dates, or carry a value from one response into a later request. They can also adjust outbound requests and responses used by mocks.
@@ -27,6 +29,18 @@ These workflows use the same [transform engine](/concepts/transforms.md), [extra
 Use **Traffic** to inspect requests and responses, selecting inbound or outbound traffic as needed. A chain that matches no traffic cannot fix the replay. Check its filter and execution side before adding more transforms.
 
 Correctness failures may require an application fix or a new recording. Change transforms only when the difference is an expected consequence of replaying in a different context. For a complete local iteration loop, see [Replay Tuning](/proxymock/guides/replay-tuning.md).
+
+## Create and verify your first transform
+
+Follow the dashboard walkthrough to change a JSON field on one endpoint. It shows how to choose the requests and source in **Prepare**, preview the change before saving, then compare the recorded request with the transformed request in **Traffic**.
+
+<video controls playsInline preload="none" aria-label="Create and verify your first Speedscale transform" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/transforms/speedscale-first-transform-tutorial.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/transforms/speedscale-first-transform-tutorial.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/transforms/speedscale-first-transform-tutorial.mp4')}>Download the video</a>
+</video>
+
+If you used the previous dashboard editor, see [what changed in the transform editor](/concepts/transforms.md#what-changed-in-the-transform-editor).
 
 ## Preview a chain on real traffic
 
