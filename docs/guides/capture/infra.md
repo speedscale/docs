@@ -155,7 +155,9 @@ Use **Turn on**, or the capture mode on any row, to pick a mode. Each mode state
 
 To change many workloads at once, select rows or a whole namespace with the checkboxes and use **Turn on eBPF** or **Turn off eBPF**. A preview shows what will change and why anything is skipped, and nothing changes until you apply it. Bulk changes only switch eBPF, so sidecar workloads are skipped. Turning off eBPF in bulk stops Java capture too but leaves the agent installed, and the workload's settings say so.
 
-**Select by label**, below the list, does the same for a pod template label selector across the namespaces you choose.
+**Select by label**, below the list, does the same for a pod template label selector across the namespaces you choose. Every condition in a selector such as `app=checkout,environment=staging` must match, and it matches the pod template labels, not the workload's own labels.
+
+A bulk change is a one-time action on the previewed workloads, so workloads created later are not included. **Applied** means the cluster acknowledged the annotation, not that traffic is being captured yet, so check the capture note afterwards. Bulk changes cover Deployments, StatefulSets, DaemonSets, Jobs and Argo Rollouts. A preview expires after 15 minutes. A preview that matches more than 500 workloads, skipped ones included, or spans more than 100 namespaces is refused, so narrow the scope.
 
 ### Workload details
 
