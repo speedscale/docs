@@ -271,20 +271,31 @@ class SiteSearch extends HTMLElement {
     this.more.disabled = true;
     const offset = this.shown;
     try {
-      const records = await Promise.all(
+      const settled = await Promise.allSettled(
         this.hits.slice(offset, offset + 8).map((hit) => hit.data()),
       );
       if (sequence !== this.sequence) return;
-      for (const record of records) {
+      const origins = [
+        location.origin,
+        "https://speedscale.com",
+        "https://www.speedscale.com",
+        "https://docs.speedscale.com",
+        new URL(this.dataset.secondaryBase || location.origin, location.href)
+          .origin,
+      ];
+      // One unreachable fragment must not hide the rest of the page.
+      const failed = settled.filter(({ status }) => status === "rejected");
+      if (failed.length)
+        console.warn("Search result loading failed", failed[0].reason);
+      if (failed.length === settled.length && settled.length)
+        this.status.textContent =
+          "Could not load results. Please try your search again.";
+      for (const outcome of settled) {
+        if (outcome.status === "rejected") continue;
+        const record = outcome.value;
         const url = new URL(record.url, location.origin);
         if (
-          ![
-            location.origin,
-            "https://speedscale.com",
-            "https://www.speedscale.com",
-            "https://docs.speedscale.com",
-            new URL(this.dataset.secondaryBase || location.origin).origin,
-          ].includes(url.origin) ||
+          !origins.includes(url.origin) ||
           !["http:", "https:"].includes(url.protocol)
         )
           continue;
@@ -334,7 +345,7 @@ class SiteSearch extends HTMLElement {
         if (sections.childElementCount) row.append(sections);
         this.list.append(row);
       }
-      this.shown += records.length;
+      this.shown += settled.length;
       this.more.hidden = this.shown >= this.hits.length;
     } catch (error) {
       console.warn("Search result loading failed", error);

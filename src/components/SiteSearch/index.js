@@ -16,11 +16,9 @@ export default function SiteSearch() {
       data-engine-version={search.version}
       data-bundle={`${base}pagefind/pagefind.js`}
       data-primary-base={base}
-      data-secondary-bundle={
-        search.websiteBundle || "https://speedscale.com/pagefind"
-      }
-      data-secondary-base={search.websiteBase || "https://speedscale.com/"}
-      data-website-base={search.websiteBase || "https://speedscale.com/"}
+      data-secondary-bundle={search.websiteBundle}
+      data-secondary-base={search.websiteBase}
+      data-website-base={search.websiteBase}
       data-local-section="Docs"
       data-index-weight="3"
       data-secondary-weight="1"
@@ -46,13 +44,9 @@ export function SearchDialog() {
     };
     const onClick = (event) => {
       if (!(event.target instanceof Element)) return;
-      if (
-        event.target.closest("[data-search-trigger]") &&
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.shiftKey &&
-        !event.altKey
-      ) {
+      const plain =
+        !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+      if (event.target.closest("[data-search-trigger]") && plain) {
         event.preventDefault();
         open();
       }
@@ -61,6 +55,15 @@ export function SearchDialog() {
         event.target === dialog
       )
         dialog.close();
+      // Same-page anchor results do not unload the page; skip focus restore so the jump is kept.
+      if (
+        plain &&
+        dialog.open &&
+        dialog.contains(event.target.closest("a[href]"))
+      ) {
+        trigger = undefined;
+        dialog.close();
+      }
     };
     const onKey = (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {

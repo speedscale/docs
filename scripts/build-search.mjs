@@ -20,6 +20,7 @@ export async function buildSearch(buildDir = "build") {
     excludeSelectors: [
       ".theme-doc-breadcrumbs",
       ".theme-doc-toc-mobile",
+      ".theme-doc-toc-desktop",
       ".theme-doc-footer",
       ".pagination-nav",
     ],

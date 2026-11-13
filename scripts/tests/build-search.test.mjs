@@ -36,7 +36,10 @@ test("indexes canonical sitemap pages under a preview base and excludes aliases 
     const entry = JSON.parse(
       await fs.readFile(path.join(dir, "pagefind/pagefind-entry.json"), "utf8"),
     );
-    assert.equal(entry.version, "1.5.2");
+    const { devDependencies } = JSON.parse(
+      await fs.readFile(new URL("../../package.json", import.meta.url), "utf8"),
+    );
+    assert.equal(entry.version, devDependencies.pagefind);
     assert.equal(entry.languages.en.page_count, 2);
     await assert.rejects(fs.access(path.join(dir, "pagefind/alias.html")));
     await fs.writeFile(
