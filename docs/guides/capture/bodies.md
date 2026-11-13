@@ -55,7 +55,7 @@ Each line starts with the field number from the `.proto`. Text fields and nested
 
 `LEN` holds strings, bytes and nested messages, `VARINT` holds integers, booleans and enums, and `I32` and `I64` hold fixed-width values as their raw bits, which is why the `double` 50.5 reads as `4632304060471443456` here. To change a field, change its value and keep the key. Speedscale re-encodes the message when it replays or mocks the call. The transform views always use Wire JSON.
 
-Switch between the two with the Protoscope / Wire JSON control above the body. The field numbers in both views match the field numbers in your `.proto`. [proxymock](../../proxymock/grpc/index.md#read-a-body-as-protoscope) shows the same views for local recordings.
+Switch between the two with the Protoscope / Wire JSON control above the body. The field numbers in both views match the field numbers in your `.proto`. Upload the `.proto` and a third view, **Named**, shows the body with your field and enum names; see [Read protobuf bodies with your schemas](./protobuf-schemas.md). [proxymock](../../proxymock/grpc/index.md#read-a-body-as-protoscope) shows the same views for local recordings.
 
 ## GraphQL
 
