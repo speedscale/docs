@@ -22,7 +22,7 @@ For local development and testing without a cloud cluster, use **proxymock** to 
 This guide walks through installing Speedscale into a Kubernetes (cloud or on-prem) environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./tutorial.md) to record, replay and view results for a demo application.
 
 :::warning Sidecar capture is deprecated
-For Kubernetes traffic collection, use the [eBPF collector](/reference/ebpf-traffic-collection). Use goproxy sidecars only for an existing deployment or when your environment does not meet the eBPF requirements.
+For standard Kubernetes traffic collection, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). Use goproxy sidecars only for an existing deployment or when your environment does not meet the eBPF requirements.
 :::
 
 Speedscale is tested with apps hosted on the local desktop all the way up to high scale enterprise Kubernetes clusters. Keep in mind that it is very common to record traffic in one environment (like a production Kubernetes cluster) and replay it somewhere else (like a local mock server).
@@ -51,4 +51,4 @@ For the proxymock CLI path, continue with [cluster capture and replay commands](
 
 At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
 
-If you're already an expert you can click the `Add Service` button in the UI to target workloads for capture. Prefer enabling the [eBPF collector](/reference/ebpf-traffic-collection); if not possible, add sidecars [manually](./installation/sidecar/install.md).
+If you're already an expert you can click the `Add Service` button in the UI to target workloads for capture. Follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes) to configure and verify capture. If your environment cannot run eBPF, use the [sidecar fallback](./installation/sidecar/install.md).

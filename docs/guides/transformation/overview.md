@@ -34,7 +34,9 @@ The chain editor on a snapshot's **Prepare** tab runs the selected chain against
 
 ![The Prepare tab showing a data.email chain with its value at each step, next to the list of requests it matches](./overview/chain-preview.png)
 
-The sample comes from the list of matching requests beside the chain. The editor starts on the first request in that list where the source has a value. Click another request to preview the chain on it. Chains filtered by service have no list, so they have no preview.
+The sample comes from the list of matching requests beside the chain. A chain you start with the pencil next to a value on the **Traffic** tab opens on the request you clicked, which is listed first when it falls past the end of the list. Any other chain starts on the first request in the list where the source has a value. Click another request to preview the chain on it. Chains filtered by service have no list, so they have no preview.
+
+Each request in the list carries a mark that says whether the chain produces a value on it. A check means every step produced a value. Otherwise hover the mark to see why: the chain's filters leave the request out, the source has nothing to read, a step selected nothing, or a step failed. A question mark means the preview could not run on that request, so it is left out of the count in the header. A `json_path` such as `items.7.name` selects nothing on a response with fewer than eight items, so look for a checked request before deciding that the path is wrong.
 
 Chains above the one you are editing run first, as they do during a replay, so a chain that rewrites the same value changes what this chain receives. A suggestion runs after every chain already on its side, which is where accepting it puts it. A chain above that fails does not stop the preview, because a replay carries on past it too.
 
@@ -64,7 +66,7 @@ A Traffic Transform Template saves a Cloud transform configuration for use with 
 
 ### How to Use Transform Templates
 
-<iframe src="https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<iframe title="Traffic Transform Templates tutorial" src="https://www.youtube.com/embed/XSN8wG_-RO8?rel=0&modestbranding=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 1. Configure transforms for a snapshot and verify them with a replay.
 2. Save the configuration as a template.

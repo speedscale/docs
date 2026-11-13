@@ -30,6 +30,8 @@ Speedscale detects several categories of issues:
 | **Volume Mismatch** | Request count differs significantly from what was expected based on the snapshot | Check capture completeness. If using a traffic multiplier, verify the multiplier setting. A volume mismatch may also indicate that some requests are being dropped or filtered. |
 | **Error Rate Deviation** | 4xx/5xx error rates higher than the baseline snapshot | Review service dependencies and mock configurations. A spike in errors often indicates that a downstream mock is not returning the expected responses. |
 
+Security findings, such as credentials sent over plain HTTP, weak JWTs or injection candidates, appear here too under the **Security** category. [Security Findings from Captured Traffic](./security-findings.md) lists every check.
+
 ## Reading a Recommendation
 
 Each recommendation includes:

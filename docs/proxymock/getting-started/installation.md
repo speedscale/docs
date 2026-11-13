@@ -43,7 +43,7 @@ Prefer to install it yourself? Pick your OS:
 </Tabs>
 
 :::info Coding with AI Tools?
-Install the **proxymock** [MCP](https://modelcontextprotocol.io/) by running `proxymock mcp install` (`--yes` skips the per-client prompts). That command also drops the [install-speedscale](https://github.com/speedscale/skills) skill into Claude Code, so `/install-speedscale` can upgrade or repair everything later.
+Agent integration is optional and separate from `proxymock init`. Preview a selected client with `proxymock mcp install --client claude-code --skills --dry-run`, then remove `--dry-run` to confirm. Omit `--skills` for MCP only. Project scope is preferred where supported; add `--scope user` for an explicitly requested global installation. See [MCP setup](../how-it-works/mcp.md#install-or-remove-an-agent-integration) for client selection, unattended setup and removal.
 
 :::
 

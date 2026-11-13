@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
-# Regenerate the MCP tools/prompts reference page from the proxymock
-# binary's live tool registry, so it never drifts from the actual MCP
-# server surface. Run this whenever the proxymock MCP tools change.
+# Regenerate the MCP tools/prompts reference page, the REST API reference
+# page and the REST API's OpenAPI document from the proxymock binary, so they
+# never drift from the actual server surface. Run this whenever the proxymock
+# MCP tools or REST operations change.
 # Kraken's post-release pipeline runs it against the exact proxymock
 # release binary whose release notes it publishes.
 #
@@ -62,5 +63,19 @@ fi
 
 echo "Generating ${OUT} from ${BIN} (${VERSION})..." >&2
 "${BIN}" mcp docs > "${OUT}"
+
+# The REST API reference and its OpenAPI document come from the same binary.
+# Older releases have no `mcp openapi`; leave the pages as they are then.
+# Probe the subcommand list, not `mcp openapi --help`: cobra prints the parent
+# help and exits 0 for --help even when the subcommand does not exist.
+REST_OUT="docs/proxymock/how-it-works/rest-api-reference.md"
+OPENAPI_OUT="static/proxymock/openapi-v1.json"
+if "${BIN}" mcp --help 2>/dev/null | grep -qE '^[[:space:]]+openapi[[:space:]]'; then
+  echo "Generating ${REST_OUT} and ${OPENAPI_OUT}..." >&2
+  mkdir -p "$(dirname "${OPENAPI_OUT}")"
+  "${BIN}" mcp openapi > "${OPENAPI_OUT}"
+  "${BIN}" mcp openapi --markdown > "${REST_OUT}"
+fi
+
 printf '%s\n' "${VERSION}" > "${VERSION_FILE}"
-echo "Done. Review the diff and commit ${OUT} and ${VERSION_FILE}." >&2
+echo "Done. Review the diff and commit ${OUT}, ${REST_OUT}, ${OPENAPI_OUT} and ${VERSION_FILE}." >&2

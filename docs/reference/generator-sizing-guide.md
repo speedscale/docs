@@ -3,6 +3,8 @@ description: "Optimize your load testing with the Speedscale Generator Sizing Gu
 sidebar_position: 6
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Generator Sizing Guide
 
 When running a load test it is helpful to understand the environmental requirements for reaching your desired
@@ -193,12 +195,26 @@ Generally, the more vUsers the more traffic... but not always.  The best an appl
 linealy, as shown below.  For example, if a static webpage can handle 1000 RPS with 1 server node it will be
 able to handle 10,000 with 10 because there are no shared resources to cause bottlenecks.
 
-![throughput resources linear](./generator-sizing-guide/throughput-resources-linear.png)
+These curves illustrate scaling behavior; they are not measured benchmark results.
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '750px'}} tabIndex={0} role="region" aria-label="Ideal linear scaling">
+
+![Qualitative relationship: throughput grows proportionally with application resources](/img/diagrams/linear-scaling.svg)
+
+</div>
+
+<a href={useBaseUrl('/img/diagrams/linear-scaling.svg')}>Open diagram full size</a>
 
 Unfortunately most applications are more complex than a static webpage and do not scale linearly.  Instead
 they tend to increase pressure on their bottlenecks as load is increased.
 
-![throughput resources stalled](./generator-sizing-guide/throughput-resources-stalled.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '750px'}} tabIndex={0} role="region" aria-label="Bottleneck scaling">
+
+![Qualitative relationship: throughput levels off as application resources grow when another component is the bottleneck](/img/diagrams/bottleneck-scaling.svg)
+
+</div>
+
+<a href={useBaseUrl('/img/diagrams/bottleneck-scaling.svg')}>Open diagram full size</a>
 
 
 This situation arises when the application cannot respond fast enough to go any higher. This can happen for a

@@ -1,0 +1,2521 @@
+{
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "properties": {
+          "code": {
+            "description": "Machine-readable error code. Absent on the 401 and 403 of the access guard.",
+            "enum": [
+              "invalid_request",
+              "not_found",
+              "conflict",
+              "tool_error",
+              "internal"
+            ],
+            "type": "string"
+          },
+          "error": {
+            "description": "What went wrong.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "type": "object"
+      },
+      "Job": {
+        "properties": {
+          "created": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "errorCode": {
+            "type": "string"
+          },
+          "finished": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "operation": {
+            "description": "operationId of the call that started the job, e.g. replays.run.",
+            "type": "string"
+          },
+          "result": true,
+          "status": {
+            "enum": [
+              "running",
+              "succeeded",
+              "failed",
+              "canceled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "operation",
+          "status",
+          "created"
+        ],
+        "type": "object"
+      },
+      "JobList": {
+        "properties": {
+          "jobs": {
+            "description": "Jobs this server has run, newest first.",
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "jobs"
+        ],
+        "type": "object"
+      },
+      "MockServerResult": {
+        "properties": {
+          "env": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Environment variables that point an application at the mock server.",
+            "type": "object"
+          },
+          "inDirectories": {
+            "description": "Directories the mock responses come from.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "outDirectory": {
+            "description": "Directory the mock server writes the traffic it served to.",
+            "type": "string"
+          },
+          "proxyUrl": {
+            "description": "Outbound proxy the application under test must send its dependency calls through.",
+            "type": "string"
+          },
+          "running": {
+            "description": "Whether the mock server is running after the call.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "running"
+        ],
+        "type": "object"
+      },
+      "MocksSQLCorrectness": {
+        "properties": {
+          "bindDrift": {
+            "type": "integer"
+          },
+          "checked": {
+            "type": "integer"
+          },
+          "exact": {
+            "type": "integer"
+          },
+          "fallback": {
+            "type": "integer"
+          },
+          "fallbackByTier": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "orderDependent": {
+            "type": "integer"
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/MocksSQLStatement"
+            },
+            "type": "array"
+          },
+          "unverified": {
+            "type": "integer"
+          },
+          "writesWithNewValues": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "checked",
+          "exact",
+          "bindDrift",
+          "fallback"
+        ],
+        "type": "object"
+      },
+      "MocksSQLStatement": {
+        "properties": {
+          "applied": {
+            "type": "boolean"
+          },
+          "bindDrift": {
+            "type": "integer"
+          },
+          "exact": {
+            "type": "integer"
+          },
+          "fallback": {
+            "type": "integer"
+          },
+          "keyParams": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "orderDependent": {
+            "type": "integer"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "recommendationId": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "statement": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "service",
+          "statement",
+          "exact",
+          "bindDrift",
+          "fallback"
+        ],
+        "type": "object"
+      },
+      "ProcessLogs": {
+        "properties": {
+          "stderr": {
+            "type": "string"
+          },
+          "stdout": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReplayRunResult": {
+        "properties": {
+          "exitCode": {
+            "description": "Exit code of proxymock replay. 0 passed; 1 means a test config goal was missed, a fail-if condition triggered, or the replay failed.",
+            "type": "integer"
+          },
+          "logs": {
+            "$ref": "#/components/schemas/ProcessLogs"
+          },
+          "outDirectory": {
+            "description": "Directory the observed traffic and replay-verdict.json were written to.",
+            "type": "string"
+          },
+          "passed": {
+            "description": "True when exitCode is 0. Fail the CI job when this is false.",
+            "type": "boolean"
+          },
+          "score": {
+            "$ref": "#/components/schemas/ReplayScore",
+            "description": "The replay scored as replays.score scores it."
+          },
+          "scoreError": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "exitCode",
+          "passed",
+          "logs"
+        ],
+        "type": "object"
+      },
+      "ReplayScore": {
+        "properties": {
+          "accuracy": {
+            "$ref": "#/components/schemas/ScoreAccuracy"
+          },
+          "baseline": {
+            "$ref": "#/components/schemas/ReplayScore"
+          },
+          "deltas": {
+            "$ref": "#/components/schemas/ScoreDeltas"
+          },
+          "goals": {
+            "$ref": "#/components/schemas/ScoreGoals"
+          },
+          "httpOutput": {
+            "$ref": "#/components/schemas/ScoreHttpOutput"
+          },
+          "input": {
+            "$ref": "#/components/schemas/ScoreInput"
+          },
+          "matchRate": {
+            "$ref": "#/components/schemas/ScoreMatchRate"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "sources": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input",
+          "accuracy",
+          "matchRate",
+          "goals",
+          "sources"
+        ],
+        "type": "object"
+      },
+      "ScoreAccuracy": {
+        "properties": {
+          "bodyMismatches": {
+            "type": "integer"
+          },
+          "matched": {
+            "type": "integer"
+          },
+          "mismatches": {
+            "type": "integer"
+          },
+          "pairs": {
+            "type": "integer"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "reportSuccessRate": {
+            "type": "number"
+          },
+          "statusMismatches": {
+            "type": "integer"
+          },
+          "topFailingEndpoints": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreEndpointFailures"
+            },
+            "type": "array"
+          },
+          "unpaired": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pairs",
+          "matched",
+          "mismatches",
+          "statusMismatches",
+          "bodyMismatches",
+          "rate",
+          "topFailingEndpoints"
+        ],
+        "type": "object"
+      },
+      "ScoreAccuracyDeltas": {
+        "properties": {
+          "bodyMismatches": {
+            "type": "integer"
+          },
+          "matched": {
+            "type": "integer"
+          },
+          "mismatches": {
+            "type": "integer"
+          },
+          "pairs": {
+            "type": "integer"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "statusMismatches": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pairs",
+          "matched",
+          "mismatches",
+          "statusMismatches",
+          "bodyMismatches",
+          "rate"
+        ],
+        "type": "object"
+      },
+      "ScoreDeltas": {
+        "properties": {
+          "accuracy": {
+            "$ref": "#/components/schemas/ScoreAccuracyDeltas"
+          },
+          "goals": {
+            "$ref": "#/components/schemas/ScoreGoalDeltas"
+          },
+          "matchRate": {
+            "$ref": "#/components/schemas/ScoreMatchRateDeltas"
+          }
+        },
+        "type": "object"
+      },
+      "ScoreEndpointFailures": {
+        "properties": {
+          "bodyMismatches": {
+            "type": "integer"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "failures": {
+            "type": "integer"
+          },
+          "method": {
+            "type": "string"
+          },
+          "statusMismatches": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "endpoint",
+          "failures",
+          "statusMismatches",
+          "bodyMismatches"
+        ],
+        "type": "object"
+      },
+      "ScoreGoal": {
+        "properties": {
+          "condition": {
+            "type": "string"
+          },
+          "metric": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "observed": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "metric",
+          "condition",
+          "status"
+        ],
+        "type": "object"
+      },
+      "ScoreGoalDeltas": {
+        "properties": {
+          "failed": {
+            "type": "integer"
+          },
+          "passed": {
+            "type": "integer"
+          },
+          "verdictChanged": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "passed",
+          "failed"
+        ],
+        "type": "object"
+      },
+      "ScoreGoals": {
+        "properties": {
+          "failed": {
+            "type": "integer"
+          },
+          "goals": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreGoal"
+            },
+            "type": "array"
+          },
+          "notEvaluated": {
+            "type": "integer"
+          },
+          "passed": {
+            "type": "integer"
+          },
+          "verdict": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "verdict",
+          "passed",
+          "failed",
+          "goals"
+        ],
+        "type": "object"
+      },
+      "ScoreHostCount": {
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "host": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "host",
+          "count"
+        ],
+        "type": "object"
+      },
+      "ScoreHttpOutput": {
+        "properties": {
+          "differences": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "type": "object"
+      },
+      "ScoreInput": {
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "reportId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "path"
+        ],
+        "type": "object"
+      },
+      "ScoreMatchRate": {
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/ScoreMatchRateAnalysis"
+          },
+          "matched": {
+            "type": "integer"
+          },
+          "mockRun": {
+            "type": "string"
+          },
+          "mockRunSelection": {
+            "type": "string"
+          },
+          "noMatch": {
+            "type": "integer"
+          },
+          "noMatchRate": {
+            "type": "number"
+          },
+          "passthrough": {
+            "type": "integer"
+          },
+          "passthroughRate": {
+            "type": "number"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "topMissingHosts": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHostCount"
+            },
+            "type": "array"
+          },
+          "topMissingSignatures": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreMissingSignature"
+            },
+            "type": "array"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "matched",
+          "noMatch",
+          "passthrough",
+          "rate",
+          "noMatchRate",
+          "passthroughRate",
+          "topMissingSignatures",
+          "topMissingHosts"
+        ],
+        "type": "object"
+      },
+      "ScoreMatchRateAnalysis": {
+        "properties": {
+          "blueprintsApplied": {
+            "type": "integer"
+          },
+          "projectedMatched": {
+            "type": "integer"
+          },
+          "projectedMisses": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreMissingSignature"
+            },
+            "type": "array"
+          },
+          "projectedNoMatch": {
+            "type": "integer"
+          },
+          "projectedRate": {
+            "type": "integer"
+          },
+          "reportMatched": {
+            "type": "integer"
+          },
+          "reportNoMatch": {
+            "type": "integer"
+          },
+          "reportRate": {
+            "type": "integer"
+          },
+          "sqlCorrectness": {
+            "$ref": "#/components/schemas/MocksSQLCorrectness"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "reportMatched",
+          "reportNoMatch",
+          "reportRate",
+          "projectedMatched",
+          "projectedNoMatch",
+          "projectedRate",
+          "blueprintsApplied"
+        ],
+        "type": "object"
+      },
+      "ScoreMatchRateDeltas": {
+        "properties": {
+          "matched": {
+            "type": "integer"
+          },
+          "noMatch": {
+            "type": "integer"
+          },
+          "noMatchRate": {
+            "type": "number"
+          },
+          "passthrough": {
+            "type": "integer"
+          },
+          "passthroughRate": {
+            "type": "number"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "matched",
+          "noMatch",
+          "passthrough",
+          "rate",
+          "noMatchRate",
+          "passthroughRate"
+        ],
+        "type": "object"
+      },
+      "ScoreMissingSignature": {
+        "properties": {
+          "command": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "host": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "count"
+        ],
+        "type": "object"
+      },
+      "SnapshotDeleteResult": {
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "destination",
+          "deleted"
+        ],
+        "type": "object"
+      },
+      "SnapshotListResult": {
+        "properties": {
+          "destination": {
+            "description": "Where the snapshots are stored: cloud or a bucket location.",
+            "type": "string"
+          },
+          "snapshots": {
+            "description": "Snapshots, newest first.",
+            "items": {
+              "$ref": "#/components/schemas/SnapshotSummary"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "destination",
+          "snapshots"
+        ],
+        "type": "object"
+      },
+      "SnapshotPullResult": {
+        "properties": {
+          "directory": {
+            "description": "Directory holding the snapshot's RRPair files.",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "services": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "source": {
+            "description": "Where it was pulled from: cloud or a bucket location.",
+            "type": "string"
+          },
+          "testConfigs": {
+            "description": "Test configs restored into the workspace.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "workspace": {
+            "description": "Workspace root to replay or mock against.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "workspace",
+          "directory"
+        ],
+        "type": "object"
+      },
+      "SnapshotPushResult": {
+        "properties": {
+          "cloudAnalysisPending": {
+            "description": "True for a cloud snapshot: it becomes replayable in the cloud when analysis completes.",
+            "type": "boolean"
+          },
+          "destination": {
+            "description": "Where it was stored: cloud or a bucket location.",
+            "type": "string"
+          },
+          "id": {
+            "description": "ID of the new snapshot.",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rrpairs": {
+            "description": "Number of RRPairs uploaded.",
+            "type": "integer"
+          },
+          "services": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "testConfigs": {
+            "description": "Test configs uploaded with the snapshot.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "url": {
+            "description": "Dashboard URL for a cloud snapshot, or the object location for a bucket.",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "window": {
+            "$ref": "#/components/schemas/SnapshotWindow",
+            "description": "Set when maxRRPairs narrowed the push to a time window."
+          }
+        },
+        "required": [
+          "id",
+          "destination",
+          "rrpairs",
+          "cloudAnalysisPending"
+        ],
+        "type": "object"
+      },
+      "SnapshotSummary": {
+        "properties": {
+          "buildTag": {
+            "description": "Build tag the snapshot was recorded with.",
+            "type": "string"
+          },
+          "created": {
+            "description": "When the snapshot was created.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "description": "Snapshot ID.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Display name, when one was given.",
+            "type": "string"
+          },
+          "services": {
+            "description": "Services with traffic in the snapshot.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "status": {
+            "description": "Cloud analysis status, e.g. COMPLETE.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "SnapshotWindow": {
+        "properties": {
+          "coverage": {
+            "description": "Fraction of the operations in the full recording that the window covers, 0 to 1.",
+            "type": "number"
+          },
+          "end": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "start": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "coverage"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "proxymockToken": {
+        "description": "The server's access token: --token or PROXYMOCK_MCP_TOKEN, or the one the server prints when it listens beyond loopback.",
+        "in": "header",
+        "name": "X-Proxymock-Token",
+        "type": "apiKey"
+      },
+      "speedscaleApiKey": {
+        "description": "A Speedscale API key. Cloud operations run as its user.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Drive proxymock from CI jobs and scripts: pull and push snapshots, run the mock server, replay traffic against the application under test and score the result.\n\nThe API is served by `proxymock mcp run --http` on the machine that runs the job, next to the MCP endpoint at /mcp. It listens on 127.0.0.1 by default.\n\nAuthentication:\n- X-Proxymock-Token: the server's access token. Required when the server listens beyond loopback (--host), optional on loopback.\n- Authorization: Bearer \u003cSpeedscale API key\u003e: runs cloud operations as that key's user. Without it, the server uses the login of the machine it runs on.\n\nLong-running operations answer 202 with a job. Poll GET /v1/jobs/{id}, or pass ?wait=\u003cseconds\u003e to block for up to 10 minutes.\n\nVersioning: everything under /v1 except /v1/experimental is stable. New optional fields and new operations can appear in a minor version; removing or renaming a field or changing its meaning needs /v2.",
+    "title": "proxymock REST API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/docs": {
+      "get": {
+        "description": "A page that renders this document and sends requests from the browser. It needs no token to load; paste the token into it to call operations.",
+        "operationId": "docs.get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The docs page."
+          }
+        },
+        "security": [
+          {}
+        ],
+        "summary": "Interactive docs",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/v1/jobs": {
+      "get": {
+        "operationId": "jobs.list",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobList"
+                }
+              }
+            },
+            "description": "Jobs, newest first."
+          }
+        },
+        "summary": "List jobs",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/v1/jobs/{id}": {
+      "get": {
+        "description": "Returns the job. With ?wait it blocks until the job finishes or the wait ends.",
+        "operationId": "jobs.get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Seconds to wait for the job to finish before answering, at most 600.",
+            "in": "query",
+            "name": "wait",
+            "required": false,
+            "schema": {
+              "maximum": 600,
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "The job has finished."
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "The job is still running."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "No such job. Jobs end with the server, and only the latest 100 finished jobs are kept."
+          }
+        },
+        "summary": "Get a job",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/v1/jobs/{id}/cancel": {
+      "post": {
+        "description": "Stops a running job (a replay's process is killed). Canceling a finished job changes nothing.",
+        "operationId": "jobs.cancel",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "The job is canceled or had already finished."
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "The job is still running."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "No such job. Jobs end with the server, and only the latest 100 finished jobs are kept."
+          }
+        },
+        "summary": "Cancel a job",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/v1/mocks/start": {
+      "post": {
+        "description": "Starts the mock server on the outbound proxy port and answers once it accepts connections. Point the application under test at it with the returned environment variables. One mock server runs at a time.",
+        "operationId": "mocks.start",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "chaos": {
+                    "description": "Chaos specs, '\u003cfilter query\u003e:\u003ceffect\u003e=\u003cvalue\u003e[,...]'.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "faults": {
+                    "description": "Fault specs, '\u003cregexp\u003e:action=value[,...]'.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "inDirectories": {
+                    "description": "Directories of recorded RRPairs to answer from.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "mockTiming": {
+                    "description": "Response timing: none, recorded, or a fixed duration.",
+                    "type": "string"
+                  },
+                  "outDirectory": {
+                    "description": "Directory to write the traffic the mock server served to. Score the replay's outbound calls from it.",
+                    "type": "string"
+                  },
+                  "responseSelection": {
+                    "description": "How to pick among several recorded responses for one request.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "inDirectories"
+                ],
+                "type": "object",
+                "x-field-order": [
+                  "inDirectories",
+                  "outDirectory",
+                  "mockTiming",
+                  "faults",
+                  "chaos",
+                  "responseSelection"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockServerResult"
+                }
+              }
+            },
+            "description": "The result."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "Start the mock server",
+        "tags": [
+          "mocks"
+        ],
+        "x-order": 4
+      }
+    },
+    "/v1/mocks/stop": {
+      "post": {
+        "description": "Stops the running mock server.",
+        "operationId": "mocks.stop",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {},
+                "type": "object"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockServerResult"
+                }
+              }
+            },
+            "description": "The result."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "Stop the mock server",
+        "tags": [
+          "mocks"
+        ],
+        "x-order": 5
+      }
+    },
+    "/v1/openapi.json": {
+      "get": {
+        "operationId": "openapi.get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "The OpenAPI document."
+          }
+        },
+        "security": [
+          {}
+        ],
+        "summary": "This document",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/v1/replays/run": {
+      "post": {
+        "description": "Replays recorded traffic against the application under test and scores the result. Runs as a job; the job's result has passed=false when a test config goal is missed or a fail-if condition triggers. One replay runs at a time.",
+        "operationId": "replays.run",
+        "parameters": [
+          {
+            "description": "Seconds to wait for the job to finish before answering, at most 600.",
+            "in": "query",
+            "name": "wait",
+            "required": false,
+            "schema": {
+              "maximum": 600,
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "baseline": {
+                    "description": "Output directory of an earlier replay to compare with.",
+                    "type": "string"
+                  },
+                  "expect": {
+                    "description": "With verifyFix: a pattern the fixed requests must match.",
+                    "type": "string"
+                  },
+                  "failIf": {
+                    "description": "Fail conditions such as \"requests.failed \u003e 0\".",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "failOnNewMismatch": {
+                    "description": "Fail when a response differs that matched in the baseline.",
+                    "type": "boolean"
+                  },
+                  "for": {
+                    "description": "Keep replaying for this long, e.g. \"5m\".",
+                    "type": "string"
+                  },
+                  "ignoreBodyChanges": {
+                    "description": "Compare status codes only, not bodies.",
+                    "type": "boolean"
+                  },
+                  "inDirectories": {
+                    "description": "Directories of recorded RRPairs to replay.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "loadTest": {
+                    "description": "Load-test mode: skip response comparison to drive more load.",
+                    "type": "boolean"
+                  },
+                  "noOut": {
+                    "description": "Write nothing to disk. The result then has no score.",
+                    "type": "boolean"
+                  },
+                  "outDirectory": {
+                    "description": "Directory to write the observed traffic and replay-verdict.json to. Required unless noOut is true.",
+                    "type": "string"
+                  },
+                  "requireBlueprints": {
+                    "description": "Tuning blueprints that must apply during the replay.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "rewriteHost": {
+                    "description": "Rewrite the Host header to the testAgainst host.",
+                    "type": "boolean"
+                  },
+                  "semantic": {
+                    "description": "Score response bodies by semantic similarity.",
+                    "type": "boolean"
+                  },
+                  "semanticFail": {
+                    "description": "With semantic: the similarity, 0 to 1, below which a body fails.",
+                    "type": "number"
+                  },
+                  "semanticPass": {
+                    "description": "With semantic: the similarity, 0 to 1, at or above which a body passes.",
+                    "type": "number"
+                  },
+                  "sessions": {
+                    "description": "Sessions to replay in parallel.",
+                    "type": "number"
+                  },
+                  "stages": {
+                    "description": "Load stages such as \"30s:10\" (duration:virtual users).",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "testAgainst": {
+                    "description": "Where to send the requests: a URL, or host=URL pairs to route each recorded host.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "testConfig": {
+                    "description": "Test config ID from the workspace: load shape, goals and assertions.",
+                    "type": "string"
+                  },
+                  "testsFilter": {
+                    "description": "Filter query selecting which recorded requests to replay.",
+                    "type": "string"
+                  },
+                  "times": {
+                    "description": "Replay the traffic this many times.",
+                    "type": "number"
+                  },
+                  "verifyFix": {
+                    "description": "Fail unless the responses that differed now match.",
+                    "type": "boolean"
+                  },
+                  "vus": {
+                    "description": "Virtual users replaying in parallel.",
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "inDirectories"
+                ],
+                "type": "object",
+                "x-field-order": [
+                  "inDirectories",
+                  "testAgainst",
+                  "outDirectory",
+                  "noOut",
+                  "testConfig",
+                  "failIf",
+                  "rewriteHost",
+                  "testsFilter",
+                  "vus",
+                  "sessions",
+                  "for",
+                  "times",
+                  "stages",
+                  "loadTest",
+                  "baseline",
+                  "failOnNewMismatch",
+                  "verifyFix",
+                  "expect",
+                  "ignoreBodyChanges",
+                  "semantic",
+                  "semanticPass",
+                  "semanticFail",
+                  "requireBlueprints"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Job"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "$ref": "#/components/schemas/ReplayRunResult"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "The job finished within ?wait."
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Job"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "$ref": "#/components/schemas/ReplayRunResult"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "The job is running. Poll the Location header, GET /v1/jobs/{id}.",
+            "headers": {
+              "Location": {
+                "description": "/v1/jobs/{id}",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "Run a replay",
+        "tags": [
+          "replays"
+        ],
+        "x-order": 6
+      }
+    },
+    "/v1/replays/score": {
+      "post": {
+        "description": "Scores a finished replay: accuracy, mock match rate, goals and the outbound HTTP assertion. Takes a local replay output directory or a pulled cloud report.",
+        "operationId": "replays.score",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "baseline": {
+                    "description": "An earlier replay or report to compare with.",
+                    "type": "string"
+                  },
+                  "input": {
+                    "description": "A replay output directory holding replay-verdict.json, a pulled report ID, or a pulled workspace.",
+                    "type": "string"
+                  },
+                  "mockRun": {
+                    "description": "The mocked-* run that served the replay, when the time-overlap pairing picks the wrong one.",
+                    "type": "string"
+                  },
+                  "mocksOut": {
+                    "description": "The mock server's outDirectory, to score the outbound HTTP assertion.",
+                    "type": "string"
+                  },
+                  "workspace": {
+                    "description": "Directory a bare report ID is looked up in.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "input"
+                ],
+                "type": "object",
+                "x-field-order": [
+                  "input",
+                  "baseline",
+                  "workspace",
+                  "mockRun",
+                  "mocksOut"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayScore"
+                }
+              }
+            },
+            "description": "The result."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "Score a replay",
+        "tags": [
+          "replays"
+        ],
+        "x-order": 7
+      }
+    },
+    "/v1/snapshots/delete": {
+      "post": {
+        "description": "Deletes a stored snapshot. This cannot be undone, so confirm must be true.",
+        "operationId": "snapshots.delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "bucket": {
+                    "description": "Use this bucket instead of Speedscale cloud. Credentials come from the standard AWS chain (S3) or Google Application Default Credentials (GCS). No Speedscale account is needed.",
+                    "type": "string"
+                  },
+                  "bucketPrefix": {
+                    "description": "Key prefix in the bucket. proxymock only writes and deletes under it.",
+                    "type": "string"
+                  },
+                  "bucketProvider": {
+                    "description": "Bucket storage provider: s3 (default) or gcs.",
+                    "enum": [
+                      "s3",
+                      "gcs"
+                    ],
+                    "type": "string"
+                  },
+                  "confirm": {
+                    "description": "Must be true.",
+                    "type": "boolean"
+                  },
+                  "region": {
+                    "description": "Bucket region. Defaults to the AWS SDK configuration.",
+                    "type": "string"
+                  },
+                  "s3EndpointUrl": {
+                    "description": "Endpoint of an S3-compatible store such as MinIO. Empty for AWS S3.",
+                    "type": "string"
+                  },
+                  "s3ForcePathStyle": {
+                    "description": "Use path-style S3 addressing, often needed for MinIO.",
+                    "type": "boolean"
+                  },
+                  "snapshotId": {
+                    "description": "ID of the snapshot to delete.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "snapshotId",
+                  "confirm"
+                ],
+                "type": "object",
+                "x-field-order": [
+                  "snapshotId",
+                  "confirm",
+                  "bucket",
+                  "bucketProvider",
+                  "bucketPrefix",
+                  "region",
+                  "s3EndpointUrl",
+                  "s3ForcePathStyle"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotDeleteResult"
+                }
+              }
+            },
+            "description": "The result."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "Delete a snapshot",
+        "tags": [
+          "snapshots"
+        ],
+        "x-order": 3
+      }
+    },
+    "/v1/snapshots/list": {
+      "post": {
+        "description": "Lists stored snapshots, newest first, in Speedscale cloud or in a bucket.",
+        "operationId": "snapshots.list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "bucket": {
+                    "description": "Use this bucket instead of Speedscale cloud. Credentials come from the standard AWS chain (S3) or Google Application Default Credentials (GCS). No Speedscale account is needed.",
+                    "type": "string"
+                  },
+                  "bucketPrefix": {
+                    "description": "Key prefix in the bucket. proxymock only writes and deletes under it.",
+                    "type": "string"
+                  },
+                  "bucketProvider": {
+                    "description": "Bucket storage provider: s3 (default) or gcs.",
+                    "enum": [
+                      "s3",
+                      "gcs"
+                    ],
+                    "type": "string"
+                  },
+                  "limit": {
+                    "description": "Maximum snapshots to return (default 20, max 100).",
+                    "type": "number"
+                  },
+                  "region": {
+                    "description": "Bucket region. Defaults to the AWS SDK configuration.",
+                    "type": "string"
+                  },
+                  "s3EndpointUrl": {
+                    "description": "Endpoint of an S3-compatible store such as MinIO. Empty for AWS S3.",
+                    "type": "string"
+                  },
+                  "s3ForcePathStyle": {
+                    "description": "Use path-style S3 addressing, often needed for MinIO.",
+                    "type": "boolean"
+                  },
+                  "search": {
+                    "description": "Match snapshot names containing this text.",
+                    "type": "string"
+                  },
+                  "service": {
+                    "description": "Only snapshots with traffic for this service.",
+                    "type": "string"
+                  },
+                  "tag": {
+                    "description": "Only snapshots with this build tag.",
+                    "type": "string"
+                  }
+                },
+                "type": "object",
+                "x-field-order": [
+                  "search",
+                  "service",
+                  "tag",
+                  "limit",
+                  "bucket",
+                  "bucketProvider",
+                  "bucketPrefix",
+                  "region",
+                  "s3EndpointUrl",
+                  "s3ForcePathStyle"
+                ]
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotListResult"
+                }
+              }
+            },
+            "description": "The result."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "List snapshots",
+        "tags": [
+          "snapshots"
+        ],
+        "x-order": 0
+      }
+    },
+    "/v1/snapshots/pull": {
+      "post": {
+        "description": "Downloads a stored snapshot into local RRPair files that can be replayed and mocked. Runs as a job.",
+        "operationId": "snapshots.pull",
+        "parameters": [
+          {
+            "description": "Seconds to wait for the job to finish before answering, at most 600.",
+            "in": "query",
+            "name": "wait",
+            "required": false,
+            "schema": {
+              "maximum": 600,
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "bucket": {
+                    "description": "Use this bucket instead of Speedscale cloud. Credentials come from the standard AWS chain (S3) or Google Application Default Credentials (GCS). No Speedscale account is needed.",
+                    "type": "string"
+                  },
+                  "bucketPrefix": {
+                    "description": "Key prefix in the bucket. proxymock only writes and deletes under it.",
+                    "type": "string"
+                  },
+                  "bucketProvider": {
+                    "description": "Bucket storage provider: s3 (default) or gcs.",
+                    "enum": [
+                      "s3",
+                      "gcs"
+                    ],
+                    "type": "string"
+                  },
+                  "force": {
+                    "description": "Overwrite test configs in the workspace that differ from the snapshot's.",
+                    "type": "boolean"
+                  },
+                  "outDirectory": {
+                    "description": "Workspace directory to expand the snapshot into. Defaults to ./proxymock.",
+                    "type": "string"
+                  },
+                  "region": {
+                    "description": "Bucket region. Defaults to the AWS SDK configuration.",
+                    "type": "string"
+                  },
+                  "s3EndpointUrl": {
+                    "description": "Endpoint of an S3-compatible store such as MinIO. Empty for AWS S3.",
+                    "type": "string"
+                  },
+                  "s3ForcePathStyle": {
+                    "description": "Use path-style S3 addressing, often needed for MinIO.",
+                    "type": "boolean"
+                  },
+                  "snapshotId": {
+                    "description": "ID of the snapshot to pull.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "snapshotId"
+                ],
+                "type": "object",
+                "x-field-order": [
+                  "snapshotId",
+                  "outDirectory",
+                  "force",
+                  "bucket",
+                  "bucketProvider",
+                  "bucketPrefix",
+                  "region",
+                  "s3EndpointUrl",
+                  "s3ForcePathStyle"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Job"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "$ref": "#/components/schemas/SnapshotPullResult"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "The job finished within ?wait."
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Job"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "$ref": "#/components/schemas/SnapshotPullResult"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "The job is running. Poll the Location header, GET /v1/jobs/{id}.",
+            "headers": {
+              "Location": {
+                "description": "/v1/jobs/{id}",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "Pull a snapshot",
+        "tags": [
+          "snapshots"
+        ],
+        "x-order": 2
+      }
+    },
+    "/v1/snapshots/push": {
+      "post": {
+        "description": "Uploads local RRPair directories as one new snapshot. Runs as a job.",
+        "operationId": "snapshots.push",
+        "parameters": [
+          {
+            "description": "Seconds to wait for the job to finish before answering, at most 600.",
+            "in": "query",
+            "name": "wait",
+            "required": false,
+            "schema": {
+              "maximum": 600,
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "bucket": {
+                    "description": "Use this bucket instead of Speedscale cloud. Credentials come from the standard AWS chain (S3) or Google Application Default Credentials (GCS). No Speedscale account is needed.",
+                    "type": "string"
+                  },
+                  "bucketPrefix": {
+                    "description": "Key prefix in the bucket. proxymock only writes and deletes under it.",
+                    "type": "string"
+                  },
+                  "bucketProvider": {
+                    "description": "Bucket storage provider: s3 (default) or gcs.",
+                    "enum": [
+                      "s3",
+                      "gcs"
+                    ],
+                    "type": "string"
+                  },
+                  "inDirectories": {
+                    "description": "Directories of RRPair files to upload, read recursively.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "maxRRPairs": {
+                    "description": "Above this many RRPairs, narrow the push to a representative time window that fits.",
+                    "type": "number"
+                  },
+                  "name": {
+                    "description": "Display name for the snapshot.",
+                    "type": "string"
+                  },
+                  "region": {
+                    "description": "Bucket region. Defaults to the AWS SDK configuration.",
+                    "type": "string"
+                  },
+                  "s3EndpointUrl": {
+                    "description": "Endpoint of an S3-compatible store such as MinIO. Empty for AWS S3.",
+                    "type": "string"
+                  },
+                  "s3ForcePathStyle": {
+                    "description": "Use path-style S3 addressing, often needed for MinIO.",
+                    "type": "boolean"
+                  },
+                  "sample": {
+                    "description": "Keep a deterministic fraction of the traffic, whole sessions at a time: \"20%\", \"1/5\" or \"1 in 5\".",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "inDirectories"
+                ],
+                "type": "object",
+                "x-field-order": [
+                  "inDirectories",
+                  "name",
+                  "sample",
+                  "maxRRPairs",
+                  "bucket",
+                  "bucketProvider",
+                  "bucketPrefix",
+                  "region",
+                  "s3EndpointUrl",
+                  "s3ForcePathStyle"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Job"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "$ref": "#/components/schemas/SnapshotPushResult"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "The job finished within ?wait."
+          },
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Job"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "$ref": "#/components/schemas/SnapshotPushResult"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "The job is running. Poll the Location header, GET /v1/jobs/{id}.",
+            "headers": {
+              "Location": {
+                "description": "/v1/jobs/{id}",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request body is not valid for this operation."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The access token is missing or wrong."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The Host or Origin header names another site."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Another run of this kind is in progress (one mock server, one replay)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request was valid but the operation failed."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An unexpected server error."
+          }
+        },
+        "summary": "Push a snapshot",
+        "tags": [
+          "snapshots"
+        ],
+        "x-order": 1
+      }
+    }
+  },
+  "security": [
+    {},
+    {
+      "proxymockToken": []
+    },
+    {
+      "speedscaleApiKey": []
+    },
+    {
+      "proxymockToken": [],
+      "speedscaleApiKey": []
+    }
+  ],
+  "servers": [
+    {
+      "description": "proxymock mcp run --http on this machine",
+      "url": "http://127.0.0.1:7799"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Recorded traffic stored in Speedscale cloud or a bucket.",
+      "name": "snapshots"
+    },
+    {
+      "description": "The mock server the application under test calls instead of its real dependencies.",
+      "name": "mocks"
+    },
+    {
+      "description": "Replay recorded traffic against the application under test and score it.",
+      "name": "replays"
+    },
+    {
+      "description": "Long-running operations.",
+      "name": "jobs"
+    },
+    {
+      "description": "The API itself.",
+      "name": "meta"
+    }
+  ]
+}

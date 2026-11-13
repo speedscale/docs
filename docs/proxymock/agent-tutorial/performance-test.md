@@ -100,6 +100,14 @@ go run ./cmd/traffic http://localhost:4143    # second terminal
 
 </details>
 
+## Another load-testing example
+
+This short demo uses a Node.js app to show the record, mock and load-test workflow with an AI coding agent.
+
+[Watch quick load testing and mocking with proxymock and AI on YouTube](https://www.youtube.com/watch?v=Hyh-i85W5cw).
+
+<iframe title="Quick load testing and mocking with proxymock and AI" src="https://www.youtube.com/embed/Hyh-i85W5cw?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Next
 
 [Chapter 8: Do it to your own service](./your-own-service.md)

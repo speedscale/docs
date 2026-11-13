@@ -4,7 +4,9 @@ title: Creating a Snapshot
 description: "Create, tune, and restore snapshot traffic in Speedscale for repeatable API replay tests."
 ---
 
-<iframe src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+import SnapshotOverviewImage from './snapshot-overview.jpg';
+
+<iframe title="Speedscale Traffic Viewer tutorial" src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 ## Observe Traffic
 
@@ -49,11 +51,15 @@ Now that you have identified the subset of traffic that you would like to replay
 
 A traffic snapshot is created from the selected traffic when running a replay so the same set of traffic can be reviewed and replayed again.
 
-![The Overview tab of a snapshot: whether it is ready to replay, its Tests and Mocks, and its latency and throughput](./snapshot.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1100px'}} tabIndex={0} role="region" aria-label="Snapshot Overview with Tests, Mocks, Requests over time and Latency p95">
 
-In addition to these details, a Service Map visually represents the inbound and outbound traffic, and how the replay will be orchestrated.
+![Snapshot Overview with Tests, Mocks, Requests over time and Latency p95](./snapshot-overview.jpg)
 
-![Service Map](../select-service-map.png)
+</div>
+
+<a href={SnapshotOverviewImage}>Open screenshot full size</a>
+
+The **Requests over time** chart separates Tests above zero from Mocks below zero. **Latency · p95** shows the recorded latency over time.
 
 ### Lock a snapshot
 
@@ -103,4 +109,4 @@ Speedscale provides a sophisticated data transformation system to ensure that tr
 Before using any custom configuration, attempt a traffic replay with defaults. The default `standard` configuration works in many cases so most users should skip ahead to the next step.
 :::
 
-However, if after performing a test run your application has a very low accuracy, or displays other unusual behavior, reach out on the Speedscale Slack [community](https://slack.speedscale.com) or via [email](mailto:support@speedscale.com). We will be happy to walk through your specific use case. The Speedscale team is working on a configuration UI but for now we're happier to do the work for you than to have you stumble through this complex topic. If you're feeling adventurous, you can jump over to [transforms](/guides/transformation/overview) to learn more.
+If a replay has low accuracy or unexpected behavior, inspect the affected requests in **Traffic**, then open the snapshot's **Prepare** tab to review suggestions, credentials, and transform chains. Use the chain editor to preview changes against a recorded request, save the configuration, and replay again to check the result. See [Traffic Transformation](/guides/transformation/overview.md) for the workflow. For help with your configuration, ask in the [Speedscale Slack community](https://slack.speedscale.com) or [email support](mailto:support@speedscale.com).

@@ -19,6 +19,10 @@ Choose an installation based on the permissions your platform team can grant. Bo
 
 **Use the [standard operator](./kubernetes-operator.md) when cluster policy permits it.** It provides eBPF capture and needs less manual coordination. If cluster-scoped grants are unavailable, follow the [namespace-scoped guide](./kubernetes-namespaced.md) and review its [limitations and compatibility](./kubernetes-namespaced-limitations.md) before installing.
 
+## Set up capture
+
+After the standard operator is installed, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes) for annotations, JVM rollout requirements, persistent Helm/GitOps configuration, and capture verification.
+
 ## Check your platform requirements
 
 Review these guides before running the installation commands for your chosen mode:

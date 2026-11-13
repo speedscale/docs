@@ -23,6 +23,10 @@ This guide runs the whole loop locally with the open-source
 5. **Replay** that snapshot back against the app.
 6. **Verify** the replay preserved distinct identities.
 
+[Watch session-based replay on YouTube](https://www.youtube.com/watch?v=P-eHNS65F3k).
+
+<iframe title="Session-based replay" src="https://www.youtube.com/embed/P-eHNS65F3k?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Prerequisites
 
 - proxymock installed and an API key configured — see

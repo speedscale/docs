@@ -14,6 +14,10 @@ This guide walks through one failure in the [mock-lab](https://github.com/speeds
 The debugger is local only in this release. It applies to replays that run on this machine, not to replays in your cluster or through Speedscale cloud. See [Limits in this release](#limits-in-this-release).
 :::
 
+[Watch step-by-step session debugging on YouTube](https://www.youtube.com/watch?v=9WygqPty7eQ).
+
+<iframe title="Step-by-step session debugging" src="https://www.youtube.com/embed/9WygqPty7eQ?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## What a debug session is
 
 A debug session is an ordinary replay whose generator parks before every recorded request instead of sending the next one on its own. It loads the recording, applies the test config, probes the target, and then waits for a command. Every command sends some of the recording and reports, per request, what was sent, what came back against the recording, which assertions passed, and which transforms fired.
@@ -88,7 +92,7 @@ The replay flags you already use (`--in`, `--test-against`, `--out`, `--test-con
 | Flag | Meaning |
 |---|---|
 | `--debug` | Park the generator before the first request and wait for commands |
-| `--debug-listen` | Address the session is driven from. Default `127.0.0.1:0`, which picks a free port |
+| `--debug-listen` | Address the session is driven from. Default `127.0.0.1:0`, which picks a free port. It must be a loopback address, and the session refuses requests whose `Host` or `Origin` names another site |
 | `--debug-pause-on` | Breakpoints every run-to stops at: `assertion-fail`, `status-mismatch`, `send-fail` or `msg:N`. Repeatable. `failure` means the first three |
 | `--debug-idle-timeout` | Finish the session when no command arrives for this long. Default `30m`, maximum `4h` |
 | `--debug-start-at` | Park at this recorded message number and skip everything before it |

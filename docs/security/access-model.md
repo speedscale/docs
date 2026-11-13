@@ -15,34 +15,24 @@ Speedscale uses role-based access control (RBAC) with three pre-defined roles: *
 
 ## Permission overview
 
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1000px'}} tabIndex={0} role="region" aria-label="Role permission inheritance">
+
 ```mermaid
 flowchart LR
-    Admin([Admin])
-    Maintainer([Maintainer])
-    Developer([Developer])
-
-    Admin --> A1[User management]
-    Admin --> A2[Billing & usage thresholds]
-    Admin --> A3[DLP & filter rules]
-    Admin --> A4[Deploy sidecars & eBPF capture]
-    Admin --> A5[Operator & cron job config]
-    Admin --> A6[Run replays]
-    Admin --> A7[Create & edit snapshots]
-    Admin --> A8[View infrastructure status]
-    Admin --> A9[View reports & dashboards]
-
-    Maintainer --> M1[Deploy sidecars & eBPF capture]
-    Maintainer --> M2[Operator & cron job config]
-    Maintainer --> M3[Run replays]
-    Maintainer --> M4[Create & edit snapshots]
-    Maintainer --> M5[View infrastructure status]
-    Maintainer --> M6[View reports & dashboards]
-
-    Developer --> D1[Run replays]
-    Developer --> D2[Create & edit snapshots]
-    Developer --> D3[View infrastructure status]
-    Developer --> D4[View reports & dashboards]
+    developer["Developer<br/>Run replays; create and edit snapshots<br/>View infrastructure and reports"]
+    maintainer["Maintainer<br/>Adds capture deployment<br/>Operator and cron-job configuration"]
+    admin["Admin<br/>Adds user management<br/>Billing and usage thresholds; DLP and filter rules"]
+    developer -->|"permissions included"| maintainer
+    maintainer -->|"permissions included"| admin
+    classDef baseline fill:#edf5f8,stroke:#8eacbd,color:#24465c;
+    classDef elevated fill:#e8f4ee,stroke:#6b9783,color:#224f3d;
+    classDef adminrole fill:#fff2db,stroke:#ba8b3c,color:#644815;
+    class developer baseline;
+    class maintainer elevated;
+    class admin adminrole;
 ```
+
+</div>
 
 ## Roles
 

@@ -1,6 +1,6 @@
 ---
 title: Use BYOC Traffic with proxymock
-description: "Use proxymock import s3, proxymock import gcs, or the pull_byoc_bucket MCP tool to pull historical traffic directly from your bucket into a local workspace."
+description: "Import historical traffic from S3, native GCS, or Azure Blob into a local proxymock workspace through the CLI, MCP, or web UI."
 ---
 
 # Use BYOC Traffic with proxymock
@@ -9,11 +9,11 @@ In a bring-your-own-cloud (BYOC) deployment, a collector or the Speedscale Forwa
 
 Enabling a BYOC exporter does not automatically disable the Speedscale Cloud exporter. Configure exporters separately when captured RRPairs must remain only in customer-controlled destinations. See [Network and data boundaries](./how-it-works.md#network-and-data-boundaries).
 
-The pull runs entirely locally against your bucket. Credentials come from the AWS credential chain for S3 or Google Application Default Credentials for GCS, and the traffic lands as ordinary RRPair files, so every proxymock workflow works on it unchanged.
+The pull runs locally against your bucket and writes ordinary RRPair files for inspection, mocking, and replay. S3 uses the AWS credential chain; GCS uses Google Application Default Credentials; Azure Blob uses Azure identity or an environment connection string.
 
 There are three ways to run the pull, over the same bucket layout:
 
-- **CLI** with `proxymock import s3` or `proxymock import gcs`.
+- **CLI** with `proxymock import s3`, `proxymock import gcs`, or `proxymock import azureblob` (v2.5.1169+).
 - **MCP** with the `pull_byoc_bucket` tool, so an AI agent can fetch its own production context.
 - **Web** through the source picker in `proxymock web`.
 
@@ -21,7 +21,7 @@ There are three ways to run the pull, over the same bucket layout:
 
 The BYOC OpenTelemetry `awss3` exporter writes OTLP-JSON objects under the `byoc/` prefix, in hive-style `year=/month=/day=/hour=/minute=` partitions. When the bucket contains `_speedscale/byoc-layout.json`, proxymock reads it to enumerate workload-specific `namespace=/app=/…` prefixes directly, which makes a narrow pull cheap. The legacy Fluent Bit layout, with objects at the bucket root and hour-granularity partitions, is also supported.
 
-Point `--prefix` at `byoc/` for the current layout. proxymock prunes the object listing by the time window before it downloads anything, so a tight `--from`/`--to` keeps the pull fast even against a large bucket.
+Point `--prefix` at `byoc/` for the current S3 and native GCS collector layouts. The [Azure chart uses a different layout](#azure-blob-storage). proxymock prunes the object listing by the time window before it downloads anything, so a tight `--from`/`--to` keeps the pull fast even against a large bucket.
 
 ### Direct S3 replay storage layout
 
@@ -37,7 +37,7 @@ For a private S3-compatible service, add `--s3-endpoint-url <URL>` and `--s3-for
 ## Before you begin
 
 - `proxymock` [installed](/proxymock/getting-started/quickstart/quickstart-cli.md).
-- Read access to the BYOC bucket. For S3, use the standard AWS credential chain: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, or an instance role. For GCS, use Google Application Default Credentials as described below. No Speedscale account or API key is required for the pull.
+- Read access to the BYOC bucket. For S3, use the standard AWS credential chain: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`, `AWS_PROFILE`, or an instance role. For GCS, use Google Application Default Credentials. For Azure Blob, use an Azure identity with **Storage Blob Data Reader** on the selected container or an authorized environment connection string. Provider setup is described below. No Speedscale account or API key is required for the pull.
 
 ## Pull with the CLI {#cli}
 
@@ -115,21 +115,41 @@ proxymock import s3 --bucket my-gcs-bucket --prefix byoc/ \
 
 Keep the endpoint exactly `https://storage.googleapis.com`; put the bucket name only in `--bucket`. A bucket-qualified endpoint such as `https://my-gcs-bucket.storage.googleapis.com` can produce incorrect addressing or TLS errors. Use the native `import gcs` command when S3 interoperability authentication or requests fail.
 
+### Azure Blob Storage {#azure-blob-storage}
+
+Use `proxymock import azureblob` in proxymock v2.5.1169 or later to read through the native Azure Blob API. Authenticate on the approved proxymock host with `az login`, an Azure workload identity, or environment credentials supported by [DefaultAzureCredential](https://learn.microsoft.com/en-us/azure/developer/go/sdk/authentication/credential-chains). The reader needs **Storage Blob Data Reader** on the selected container. Keep reader credentials separate from the collector's writer credentials.
+
+```shell
+az login
+proxymock import azureblob \
+  --azure-account-url https://mystorageacct.blob.core.windows.net \
+  --bucket byoc --service checkout --from now-1h --to now \
+  --limit 100 --out proxymock/azure-traffic --output json
+```
+
+The account URL contains the HTTPS storage account endpoint only, without a container path or SAS token. `--bucket` names the container. The reference Azure chart writes blobs under `YYYY/MM/DD/logs_*` at the container root, so leave `--prefix` unset unless you configured a matching prefix. The S3 chart's `byoc/` prefix does not apply.
+
+For connection-string authentication, set `AZURE_STORAGE_CONNECTION_STRING` securely in the process environment and omit `--azure-account-url`. Identity authentication uses `--azure-account-url` or `AZURE_STORAGE_ACCOUNT_URL`. Do not put a connection string or SAS token in command arguments, source-controlled values, or chat. Azure account-URL identity and connection-string settings are mutually exclusive.
+
+Azure imports share the traffic filters, DLP, limits, output formats, retries, cancellation, and `--follow` behavior of the other native importers. A limited viewing sample can omit dependencies or part of a journey; check completeness before replay. Azure cluster-reader discovery is unavailable, so the CLI, web server, or MCP process uses credentials on its own host. These traffic imports are separate from the snapshot-repository `--bucket-provider` workflows.
+
+Older proxymock clients can upgrade or use the chart repository's [`azure-gather.py`](https://github.com/speedscale/speedscale-byoc/blob/main/scripts/azure-gather.py) fallback.
+
 ### S3-compatible stores
 
 For MinIO, DigitalOcean Spaces, or another S3-compatible store, set `--s3-endpoint-url` and usually `--s3-force-path-style`. Set `--region` when the SDK cannot infer it. The full flag list is in the [CLI reference](/reference/proxymock-cli-reference.md#import-s3).
 
 ## Pull with the MCP tool {#mcp}
 
-The `pull_byoc_bucket` MCP tool gives an AI coding assistant the same pull. It runs locally with no Speedscale account; credentials come from the AWS credential chain or Google ADC for the selected provider. Describe what you need and the assistant fills in the parameters:
+The `pull_byoc_bucket` MCP tool gives an AI coding assistant the same pull. It runs locally with no Speedscale account; credentials come from the AWS credential chain, Google ADC, or local Azure credentials for the selected provider. Describe what you need and the assistant fills in the parameters:
 
 > Pull the last 15 minutes of checkout 500s from the `my-bucket` BYOC bucket and replay them against my local build.
 
-Set `storage-provider` to `gcs` for Google Cloud Storage; the default is `s3`. The tool takes `bucket` plus the same narrowing parameters as the CLI (`prefix`, `from`, `to`, `service`, `namespace`, `status`, `trace-id`, or a full `filter`), returns the import summary, and writes RRPair files to `./proxymock/imported-s3-<timestamp>/` or `./proxymock/imported-gcs-<timestamp>/` for GCS. This is distinct from `pull_remote_recording`, which pulls from Speedscale-managed cloud; use `pull_byoc_bucket` when the traffic lives in your own bucket. See the [MCP Tools reference](/proxymock/how-it-works/mcp-tools.md) for the full parameter list.
+Set `storage-provider` to `gcs` for Google Cloud Storage or `azureblob` for Azure Blob; the default is `s3`. Azure identity uses `azure-account-url`; connection-string authentication reads `AZURE_STORAGE_CONNECTION_STRING` from the MCP server environment. The tool takes `bucket` plus the same narrowing parameters as the CLI (`prefix`, `from`, `to`, `service`, `namespace`, `status`, `trace-id`, or a full `filter`), returns the import summary, and writes RRPair files under `./proxymock/` in an `imported-s3-<timestamp>`, `imported-gcs-<timestamp>`, or `imported-azureblob-<timestamp>` directory for the selected provider. This is distinct from `pull_remote_recording`, which pulls from Speedscale-managed cloud; use `pull_byoc_bucket` when the traffic lives in your own bucket. See the [MCP Tools reference](/proxymock/how-it-works/mcp-tools.md) for the full parameter list.
 
 ## Pull from proxymock web {#web}
 
-In `proxymock web`, the import source picker offers a BYOC bucket as a source alongside local files. Select **Google Cloud Storage** for a native GCS pull using the proxymock process's Google ADC credentials. Then give it the bucket, prefix, and a time window, and the imported run appears in the Run selector like any other recording, ready to explore in the Requests grid or replay.
+In `proxymock web`, the import source picker offers a BYOC bucket as a source alongside local files. Select **Google Cloud Storage** for a native GCS pull using the proxymock process's Google ADC credentials, or **Azure Blob Storage** for a native Azure pull using its local Azure credentials. For Azure identity, supply the account URL; leave that field empty when using an environment connection string. Then give it the bucket, prefix, and a time window, and the imported run appears in the Run selector like any other recording, ready to explore in the Requests grid or replay.
 
 ## Next steps
 

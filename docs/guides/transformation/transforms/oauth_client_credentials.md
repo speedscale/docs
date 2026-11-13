@@ -84,13 +84,16 @@ In analysis mode the transform returns the recorded value unchanged and never ca
 |---|---|---|---|
 | `tokenUrl` | **Yes** | none | The token endpoint. Must be an absolute `http` or `https` URL with a host. |
 | `clientId` | **Yes** | none | The OAuth client ID. A literal value or a `${{secret:name/key}}` reference. |
-| `clientSecret` | **Yes** | none | The OAuth client secret. A literal value or a `${{secret:name/key}}` reference. Use a secret reference anywhere other than a short local test. |
+| `clientSecret` | **Yes**, unless `clientAssertion` is set | none | The OAuth client secret. A literal value or a `${{secret:name/key}}` reference. Use a secret reference anywhere other than a short local test. |
+| `clientAssertion` | **Yes**, unless `clientSecret` is set | none | A client assertion sent in place of the client secret, for example a cloud workload identity token fetched with `fetches`. See [Chain token requests](./token_fetch.md#chain-token-requests). Requires v2.5.1322 or later. |
 | `scope` | No | not sent | Sent as the `scope` form field exactly as written, for example `api://orders-api/.default`. Separate several scopes with spaces. |
 | `tokenPath` | No | `access_token` | JSON path of the token in the token response, for example `data.token` for a nested field. |
 | `prefix` | No | `Bearer ` | Written before the token. When set, only values that already start with it are replaced. Set it to an empty string to replace every non-empty value with the bare token. |
 | `name` | No | none | A label for people reading the config. The transform ignores it and never sends it. |
 
-Chain initialization fails with `tokenUrl is required`, `tokenUrl must be an absolute http or https URL, got "..."`, `clientId is required` or `clientSecret is required` when a required field is missing or invalid.
+`clientAssertionType` and `fetches` work as described for [`token_fetch`](./token_fetch.md#configuration).
+
+Chain initialization fails with `tokenUrl is required`, `tokenUrl must be an absolute http or https URL, got "..."`, `clientId is required`, `clientSecret or clientAssertion is required` or `set clientSecret or clientAssertion, not both` when a required field is missing or invalid.
 
 ## Caching and Refresh
 

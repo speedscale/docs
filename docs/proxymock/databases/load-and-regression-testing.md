@@ -18,6 +18,10 @@ Every step works two ways. You can ask an AI coding assistant that has the [prox
 
 Pick your database once in any of the tabs below and every section follows. The MySQL steps also work for MariaDB, which speaks the MySQL protocol. The MySQL replay has been tested against MySQL 8.0, MySQL 8.4 and MariaDB 11.4.
 
+[Watch database replay and testing on YouTube](https://www.youtube.com/watch?v=Q4sIn21pfQc).
+
+<iframe title="Database replay and testing" src="https://www.youtube.com/embed/Q4sIn21pfQc?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Before you start {#prerequisites}
 
 - proxymock installed. See [installation](../getting-started/installation.md).
