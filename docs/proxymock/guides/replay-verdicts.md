@@ -8,6 +8,10 @@ sidebar_position: 10
 
 A replay can finish sending requests while the application returns the wrong result. Standard replay writes `replay-verdict.json` in its output directory so you can inspect the overall verdict and each request's result. Choose a gate explicitly when a mismatch should fail CI.
 
+[Watch replay verdicts on YouTube](https://www.youtube.com/watch?v=0yborMZ4kr4).
+
+<iframe title="Replay verdicts" src="https://www.youtube.com/embed/0yborMZ4kr4?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 Run the examples from your application directory, with the application listening at `http://localhost:8080`. Replace `recorded-example` with a recording that contains inbound requests for it.
 
 ## Save a baseline
@@ -71,13 +75,28 @@ proxymock replay \
   --test-against http://localhost:8080 \
   --require-blueprint 'Field Transforms' \
   --fail-if 'requests.failed > 0' \
+  --fail-if 'requests.response-match-pct < 100' \
   --fail-if 'latency.p99 > 500'
 ```
+
+`requests.response-match-pct` is the share of the verdict's pairs that matched, so it fails the run when a response body changes. `requests.result-match-pct` compares status codes only, so a body change does not move it.
+
+To check the calls your service makes to its dependencies, add an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion to the test config and pass the directory `proxymock mock` wrote while it served the replay:
+
+```shell
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8080 \
+  --test-config outbound \
+  --mocks-out ./proxymock/results/mocked-1
+```
+
+A difference from the recorded calls fails the goal verdict and exits `1`, and the differences are written to `http-output-diff.json` in the replay output. `proxymock replay score <replay-dir> --mocks-out <dir>` scores a finished replay the same way.
 
 Use the actual blueprint name. A violated `--fail-if` condition exits `1`. These metrics and blueprint checks answer different questions from the per-pair verdict; requiring a blueprint proves that at least one of its chains ran, not that the response was correct.
 
 ## Output and load-mode limits
 
-Baseline, fix-verification, and [semantic comparison](./semantic-comparison.md) need response output. They cannot run with `--no-out` or `--load-test`. High-throughput load mode also omits `requests.result-match-pct` and cannot verify blueprint activity.
+Baseline, fix-verification, and [semantic comparison](./semantic-comparison.md) need response output. They cannot run with `--no-out` or `--load-test`. High-throughput load mode also omits `requests.result-match-pct` and `requests.response-match-pct` and cannot verify blueprint activity. `--no-out` omits `requests.response-match-pct` too.
 
 Keep CI artifacts from failed runs so you can inspect the request, observed response, and verdict together. Do not use the global `--exit-zero` option in a job that relies on exit codes. See the [CI/CD guide](./cicd.md) for pipeline setup and the [CLI reference](/reference/proxymock-cli-reference.md#replay) for options.

@@ -8,7 +8,7 @@ sidebar_position: 8
 This document describes the configuration options available for the Speedscale Operator Helm [chart](https://github.com/speedscale/operator-helm). The Speedscale Operator is a Kubernetes operator that watches for deployments and can inject proxies to capture traffic or set up isolation test environments.
 
 :::info Alternative manifest workflows
-If cluster policy prevents direct Helm deployments, render the chart to plain Kubernetes YAML with `helm template`, then manage that output directly or as a Kustomize base. The [GitOps quick-start example](/getting-started/quick-start#install-speedscale-operator-optional) shows this workflow.
+If cluster policy prevents direct Helm deployments, render the chart to plain Kubernetes YAML with `helm template`, then manage that output directly or as a Kustomize base. The [rendered-manifest installation example](/getting-started/installation/install/kubernetes-operator/?method=gitops#install-method) shows this workflow.
 
 If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:support@speedscale.com), ask in the [Speedscale Community](https://slack.speedscale.com), or reach out to your account team for help creating Kustomize-compatible or other custom manifests.
 :::
@@ -35,6 +35,7 @@ If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:supp
   - [Network Configuration](#network-configuration)
   - [Security Settings](#security-settings)
   - [Advanced Configuration](#advanced-configuration)
+    - [Dynatrace Injection Exclusions](#dynatrace-injection-exclusions)
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
 
@@ -46,18 +47,7 @@ If Helm tooling is prohibited entirely, [contact Speedscale Support](mailto:supp
 
 ## Quick Start
 
-```bash
-# Add the Speedscale Helm repository
-helm repo add speedscale https://speedscale.github.io/operator-helm/
-helm repo update
-
-# Install the chart with required values
-helm install speedscale-operator speedscale/speedscale-operator \
-  -n speedscale \
-  --create-namespace \
-  --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-  --set clusterName=<YOUR-CLUSTER-NAME>
-```
+Follow the [standard Kubernetes operator installation](/getting-started/installation/install/kubernetes-operator/) for credentials, method selection, and verification. To compare cluster-scoped and namespace-scoped modes, see [Kubernetes installation options](/getting-started/installation/install/kubernetes/).
 
 ## Namespaced mode
 
@@ -411,6 +401,7 @@ Each returned image should be `artifactory.example.com/approved/redis:7.4`. If a
 | `secretAccessList` | list | `[]` | Restricts the operator to the named Kubernetes Secrets plus required Speedscale internal Secrets. An empty list permits access to all Secrets in a managed namespace. |
 | `createJKS` | bool | `true` | Controls the pre-install job that creates the `speedscale-jks` Secret using the selected Java runtime. Supports non-root execution and a read-only root filesystem. Disable when JKS is unnecessary or the Secret is pre-provisioned. |
 | `disableSidecarSmartReverseDNS` | bool | `false` | Controls whether the sidecar should disable the smart DNS lookup feature (requires `NET_ADMIN` capability). |
+| `replayComponents.generator.serviceAccountSelectors` | list | `[]` | Label selectors for the existing service accounts a test config's `cluster.generatorServiceAccount` may run the generator as. An account matching any selector is allowed; an empty list allows none. A namespaced install uses `namespaced.replayRuntime.generatorServiceAccountSelectors`. See [Generator service account](/guides/replay/generator-service-account). |
 
 See [Kubernetes Security Requirements](/security/kubernetes-permissions) for the operator RBAC, admission webhook, replay certificate, and eBPF runtime permission summary.
 
@@ -419,11 +410,28 @@ See [Kubernetes Security Requirements](/security/kubernetes-permissions) for the
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `deployDemo` | string | `"java"` | Deploy a demo app at startup. Valid values: `"java"` or `""` (empty string to disable). |
-| `globalAnnotations` | object | `{}` | Set of annotations to be applied to all Speedscale-related deployments, services, jobs, pods, etc. |
+| `globalAnnotations` | object | `{}` | Annotations for Speedscale resources, including pod templates and operator-created replay infrastructure. Use string values. See [Dynatrace injection exclusions](#dynatrace-injection-exclusions). |
 | `globalLabels` | object | `{}` | Set of labels to be applied to all Speedscale-related deployments, services, jobs, pods, etc. |
 | `affinity` | object | `{}` | Full affinity object for pod scheduling. See [Kubernetes affinity documentation](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity). |
 | `tolerations` | list | `[]` | List of tolerations for pod scheduling. See [Kubernetes tolerations documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/). |
 | `nodeSelector` | object | `{}` | Node selector object for pod scheduling. See [Kubernetes node selector documentation](https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/). |
+
+#### Dynatrace Injection Exclusions
+
+To exclude Speedscale infrastructure from Dynatrace injection, merge this entry into the existing Speedscale Operator chart values:
+
+```yaml
+globalAnnotations:
+  dynatrace.com/inject: "false"
+```
+
+Preserve other annotations and keep `"false"` quoted. Apply the values through the Helm, GitOps, or manifest workflow that manages your installation.
+
+The chart uses `globalAnnotations` on Speedscale resources and passes the map to the operator as `GLOBAL_ANNOTATIONS` in its ConfigMap. The operator uses that configuration for replay infrastructure it creates in application namespaces, such as generators and collectors. These resources are created at runtime and are absent from `helm template` output. Adding an annotation only to the operator Deployment does not configure those future pods.
+
+For rendered-manifest installations, regenerate with the chart values above so both pod annotations and the operator ConfigMap are updated. Restart the operator to load the configuration before starting a new replay. Keep application workloads selected for Dynatrace monitoring.
+
+Dynatrace injection exclusions are separate from `sidecar.ignore_*`, which filters traffic captured by the Speedscale sidecar. For dedicated-namespace exclusions, rollout steps, and pod verification, follow the [Dynatrace guide](/guides/integrations/export/dynatrace#optional-exclude-speedscale-pods-from-dynatrace-injection).
 
 ### eBPF Traffic Collection
 

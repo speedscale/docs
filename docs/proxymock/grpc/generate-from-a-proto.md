@@ -38,6 +38,8 @@ Processing RPC: /fraud.v1.FraudChecker/CheckTransaction
 | `--tag-filter` | Not available: a `.proto` has no tags. Use `--include-paths` instead. |
 | `--examples-only` | No effect: a `.proto` declares no examples, so every message is made up from its type. |
 
+The spec can also be a directory of `.proto` files, a zip of them, or a compiled descriptor set (`.binpb`, `.pb`, `.protoset` or `.desc`, from `buf build -o` or `protoc --include_imports --descriptor_set_out`). Every service in a directory, zip or descriptor set is used, while a single `.proto` file contributes only its own services.
+
 When the `.proto` imports another file, pass the directory the import path is relative to:
 
 ```bash
@@ -47,7 +49,7 @@ proxymock generate -I ./proto --out ./proxymock/candidates-orders ./proto/orders
 Without it, generate stops and names the flag:
 
 ```
-generation failed: parse protobuf spec "./proto/orders/v1/orders.proto" (add import roots with --proto-path): orders.proto:3:8: open .../proto/orders/v1/common/v1/money.proto: no such file or directory
+generation failed: parse protobuf spec "./proto/orders/v1/orders.proto": compile protobuf schema ./proto/orders/v1/orders.proto (add the imported file to the schema, or its directory with --proto-path): orders.proto:3:8: could not resolve path "common/v1/money.proto": file does not exist
 ```
 
 ## What the generated calls contain

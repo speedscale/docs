@@ -1,7 +1,22 @@
 ---
-description: "Select your environment from the main navigation to access supported enterprise distributions in Speedscale for effective API testing and traffic replay."
+title: Install Speedscale
+description: "Choose a command-line tool or deployment environment to install Speedscale."
 sidebar_position: 0
 ---
-# Select Environment
+# Install Speedscale
 
-For CLI installation, [choose proxymock or speedctl](../../command-line-tools.md) and follow the matching install guide. For Kubernetes setup, see the [Quick Start](../../quick-start.md). The environment pages in this section cover platform-specific installation requirements.
+Choose the setup that matches where you want to work:
+
+| Environment | Start here |
+|---|---|
+| Local development with proxymock | [Install proxymock CLI](../../../proxymock/getting-started/installation.md) |
+| Kubernetes | [Choose a Kubernetes installation](./kubernetes.md) |
+| Docker | [Docker](./docker.md) |
+| AWS ECS or Fargate | [AWS ECS/Fargate](./ecs.md) |
+| Virtual machines | [Virtual Machines](./vm.md) |
+| AWS Elastic Beanstalk | [AWS Elastic Beanstalk](./beanstalk.md) |
+| Google Cloud Run | [Google Cloud Run](./cloudrun.md) |
+
+After installing on Kubernetes, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes) to select workloads and verify captured traffic.
+
+For platform setup and cloud resource automation, [install speedctl](./cli.md). See [Command-line tools](../../command-line-tools.md) for help choosing between speedctl and proxymock.

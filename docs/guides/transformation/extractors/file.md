@@ -19,7 +19,7 @@ sidebar_position: 2
 ```
 
 - **filename** - the location of the file. Speedscale recognizes three forms:
-  - an absolute path on the local file system (e.g. `/var/secrets/myssecret.key`)
+  - an absolute path on the local file system (e.g. `/var/secrets/myssecret.key`). A local path is read only where the replay runs. A transform preview in the dashboard shows `will be loaded at runtime` instead, and a runtime variable that reads a local path cannot be previewed in Speedscale cloud.
   - `s3://<name>` to pull from [user data](../../../reference/glossary.md#user-data) in the Speedscale cloud
   - `dataframe:<key>` — a **portable** reference that resolves to user data in the cloud and to a local workspace file under `proxymock/dataframes/` when proxymock runs the replay. Use this form whenever you want the same transform to work in both environments without editing the filename.
 

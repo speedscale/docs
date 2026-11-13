@@ -24,25 +24,22 @@ sequenceDiagram
 
 Many traffic replay efforts stall at testing basic GETs because the environment can't tolerate change. That is because most service mocks are hard coded to return one response per request and do not attempt to interpret the logic as an actual backend system would. Fortunately, Speedscale has a set of algorithms and techniques that eliminate many of these headaches. It's easiest to think of Speedscale's mocks as a state machine that automatically changes shape based on how the reach application behaved. It's not necessary for Speedscale to have a complete copy of the database in order to build a good quality service mock, it simply needs to understand the "flow" of transactions and build a state machine around those flows. Here's a trivial state machine that Speedscale might build for the example above. Keep in mind that Speedscale can also use stochastic or other methods beyond a simple rules engine, this is just a straightforward example.
 
-```mermaid
----
-title: Automated Mock
----
-flowchart LR
-   start@{ shape: small-circle }
-   known@{ shape: diamond, label: "known?" }
-   seen-before?
-   send-empty
-   send-one-user
-   stop@{ shape: framed-circle }
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '750px'}} tabIndex={0} role="region" aria-label="Recorded user state transitions">
 
-   start-->known
-   known-->|yes|seen-before?
-   seen-before?-->|no|send-empty
-   seen-before?-->|yes|send-one-user
-   send-empty-->stop
-   send-one-user-->stop
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> NoUsers
+    NoUsers --> NoUsers: request_users / empty response
+    NoUsers --> OneUser: insert_user
+    OneUser --> OneUser: request_users / one-user response
+    note right of NoUsers
+        Example recorded flow only.
+        Unknown-request policy is not specified.
+    end note
 ```
+
+</div>
 
 ## Challenges of Change
 

@@ -27,25 +27,35 @@ Some protocols have no direct JSON-compatible mapping and so the formats are inv
 
 ## gRPC
 
-gRPC is sent over HTTP 1.1 or 2 as a binary wire protocol. That means there is an HTTP request containing the usual headers and trailers wrapped around the gRPC binary payload. The binary [payload](https://protobuf.dev/programming-guides/encoding/) itself must be decoded and is converted into a JSON format that looks like this:
+gRPC is sent over HTTP/1.1 or HTTP/2 as a binary wire protocol: an HTTP request with the usual headers and trailers, wrapped around one or more binary protobuf messages. Protobuf bodies sent over plain HTTP with a content type such as `application/x-protobuf` are handled the same way. Speedscale decodes each [message](https://protobuf.dev/programming-guides/encoding/) without needing your `.proto` file and offers two views of it in the traffic viewer's Body tab.
+
+**Protoscope** is the default. It is the readable text form of the protobuf wire format from the [protobuf project](https://github.com/protocolbuffers/protoscope), and it shows every byte of the message:
+
+```
+1: {"acct-1001"}
+2: {"user-7"}
+3: 50.5   # 0x4049400000000000i64
+4: {"DEPOSIT"}
+5: {"5411"}
+```
+
+Each line starts with the field number from the `.proto`. Text fields and nested messages are in `{ }`, whole numbers are varints (integers, booleans and enums), fixed-width values are shown as the number they most likely hold with their raw bits in a `#` comment, and anything else is hex in backticks. A stream shows one block per message, headed `# message 1 of 3` and so on. Protoscope is for reading only.
+
+**Wire JSON** is the intermediate JSON that transforms, extractors and edits work on. Each key is `<field number>:<wire type>`:
 
 ```json
 {
-  "fieldsMap": {
-    "1": {
-      "fields": [
-        {
-          "asString": "4",
-          "id": "1",
-          "type": "PROTOBUF_FIELD_TYPE_LENGTH_DELIM"
-        }
-      ]
-    }
-  }
+  "1:LEN": "acct-1001",
+  "2:LEN": "user-7",
+  "3:I64": 4632304060471443456,
+  "4:LEN": "DEPOSIT",
+  "5:LEN": "5411"
 }
 ```
 
-Each `fieldsMap` is a hash map of fields sent over gRPC. To modify a field, modify the `asString` key with the new value. It is inadvisable to modify the `type` or `id` unless you are very familiar with the encoding format. Speedscale does not currently compile and import `.proto` files but the field numbers in this JSON should match to the protobuf definitions.
+`LEN` holds strings, bytes and nested messages, `VARINT` holds integers, booleans and enums, and `I32` and `I64` hold fixed-width values as their raw bits, which is why the `double` 50.5 reads as `4632304060471443456` here. To change a field, change its value and keep the key. Speedscale re-encodes the message when it replays or mocks the call. The transform views always use Wire JSON.
+
+Switch between the two with the Protoscope / Wire JSON control above the body. The field numbers in both views match the field numbers in your `.proto`. Upload the `.proto` and a third view, **Named**, shows the body with your field and enum names; see [Read protobuf bodies with your schemas](./protobuf-schemas.md). [proxymock](../../proxymock/grpc/index.md#read-a-body-as-protoscope) shows the same views for local recordings.
 
 ## GraphQL
 

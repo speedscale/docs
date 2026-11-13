@@ -85,6 +85,8 @@ The [RRPair](/reference/glossary.md#rrpair) files from the `--in` directory will
 
 For complex setups with multiple services, run **proxymock** alongside your application containers using [Docker Compose](https://docs.docker.com/compose/).
 
+On Linux, and on macOS with Colima or Lima, set `user:` on the proxymock service to your own user and group IDs, as shown in the examples below. The config file and CA key in `~/.speedscale` are readable by your user only, and these engines show bind-mounted files to the container with their real owner. Docker Desktop on macOS and Windows does not need it.
+
 <Tabs>
 <TabItem value="record" label="Record">
 
@@ -100,6 +102,8 @@ services:
   # proxymock app container
   proxymock:
     image: gcr.io/speedscale/proxymock:latest
+    # on Linux, Colima or Lima, uncomment and set your user and group IDs (`id -u` and `id -g`) so proxymock can read ~/.speedscale
+    # user: "1000:1000"
     command:
       - record
       # inbound requests to proxymock port 4143 will be recorded and forwarded to this port
@@ -171,6 +175,8 @@ services:
   # proxymock app container
   proxymock:
     image: gcr.io/speedscale/proxymock:latest
+    # on Linux, Colima or Lima, uncomment and set your user and group IDs (`id -u` and `id -g`) so proxymock can read ~/.speedscale
+    # user: "1000:1000"
     command:
       - mock
       - --in
@@ -241,6 +247,8 @@ services:
   # proxymock app container
   proxymock:
     image: gcr.io/speedscale/proxymock:latest
+    # on Linux, Colima or Lima, uncomment and set your user and group IDs (`id -u` and `id -g`) so proxymock can read ~/.speedscale
+    # user: "1000:1000"
     command:
       - replay
       # read RRPair files from this directory

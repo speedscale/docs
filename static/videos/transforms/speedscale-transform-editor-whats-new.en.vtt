@@ -1,0 +1,110 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.700
+If you used to edit transforms from the
+Traffic tab, open Prepare on your
+
+00:00:04.700 --> 00:00:05.280
+snapshot.
+
+00:00:05.280 --> 00:00:08.400
+Let's take the same rule through both
+editors.
+
+00:00:08.400 --> 00:00:13.840
+This one swaps the order request's routing
+mode for a sandbox value before replay.
+
+00:00:13.840 --> 00:00:18.480
+In the old drawer, Subset told you which
+requests the rule applied to.
+
+00:00:18.480 --> 00:00:23.040
+Source pointed at the request body, and
+Transform held the steps.
+
+00:00:23.040 --> 00:00:27.672
+You read the chain string at the top and
+opened the individual controls to check
+
+00:00:27.672 --> 00:00:29.120
+what each step was doing.
+
+00:00:29.120 --> 00:00:34.615
+In Prepare, choose Tests for requests
+Speedscale sends to your app, or Mocks for
+
+00:00:34.615 --> 00:00:35.920
+dependency traffic.
+
+00:00:35.920 --> 00:00:39.680
+Open a rule under In this snapshot and
+read down the middle.
+
+00:00:39.680 --> 00:00:44.160
+Runs on is the old subset. Pull from is
+the old source.
+
+00:00:44.160 --> 00:00:47.840
+Then come the numbered steps and where the
+result gets written back.
+
+00:00:47.840 --> 00:00:52.640
+Click a step to edit it in place. Use a
+plus between steps to insert one
+
+00:00:52.640 --> 00:00:58.160
+or drag a step to change the order. Here,
+JSON Path has to come first.
+
+00:00:58.160 --> 00:01:02.080
+It selects the routing mode so Constant
+can replace that one value.
+
+00:01:02.700 --> 00:01:04.700
+Pick a recorded request on the right.
+
+00:01:05.380 --> 00:01:10.628
+The preview shows the whole body coming
+in, the original mode after JSON Path, and
+
+00:01:10.628 --> 00:01:12.100
+sandbox after Constant.
+
+00:01:12.900 --> 00:01:17.807
+At the bottom, Replay uses shows the full
+body again, with sandbox in the right
+
+00:01:17.807 --> 00:01:18.180
+field.
+
+00:01:18.800 --> 00:01:22.620
+Click another request to check the same
+rule against a different sample.
+
+00:01:22.620 --> 00:01:28.620
+Suggestions that used to live in Tuning or
+Recommendations are now under To review.
+
+00:01:28.620 --> 00:01:32.620
+You can see what a suggestion does to a
+sample before you accept it.
+
+00:01:32.620 --> 00:01:34.620
+Accept adds it to your draft.
+
+00:01:34.620 --> 00:01:38.620
+Save and reanalyze applies the staged
+changes together.
+
+00:01:38.620 --> 00:01:42.620
+To double-check a saved change, go back to
+Traffic and open the request.
+
+00:01:42.620 --> 00:01:47.620
+Compare shows the recording beside the
+result of the saved transforms.
+
+00:01:47.620 --> 00:01:51.620
+If you're still editing, use the preview
+in Prepare to see your draft.

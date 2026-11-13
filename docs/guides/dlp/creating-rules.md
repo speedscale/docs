@@ -70,9 +70,9 @@ Some rules are protected:
 
 To create a rule from a single recommendation:
 
-1. **Open Recommendations**: Navigate to the Recommendations tab in your snapshot
-2. **Select Recommendation**: Click on the recommendation you want to use
-3. **Click "Apply"**: Click the "Apply" or "Add to DLP Rule" button
+1. **Open Prepare**: Select the Prepare tab in your snapshot
+2. **Select Recommendation**: Select the suggestion you want to use under **To review**, then accept it
+3. **Add it to a rule**: Open the transform's menu and select **Add to DLP rule**
 4. **Select or Create Rule**: 
    - Choose existing rule to add to, or
    - Create a new rule with a unique ID

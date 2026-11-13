@@ -3,7 +3,7 @@ description: "Explore the Speedscale Traffic View to filter and replicate traffi
 sidebar_position: 2
 ---
 
-import ViewTagsImg from './filter/snapshot-tags.png'
+import ViewTagsImg from './filter/snapshot-actions.jpg'
 import RawSizeImg from './filter/raw-size.png'
 
 # Traffic View
@@ -43,7 +43,7 @@ As you use cases get more advanced you can explore more complex filters, but the
 
 Editing simple filters can be accomplished in different three ways:
 
-1. *Filter selector dialog* - To initiate this workflow click on the Search bar at the top. From there, you can add and remove filter criteria with autocomplete.
+1. *Filter editor* - Click the **Filters** bar at the top to open the editor. Click a single filter in the bar to open the editor on that filter. See [The filter editor](#filter-editor) below.
 
 ![ui_filters](./filter/filters.png)
 
@@ -55,15 +55,29 @@ Editing simple filters can be accomplished in different three ways:
 
 ![shortcuts](./filter/shortcuts.png)
 
+## The filter editor <a href="#filter-editor" id="filter-editor"></a>
+
+The filter editor reads like a sentence: "Requests in the selected time range that match all of these", followed by one row per filter. The same editor is used everywhere you pick a subset of traffic, including snapshots, reports, filter rules, transform chains and test configs.
+
+Each row is one field, a comparison and one or more values. Add a value by typing it and pressing Enter, or by picking a suggestion. Several values in one row read as "Service is orders or payments": "is" matches any of the values, and "is not" or "doesn't contain" exclude all of them. For "contains", click the word between two values to switch between "or" and "and".
+
+Click **Add a filter** to pick a field. The field list is searchable and grouped by where the value comes from: where the request ran, the request, the response, identity, replay and testing, and database. Each field offers only the comparisons it supports. For example, Service can only be matched with "is", and Full Text can't be negated.
+
+The word on the left between two rows says how they combine. On the Traffic page every row has to match, because the page also applies its time range. To match "this or that", click **Add an any-of group** and add the alternatives to the group, for example "Response Status is 500" or "Duration is more than 2000 ms". A group has its own all or any choice. Where nothing else applies, such as a filter rule, a test config scope or a chaos rule scope, the top line also lets you choose between all and any, and clicking the word between two rows switches it.
+
+Transform chains, runtime variables and DLP rules store a flat list of filters that all have to match. Their editor has no groups, and an "is" row takes one value.
+
+Below the rows, **Reads as** describes the whole filter in plain language. Rows that are still missing a value are left out until you finish them. **Cancel** discards your changes, and **Apply** applies them. Removing every filter and clicking **Apply** shows all traffic again.
+
 ## Complex Filters <a href="#complex-filters" id="complex-filters"></a>
 
-Certain complex filter criteria are permitted when creating a snapshot but not in the Speedscale UI. Generally this involves deep payload filtering like `requestBodyJson` or nested conditional statements. These filters are not editable in the UI but can be edited directly as the filter query string. You may also notice complex JSON representations of filters hidden in the UI. This is the internal Speedscale filter presentation and is not typically edited by users. If you're curious about complex filters you can learn more in this [guide](../advanced-filters.md).
+Certain complex filter criteria are permitted when creating a snapshot but not in the Speedscale UI. Generally this involves whole-document payload comparisons like `requestBodyJson`. Request and response body filters on a single key, in JSON, XML, XPath or SOAP form, are available in the filter editor as **Request Body** and **Response Body**. Edit the remaining criteria directly in the filter query string. You may also notice complex JSON representations of filters hidden in the UI. This is the internal Speedscale filter presentation and is not typically edited by users. If you're curious about complex filters you can learn more in this [guide](../advanced-filters.md).
 
 ## Saving Traffic <a href="#saving" id="saving"></a>
 
 Clicking the Save button at the top of the Traffic Viewer will cause the current view to be stored for future use. That could mean it's a section of traffic you want to replay or simply view later. Saving a snapshot does not cause additional ingest usage on your account. You should feel free to save snapshots without concern.
 
-Traffic filters can also be saved for use as forwarder filters or snapshot criteria by clicking the save button inside the filter editor dialog. The Traffic Viewer also employs URL deep links which means you can copy/paste the URL bar in your browser to share a view.
+Traffic filters can also be saved for use as forwarder filters or snapshot criteria by clicking **Save as filter rule** in the filter editor. A filter rule can compare only one field inside each group, so the button is disabled while a group mixes fields. The Traffic Viewer also employs URL deep links which means you can copy/paste the URL bar in your browser to share a view.
 
 ## Resending Requests
 
@@ -95,10 +109,12 @@ Snapshots do not have a fixed size limit but extremely large snapshots can time 
 Speedscale cloud is designed to horizontally scale analysis jobs but all systems have configuration limits. If your snapshot creation is timing out, follow the procedure below to chop it down to a more manageable size. Generally speaking, snapshot size has no limit but practically speaking snapshots over a few gigabytes become unmanageable simply because files that large take time to move. To handle snapshot creation timeouts you can follow the following procedure:
 
 1. Save a snapshot for a minimal amount of time like 15 minutes (the default)
-2. Once this is complete, open the snapshot tags and look for the raw file size.
+2. Once this is complete, open the snapshot's **More actions** menu and choose **Inspect data > View tags**. Look for the raw file size.
 
-<img src={ViewTagsImg} height="300px" alt="Alt text" />
-<img src={RawSizeImg} height="300px" alt="Alt text" />
+<img src={ViewTagsImg} width="248" alt="Snapshot actions menu with View tags under Inspect data" />
+
+<a href={ViewTagsImg}>Open the action menu image full size</a>
+<img src={RawSizeImg} height="300px" alt="The raw-size snapshot tag used for the size estimate in this example" />
 
 3. Let's assume we want a 1 Gig snapshot since that is fairly easy to work with. We can do some basic multiplication to see that the existing file is roughly 10M and so if we captured 100x as much traffic that would be roughly 1GB. This assumes traffic size is fairly uniform which may or may not be reasonable for your application. Some apps have mid-day spikes so your mileage may vary.
 4. Run the same snapshot with 10x the timeframe (150 minutes or roughly 2.5 hours)

@@ -101,3 +101,28 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   aspect-ratio: 16 / 9;
   margin: 1rem auto;
 }
+
+.docs-diagram-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-block: 1rem;
+}
+
+.docs-diagram-scroll > p {
+  margin: 0;
+}
+
+.docs-diagram-scroll img,
+.docs-diagram-scroll svg {
+  display: block;
+  width: 100%;
+  min-width: var(--docs-diagram-width, 800px);
+  max-width: none !important;
+  height: auto;
+}
+
+.docs-diagram-scroll:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}

@@ -21,13 +21,9 @@ The system automatically analyzes snapshots with `REDACTED-` tokens and generate
 
 ### Reviewing Recommendations
 
-1. **Open Snapshot**: Open a snapshot containing `REDACTED-` tokens
-2. **View Recommendations**: Navigate to the test data recommendations section
-3. **Review Details**: Each recommendation shows:
-   - **Pattern Type**: Type of data to generate (email, SSN, credit card, etc.)
-   - **Location**: JSONPath where the token appears
-   - **Format**: Expected format of the generated data
-   - **Impact**: Number of tokens affected
+Open the snapshot's **Prepare** tab and select a test-data suggestion under **To review**. Check the chain preview and several matching requests to confirm that the `REDACTED-` token becomes a suitable test value. A redaction suggestion removes sensitive values; it does not demonstrate test-data generation.
+
+See the illustrated [recommendation review workflow](../transformation/recommendations.md) for the shared Prepare layout.
 
 ### Selecting Recommendations
 
@@ -44,21 +40,7 @@ Available test data patterns include:
 
 ### Applying Recommendations
 
-#### Individual Application
-
-1. **Select Recommendation**: Choose a recommendation to apply
-2. **Review Details**: Review the recommendation details and configuration
-3. **Configure Test Data** (optional): Customize data format or generation rules if needed. Individual recommendations can be edited during the application process or after the fact by modifying the snapshot used for testing.
-4. **Apply**: Apply the recommendation to generate test data
-5. **Verify**: Verify that test data has been generated correctly
-
-#### Bulk Application
-
-1. **Select Multiple**: Select multiple recommendations using checkboxes
-2. **Bulk Actions**: Use the bulk action menu
-3. **Configure** (optional): Configure test data settings for all selected recommendations
-4. **Apply All**: Apply all selected recommendations at once
-5. **Review**: Review the applied recommendations and generated test data
+Select **Accept** to stage the suggestion, then **Save and reanalyze** to save the changes. Inspect the transformed requests to verify the generated values before replaying. Use **Ignore** for an unsuitable suggestion or **Skip** to leave it for later. See [Working through recommendations](../transformation/recommendations.md#working-through-recommendations-in-the-prepare-tab).
 
 ## Creating Recommendations Manually
 
@@ -66,7 +48,7 @@ If automatic recommendations don't meet your needs, or you want to create test d
 
 ### Manual Recommendation Process
 
-1. **Identify REDACTED Tokens**: Open your snapshot and either open the Recommendations tab to view automatic recommendations, or edit the snapshot Transform Chains manually to pinpoint a data token. Note the JSONPath locations and field names where tokens appear.
+1. **Identify REDACTED Tokens**: Open your snapshot and open the Prepare tab, then either review the automatic recommendations under **To review**, or edit the snapshot transform chains manually to pinpoint a data token. Note the JSONPath locations and field names where tokens appear.
 
 2. **Determine Test Data Type**: Based on the field names, context, and your knowledge of the data structure, determine what type of test data should replace each token.
 

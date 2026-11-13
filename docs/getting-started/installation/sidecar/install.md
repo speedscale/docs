@@ -1,11 +1,17 @@
 ---
-title: Sidecar
-description: "Capture network traffic for Kubernetes services using the Speedscale sidecar proxy to enhance API testing and traffic replay capabilities."
+title: Legacy sidecar capture fallback
+description: "Configure proxy sidecar capture for existing installations and environments that cannot use the standard eBPF capture path."
 sidebar_position: 1
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+
+# Legacy sidecar capture fallback
+
+:::warning Environment-specific fallback
+For standard Kubernetes capture, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). Use this proxy sidecar workflow for existing sidecar deployments or environments that cannot meet the eBPF requirements. For a strict namespace-scoped installation without admission webhooks, use [namespaced sidecar capture](/guides/capture/sidecar-namespaced) instead of the annotation workflow below. Sidecar capture redirects application traffic and has its own permissions and TLS configuration.
+:::
 
 In Kubernetes, Speedscale employs a sidecar (also known as `goproxy`) to capture network level traffic for individual services. The sidecar uses two server sockets to capture traffic:
 
@@ -14,16 +20,32 @@ In Kubernetes, Speedscale employs a sidecar (also known as `goproxy`) to capture
 
 The sidecar or init container uses these ports "intercept" traffic transparently. Here is a basic diagram that shows a client making a call to a service under test, and that service makes subsequent calls to other backend systems. Of course some calls may use an http port like 80 or 8080 (or pick your favorite port), other times the service may use https on port 443 and be using TLS traffic.
 
-![tls](./tls/sidecar.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1400px'}} tabIndex={0} role="region" aria-label="Sidecar traffic routing">
+
+```mermaid
+flowchart LR
+    client["Client<br/>destination :443"]
+    subgraph workload["Existing sidecar deployment"]
+        inbound["Inbound proxy<br/>:4143"]
+        app["Application<br/>:443"]
+        outbound["Outbound proxy<br/>:4140"]
+        inbound -->|"original destination"| app
+        app -->|"redirected outbound"| outbound
+    end
+    client -->|"transparent redirect"| inbound
+    outbound -->|"HTTP :8080"| http["HTTP service"]
+    outbound -->|"HTTPS :443"| https["HTTPS service"]
+    classDef proxy fill:#fff1d7,stroke:#b97616,color:#5c3b0a,stroke-width:1.5px;
+    classDef app fill:#e5f3ed,stroke:#5d9480,color:#204c3e,stroke-width:1.5px;
+    class inbound,outbound proxy;
+    class app app;
+```
+
+</div>
 The Speedscale sidecar proxy, [goproxy](/reference/glossary.md#goproxy), is
 used to collect data from an existing application.  To capture
 [traffic](/reference/glossary.md#traffic), requests to and from your
 application will need to be routed through the proxy.
-
-:::warning Sidecar capture is deprecated
-For new Kubernetes installations, use the [eBPF collector](/reference/ebpf-traffic-collection). It runs as a DaemonSet, requires no application changes, and captures plaintext and supported TLS traffic without certificate management. Use the sidecar only for an existing deployment or when your workload or cluster does not meet the eBPF requirements.
-:::
-
 
 <iframe src="https://www.youtube.com/embed/0bdI6vhNavQ?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 

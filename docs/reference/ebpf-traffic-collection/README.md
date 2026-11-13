@@ -5,6 +5,8 @@ sidebar_position: 0
 
 # eBPF Traffic Collection
 
+For Kubernetes setup, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). Use this reference for detailed node requirements, runtime permissions, TLS support, and limitations.
+
 ## What is eBPF?
 
 eBPF (extended Berkeley Packet Filter) is a Linux kernel technology that allows running sandboxed programs in
@@ -138,26 +140,16 @@ For operator RBAC, admission webhook, and certificate requirements, see [Kuberne
 ## Installation
 
 :::info Helm-restricted environments
-The eBPF collector is installed as Kubernetes resources, so Helm does not need to run in the cluster. You can render the Speedscale chart to plain YAML with `helm template` and manage the result directly or as a Kustomize base; see the [GitOps installation example](/getting-started/quick-start#install-speedscale-operator-optional).
+The eBPF collector is installed as Kubernetes resources, so Helm does not need to run in the cluster. You can render the Speedscale chart to plain YAML with `helm template` and manage the result directly or as a Kustomize base; see the [GitOps installation example](/getting-started/installation/install/kubernetes-operator/?method=gitops#install-method).
 
 If your organization cannot use Helm tooling at all, [contact Speedscale Support](mailto:support@speedscale.com), ask in the [Speedscale Community](https://slack.speedscale.com), or reach out to your account team. We can help create Kustomize-compatible or other custom manifests with the required eBPF DaemonSet, RBAC, configuration, and cluster-specific settings.
 :::
 
 ### Enabling via Helm
 
-To enable eBPF capture, set `ebpf.enabled: true` in your Helm values and define at least one capture target:
+For a new deployment, follow the [standard operator installation](/getting-started/installation/install/kubernetes-operator/) first. Its Helm and manifest examples enable eBPF; the speedctl method links to the configuration below.
 
-```bash
-helm install speedscale-operator speedscale/speedscale-operator \
-  -n speedscale \
-  --create-namespace \
-  --set apiKey=<YOUR-SPEEDSCALE-API-KEY> \
-  --set clusterName=<YOUR-CLUSTER-NAME> \
-  --set ebpf.enabled=true \
-  -f ebpf-values.yaml
-```
-
-Where `ebpf-values.yaml` contains your capture targets:
+For an existing installation, add the following settings to the values file you keep for the release, preserving its API key reference, cluster name, and platform overrides. If you installed with `speedctl install` or `--set` flags and have no values file, export the current values first with `helm -n speedscale get values speedscale-operator -o yaml > current-values.yaml`:
 
 ```yaml
 ebpf:
@@ -174,57 +166,17 @@ ebpf:
               app: my-service
 ```
 
+Apply the updated values following [Upgrade flow](/reference/helm#upgrade-flow), using the edited values file with `helm upgrade`.
+
 You can define multiple targets to capture traffic from different services or namespaces. See the [Helm Values reference](../helm.md) for the full list of eBPF configuration options.
 
 ### Enabling via Annotation
 
-You can also enable eBPF capture on a per-workload basis using Kubernetes annotations. This is useful when you want to target specific deployments without modifying the global Helm configuration:
-
-```bash
-kubectl annotate deployment my-app -n my-namespace \
-  capture.speedscale.com/enabled="true"
-```
-
-To control which ports are captured via eBPF:
-
-```bash
-kubectl annotate deployment my-app -n my-namespace \
-  capture.speedscale.com/ignore-ports="8080,8443"
-```
-
-To disable eBPF capture on a workload:
-
-```bash
-kubectl annotate deployment my-app -n my-namespace \
-  capture.speedscale.com/enabled="false" --overwrite
-```
-
-:::tip
-Annotation-based capture requires that `ebpf.enabled: true` is set in the Helm chart. The annotation controls which workloads are targeted, but the nettap DaemonSet must be running on the node.
-:::
+Follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes#enable-capture-on-the-workload) to set workload annotations, configure port exclusions, add the Java Agent, disable capture, and preserve settings across redeploys. Annotation-based targeting requires the collector to be enabled and running.
 
 ### Verifying Installation
 
-After enabling eBPF, verify that the nettap DaemonSet is running:
-
-```bash
-kubectl -n speedscale get daemonset
-```
-
-You should see a `nettap` DaemonSet with pods running on each node:
-
-```
-NAME     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-nettap   3         3         3       3             3           <none>          5m
-```
-
-Check the nettap logs to verify probe attachment:
-
-```bash
-kubectl -n speedscale logs daemonset/nettap | grep "probe attached"
-```
-
-The logs will indicate which probe type was selected for each process (kprobe, uprobe, or JVMTI) and whether attachment succeeded.
+Use the [capture verification steps](/guides/capture/kubernetes#verify-capture) to check collector readiness on the workload's nodes, Java Agent injection, and complete captured request/response pairs.
 
 ## Limitations
 

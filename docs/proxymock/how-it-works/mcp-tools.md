@@ -8,7 +8,7 @@ sidebar_position: 7
 
 > **Generated file: do not edit by hand.** Run `proxymock mcp docs` to regenerate it from the MCP server's live tool registry.
 
-This page lists everything the **proxymock** MCP server exposes to an AI coding assistant. Install it with `proxymock mcp install` (see [Model Context Protocol](./mcp.md)). You rarely call these by name. Describe what you want and the assistant picks the right tool.
+This page lists everything the **proxymock** MCP server exposes to an AI coding assistant. Select your coding agent and installation scope in [Model Context Protocol](./mcp.md) before installing the MCP server or skills. You rarely call these by name. Describe what you want and the assistant picks the right tool.
 
 - **Tools** are actions the assistant invokes on its own (record, replay, analyze). Ones marked _read-only_ never change your files or services.
 - **Prompts** are workflows you trigger explicitly (often as slash commands).
@@ -25,6 +25,7 @@ _Read-only._
 List the starting points a repository offers for a first regression test when the service or a new endpoint has no recording yet. Read-only: scans the directory and, when Speedscale cloud is configured, lists the tenant's services. Never contacts a cluster.
 
 Ranks each source by how little the user must supply and how real its values are:
+
 - 0  existing proxymock recording (extend it with the new requests)
 - 1a Speedscale cloud capture of a matching service (pull_remote_recording)
 - 1b fresh capture in a Kubernetes cluster (offered, never auto-selected: confirm the context and workload with the user)
@@ -63,18 +64,30 @@ _No parameters._
 
 #### `mock_server_start`
 
-Start the mock server with RRPairs from the mock files in the directory.
+Start a standalone mock server using recorded RRPairs. Fails closed by default: unmatched calls return 404; set no-passthrough=false only when live upstream calls are intended. Returns ready only after health and child listener ownership checks. Java HTTPS: use the CLI app wrapper instead of a standalone JVM configured only with HTTP_PROXY/HTTPS_PROXY. Stop this MCP mock first, then run from the app repository:
+
+proxymock mock --in &lt;recording&gt; --no-passthrough --no-cert-install -- java -jar app.jar
+
+Or: proxymock mock --in &lt;recording&gt; --no-passthrough --no-cert-install -- env -u AWS_PROFILE AWS_ACCESS_KEY_ID=dummy java -jar app.jar
+
+Automated runs skip macOS keychain installation with --no-cert-install; configure client CA trust separately. The wrapper sets JVM http/https proxy properties and a CA truststore, preserving existing JAVA_TOOL_OPTIONS. Direct java/javac/jshell and supported env wrappers (assignments, -u NAME, --, nested env) are recognised; env -i/-S, shells, and opaque build launchers are not. Do not assume they inherit JVM setup.
+
+App wrapping, app readiness and database mappings are not supported by mock_server_start. Use CLI --proxy-out-port &lt;port&gt; --health-port &lt;port&gt; --app-health-endpoint `http://localhost:<app-port>/health` and --map &lt;listen-port&gt;=&lt;protocol&gt;://&lt;recorded-host&gt;:&lt;port&gt; as needed. Database clients must connect to the mapped local port. Proxy variables alone do not redirect every client. Keep --no-passthrough for isolated tests; use dummy credentials and verify HIT/MISS/PASSTHROUGH before claiming every dependency is mocked.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `in-directory` | array | **yes** | Directories containing the mock RRPair files. Directories are read recursively. Usually these directories end with 'proxymock' and are contained in the current repository. |
 | `chaos` | array | no | Repeatable '&lt;filter query&gt;:&lt;effect&gt;=&lt;value&gt;[,...]' specs, for example '(location REGEX "^/api/checkout"): latency=2s,percent=25'. The scope is the same filter query language as the search_traffic filter-query param ('*' matches everything). Effects are latency=2s\|3x\|100ms-2s, status=500\|503, connection=refuse\|reset\|stall\|drop, body=corrupt\|truncate[:&lt;bytes&gt;], header=Name:Value, no-response, plus the knobs percent=, seed=, sticky, max-latency=. Suffix an effect with '@&lt;percent&gt;' to give it its own probability. Prefer this over 'fault' for scoped, reproducible chaos. |
 | `fault` | array | no | Repeatable '&lt;regexp&gt;:action=value[,action=value...]' specs. Rate alone injects intermittent 503s; body=corrupt\|truncate\|truncate:&lt;bytes&gt; returns a well-formed shorter body; connection=refuse\|reset\|stall\|drop faults the socket (drop cuts the stream mid-response). |
+| `health-port` | string | no | Health port, 1-65535 (default: an available port). Must differ from the proxy port. |
 | `log-to` | string | no | File path to redirect all proxymock output to |
 | `mock-reload-interval` | string | no | Hot-reload check interval such as '1s'. Omit to disable. |
 | `mock-timing` | string | no | Response timing: 'none', 'recorded', or a multiplier such as '5x'. |
+| `no-passthrough` | boolean | no | Disable live upstream passthrough (default true). Keep true to mock all dependencies. |
 | `out-directory` | array | no | Directories to write new mock request/response files to. MATCH, NO_MATCH, AND PASSTHROUGH seen by mock server. If not provided, defaults to a timestamped directory. Unless otherwise instructed use 'proxymock/results/mocked-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. Keep it under 'results/': output written next to the recordings is read back as input on the next run. |
+| `proxy-out-port` | string | no | Outbound proxy port, 1-65535 (default 4140). |
 | `response-selection` | string | no | Duplicate-signature response selection: 'round-robin' (default) or weighted-by-copy-count 'random'. |
+| `startup-timeout` | string | no | Maximum wait for health and listener ownership, e.g. '30s' (default). Must be positive. |
 
 #### `mock_server_stop`
 
@@ -103,7 +116,7 @@ Set 'test_config' to run a test config authored in this workspace as the base co
 | `in-directory` | array | **yes** | Directories containing the test RRPair files. Directories are read recursively. Usually these directories end with 'proxymock' and are contained in the current repository. |
 | `baseline` | string | no | Output directory of an earlier replay of the same recording. Pairs are matched by refUuid, so the verdict can tell a mismatch that already existed there from a new one. |
 | `expect` | string | no | Regular expression selecting the recorded-error endpoints 'verify-fix' expects to be fixed. Requires 'verify-fix'. |
-| `fail-if` | array | no | Condition expressions that mark the replay as failed (exit code 1) when any is true, e.g. ["latency.p99 &gt; 100", "requests.result-match-pct &lt; 95.5"]. A single string is still accepted. Applies in addition to the test config's goals. Check the process logs to see whether a condition triggered. |
+| `fail-if` | array | no | Condition expressions that mark the replay as failed (exit code 1) when any is true, e.g. ["latency.p99 &gt; 100", "requests.result-match-pct &lt; 95.5"]. A single string is still accepted. 'requests.result-match-pct' compares status codes only; 'requests.response-match-pct' is the share of replayed pairs whose response matched, body included, as replay-verdict.json scores them, and is not reported in load test mode. Applies in addition to the test config's goals. Check the process logs to see whether a condition triggered. |
 | `fail-on-new-mismatch` | boolean | no | Exit 3 when a pair fails differently than it failed in 'baseline' (a pair that already failed there is exempt only from that same failure). Requires 'baseline'; cannot be combined with 'verify-fix'. |
 | `for` | string | no | How long to run the replay, as a Go duration string (e.g. '30s', '5m'). Traffic is replayed continuously, on a loop, until the duration expires. Mutually exclusive with 'times'. Omit both to replay each request exactly once. |
 | `ignore-body-changes` | boolean | no | Score only response status codes, not response bodies, when building the verdict. Cannot be combined with 'semantic'. |
@@ -181,17 +194,20 @@ Use this to spot-check one endpoint after a code or RRPair change without runnin
 Replay recorded traffic in a Kubernetes cluster THROUGH Speedscale cloud: the same request the Speedscale dashboard's replay wizard, 'speedctl infra replay' and 'proxymock cloud replay' send. The recordings are pushed to Speedscale cloud as a snapshot, then Speedscale cloud tells the inspector registered for the chosen cluster to run the replay there, and the report lands in Speedscale cloud with a dashboard link. Select the operation with 'action'.
 
 proxymock has three independent replay paths and this tool is the third. Choose by what the user has access to:
+
 1. On this machine: replay_traffic against a URL, with mock_server_start for the dependencies. No cluster and no login.
 2. In a cluster straight from the kubeconfig: the cluster tool's action='replay-start'. It stages the snapshot in the in-cluster forwarder with no Speedscale cloud round-trip (its 'snapshot_source' parameter decides whether it may fall back to a cloud push). Needs a kubeconfig, not a login.
 3. In a registered cluster via Speedscale cloud: this tool. Needs a Speedscale cloud login ('proxymock init') and a cluster whose Speedscale inspector is registered with the tenant. It never uses the kubeconfig, so it also reaches clusters the user cannot reach directly.
 
 Discover a target (read-only; answered by Speedscale cloud from what each registered inspector reports, not from the kubeconfig):
+
 - 'clusters': the clusters registered with the tenant, with inspector id and version. Their names are what 'cluster' takes.
 - 'namespaces': the namespaces one cluster reports. Needs 'cluster' or 'inspector_id'.
 - 'workloads': the workloads and Services in one namespace of that cluster. Needs 'cluster' or 'inspector_id', and 'namespace'. The workload names are what 'workload' and 'routes' take.
 - 'defaults' (read-only): where the traffic was recorded and where to replay it by default. With 'snapshot_id' (or 'report_id') it returns what the dashboard's replay wizard pre-fills: the cluster, namespace, per-inbound-slice workload, mocks and test config, from the latest earlier replay of the snapshot, else the namespace it was captured from, and says which evidence it used. With 'in_directories' it reads a recording on disk instead (no login needed): captured in a cluster (Kubernetes tags on the inbound RRPairs, or a pulled snapshot's metadata) or recorded locally by proxymock, plus the address the busiest inbound slice was recorded against, which for a local recording is where the app listened.
 
 Run:
+
 - 'start' (mutates): push the recordings in 'in_directories' (or reuse 'snapshot_id'), then start the replay in 'cluster' and 'namespace'. Give it a destination: 'workload' (every inbound slice goes to that workload), 'routes' (send individual slices to their own workload, in any namespace, or address; combine with 'workload' for the rest), or 'target' (replay against an address; nothing in the cluster is modified and nothing is mocked). Set 'dry_run' to resolve the cluster, routes, mocks and test config and report them without pushing or starting anything, like 'proxymock cloud replay --dry-run'. Omitting both 'mocks' and 'mock_enabled' mocks every recorded outbound dependency of the workload, which is what makes a replay repeatable - the default of every workload replay path: Speedscale cloud, 'speedctl infra replay', 'proxymock cloud replay', 'proxymock cluster replay start' and the proxymock web Replay tab. List keys in 'mocks' to mock only those, or set 'mock_enabled' to false to mock nothing so the workload reaches its real dependencies. Mocking needs a workload to attach a responder to, so a 'target' replay mocks nothing, and asking one to mock is an error. The keys 'mocks' takes come from the cluster tool's action='replay-prepare'. A parameter that does not apply to the replay shape you picked (for example 'snapshot_name' with 'snapshot_id') is refused rather than ignored. Returns as soon as Speedscale cloud accepts the replay, with the report id and dashboard URL. It does NOT wait for the replay to finish.
 - 'cancel' (mutates, destructive): stop the replay behind 'report_id', the call 'speedctl infra replay cancel' makes. The inspector tears the replay down and the report ends Canceled.
 - 'status' (read-only): one report's status as Speedscale cloud sees it (Initializing, Testing, Analyzing, then a terminal verdict: Passed, Missed Goals, Error or Canceled), whether it is done, its success rate, the replay events its components raised (oldest first, each with severity, reason, description and suggested resolutions; they explain a stuck, failed or skewed replay) and, once analyzed, its goals with expected and actual values. Pass the 'report_id' that 'start' returned. Set 'wait' to block until the verdict (bounded by 'timeout_seconds') and get the status changes and new events seen along the way; otherwise call it again a few seconds apart until done is true. Then pull_report downloads the report and its snapshot for analysis.
@@ -303,6 +319,7 @@ Report the health of the Kafka consumer groups recorded in RRPair directories, f
 For each consumer group: its protocol (classic, or consumer for KIP-848), the assignors its members offered, every member with its client ID, rebalance timeout (max.poll.interval.ms) and session timeout, every rebalance with what started it and how long it took, and every partition the app fetched or committed with its last fetch offset, high watermark, lag, committed offset and commit lag. Also how often each client fetched, polled empty and heartbeat.
 
 Findings, each with its group, topic, partition, offset, count and a detail sentence:
+
 - CONSUMER_LAG: a fetched partition left 10 or more records behind its high watermark
 - STUCK_PARTITION: one offset fetched 3 or more times with no commit past it, a poison pill the consumer keeps seeking back to
 - POLL_TIMEOUT: a member that went longer than max.poll.interval.ms without polling and left, or was dropped from the group
@@ -338,6 +355,7 @@ _Read-only._
 Find values that drift (vary) across two or more RRPair directories, e.g. a recording vs. a replay, or several replay runs. Returns a JSON DriftReport listing every field whose value changed between sources, with prefilled transform recommendations for stabilizing mock matching. Covers HTTP and gRPC RRPairs only; other protocols (SQL, Redis, Kafka and the rest) are skipped.
 
 Each source is a directory of RRPair files or a single jsonl file (raw.jsonl from a snapshot, raw_rr.jsonl from a report); the formats can be mixed. Sensitivity controls noise filtering:
+
 - 'permissive': any field that took on more than one value, anywhere
 - 'normal' (default): drift sustained across multiple equivalence classes
 - 'strict': multiple distinct values across multiple classes
@@ -397,9 +415,11 @@ _Read-only._
 Score one replay, cloud or local, in one JSON shape. Read-only: nothing is downloaded or written. Call it after every tuning iteration to see whether the snapshot got better.
 
 Returns:
+
 - accuracy: replayed responses that matched the recorded ones (pairs, matched, statusMismatches, bodyMismatches, rate, topFailingEndpoints). Cloud reports also carry the report's own reportSuccessRate.
 - matchRate: outbound calls the mocks answered, from the responder status of each call (HIT, MISS, PASSTHROUGH): total, matched, noMatch, passthrough, rate, noMatchRate, passthroughRate, topMissingSignatures, topMissingHosts. Local replays also carry matchRate.analysis, the offline match-rate analysis of the same run with its projected rate under the active tuning blueprints; its reportRate treats passthrough as a non-match, like matchRate.rate.
 - goals: the goal verdict and each goal's condition and observed value.
+- httpOutput: the test config's httpOutput assertion (the app's outbound HTTP calls against the recording's mocks): status, reason and differences per kind. A local replay is scored from 'mocks_out', the directory the mock server wrote while serving it; without it the replay's own outcome is reported. A cloud report is scored from its http-output-diff.json.
 - sources: the file each section was read from. notes: why a section is null.
 
 'input' is one of: a cloud report id already pulled into the workspace (pull it with pull_report first; this tool never downloads), a pulled workspace (its single report), a pulled report's report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json (written by replay_traffic). A local replay's match rate comes from the mocked-* run (the mock server output) that served it: the run whose RRPairs overlap the replay in time, else the latest one started before the replay, else the newest one with a note that the pairing is a guess. Pass 'mock_run' to name it. matchRate.mockRun and mockRunSelection say which run was used and how. Its analysis matches the mocks tool's analyze action.
@@ -411,6 +431,7 @@ Pass 'baseline' (another input of any kind) to include its score and per-number 
 | `input` | string | **yes** | A pulled cloud report id, a pulled workspace, a report-&lt;id&gt; run directory, or a local replay output directory holding replay-verdict.json. |
 | `baseline` | string | no | Optional second input of any of the same kinds. When set, the result includes the baseline's score and deltas (this score minus the baseline's). |
 | `mock_run` | string | no | Optional mocked-* run directory that served a local input replay, overriding the time-overlap pairing. A path, or a run name inside the workspace. Applies to the input, not the baseline. |
+| `mocks_out` | string | no | Optional directory the mock server wrote while it served a local input replay. Scores the test config's httpOutput assertion. Applies to the input, not the baseline. |
 | `workspace` | string | no | Directory a bare report id is looked up in: the repo root or its proxymock directory. Defaults to the server's working directory. |
 
 ### Author configs
@@ -432,11 +453,29 @@ The 'config' is the same JSON document 'proxymock cloud pull/push filter|transfo
 | `in-directory` | array | **yes** | Directories or RRPair files to read, relative to the working directory. Directories are read recursively. |
 | `out-directory` | array | no | Required for 'transform-apply': directory to write transformed copies to (must be outside the input directories). Only the first entry is used. Ignored by the read-only actions. Unless otherwise instructed use 'proxymock/transform-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. |
 
+#### `test_config_inspect`
+
+_Read-only._
+
+Read-only inspection of workspace test configs, with no account required. Actions: list (workspace and built-ins), show (id), meta (field types, defaults and supported run paths; optional section/path_prefix), validate (saved id or unsaved config document). Never creates, changes or deletes files. Use test_config for create/set/delete.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | Read-only action: list, show, meta or validate. |
+| `config` | object | no | validate: an unsaved complete TestConfig JSON document to check without writing. |
+| `id` | string | no | show: the config id; validate: the saved config to check or the id to check an unsaved config under. |
+| `in_directory` | string | no | The proxymock workspace: the repo directory holding proxymock/, the proxymock directory itself, or a recording inside it. Defaults to the working directory. Pass the same directory as 'in_directories' on the replay that uses the config. |
+| `path_prefix` | string | no | meta: only fields whose path starts with this, e.g. 'responder.' or 'cluster.responder'. |
+| `section` | string | no | meta: only fields in this editor section ('none' is the identity fields). |
+
 #### `test_config`
+
+Use test_config_inspect for independently permissionable read-only list/show/meta/validate. Use this tool to create, change or delete workspace configs.
 
 Author, inspect, validate and delete the test configs of a proxymock workspace (files in &lt;workspace&gt;/proxymock/testconfigs/&lt;id&gt;.json, each one complete TestConfig as Speedscale cloud stores it). Works offline with no Speedscale account. The same rules as the proxymock web test config editor apply, and files written here open unchanged in it.
 
 A test config controls how a replay runs: load stages, responder replicas and resources, chaos, goals and assertions. Workflow:
+
 1. action='meta' with a 'section' or 'path_prefix' to find the field paths you need, their types and defaults, and which run paths (local/cluster/cloud) honour them.
 2. action='create' with a new 'id': copies the built-in 'regression' config unless 'from' names another config or 'config' supplies a whole document.
 3. action='set' with 'fields', a map of field path to value, e.g. &#123;"responder.numReplicas": 3, "cluster.responderResources.limits.cpu": "2"&#125;. Unknown and deprecated paths are refused with the path named; a null value removes a field.
@@ -503,40 +542,77 @@ Paths that fail validation are reported as skipped with a reason and do not abor
 | --- | --- | --- | --- |
 | `files` | array | **yes** | Paths of the .json or .md RRPair files to delete, relative to the working directory. |
 
+### Protobuf schemas
+
+#### `protos`
+
+Read recorded protobuf and gRPC bodies with their real field and enum names, using the .proto schemas in the workspace's proxymock/protos/ directory.
+
+Recorded protobuf bodies are stored as field-number JSON ("1:LEN", "3:I64": 4632304060471443456), which hides names, enum values and doubles. With the service's .proto in proxymock/protos/, action=check returns each body as named JSON ("account_id": "acct-1001", "amount": 50.5). Prefer it over reading the .md file whenever an RRPair carries protobuf or gRPC.
+
+Actions:
+
+- list: the schemas in proxymock/protos/, their services and gRPC methods, and any file that failed to compile.
+- check: for each RRPair file or directory in 'files', the message type each protobuf body resolves to (by gRPC method path, or a Content-Type proto= parameter), the body as named JSON (show=named, the default) or protoscope text (show=protoscope), and the fields that did not match the schema. A body with no schema says why and is shown as protoscope.
+- add: copy the .proto files, directories, zips or descriptor sets in 'files' into proxymock/protos/, with every file they import (found under the input or on proto-path), so the workspace compiles on its own. Nothing is written unless every input compiles. Existing files with other content are only replaced with force=true.
+- map: for protobuf sent over plain HTTP, whose path and Content-Type do not name its message, add a rule to proxymock/protos/mappings.json naming the request and/or response type of calls matching 'path' (a glob; a trailing /** matches anything below), optionally only for 'host' and 'method'. A rule with the same host, method and path is replaced. The types must be declared by a schema in proxymock/protos/.
+- unmap: remove the rule with that host, method and path.
+
+The mapping is read-only: check never changes a recording, and the field-number JSON stays the form transforms and edit_rrpair address.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** | list, check, add, map or unmap. |
+| `files` | array | no | check: RRPair files or directories of them. add: .proto files, directories of .proto files, zips or descriptor sets. Relative to the working directory. |
+| `force` | boolean | no | add: replace files in proxymock/protos/ that have other content. Defaults to false. |
+| `host` | string | no | map, unmap: glob the request host must match. Empty matches any host. |
+| `method` | string | no | map, unmap: HTTP method the request must use. Empty matches any method. |
+| `path` | string | no | map, unmap: glob the request path must match, such as /v1/orders/** . |
+| `proto-path` | array | no | Directories to resolve imports from that proxymock/protos/ does not hold, like protoc -I. Relative to the working directory. |
+| `request` | string | no | map: full message name of the request body. |
+| `response` | string | no | map: full message name of the response body. |
+| `show` | string | no | check: named (default; JSON with .proto field names when a schema matched, else protoscope) or protoscope (the exact wire data, with field names as comments when a schema matched). |
+
 ### Convert
 
 #### `generate`
 
-Turn an OpenAPI or protobuf specification into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) or a .proto file and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
+Turn an OpenAPI or protobuf specification or a GraphQL schema into local RRPair files. Parses an OpenAPI 3.0+ spec (JSON or YAML) or a .proto file and writes one or more RRPair files per endpoint with realistic synthesized data. Runs entirely locally with no Speedscale account.
 
 For a .proto spec each unary RPC becomes a gRPC over HTTP/2 RRPair, the same shape proxymock records, so the mock server and replay serve it unchanged. Streaming RPCs are listed as skipped. Include and exclude patterns match /package.Service/Method, and tag-filter does not apply. Pass proto-path when the .proto imports files outside its own directory.
 
+A GraphQL schema (SDL in .graphql/.graphqls/.gql, an introspection JSON file, or an http(s) URL to introspect) yields one named operation per root query and mutation field, POSTed to a single endpoint, with variables for its required arguments. Include and exclude patterns match query.&lt;field&gt; and mutation.&lt;field&gt;; subscriptions are listed as skipped.
+
 Use 'direction' to pick what to emit:
+
 - outbound (default): OUTBOUND mock definitions. Serve them with 'mock_server_start' (proxymock mock) to stand up a mock of the spec's API, or use them as dependency mocks during 'replay_traffic'.
 - inbound: INBOUND test definitions. Drive them at a running implementation of the spec with 'replay_traffic' (proxymock replay).
 - both: an inbound test and an outbound mock per endpoint.
 
-Returns the number of RRPair files generated and the output directory.
+Returns the number of RRPair files generated and the output directory, plus any inbound tests that still send placeholders and any GraphQL operations that were skipped.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML) or .proto file, relative to the working directory. The type is detected from the file. |
+| `spec` | string | **yes** | Path to the OpenAPI 3.0+ specification file (JSON or YAML), .proto file, or GraphQL schema (SDL or introspection JSON), relative to the working directory, or an http(s) URL of a GraphQL endpoint to introspect. The type is detected from the file. |
 | `out-directory` | string | **yes** | Directory to write the generated RRPair files to, relative to the working directory. |
 | `direction` | string | no | Which RRPairs to generate: 'outbound' (mocks for the mock server, default), 'inbound' (tests for replay), or 'both'. |
 | `examples-only` | boolean | no | Only generate responses that have an explicit example in the spec, skipping schema-synthesized ones. Defaults to false. |
-| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. For a .proto, /package.Service/Method globs. |
-| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL, or localhost for a .proto. |
+| `exclude-paths` | string | no | Comma-separated path patterns to exclude; matching endpoints are skipped. For a .proto, /package.Service/Method globs; for GraphQL, operation globs. |
+| `host` | string | no | Override the host recorded on generated requests. Defaults to the host from the spec's server URL or GraphQL schema URL, else localhost. |
 | `include-optional` | boolean | no | Include optional schema properties (proto fields declared optional) in generated request/response bodies. Defaults to false. |
-| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. For a .proto, /package.Service/Method globs such as /orders.v1.Orders/*. |
+| `include-paths` | string | no | Comma-separated path patterns to include; only matching endpoints are generated. For a .proto, /package.Service/Method globs such as /orders.v1.Orders/*; for GraphQL, operation globs such as query.* or mutation.createUser. |
+| `path` | string | no | URL path generated GraphQL requests are POSTed to. Defaults to /graphql, or the path of a schema URL. Ignored for OpenAPI and .proto specs. |
 | `port` | number | no | Override the port recorded on generated requests. Defaults to the port from the spec, or 80/443. |
 | `proto-path` | array | no | Import roots for a .proto spec, relative to the working directory, like protoc -I. The spec's own directory is always searched. |
-| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). Rejected for a .proto spec, which has no tags. |
+| `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). Rejected for a .proto spec or GraphQL schema, which have no tags. |
 
 #### `import_traffic`
 
 Convert a third-party traffic capture into local RRPair files that proxymock can mock and replay. This is the INBOUND direction: an external artifact becomes RRPairs on disk. Runs entirely locally with no Speedscale account.
 
 Choose the format that matches the source artifact:
+
+- aiperf: Mooncake JSONL payload/messages or a Speedscale bundle, tested with AIPerf v0.13.0. Requires dataset-type=mooncake_trace and base-url. Standalone requests have unmeasured response accuracy; only verified bundle companions restore response-backed tests/mocks. Live/delta modes are rejected.
 - postman: a Postman collection JSON file (v2.1). Every request becomes an inbound test; requests with a saved example response also become outbound mocks.
 - har: a HAR (HTTP Archive) JSON file. Every entry becomes an inbound test and, because HAR carries the response, an outbound mock. Set mocks-only for a browser DevTools HAR whose calls should be answered as mocks behind Playwright journeys.
 - goreplay: a GoReplay capture file (.gor). Every request becomes an inbound test.
@@ -547,9 +623,14 @@ Returns the number of tests and mocks written and a sample of the RRPair file pa
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | string | **yes** | Format of the source artifact: 'postman', 'har', 'goreplay' (single file), or 'wiremock', 'http-wire' (directory or .zip). |
-| `source` | string | **yes** | Path to the input artifact, relative to the working directory. A file for postman/har/goreplay; a directory or .zip for wiremock/http-wire. |
+| `format` | string | **yes** | Format of the source artifact: 'postman', 'har', 'goreplay' (single file), 'wiremock', 'http-wire' (directory or .zip), or 'aiperf' (JSONL or bundle directory). |
+| `source` | string | **yes** | Path to the input artifact, relative to the working directory. A file for postman/har/goreplay; a directory or .zip for wiremock/http-wire; JSONL or a bundle directory for aiperf. |
+| `base-url` | string | no | AIPerf only: required destination HTTP/S origin. |
+| `dataset-type` | string | no | AIPerf only: required explicit input dataset type. |
+| `dry-run` | boolean | no | AIPerf only: preview without writing files. |
+| `endpoint` | string | no | AIPerf only: destination chat/completion path override. |
 | `mocks-only` | boolean | no | har only: write only the outbound mocks, for a HAR of the calls a client made (for example a browser DevTools HAR) rather than requests to replay. |
+| `model` | string | no | AIPerf only: fill missing request models. |
 | `out-directory` | string | no | Directory to write RRPair files to. Defaults to ./proxymock/imported-&lt;source-name&gt;. |
 | `service-name` | string | no | Service name recorded on all imported RRPairs. Defaults to 'localhost'. |
 | `target-host` | string | no | wiremock/http-wire only: hostname recorded on each imported mock (for http-wire, a fallback when the request has no Host header). |
@@ -560,19 +641,34 @@ Returns the number of tests and mocks written and a sample of the RRPair file pa
 Convert local RRPair files into a third-party format. This is the OUTBOUND direction: recorded RRPairs on disk become an artifact another tool can consume. Runs entirely locally (file output only, no publishing to any service).
 
 Choose the target format:
+
+- aiperf: Mooncake payload JSONL / versioned Speedscale bundle, tested with AIPerf v0.13.0. Preserves duplicates and sessions. Select dependency calls with direction=out. Preview with dry-run. Headers carrying credentials are stripped; mask body/query secrets before exporting.
 - postman: a Postman collection JSON file, for driving requests from Postman.
+- bruno: a native OpenCollection 1.0 YAML directory, verified with Bruno CLI 4.3.0. Open it in Bruno and select the local environment. Credential headers become empty placeholders; review/mask body and query secrets before exporting.
 - k6: a k6 load-test JavaScript file.
 - locust: a Python locustfile for HTTP load testing. Run with --host to target the test deployment.
 - gatling: a Gatling simulation Java file.
 - datadog-synthetics: a Datadog Synthetics test bundle written to disk (local files only; this tool never publishes to Datadog).
 
-Reads RRPair files from one input directory and writes a single output artifact. To go the other way (a third-party artifact to RRPairs) use import_traffic.
+Reads RRPair files from one input directory and writes an output file or collection directory. To go the other way (a third-party artifact to RRPairs) use import_traffic.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | string | **yes** | Format to export to: 'postman', 'k6', 'gatling', 'locust', or 'datadog-synthetics'. |
+| `format` | string | **yes** | Format to export to: 'postman', 'k6', 'gatling', 'locust', 'bruno', 'datadog-synthetics', or 'aiperf'. |
 | `in-directory` | string | **yes** | Directory of recorded RRPair files to export, relative to the working directory (read recursively). |
-| `out` | string | no | Output file (or bundle directory for datadog-synthetics). Defaults per format: collection.json, k6.js, LoadSimulation.java, locustfile.py, or a datadog-synthetics-&lt;dir&gt; bundle. |
+| `base-url` | string | no | Bruno only: replace recorded origins with an HTTP/S origin in the local environment. |
+| `direction` | string | no | AIPerf only: traffic direction; defaults in. |
+| `dry-run` | boolean | no | AIPerf only: validate and preview without writing. |
+| `endpoint` | string | no | AIPerf only: select an exact chat/completion path. |
+| `inbound-only` | boolean | no | Bruno only: defaults true; set false to include outbound HTTP/S calls. |
+| `include-responses` | boolean | no | AIPerf only: include native companions; defaults true for bundles. |
+| `limit` | number | no | Bruno/AIPerf: maximum exported requests in recorded order; 0 or -1 means unlimited. |
+| `out` | string | no | Output file or directory. AIPerf defaults to ./aiperf-bundle; Bruno defaults to ./bruno (native collection); other defaults: collection.json, k6.js, LoadSimulation.java, locustfile.py, or a datadog-synthetics-&lt;dir&gt; bundle. |
+| `overwrite` | boolean | no | Bruno only: explicitly replace a previous proxymock collection, including local edits. Defaults false. |
+| `scheme` | string | no | Bruno only: override the recorded URL scheme. |
+| `secret-headers` | string | no | Bruno/AIPerf: comma-separated additional credential header names to replace with empty placeholders. Authorization/Cookie are always replaced. |
+| `service` | string | no | Bruno/AIPerf: export requests for this service or host. |
+| `standalone` | boolean | no | AIPerf only: write request-only JSONL; defaults to a bundle. |
 
 ### Cloud
 
@@ -611,6 +707,7 @@ Search for RRPairs (request/response pairs) in recorded traffic using filters. R
 This tool is useful when doing investigations into issues with live systems such as requests with non-200 status codes.
 
 You should:
+
 1. Get the basic set parameters of service name and time range and optionally a cluster/namespace to start investigating the data.
 2. Get additional filters such as a status code or url to filter down to the right set of traffic to investigate.
 3. Use these filters to create a snapshot of the investigation scenario with the pull_remote_recording tool and use a snapshot name relevant to the original investigation query.
@@ -705,6 +802,7 @@ Narrow the pull with a time window (from/to) and filters (service, namespace, st
 Work the Kubernetes cluster your kubeconfig points at: inspect what is running, turn Speedscale eBPF traffic capture on and off, and run recorded traffic back against a workload inside the cluster. Select the operation with 'action'.
 
 Capture (record real traffic off a running workload):
+
 - 'inject' (mutates): turn capture on for one workload by patching its capture.speedscale.com/* annotations. eBPF capture attaches to running pods, so the workload is NOT restarted; setting 'java_agent' does restart it, because the agent is injected at pod admission and only loads into new pods. Idempotent.
 - 'uninject' (mutates): turn capture off by clearing those annotations. Idempotent; already-recorded traffic is untouched.
 - 'capture-status' (read-only): report whether capture is on, whether the java agent is enabled, which ports are excluded, and whether the workload looks like it runs a JVM.
@@ -712,6 +810,7 @@ Capture (record real traffic off a running workload):
 There are two capture mechanisms and these three actions cover both. By default they record intent in annotations, which the in-cluster operator and nettap daemon act on. On a NAMESPACED install, there is no cluster-wide operator or nettap, so eBPF and Java Agent capture are unavailable. The goproxy SIDECAR is the available capture mechanism: proxymock computes the mutation and applies it with your credentials. You MUST set 'sidecar' to choose it. The mechanism is never inferred from $SPEEDSCALE_NAMESPACE; eBPF inject is refused when the namespaced coordinator is installed, and capture-status explains the unavailable capability. Sidecar capture works on classic installs too. It restarts the workload, records the changed fields in an inventory ConfigMap, and refuses to revert if they drift. Java Agent cannot be combined with sidecar capture. Deployments and StatefulSets only. Call action='status' first if you are unsure which install this is: it reports namespacedMode, and namespacedMode=true means pass sidecar=true.
 
 Replay: run recorded traffic against a workload in the cluster, straight from the kubeconfig. This is the second of proxymock's three independent replay paths: replay_traffic replays on this machine; these actions replay in the cluster your kubeconfig reaches; the cloud_replay tool replays in a cluster registered with Speedscale cloud, needing a cloud login instead of a kubeconfig, the way a dashboard replay does. When the user wants the replay to run through Speedscale cloud, use cloud_replay rather than these actions.
+
 - 'replay-prepare' (read-only, local): analyze recordings on this machine and return the inbound slices a replay can be routed at and the outbound dependencies it can mock. Runs the same analyzer the cloud runs, with no push and no login, so the keys it returns are exactly the keys 'replay-start' accepts. Call this before 'replay-start' rather than guessing dependency keys.
 - 'replay-start' (mutates): analyze the recordings on this machine, stage the snapshot in the in-cluster forwarder over a port-forward, and create the replay. No Speedscale cloud login is needed for that; the replay is annotated snapshot-source=local, and its report stays in the cluster (so there is no dashboard link; 'replay-status' shows its result once it finishes). By default ('snapshot_source' auto) the recordings are pushed to Speedscale cloud instead only if staging in the cluster fails, which does need a login. Set 'snapshot_source' to local to forbid that fallback, so the call fails rather than touching the cloud, or to cloud to skip staging and push to the cloud directly. The result says which happened as 'snapshotSource' (local or cloud). Pass 'snapshot_id' to reuse a snapshot already in the cloud and skip both. Give it either 'workload' (replay every inbound slice against a cluster workload; the only shape that can mock dependencies), 'routes' (send individual slices to their own workload, in any namespace, or address; combine with 'workload' for the rest), or 'target' (replay against a plain address, touching nothing in the cluster). 'replay_mode' picks full-replay (default), responder-only or generator-only, and 'build_tag' is recorded on the report, on both install mechanisms. 'mocks' takes the outbound keys from 'replay-prepare'; mocking a dependency makes the responder answer it from the recording instead of letting the workload reach the real thing. Omitting both 'mocks' and 'mock_enabled' mocks every recorded outbound dependency of the workload, which is what makes a replay repeatable - the default of every workload replay path: Speedscale cloud, 'speedctl infra replay', 'proxymock cloud replay', 'proxymock cluster replay start' and the proxymock web Replay tab. List keys in 'mocks' to mock only those, or set 'mock_enabled' to false to mock nothing so the workload reaches its real dependencies. Mocking needs a workload to attach a responder to, so a 'target' replay mocks nothing, and asking one to mock is an error. A parameter that does not apply to the replay shape you picked (for example 'workload_type' with 'target', or 'in_directories' with 'snapshot_id') is refused rather than ignored. Returns immediately with the replay name and report id; it does not block.
 - 'replay-status' (read-only): with 'replay_name', the full stage breakdown of one replay including the operator's own explanation of a failure, and for a finished cloud-free replay (snapshotSource local) its result: the verdict, success rate, goals and notifications its generator scored in the cluster; without it, the replays currently running in the cluster (pass 'all' to include finished ones still present). A replay is garbage-collected after it finishes, so a long-completed replay will not be found; read its report in Speedscale cloud.
@@ -721,9 +820,11 @@ Replay: run recorded traffic against a workload in the cluster, straight from th
 On a NAMESPACED install the replay actions drive a replay REQUEST (a labeled ConfigMap the in-cluster replay coordinator reads) instead of a TrafficReplay, because such an install cannot have the TrafficReplay CRD. A namespaced install is an install mode, not another replay path: the replay still runs from the kubeconfig, through a different in-cluster mechanism. Set 'namespaced' to select that mechanism - it is never inferred (a namespaced install is recognized by what is deployed, not by its namespace name; action='status' reports which mechanisms an install supports). Three things differ with it. There is no push to Speedscale cloud and no login: pass 'snapshot_id' for a complete snapshot already staged in the forwarder, or 'snapshot_file' for an analyzed &lt;snapshot-id&gt;.json with action and reaction files in the adjacent &lt;snapshot-id&gt; directory. It drives exactly one workload, so 'target' is refused. And 'replay-cancel' writes a cancellation the coordinator acts on (it restores the workload as it tears the replay down) instead of deleting anything, and is accepted from every non-terminal state. A replay request also has no TTL, so 'replay-status' still answers for a replay that finished long ago.
 
 Install (read-only):
+
 - 'status': report whether the Speedscale data plane is present, reachable and permitted in the resolved namespace: which components are deployed and ready, whether the forwarder and inspector actually answer over a port-forward (naming the failing hop when they do not), what this kubeconfig is allowed to do there, and which capture and replay mechanism the actions above will therefore drive. It never fails outright: a completely unreachable cluster still produces a full report with each check marked failed, so this is the first action to call when anything else here behaves unexpectedly.
 
 Inspect (read-only, and the fastest way to answer "what is actually in this cluster"):
+
 - 'namespaces': the namespaces the forwarder has observed. Start here when you do not know what is in the cluster. Note that it lists only namespaces nettap has seen traffic in, so it is not the same as 'kubectl get ns'.
 - 'nodes': the cluster's nodes with kernel, OS image and container runtime. The kernel version is what to check when eBPF capture records nothing.
 - 'services': the Services in a namespace with type, cluster IP and ports. A Service address is usually what 'replay-start' wants as its 'target'.

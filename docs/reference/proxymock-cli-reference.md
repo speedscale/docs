@@ -46,6 +46,7 @@ proxymock [command]
 - `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
+- `protos` - Manage the protobuf schemas that name the fields of recorded protobuf and gRPC bodies
 - `recommendations` - Work the replay-tuning recommendations the analyzer finds
 - `record` - Record traffic from your app, turning it into RRPair files
 - `replay` - Replay tests to make requests to your app
@@ -144,15 +145,22 @@ proxymock mock --map 65432=localhost:5432
 
 - `--app-health-endpoint string` - Wait for an app health endpoint to return HTTP 200 before starting
 - `--app-log-to string` - File path to redirect wrapped application output to
+- `--chaos stringArray` - Inject scoped chaos as `'<filter query>:<effect>=<value>[,...]'`, such as latency, status, connection or body effects; see [chaos](/concepts/chaos.md)
+- `--fault stringArray` - Inject faults as `'<regexp>:action=value[,...]'`; a rate alone injects intermittent 503s
+- `--grpc-streaming-immediate` - Send native gRPC stream messages immediately instead of with their recorded timing
 - `--health-port int` - Port to expose proxymock's own readiness endpoint
 - `--in strings` - Directories to read mock files from recursively (default current directory)
 - `--log-to string` - File path to redirect all proxymock output to
 - `-m, --map stringToString` - Create a reverse proxy mapping for backends
+- `--mock-reload-interval duration` - Reload mock files when they change, checking at this interval such as `1s` (disabled by default)
 - `--mock-timing string` - Response timing behavior: `none`, `recorded`, or a multiplier such as `5x` or `.25x` (default `none`)
 - `--no-out` - Do not write observed mock requests or responses to disk
+- `--no-passthrough` - Return a 404 when no mock matches instead of forwarding the request to the real resource
+- `--observe-real-apis` - Send every request to the real resource, even when a mock matches, and name the recorded request it matched
 - `--out string` - Directory to write observed `MATCH`, `NO_MATCH`, and `PASSTHROUGH` traffic to (default `proxymock/results/mocked-<timestamp>`)
 - `--out-format string` - Output format for files, one of `markdown` or `json` (default `markdown`)
 - `--proxy-out-port int` - Port where proxymock listens for outbound connections from your app (default `4140`)
+- `--response-selection string` - Choose among responses recorded for the same signature: `round-robin`, or `random` weighted by how often each was recorded (default `round-robin`)
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 
 ### `replay`
@@ -236,6 +244,7 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
 - `--spec string` - OpenAPI 3 contract for local recording coverage goals; defaults to the selected workload's workspace contract
 - `--workload string` - Inbound workload for local recording coverage goals when the recording contains several workloads
+- `--mocks-out string` - Directory `proxymock mock` wrote while it served this replay's dependencies; evaluates the test config's [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion and writes `http-output-diff.json` beside the replay verdict (requires `--test-config`)
 - `--timeout duration` - Command timeout such as `10s`, `5m`, or `1h` (default `12h`)
 - `-n, --times uint` - Number of times to replay the traffic (default `1`)
 - `-u, --vus uint` - Number of virtual users to run in parallel (default `1`)
@@ -262,10 +271,24 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 - `requests.failed`
 - `requests.per-minute`
 - `requests.per-second`
+- `requests.response-match-pct`
 - `requests.response-pct`
 - `requests.result-match-pct`
 - `requests.succeeded`
 - `requests.total`
+- `llm.ttft-p50`, `llm.ttft-p95`, `llm.ttft-max`
+- `llm.e2e-p50`, `llm.e2e-p95`, `llm.e2e-max`
+- `llm.itl-p50`, `llm.itl-p95`, `llm.itl-max`
+- `llm.user-tokens-per-sec-p50`, `llm.user-tokens-per-sec-p95`
+- `llm.output-tokens-per-sec`
+- `llm.output-tokens`
+- `llm.requests`
+- `llm.incomplete`
+- `llm.token-count-approx-pct`
+
+The `llm.*` metrics measure streamed LLM responses; see [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md) for their definitions.
+
+`requests.result-match-pct` is the share of requests whose status code matched the recording, the same figure a cloud report shows as its expected status code percentage. A changed response body does not lower it. `requests.response-match-pct` is the share of replayed pairs whose response matched as `replay-verdict.json` scores them, body included, or status only with `--ignore-body-changes`. Gate on it to fail a replay when a body changes. It needs the replayed responses, so it is not reported with `--no-out` or `--load-test`.
 
 Standard replay writes `replay-verdict.json` to the output directory. See [Replay Verdicts](/proxymock/guides/replay-verdicts.md) for exit codes and [Semantic Comparison](/proxymock/guides/semantic-comparison.md) for scoring. Semantic options require `--semantic`. Baseline, fix-verification, and semantic modes require output and cannot use `--no-out` or `--load-test`. `--require-blueprint` cannot use `--load-test`.
 
@@ -665,6 +688,46 @@ proxymock transform test --transform-config my-transforms.json --show ./recorded
 - `--in strings` - Directories or RRPair files to read from (default `.`)
 - `--show string` - (`test`) Print the full before/after transform of this RRPair file instead of the summary
 - `--out string` - (`apply`) Directory to write transformed copies to (must be outside `--in`)
+
+### `protos`
+
+Manage the protobuf schemas in the workspace's `proxymock/protos/` directory. With a service's `.proto` files there, recorded protobuf and gRPC bodies show their real field and enum names in proxymock web, these commands and the MCP `protos` tool. See [Read gRPC bodies with your .proto](../proxymock/grpc/name-fields-with-your-proto.md).
+
+**Subcommands**
+
+- `protos list` - List the schemas in `proxymock/protos/` and the services they declare
+- `protos add <file|dir|zip|descriptor-set>...` - Copy schemas into `proxymock/protos/`, with every file they import
+- `protos map <path-glob>` - Name the request and response types of protobuf calls whose path and Content-Type do not, in `proxymock/protos/mappings.json`
+- `protos check <rrpair-file|dir>...` - Show which message type each recorded protobuf body resolves to, or why none did
+
+**Examples**
+
+```bash
+# add a proto tree, then see what it declares
+proxymock protos add ./proto
+proxymock protos list --methods
+
+# add one file whose imports live in a shared tree
+proxymock protos add ../shared/proto/acme/orders/v1/orders.proto --proto-path ../shared/proto
+
+# name the response type of protobuf calls over plain HTTP
+proxymock protos map '/v1/orders/**' --response acme.orders.v1.Order
+
+# check recorded calls and print each body with its field names
+proxymock protos check proxymock/recorded --show named
+```
+
+**Flags**
+
+- `-I, --proto-path stringArray` - Directory to resolve imports from that `proxymock/protos/` does not hold, like `protoc -I` (repeatable)
+- `--in strings` - (`list`, `add`, `map`) A directory inside the proxymock workspace to use (default `.`)
+- `--methods` - (`list`) Also list every gRPC method
+- `--force` - (`add`) Replace files in `proxymock/protos/` that have other content
+- `--show string` - (`check`) Also print each body: `named` (field names, when a schema matched) or `protoscope`
+- `--json` - (`list`, `check`) Write JSON
+- `--host string`, `--method string` - (`map`) Only calls to this host glob, or with this HTTP method
+- `--request string`, `--response string` - (`map`) Full message names of the request and response bodies
+- `--remove` - (`map`) Remove the rule with this host, method and path
 
 ## File management commands
 
@@ -1234,13 +1297,18 @@ proxymock mcp run [flags]
 proxymock mcp run
 
 # run the MCP server over Streamable HTTP (also serves the legacy /sse endpoint)
-proxymock mcp run --http --port 8080
+proxymock mcp run --http --port 7799
+
+# serve a remote dev box; clients send the token in the X-Proxymock-Token header
+PROXYMOCK_MCP_TOKEN=<token> proxymock mcp run --http --host 0.0.0.0
 ```
 
 **Flags**
 
+- `--host string` - Address the HTTP transport listens on (default `127.0.0.1`). Any other address requires an access token
 - `--http` - Serve MCP over Streamable HTTP at `http://localhost:<port>/mcp` instead of stdio. The legacy `/sse` endpoint is served on the same port for older clients
-- `--port int` - Port to use when serving the HTTP transport (default `8080`)
+- `--port int` - Port to use when serving the HTTP transport (default `7799`)
+- `--token string` - Access token clients send in the `X-Proxymock-Token` header. Defaults to `$PROXYMOCK_MCP_TOKEN`. Off loopback, a random token is printed when neither is set
 - `--sse` - Deprecated. Serve the legacy SSE transport; use `--http` instead
 - `--work-dir string` - Working directory to run the MCP server in
 
@@ -1260,6 +1328,46 @@ proxymock completion [command]
 - `fish` - Generate the autocompletion script for fish
 - `powershell` - Generate the autocompletion script for powershell
 - `zsh` - Generate the autocompletion script for zsh
+
+### `web`
+
+Start the embedded web interface for the workspace and open it in your browser.
+
+**Usage**
+
+```bash
+proxymock web [flags]
+```
+
+**Examples**
+
+```bash
+# open the web interface for the current workspace
+proxymock web
+
+# start without a browser and with a fixed access token for scripts
+proxymock web --open=false --token "$PROXYMOCK_WEB_TOKEN"
+curl -H "Authorization: Bearer $PROXYMOCK_WEB_TOKEN" http://127.0.0.1:7788/api/status
+```
+
+**Access token**
+
+Every request to the web server must carry its access token. On start, proxymock prints a URL that ends in `?token=…` and opens it. The browser trades the token for a session cookie, so later links in the same browser work without it. If you open the address without the token, the page asks for the printed URL.
+
+Scripts send the token as `Authorization: Bearer <token>`. The token is random on each start unless you set it with `--token` or `PROXYMOCK_WEB_TOKEN`.
+
+The server also rejects requests from other web origins, and requests addressed to a host name other than `localhost`, an IP address, or the `--host` value. This keeps web pages you visit from reaching your workspace, cluster credentials, or Speedscale API key through the local server.
+
+**Flags**
+
+- `--host string` - Address to bind (default `127.0.0.1`). Any other address makes the server reachable from the network over plain HTTP, and proxymock prints a warning
+- `--in strings` - Directory to read RRPair files from (default `.`)
+- `-I, --proto-path stringArray` - Directory to resolve imports from that the workspace's `proxymock/protos/` does not hold, like `protoc -I` (repeatable)
+- `--open` - Open the browser after start (default `true`)
+- `--port int` - Port to bind (default `7788`). If it is taken, the next free port is used. `0` picks a random port
+- `--token string` - Access token every request must carry. Defaults to `PROXYMOCK_WEB_TOKEN`, then a random token per start
+
+Run `proxymock web --help` for the chat, cluster, and snapshot bucket flags.
 
 ### `version`
 

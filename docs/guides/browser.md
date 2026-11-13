@@ -4,6 +4,8 @@ description: "Record browser traffic locally with proxymock, inspect the generat
 sidebar_position: 3
 ---
 
+This guide records what a browser does by routing Firefox through proxymock by hand. To run Playwright tests against your frontend with its API calls answered from a recording, see [Browser Journeys](./browser-journeys/index.md).
+
 ## Setup
 
 ### Prerequisites

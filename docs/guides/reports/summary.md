@@ -21,13 +21,4 @@ At a glance you should be able to see:
 
 ![Summary](./screen-shot-2021-08-13-at-11.38.53-am.png)
 
-If you see a very low accuracy, or your service displays other unusual
-behavior, reach out on the [Speedscale Slack
-community](https://slack.speedscale.com) or via
-[email](mailto:support@speedscale.com) because you may need to configure data
-transformation. Typically this is needed for authentication and time shifting.
-The Speedscale team is working on a configuration UI but for now we're happier
-to do the work for you than to have you stumble through this complex topic. If
-you're feeling adventurous, you can jump over to
-[transforms](/guides/transformation/overview) to learn more,
-but talking to us on Slack will be much easier.
+If a replay has low accuracy or unexpected behavior, inspect the failing requests in the report, then open the snapshot's **Prepare** tab to review credentials and transform chains. Authentication and time shifting may require [traffic transformation](/guides/transformation/overview.md). Preview changes in the chain editor, save the configuration, and replay again to check the result. For help with your configuration, ask in the [Speedscale Slack community](https://slack.speedscale.com) or [email support](mailto:support@speedscale.com).

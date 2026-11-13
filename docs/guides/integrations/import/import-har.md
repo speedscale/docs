@@ -4,6 +4,8 @@ description: "Import browser HAR files into Speedscale Cloud or local proxymock 
 sidebar_position: 4
 ---
 
+import SnapshotOverviewImage from '../../snapshot-overview.jpg';
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -76,14 +78,20 @@ proxymock mock --in ./har-rrpairs
 
 ## View Snapshot
 
-A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot summary.
+A cloud import creates a traffic snapshot that can be replayed in a cluster or from a local desktop. After import, the UI opens the snapshot.
 
-![Snapshot](../../snapshot.png)
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '1100px'}} tabIndex={0} role="region" aria-label="Snapshot Overview with Tests, Mocks, Requests over time and Latency p95">
 
-Click **View Traffic** to inspect the requests before replay.
+![Snapshot Overview with Tests, Mocks, Requests over time and Latency p95](../../snapshot-overview.jpg)
+
+</div>
+
+<a href={SnapshotOverviewImage}>Open screenshot full size</a>
+
+Open the **Traffic** tab to inspect the requests before replay.
 
 ## Replay
 
-HAR-generated cloud snapshots can be replayed from the snapshot summary. Set **Custom URL** to the service under test because an imported HAR does not have a discovered cluster destination.
+HAR-generated cloud snapshots can be replayed from the snapshot page. Set **Custom URL** to the service under test because an imported HAR does not have a discovered cluster destination.
 
 For the cloud workflow, see the full [replay guide](../../replay/README.md). For local commands, run `proxymock import har --help` and `proxymock replay --help`.

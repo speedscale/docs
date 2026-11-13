@@ -12,6 +12,10 @@ Every skill ships inside proxymock and is mirrored to the [speedscale/skills](ht
 
 The local skills need [proxymock](./getting-started/installation.md) installed. Cloud replays also need a Speedscale account.
 
+[Watch automatic testing with proxymock MCP skills on YouTube](https://www.youtube.com/watch?v=2SW9cLmQU-U).
+
+<iframe title="Automatic testing with proxymock MCP skills" src="https://www.youtube.com/embed/2SW9cLmQU-U?rel=0&modestbranding=1" width="640" height="360" style={{minHeight: 0}} frameBorder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+
 ## Install the skills
 
 Paste this prompt into your coding agent:
@@ -20,9 +24,24 @@ Paste this prompt into your coding agent:
 Install the Speedscale agent skills from https://github.com/speedscale/skills. If you are Claude Code, run `/plugin marketplace add speedscale/skills` and then `/plugin install speedscale@speedscale-skills`. Otherwise run `npx skills add speedscale/skills`. If neither works, download every folder under skills/ in that repo into your skills directory. Then list the skills you installed and what each is for.
 ```
 
-If you already have proxymock, `proxymock mcp install --yes` installs every skill for Claude Code, and `proxymock mcp skills export --dir <your agent's skills directory>` installs them for any other agent. `proxymock mcp skills list` shows which are installed and whether they are current.
+If you already have proxymock, select a client explicitly: `proxymock mcp install --client claude-code --skills` installs MCP and bundled skills for that client in the current project. Use `--skills-only` to omit MCP, `--scope user` for a global installation, and `--dry-run` to preview paths. Managed installs preserve edited or unowned files. Inspect project skills with `proxymock mcp skills list --dir ./.claude/skills`. The separate `proxymock mcp skills export --dir <directory>` command writes to an explicit directory and replaces existing files.
 
 If you use the ChatGPT desktop app with Codex, follow the [ChatGPT section of the skills README](https://github.com/speedscale/skills#chatgpt-desktop-app).
+
+## Prompts in the dashboard
+
+The Speedscale dashboard offers ready-made prompts wherever a task starts. Each one names the skill to use, carries the IDs and your Speedscale host, and tells the agent what to ask you before it acts. Paste it into your agent from your project directory. A prompt never contains your API key or other secrets.
+
+| Where | What the prompt does |
+| --- | --- |
+| Home | Installs Speedscale with `install-speedscale`. |
+| Add Service dialog | Adds a service with `record-traffic`. Before you pick a workload, the agent asks which service and where it runs, and the prompt names your connected clusters. After you pick a workload, the prompt names its cluster, namespace, and workload. The agent asks before it turns on capture or restarts a workload, and it leaves cluster capture on when it finishes, so the service keeps sending traffic. It then tells you how to turn capture off. |
+| Add Service, Kubernetes, No Operator Installed | Installs the operator with `install-speedscale`, as an alternative to the Helm command. |
+| Add Service, Kubernetes, Record Locally | Records your service on your machine with `record-traffic`. The recording stays in your project directory. |
+| Snapshot and report pages | Ranks the prompts that fit the snapshot or report, such as analyzing a report, tuning the tests, or turning a snapshot into a regression test. Open them from the page or from **More actions** > **Use with coding agent**. |
+| Replay launcher and replay wizard | **Copy agent prompt** next to the command runs exactly the command shown with `run-snapshot-replay` and follows it to a result. It is unavailable when the command cannot express the form (for example JWT resigning, an edited test config that has not been saved, or a debug run) and when a target URI includes credentials. |
+
+The prompts start in **Fetch skill** style, which tells the agent to download the skill first and works in any agent. If you already installed the skills, switch to **Skill installed** for a shorter prompt. The dashboard remembers your choice in this browser.
 
 ## Set up
 
@@ -64,4 +83,4 @@ These skills form the proxymock quality loop. They run locally and need no Speed
 
 ## Related
 
-`install-speedscale` connects the proxymock MCP server to your agent. See [Model Context Protocol (MCP)](./how-it-works/mcp.md) for how that server works.
+`install-speedscale` can connect the proxymock MCP server to your agent. It asks which client and scope you want, previews the paths, and installs only that selection. See [Model Context Protocol (MCP)](./how-it-works/mcp.md) for how that server works.

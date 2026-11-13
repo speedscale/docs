@@ -165,6 +165,8 @@ For example, `--vus`, `--for`, `--times` or `--stage` on `proxymock replay` repl
 
 Local replay evaluates goals and assertion groups it can measure and writes the results to its replay verdict. Metrics that require Cloud are marked as not evaluated. Recording coverage goals use the OpenAPI contract in the workspace or `replay --spec`; a positive threshold fails when the contract is missing. A cloud-free in-cluster replay does not produce a verdict yet. See [replay verdicts](./replay-verdicts.md) for local exit codes.
 
+Report-level assertions judge the whole run and are listed under **Report-level assertions** in the verdict. A local replay evaluates [`httpOutput`](/reference/configuration/assertions/httpoutput.md) only when `--mocks-out` names the directory `proxymock mock` wrote while it served the replay. `kafkaOutput`, `sqlOutput` and [`chaosFired`](/reference/configuration/assertions/chaosfired.md) are evaluated in Speedscale cloud and are marked as not evaluated locally.
+
 :::note Load stages on a local replay
 Running a test config's load stages on a local replay requires a proxymock release newer than v2.5.1017. On v2.5.1017 and earlier, set local load with `--stage`, `--vus` or `--for`.
 :::

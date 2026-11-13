@@ -63,6 +63,8 @@ Keeping replay/mock output under `results/` (rather than at the top level)
 prevents a later `record` run, or a replay that scans the workspace, from
 accidentally re-feeding itself last session's output.
 
+A `mocked-<timestamp>/` directory also holds `transform-changes.jsonl`, one line per mock hit with the transforms applied to its response, keyed by the live request's `uuid` and the recording it served as `refUuid`.
+
 ### `blueprints/`
 Saved [blueprints](/proxymock/guides/blueprints.md) contain transform rules (credential swaps, JWT re-signing, value substitutions,
 and so on) created through the web UI or CLI. Blueprints are applied as an

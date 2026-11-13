@@ -3,9 +3,14 @@ description: "Modify captured requests and responses with shared transform chain
 sidebar_position: 9
 ---
 
-# Transforms
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<iframe src="https://www.youtube.com/embed/RojqxxHL7oc?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+import JwtSecretReferenceImage from './transforms/jwt-secret-reference.jpg';
+import JwtEmbeddedSubjectImage from './transforms/jwt-embedded-subject.jpg';
+
+import ConstantEmbeddedImage from './transforms/constant-embedded.jpg';
+
+# Transforms
 
 Automatically modify traffic before or during a replay.
 
@@ -41,10 +46,12 @@ Transforms also have a data cache where **variables** can be stored. Variables a
 
 Last, the transformed data is re-inserted into the RRPair in exactly the same location. Each transform runs in reverse order to re-encode the new **token** and place it back in its correct place.
 
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '900px'}} tabIndex={0} role="region" aria-label="Transform extraction and reinsertion">
+
 ```mermaid
 flowchart LR
     subgraph rrpair["RRPair"]
-        header["Record-Timestamp:<br/>Sat, 20 Nov 2019 07:16:26 GMT"]
+        header["Record-Timestamp (example):<br/>Tue, 10 Nov 2026 12:00:00 GMT"]
         body["order-id: 52-3059"]
     end
 
@@ -54,9 +61,42 @@ flowchart LR
     insertText --> extractJson --> body
 ```
 
+</div>
+
+### Read-only chains
+
+Some chains exist only to observe a value, not to change it. A chain that reads a JWT claim and tags the session with it is one example: the claim cannot be turned back into a JWT, so writing it back would replace the `Authorization` header with the claim. Set `readOnly` on the chain to skip the re-insert step entirely.
+
+```json
+{
+  "readOnly": true,
+  "extractor": { "type": "http_req_header", "config": { "name": "Authorization" } },
+  "transforms": [
+    { "type": "jwt_claim", "config": { "claim": "email" } },
+    { "type": "tag_session" }
+  ]
+}
+```
+
+A read-only chain still runs every transform forward, so side effects such as `tag_session`, `variable_store` and signature changes happen as usual. Nothing is written back into the RRPair, and transforms that do their work during the re-insert step, such as `smart_replace`, `map` and `var_load`, have no effect.
+
+Chains that redact data with `dlp_field` or `dlp_json` cannot be read-only, because redaction is applied when the chain writes back. Saving a DLP rule with such a chain is rejected, and the forwarder writes back any redaction chain regardless of the setting.
+
+## What changed in the transform editor
+
+If you used the previous editor on **Traffic**, this walkthrough shows where to find the same controls in **Prepare**, how to preview each step on a matching request, and how to review and save a suggested change.
+
+<video controls playsInline preload="none" aria-label="What changed in the Speedscale transform editor" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/transforms/speedscale-transform-editor-whats-new.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/transforms/speedscale-transform-editor-whats-new.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/transforms/speedscale-transform-editor-whats-new.mp4')}>Download the video</a>
+</video>
+
+For a step-by-step example, [create and verify your first transform](/guides/transformation/overview.md#create-and-verify-your-first-transform). The earlier [Stop scripting and use transforms](https://www.youtube.com/watch?v=RojqxxHL7oc) video is also available.
+
 ## Where to Transform Traffic
 
-Modify traffic and see the effects with the transform editor.
+Modify traffic and see the effects on a real request with the transform editor on the Prepare tab.
 
 ![transform_editor](./transforms/editor.png)
 
@@ -73,8 +113,8 @@ Variable caches store data extracted from traffic in one location and apply it i
 
 ![generator_variables](./transforms/generator_vars.png)
 
-- **Variables (Tests)** - used to pre-load the variable cache when the generator starts up
-- **Variables (Mocks)** - used to pre-load the variable cache when the responder starts up
+- **Test variables** - used to pre-load the variable cache when the generator starts up
+- **Mock variables** - used to pre-load the variable cache when the responder starts up
 
 :::note
 Test variables are scoped to the [vUser](/reference/glossary.md#vuser). For example, a random string variable would be new and different for each VU, but the same for all requests within the same VU.
@@ -133,31 +173,44 @@ This is the simplest way to interact with the variable storage system, but not n
 
 ### Scope
 
-Variables created in the Tests tab are scoped to the current [vUser](/reference/glossary.md#vuser) or "thread" within the load generator, which runs through the snapshot traffic at most 1 time. Each vUser has a separate variable cache, just like HTTP clients talking to the same server don't share information.
+Variables for Tests on the Prepare tab are scoped to the current [vUser](/reference/glossary.md#vuser) or "thread" within the load generator, which runs through the snapshot traffic at most 1 time. Each vUser has a separate variable cache, just like HTTP clients talking to the same server don't share information.
 
 ![variable_from_rrpair](./transforms/variable_from_rrpair.png)
 
-If you need more of a "global replace" functionality you should use variables from the Variables tab.  Transforms created here are run once at the start of each vUser.
+If you need more of a "global replace" functionality you should use variables from **Test variables** or **Mock variables** on the Prepare tab.  Transforms created here are run once at the start of each vUser.
 
 ![variable_from_variables](./transforms/variable_from_variables_tab.png)
 
 ### Embedded
 
-Variable values and several special keywords can be embedded within other transform
-configuration fields using the `${{...}}` syntax. The simplest form replaces a placeholder with the
-value of a variable (if known) wherever it is found in the transform configuration. For example, you
-may want to embed a variable inside of a constant to produce `new_value=<some value from variable 1>`:
+Embed a variable in transform configuration with `${{variable1}}`. For example, a [Constant](/guides/transformation/transforms/constant.md) value of `new_value=${{variable1}}` substitutes the stored value while keeping the `new_value=` prefix.
 
-```
-${{variable1}}
-```
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="Constant step with an embedded variable in the new field">
 
-![constant](./transforms/constant_example.png)
+![Constant step with an embedded variable in the new field](./transforms/constant-embedded.jpg)
 
-This also works inside of configuration fields in other transforms, like `jwt_resign`:
+</div>
 
-![jwt_example](./transforms/jwt_example.png)
+<a href={ConstantEmbeddedImage}>Open screenshot full size</a>
 
-In addition to plain variables, the syntax supports special keywords for environment variables,
-random strings, files, [user data](/reference/glossary.md#user-data), dataframe lookups, and secrets.
-See [Embedded Syntax](/guides/transformation/embedded-syntax) for the complete reference.
+The same syntax works in configuration fields for [JWT Resign](/guides/transformation/transforms/jwt_resign.md). Keep the placeholder in the field whose value should be supplied from a variable.
+
+These two views of the JWT Resign form show a secret reference in `secretPath` and a variable in `sub`. The values are configuration placeholders.
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="JWT Resign secretPath with a documentation secret reference">
+
+![JWT Resign secretPath with a documentation secret reference](./transforms/jwt-secret-reference.jpg)
+
+</div>
+
+<a href={JwtSecretReferenceImage}>Open screenshot full size</a>
+
+<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="JWT Resign sub field with the new_sub variable">
+
+![JWT Resign sub field with the new_sub variable](./transforms/jwt-embedded-subject.jpg)
+
+</div>
+
+<a href={JwtEmbeddedSubjectImage}>Open screenshot full size</a>
+
+Embedded values also support environment variables, random strings, files, [user data](/reference/glossary.md#user-data), dataframe lookups and secrets. See [Embedded Syntax](/guides/transformation/embedded-syntax.md) for the complete reference.

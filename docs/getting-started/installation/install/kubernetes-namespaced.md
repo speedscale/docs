@@ -1,10 +1,11 @@
 ---
 title: Kubernetes (Namespaced)
+sidebar_label: Namespace-scoped installation
 description: "Install Speedscale confined to a single Kubernetes namespace, with no cluster-scoped permissions, CRDs, or admission webhooks, for clusters that cannot grant the classic operator install."
 sidebar_position: 1.5
 ---
 
-# Kubernetes, Namespaced Install
+# Namespace-scoped installation
 
 The public `speedscale-operator` chart has a namespaced mode for clusters where the [classic Speedscale Operator](./kubernetes-operator.md) cannot be installed: environments that forbid cluster-scoped grants, `CustomResourceDefinition`s, or admission webhooks. Set `namespaced.enabled=true` in chart version 2.5.1133 or later. Use 2.5.1145 or later for restricted egress and mocked replay on a RollingUpdate Deployment. This mode renders a forwarder, inspector, and replay coordinator in one existing namespace. The coordinator drives replays from labeled `ConfigMap`s instead of a `TrafficReplay` custom resource.
 
@@ -18,6 +19,8 @@ Use this install if your platform or security team will not grant:
 - a `DaemonSet` (which rules out [eBPF capture](/reference/ebpf-traffic-collection))
 
 Everything this chart renders is scoped to one namespace. If your cluster has no such restriction, install the [classic operator](./kubernetes-operator.md) instead: it captures with eBPF by default, supports every workload the namespaced install does plus `DaemonSet`s, and needs less day-to-day CLI interaction.
+
+Compare both paths in [Kubernetes installation options](./kubernetes.md). Review [limitations and compatibility](./kubernetes-namespaced-limitations.md) before installing; keep [uninstall and recovery](./kubernetes-namespaced-runbooks.md) available when removing a release.
 
 :::info Two capture mechanisms, one flag
 The namespaced install captures traffic by injecting a `goproxy` sidecar, the same mutation the classic install's admission webhook performs, computed and applied by `proxymock` itself with your own kubeconfig. See the [sidecar capture guide](/guides/capture/sidecar-namespaced) for the full `inject` / `uninject` / `status` workflow.

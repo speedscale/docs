@@ -25,7 +25,7 @@ The `install-speedscale` skill:
 
 - Runs its preflight check, which finds no reachable cluster, so it takes the "cluster, but no cluster yet" path.
 - Starts a minikube cluster in Docker while it works on the rest: `minikube start -p speedscale-tutorial --driver=docker --memory=4g`. minikube points kubectl's current context at the new cluster.
-- Installs proxymock if it is missing, connects the proxymock MCP server to your agent and installs the Speedscale skills (`proxymock mcp install --yes`). It also adds the MCP server to the other coding agents it finds on your machine and says which.
+- Installs proxymock if it is missing, then asks which agent should receive MCP and bundled skills. It previews the selected paths and scope before running an explicitly scoped command, such as `proxymock mcp install --client claude-code --skills --yes`. Other coding agents are unchanged.
 - Proves proxymock works on your machine: records one call to example.com and answers it from a mock (`match=HIT`).
 - Checks your Speedscale tenant with `speedctl check` and repeats the tenant name back to you.
 - Stores your API key in the cluster as the Secret `speedscale/speedscale-apikey`, piped straight from your proxymock config, so it never appears in the output or in Helm values.
@@ -62,19 +62,26 @@ The **Next** line is generic. Follow this tutorial instead: chapter 2 deploys th
 <details>
 <summary>Manual equivalent</summary>
 
-See [Install the operator](/getting-started/installation/install/kubernetes-operator/) for the full guide. In short:
+Create the tutorial's local cluster if you do not already have one:
 
 ```bash
 minikube start -p speedscale-tutorial --driver=docker --memory=4g
+```
+
+Then install the operator with the tutorial's settings. This assumes your service account API key is in `$SPEEDSCALE_API_KEY`; the [standard operator installation](/getting-started/installation/install/kubernetes-operator/) explains the options.
+
+```bash
 helm repo add speedscale https://speedscale.github.io/operator-helm/
 kubectl create namespace speedscale
 kubectl -n speedscale create secret generic speedscale-apikey \
-  --from-literal=SPEEDSCALE_API_KEY=<your API key> \
+  --from-literal=SPEEDSCALE_API_KEY="$SPEEDSCALE_API_KEY" \
   --from-literal=SPEEDSCALE_APP_URL=app.speedscale.com
 helm install speedscale-operator speedscale/speedscale-operator -n speedscale \
   --set apiKeySecret=speedscale-apikey --set clusterName=speedscale-tutorial \
   --set deployDemo="" --set ebpf.enabled=true
 ```
+
+Complete the guide's [verification steps](/getting-started/installation/install/kubernetes-operator/#verify-installation) before continuing.
 
 </details>
 

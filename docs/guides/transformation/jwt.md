@@ -46,6 +46,10 @@ When replaying traffic, there are three major categories of JWT challenges:
 
 Note: The Speedscale responder generally does not authenticate JWTs, so category 3 can typically be ignored. **This document focuses on categories 1 and 2**: handling JWTs produced by the SUT and requesting new JWTs from external services.
 
+:::tip
+To fix expired JWTs once for every replay of a snapshot, from the dashboard, schedules and CI, use [Replace credentials](/guides/replay/replace-credentials.md). The options on this page are set in the replay wizard for a single replay.
+:::
+
 ## Using the Replay Wizard
 
 Speedscale provides a replay wizard that simplifies the process of configuring JWT handling for your replays. The wizard automatically detects OAuth handshakes in your captured traffic and identifies JWTs that may be expired.
@@ -120,7 +124,7 @@ The replay wizard offers multiple options for handling JWTs during replay. Choos
 **Configuration**:
 1. Store the client secret in a Kubernetes Secret in the replay namespace, for example `kubectl create secret generic entra-oauth --from-literal=client_secret='<client secret>' -n <replay namespace>`
 2. Select **Request new access_token with OAuth client credentials (client ID, secret, scope, token URL)**
-3. Enter the token URL, client ID, the Secret name and key, the scope and the token field, and choose the services that get the token. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you.
+3. Enter the token URL, client ID, the client secret as a Kubernetes secret reference such as `${{secret:entra-oauth/client_secret}}` (type it or select **Pick secret**), the scope and the token field, and choose the services that get the token. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you.
 
 **Requirements**:
 - Speedscale v2.5.1184 or later, including the operator in the replay cluster, and dashboard v0.10.253 or later

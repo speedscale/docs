@@ -8,8 +8,8 @@ sidebar_position: 8
 
 Most real-world APIs require authentication. The most common type of authentication we see is JWT/OAuth2. This guide shows you how to train Speedscale to automatically re-sign JWTs for your Service Under Test (SUT).
 
-:::note
-This workflow is currently in queue for complete automation by Speedscale engineering. If you'd like to view the new design and weigh in let us know in the [community](https://slack.speedscale.com). For now, please follow these instructions. The new system will be backwards compatible.
+:::tip
+To fix expired credentials once for every replay of a snapshot, from the dashboard, schedules and CI, use [Replace credentials](/guides/replay/replace-credentials.md). It re-signs JWTs, fetches fresh tokens or pastes a replacement from the snapshot's **Credentials** tab. This page covers re-signing with a transform you edit yourself, and the one-off options the replay wizard applies to a single replay, including JWKS re-signing.
 :::
 
 ## How do I know my app needs to resign JWTs?
@@ -75,7 +75,7 @@ Now, run your replay and you're ready to go!
 
 ## Request a new token with OAuth client credentials
 
-Re-signing only works when you hold the key that signs your tokens. When your service accepts tokens from an identity provider you do not control, such as Microsoft Entra ID, Okta, Auth0 or Keycloak, the replay can request a fresh token from that provider instead. The replay launcher and the replay wizard build an [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform for you: the generator requests a token with the OAuth 2.0 client credentials grant and sends it as the `Authorization: Bearer` header to the services you choose.
+Re-signing only works when you hold the key that signs your tokens. When your service accepts tokens from an identity provider you do not control, such as Microsoft Entra ID, Okta, Auth0 or Keycloak, the replay can request a fresh token from that provider instead. The replay launcher and the replay wizard build an [`oauth_client_credentials`](/guides/transformation/transforms/oauth_client_credentials.md) transform for you: the generator requests a token with the OAuth 2.0 client credentials grant and sends it as the `Authorization: Bearer` header to the services you choose. This option applies to one replay. To request a fresh token in every replay of the snapshot, save a [Replace credentials](/guides/replay/replace-credentials.md#fetch-a-fresh-token) blueprint with **Fetch a fresh token** instead.
 
 ### Recognize the problem
 
@@ -107,14 +107,14 @@ The option appears when the snapshot has JWT locations, in the **Advanced** sect
 | Client name | A label for you. It is not sent to the token endpoint. |
 | Token URL | The token endpoint, for example `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token`. Required. |
 | Client ID | The OAuth client ID. Required. |
-| Secret name and Key | The Kubernetes Secret and key that hold the client secret, for example `entra-oauth` and `client_secret` (the default key). Only the reference `${{secret:entra-oauth/client_secret}}` is sent to Speedscale; the secret value stays in your cluster. |
+| Client secret | A reference to the Kubernetes Secret and key that hold the client secret, such as `${{secret:entra-oauth/client_secret}}`. Type the reference, or select **Pick secret** to choose the Secret and key from your cluster, starting in the replay namespace. If the Secret does not exist yet, **No secret yet?** shows the `kubectl create secret` command. Only the reference is sent to Speedscale; the secret value stays in your cluster, so the field does not take the secret itself. Required. |
 | Scope | The scope to request. For Microsoft Entra ID this is usually the API's application ID URI followed by `/.default`, for example `api://orders-api/.default`. |
 | Token field in the response | The JSON path of the token in the token response. Defaults to `access_token`. |
 | Send the new token to these services | The services the recorded tokens were sent to, taken from the snapshot's JWT locations. All are selected to start with; choose at least one. |
 
 When a recorded token was issued by Microsoft Entra ID, the form fills in the token URL (`https://login.microsoftonline.com/<tid>/oauth2/v2.0/token`, keeping the authority host of a sovereign cloud), the scope (`<aud>/.default`) and the client ID (`azp` or `appid`) from its claims. Check them before you start.
 
-3. Start the replay. The launcher and the wizard keep the replay from starting until the token URL is an `http` or `https` URL, the client ID, secret name and key are filled in, and at least one service is selected.
+3. Start the replay. The launcher and the wizard keep the replay from starting until the token URL is an `http` or `https` URL, the client ID is filled in, the client secret is a `${{secret:name/key}}` reference, and at least one service is selected.
 
 ### What to expect
 
