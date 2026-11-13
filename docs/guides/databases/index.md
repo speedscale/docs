@@ -77,7 +77,7 @@ A snapshot serves recorded database responses as mocks, so a service runs in a r
 
 ## Load and regression test a database
 
-Choose the database as the replay target and the recorded statements become the tests: replay them once against a migrated schema or a new version to see every statement that now fails, or with many sessions to load test the database. See [Load and Regression Test a Database](../../proxymock/databases/load-and-regression-testing.md#dashboard). The replay signs in to the database with the user and password in the test config's **Database credentials**: type them in for a test database, or pick a Kubernetes Secret. See [Connect to the database](../../proxymock/databases/load-and-regression-testing.md#credentials).
+Choose the database as the replay target and the recorded statements become the tests: replay them once against a migrated schema or a new version to see every statement that now fails, or with many sessions to load test the database. See [Load and Regression Test a Database](../../proxymock/databases/load-and-regression-testing.md#dashboard). The replay signs in to the database with the user and password in the test config's **Database credentials**: under **Password**, choose **Constant** and type it in for a test database, or choose **Kubernetes secret** and pick one. See [Connect to the database](../../proxymock/databases/load-and-regression-testing.md#credentials).
 
 ## Develop locally
 
