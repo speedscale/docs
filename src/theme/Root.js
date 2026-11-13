@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from '@docusaurus/Head';
+import {SearchDialog} from '../components/SiteSearch';
 
 // Canonical URLs are handled natively by Docusaurus (respects trailingSlash
 // and the site url in docusaurus.config.js).  Do NOT add a duplicate
@@ -52,6 +53,7 @@ export default function Root({ children }) {
         </script>
       </Head>
       {children}
+      <SearchDialog />
     </>
   );
 }

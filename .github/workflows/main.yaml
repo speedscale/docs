@@ -44,6 +44,9 @@ jobs:
     - name: security regression tests
       run: node --test scripts/security-regressions.test.mjs scripts/tests/ssg-pool.test.mjs
 
+    - name: search indexing regression tests
+      run: yarn test:search
+
     - name: check redirects
       env:
         BASE_SHA: ${{ github.event.before }}
