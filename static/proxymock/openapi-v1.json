@@ -1091,7 +1091,7 @@
     },
     "/v1/mocks/start": {
       "post": {
-        "description": "Starts the mock server on the outbound proxy port and answers once it accepts connections. Point the application under test at it with the returned environment variables. One mock server runs at a time.",
+        "description": "Starts the mock server on the outbound proxy port and answers once it is ready. Point the application under test at it with the returned environment variables. Passthrough is off: a call with no recorded response gets a 404 instead of reaching the live dependency. One mock server runs at a time.",
         "operationId": "mocks.start",
         "requestBody": {
           "content": {
