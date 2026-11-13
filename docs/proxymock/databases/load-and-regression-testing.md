@@ -167,20 +167,77 @@ To keep your app's inbound tests too, use `(direction IS IN) OR (tech IS Postgre
 
 The replay connects to the database with its own sessions, so it needs a user and password. Point the replay at the database with a `postgres://` or `mysql://` address that includes the host, port and database name, but no credentials. Credentials in the address are rejected so they never end up in shell history or reports.
 
+There are three ways to give the replay its user and password. Pick one by where the replay runs and by how private the password is:
+
+| Option | Works for | Where the password is kept | Use it for |
+|---|---|---|---|
+| [The database client's environment](#credentials-environment) | proxymock on your machine | On your machine only | Local regression and load tests |
+| [A password typed into the test config](#credentials-typed) | proxymock and the Speedscale dashboard | In plain text, in the test config and in every replay report that uses it | A test database whose password is not sensitive |
+| [A secret reference in the test config](#credentials-secret) | proxymock and the Speedscale dashboard | In a file in your proxymock workspace, or in a Kubernetes Secret in the cluster the replay runs in. The test config keeps only the reference. | Any password that must stay private |
+
+When more than one is set, the database name and TLS mode in the address win over the test config, and the test config wins over the environment.
+
+### Option 1: the database client's environment {#credentials-environment}
+
+For a replay you run on your own machine, proxymock reads the same settings as the database's command-line client, so nothing is saved with the test config or the report.
+
 <Tabs groupId="engine">
 <TabItem value="postgres" label="PostgreSQL">
 
-proxymock reads the user and password the same way `psql` does:
+proxymock reads the user and password the same way `psql` does: the `PGUSER` and `PGPASSWORD` environment variables, or a `~/.pgpass` file. `PGDATABASE`, `PGSSLMODE` and `PGCONNECT_TIMEOUT` work too.
 
-- The `PGUSER` and `PGPASSWORD` environment variables, or a `~/.pgpass` file. An AI assistant runs proxymock through the MCP server, which inherits the environment the assistant was started with, so `~/.pgpass` is the simplest option there.
-- The `generator.postgres` section of a test config. It takes `username`, `password`, `database`, `tlsMode` and `connectTimeout`. Use a secret reference such as `${{secret:pg-creds/password}}` for the password, because a literal value is stored with the test config and the report.
+```bash
+PGUSER=replay PGPASSWORD=<password> proxymock replay \
+  --tests-filter '(direction IS OUT) AND (tech IS Postgres)' \
+  --test-against postgres://localhost:5432/tasks_db
+```
+
+An AI assistant runs proxymock through the MCP server, which inherits the environment the assistant was started with, so `~/.pgpass` is the simplest option there.
+
+</TabItem>
+<TabItem value="mysql" label="MySQL">
+
+proxymock looks for the user and password in the same places as the `mysql` client: the `MYSQL_USER` and `MYSQL_PWD` environment variables, or the `[client]` section of `~/.my.cnf`, which can also set `database`, `ssl-mode` and `ssl-ca`.
+
+```ini
+[client]
+user = replay
+password = "your-password"
+```
+
+An AI assistant runs proxymock through the MCP server, which inherits the environment the assistant was started with, so `~/.my.cnf` is the simplest option there.
+
+</TabItem>
+</Tabs>
+
+A replay in a Kubernetes cluster does not read your machine's environment, so for a replay started from the Speedscale dashboard use option 2 or 3.
+
+### Option 2: type the password into the test config {#credentials-typed}
+
+If the database is a test database and its password is test data, you can type the password straight into the test config.
+
+:::warning
+A typed password is saved in plain text with the test config and with every replay report that uses it. Anyone in your Speedscale tenant who can open the test config or one of those reports can read it. Never type a production credential here, or a password that also opens any other system. Use [a secret reference](#credentials-secret) for those.
+:::
+
+In the Speedscale dashboard:
+
+1. Open the test config you replay with, and select its **Traffic** tab.
+2. Under **Database credentials**, select the **Postgres** or **MySQL** tab.
+3. Fill in **Username**, **Database** and **Password**, and set **TLS mode** and **Connect timeout** if you need them. A field left empty falls back to the database client's own default.
+4. Save the test config. A warning under the password reminds you that it is stored in plain text.
+
+The same settings are the `generator.postgres` or `generator.mysql` section of the test config's JSON, which is also how you set them for proxymock. Each section takes `username`, `password`, `database`, `tlsMode` and `connectTimeout`:
+
+<Tabs groupId="engine">
+<TabItem value="postgres" label="PostgreSQL">
 
 ```json
 {
   "generator": {
     "postgres": {
       "username": "replay",
-      "password": "${{secret:pg-creds/password}}",
+      "password": "test-only-password",
       "database": "tasks_db",
       "tlsMode": "PROTOCOL_TLS_MODE_REQUIRE"
     }
@@ -191,24 +248,12 @@ proxymock reads the user and password the same way `psql` does:
 </TabItem>
 <TabItem value="mysql" label="MySQL">
 
-proxymock looks for the user and password in the same places as the `mysql` client:
-
-- The `MYSQL_USER` and `MYSQL_PWD` environment variables.
-- The `[client]` section of `~/.my.cnf`, which can also set `database`, `ssl-mode` and `ssl-ca`. An AI assistant runs proxymock through the MCP server, which inherits the environment the assistant was started with, so `~/.my.cnf` is the simplest option there.
-- The `generator.mysql` section of a test config. It takes `username`, `password`, `database`, `tlsMode` and `connectTimeout`. Use a secret reference such as `${{secret:mysql-creds/password}}` for the password, because a literal value is stored with the test config and the report.
-
-```ini
-[client]
-user = replay
-password = "your-password"
-```
-
 ```json
 {
   "generator": {
     "mysql": {
       "username": "replay",
-      "password": "${{secret:mysql-creds/password}}",
+      "password": "test-only-password",
       "database": "app",
       "tlsMode": "PROTOCOL_TLS_MODE_REQUIRE"
     }
@@ -216,9 +261,50 @@ password = "your-password"
 }
 ```
 
-Settings in the address win over the test config, which wins over the environment and `~/.my.cnf`.
+</TabItem>
+</Tabs>
 
-**TLS.** Set the TLS mode with `?ssl-mode=` on the address, for example `mysql://db.internal:3306/app?ssl-mode=VERIFY_IDENTITY`, or with `tlsMode` in the test config. The modes are the ones the `mysql` client uses:
+proxymock also logs a warning when a test config holds a typed password.
+
+### Option 3: a secret reference in the test config {#credentials-secret}
+
+To keep the password out of the test config and out of reports, store it as a secret and put a reference to it in the **Password** field, or in `password` in the JSON, such as `${{secret:pg-creds/password}}`. The reference names the secret and the key inside it. The username and database can be references too.
+
+Where the reference is read from depends on where the replay runs:
+
+| Where the replay runs | What `${{secret:pg-creds/password}}` reads |
+|---|---|
+| proxymock on your machine | The file `proxymock/secrets/pg-creds/password` in your workspace. See [Secrets](../guides/secrets.md). |
+| A Kubernetes cluster: the Speedscale dashboard, `proxymock cloud replay` or `proxymock cluster replay` | The key `password` of the Kubernetes Secret `pg-creds`, in the namespace the replay runs in. Files in `proxymock/secrets` are not uploaded. |
+
+Create the secret first. On your machine, write the password to a file, and keep `proxymock/secrets` out of version control:
+
+```bash
+mkdir -p proxymock/secrets/pg-creds
+printf '%s' '<password>' > proxymock/secrets/pg-creds/password
+```
+
+For a replay in a cluster, create a Kubernetes Secret in the replay namespace:
+
+```bash
+kubectl create secret generic pg-creds --from-literal=password='<password>' -n <namespace>
+```
+
+In the Speedscale dashboard, select the link icon at the end of the **Password** field, **Insert a Kubernetes secret reference**, and pick the Secret and key. The field then holds the reference, not the password.
+
+With Speedscale v2.5.1371 or later in the cluster, the operator mounts every Secret that `generator.postgres` or `generator.mysql` references into the replay. If the Secret or the key is missing, the replay stops before it sends any traffic with a message such as `Generator cannot start: Secret pg-creds is missing in namespace ...`. With an older operator, also add the Secret to the replay's `secretRefs`.
+
+### TLS {#tls}
+
+<Tabs groupId="engine">
+<TabItem value="postgres" label="PostgreSQL">
+
+Set the TLS mode with `?sslmode=` on the address, with `tlsMode` in the test config, or with `PGSSLMODE`.
+
+</TabItem>
+<TabItem value="mysql" label="MySQL">
+
+Set the TLS mode with `?ssl-mode=` on the address, for example `mysql://db.internal:3306/app?ssl-mode=VERIFY_IDENTITY`, or with `tlsMode` in the test config. The modes are the ones the `mysql` client uses:
 
 | ssl-mode | Test config `tlsMode` | What it does |
 |---|---|---|
@@ -454,10 +540,8 @@ For traffic recorded in Kubernetes, you can run the same regression and load tes
 1. Open the snapshot's **Traffic** tab and select **Choose replay tests**. The action is available once the snapshot has finished analyzing and is not locked.
 2. Select **Outbound dependencies** and check the database, shown as its host and port with the detected technology. Check **Also keep inbound tests** if you want your app's inbound traffic replayed as well. The dialog previews the filter it will save.
 3. Save. The snapshot is reanalyzed, the snapshot page shows the active selection as **Replay tests:** followed by the filter, and the database appears as a service you can replay against. To go back, choose **Inbound traffic (default)** and save. A selection that was set outside the dashboard is shown as read-only filter text with a **Reset to default** button.
-4. Add the database credentials to the test config's `generator.postgres` or `generator.mysql` section, with the password as a secret reference.
+4. Give the replay the database user and password in the test config's **Database credentials** section, on its **Traffic** tab. For a test database whose password is test data you can type the password there; otherwise pick a Kubernetes Secret. See [Connect to the database](#credentials) for both options.
 5. Start a replay and target the database's address.
-
-Secrets referenced from `generator.postgres` or `generator.mysql` are not mounted into the replay automatically yet. Add the secret to the replay's `secretRefs` until they are.
 
 ## What gets replayed {#what-gets-replayed}
 
