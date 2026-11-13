@@ -224,8 +224,11 @@ In the Speedscale dashboard:
 
 1. Open the test config you replay with, and select its **Traffic** tab.
 2. Under **Database credentials**, select the **Postgres** or **MySQL** tab.
-3. Fill in **Username**, **Database** and **Password**, and set **TLS mode** and **Connect timeout** if you need them. A field left empty falls back to the database client's own default.
-4. Save the test config. A warning under the password reminds you that it is stored in plain text.
+3. Fill in **Username** and **Database**, and set **TLS mode** and **Connect timeout** if you need them. A field left empty falls back to the database client's own default.
+4. Under **Password**, select **Constant** and type the password. The field is masked; select the eye icon to show it. A warning above the field reminds you that it is stored in plain text.
+5. Save the test config.
+
+When you open the test config again, the **Password** field starts on **Constant** because it holds a typed password. Switching between **Constant** and **Kubernetes secret** clears the field.
 
 The same settings are the `generator.postgres` or `generator.mysql` section of the test config's JSON, which is also how you set them for proxymock. Each section takes `username`, `password`, `database`, `tlsMode` and `connectTimeout`:
 
@@ -290,7 +293,7 @@ For a replay in a cluster, create a Kubernetes Secret in the replay namespace:
 kubectl create secret generic pg-creds --from-literal=password='<password>' -n <namespace>
 ```
 
-In the Speedscale dashboard, select the link icon at the end of the **Password** field, **Insert a Kubernetes secret reference**, and pick the Secret and key. The field then holds the reference, not the password.
+In the Speedscale dashboard, select **Kubernetes secret** under **Password**, which is where an empty password starts. Then either type the reference or select **Pick secret** to choose the cluster, namespace, Secret and key from your cluster. The field then holds the reference, not the password. If the Secret does not exist yet, **No secret yet?** shows the `kubectl create secret` command to create it.
 
 With Speedscale v2.5.1371 or later in the cluster, the operator mounts every Secret that `generator.postgres` or `generator.mysql` references into the replay. If the Secret or the key is missing, the replay stops before it sends any traffic with a message such as `Generator cannot start: Secret pg-creds is missing in namespace ...`. With an older operator, also add the Secret to the replay's `secretRefs`.
 
