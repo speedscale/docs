@@ -124,7 +124,7 @@ The replay wizard offers multiple options for handling JWTs during replay. Choos
 **Configuration**:
 1. Store the client secret in a Kubernetes Secret in the replay namespace, for example `kubectl create secret generic entra-oauth --from-literal=client_secret='<client secret>' -n <replay namespace>`
 2. Select **Request new access_token with OAuth client credentials (client ID, secret, scope, token URL)**
-3. Enter the token URL, client ID, the Secret name and key, the scope and the token field, and choose the services that get the token. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you.
+3. Enter the token URL, client ID, the client secret as a Kubernetes secret reference such as `${{secret:entra-oauth/client_secret}}` (type it or select **Pick secret**), the scope and the token field, and choose the services that get the token. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you.
 
 **Requirements**:
 - Speedscale v2.5.1184 or later, including the operator in the replay cluster, and dashboard v0.10.253 or later
