@@ -3,14 +3,14 @@ description: "Modify captured requests and responses with shared transform chain
 sidebar_position: 9
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import JwtSecretReferenceImage from './transforms/jwt-secret-reference.jpg';
 import JwtEmbeddedSubjectImage from './transforms/jwt-embedded-subject.jpg';
 
 import ConstantEmbeddedImage from './transforms/constant-embedded.jpg';
 
 # Transforms
-
-<iframe src="https://www.youtube.com/embed/RojqxxHL7oc?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
 Automatically modify traffic before or during a replay.
 
@@ -81,6 +81,18 @@ Some chains exist only to observe a value, not to change it. A chain that reads 
 A read-only chain still runs every transform forward, so side effects such as `tag_session`, `variable_store` and signature changes happen as usual. Nothing is written back into the RRPair, and transforms that do their work during the re-insert step, such as `smart_replace`, `map` and `var_load`, have no effect.
 
 Chains that redact data with `dlp_field` or `dlp_json` cannot be read-only, because redaction is applied when the chain writes back. Saving a DLP rule with such a chain is rejected, and the forwarder writes back any redaction chain regardless of the setting.
+
+## What changed in the transform editor
+
+If you used the previous editor on **Traffic**, this walkthrough shows where to find the same controls in **Prepare**, how to preview each step on a matching request, and how to review and save a suggested change.
+
+<video controls playsInline preload="none" aria-label="What changed in the Speedscale transform editor" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/transforms/speedscale-transform-editor-whats-new.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/transforms/speedscale-transform-editor-whats-new.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/transforms/speedscale-transform-editor-whats-new.mp4')}>Download the video</a>
+</video>
+
+For a step-by-step example, [create and verify your first transform](/guides/transformation/overview.md#create-and-verify-your-first-transform). The earlier [Stop scripting and use transforms](https://www.youtube.com/watch?v=RojqxxHL7oc) video is also available.
 
 ## Where to Transform Traffic
 

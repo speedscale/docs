@@ -1,0 +1,135 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.240
+Say you've recorded an order request with
+its routing mode set to live.
+
+00:00:04.240 --> 00:00:07.120
+Your test environment expects sandbox.
+
+00:00:07.120 --> 00:00:11.920
+A transform lets Speedscale make that
+change when it replays the request.
+
+00:00:11.920 --> 00:00:15.440
+The original recording is still there for
+you to inspect.
+
+00:00:15.440 --> 00:00:17.840
+Let's change just that one field.
+
+00:00:17.840 --> 00:00:20.960
+Open Prepare, select Tests, and click New.
+
+00:00:20.960 --> 00:00:25.120
+Tests is the side that sends requests to
+the app you're testing.
+
+00:00:25.120 --> 00:00:29.600
+Mocks is where you'd tune the traffic used
+to stand in for its dependencies.
+
+00:00:29.600 --> 00:00:33.980
+First, set Runs on. That's the filter for
+which requests get this rule.
+
+00:00:34.560 --> 00:00:37.600
+Choose Endpoint, then select the recorded
+orders endpoint.
+
+00:00:38.400 --> 00:00:40.980
+This keeps the rule focused on the orders
+endpoint.
+
+00:00:41.680 --> 00:00:45.460
+If nothing matches, check the endpoint and
+which side you selected.
+
+00:00:46.200 --> 00:00:48.680
+Next, click Pull from and choose Request
+Body.
+
+00:00:49.280 --> 00:00:51.420
+That's the source of the value we'll work
+with.
+
+00:00:51.940 --> 00:00:56.340
+Our routing mode is inside the JSON body,
+so the first step will pick it out.
+
+00:00:56.540 --> 00:00:59.260
+Click Add step and choose JSON Path.
+
+00:00:59.600 --> 00:01:02.360
+Enter routing.mode, then click Done.
+
+00:01:02.360 --> 00:01:04.480
+That gives us just the routing mode.
+
+00:01:04.480 --> 00:01:06.840
+Add a second step called Constant.
+
+00:01:06.840 --> 00:01:09.200
+Enter sandbox and click Done.
+
+00:01:09.200 --> 00:01:11.280
+The first step finds the field.
+
+00:01:11.280 --> 00:01:13.720
+The second supplies the replacement.
+
+00:01:13.720 --> 00:01:17.480
+Pick a request in Matching requests and
+read down the chain.
+
+00:01:17.480 --> 00:01:21.720
+We pull the body, find live, and replace
+it with sandbox.
+
+00:01:21.720 --> 00:01:26.160
+Under Write back to, Replay uses shows the
+full JSON body,
+
+00:01:26.160 --> 00:01:30.160
+including the order ID, with just the
+routing mode changed.
+
+00:01:30.160 --> 00:01:32.660
+Check a second request the same way.
+
+00:01:32.660 --> 00:01:36.160
+When the preview looks right, click Save
+and reanalyze.
+
+00:01:36.160 --> 00:01:38.660
+That saves the draft to this snapshot.
+
+00:01:38.660 --> 00:01:42.660
+Once analysis completes, return to Traffic
+and open
+
+00:01:42.660 --> 00:01:46.160
+Compare to see the original request
+alongside the request
+
+00:01:46.160 --> 00:01:48.660
+with the saved transform applied.
+
+00:01:48.660 --> 00:01:52.160
+Finish with a small replay against your
+test environment.
+
+00:01:52.160 --> 00:01:55.660
+Open the report and check that the order
+requests were sent
+
+00:01:55.660 --> 00:01:57.780
+and passed the expected checks.
+
+00:01:58.380 --> 00:02:00.980
+The preview told us what value the rule
+would write.
+
+00:02:01.540 --> 00:02:04.140
+The replay tells us how the application
+responded.
