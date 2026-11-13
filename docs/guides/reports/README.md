@@ -49,6 +49,16 @@ The test config decides which families block the verdict and at which letter.
 
 See the [Readiness guide](../readiness/index.md).
 
+## Low data mode
+
+When a replay runs in [low data mode](/reference/glossary.md#low-data-mode), a notice above the report tabs says so and explains what is missing.
+
+The generator keeps only a sample of failed requests, so assertions, the error summary, transform issues and recommendations cover only that sample. The responder keeps only totals, so individual mocked calls are not listed. Latency, throughput, request counts and mock counts still cover everything sent.
+
+The Accuracy card on the Overview tab counts responses in this mode, not assertions. On the Readiness tab, the notice names the families that could not see every request or mocked call, so read those letters with care.
+
+To turn the mode off, select **Change in test config** on the notice. The change applies to the next replay.
+
 ## LLM
 
 A replay that sent streamed LLM requests gets an LLM tab with time to first token, inter-token latency, request latency and token rates, next to the recorded values when the recording had frame timing. See [LLM Streaming Metrics](../replay/llm-streaming-metrics.md#read-the-results).

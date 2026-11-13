@@ -106,6 +106,8 @@ Note that replay run with low data mode will not be able to run
 [assertions](#assertion) as the full RRPairs are not available, but the report
 will show when errors occur.
 
+A report from a low data mode replay says so in a notice above its tabs. See [Reports](/guides/reports/README.md#low-data-mode) for what stays complete and what is missing.
+
 ### Mock
 
 A mock is an artifact that can be used to imitate a real service, API, or
