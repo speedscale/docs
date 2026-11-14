@@ -77,3 +77,11 @@ The docs maintainer reviews npm dependencies and GitHub Actions at least monthly
 6. Open one PR for a coherent maintenance batch. Explain why the updates are needed, identify behavior changes and remaining advisories, and include validation results. Inspect the published preview, including affected diagrams, search, redirects, and navigation, before requesting human review.
 
 Vulnerability alerts and their triage are separate from version-update automation. Keep alerts enabled in the repository settings when changing this process.
+
+## Search
+
+`yarn build` generates a Pagefind index from every canonical URL in the finished sitemap and fails if a sitemap page cannot be indexed. Redirects, search pages, and Markdown mirrors stay out of the index. `yarn test:search` checks indexing under a preview base path.
+
+The search interface searches both docs and the website, with documentation weighted higher on docs. The framework-neutral files in `src/search/` are mirrored in the website repository; change both copies together and keep Pagefind pinned to the same version in both repositories. `WWW_SEARCH_BUNDLE` and `WWW_SEARCH_BASE` can point a local build at a local website index.
+
+Deploy the public-index CloudFront headers before enabling cross-site results in production. Keep the Algolia crawler running until Pagefind is live on docs and its coverage and search behavior have been verified. Removing the frontend integration does not disable the crawler or close the Algolia account.

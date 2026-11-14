@@ -75,7 +75,7 @@ The site uses a hierarchical structure organized in `/docs/` with these main sec
 ### Content Management
 
 When deleting pages, always add redirects to `docusaurus.config.js` to prevent broken links. The site uses:
-- Algolia for search functionality
+- Pagefind for build-time search across docs and www
 - Google Tag Manager for analytics
 - Mermaid for diagram rendering
 
@@ -92,7 +92,7 @@ The generated `docs/proxymock/how-it-works/mcp-tools.md` page is checked like an
 - **Framework**: Docusaurus 3.10.2
 - **React**: 19.0.0  
 - **Node**: >=18.0 required
-- **Search**: Algolia DocSearch
+- **Search**: Pagefind
 - **Analytics**: Google Tag Manager
 
 ## Documentation Improvement Plan
@@ -125,7 +125,7 @@ The generated `docs/proxymock/how-it-works/mcp-tools.md` page is checked like an
 - **Naming Standardization**: Implement consistent file/directory naming conventions
 - **Image Organization**: Move loose images to topic-specific directories
 - **Link Validation**: Consider automated checking for future maintenance
-- **Search Optimization**: Ensure Algolia indexing covers all content areas
+- **Search Optimization**: Ensure Pagefind covers every docs sitemap URL
 
 ### Implementation Guidelines
 When working on these improvements:

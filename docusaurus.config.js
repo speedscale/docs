@@ -13,6 +13,13 @@ const config = {
   url: "https://docs.speedscale.com",
   baseUrl: "/",
   trailingSlash: true,
+  customFields: {
+    search: {
+      version: require("./package.json").devDependencies.pagefind,
+      websiteBundle: process.env.WWW_SEARCH_BUNDLE || "https://speedscale.com/pagefind",
+      websiteBase: process.env.WWW_SEARCH_BASE || "https://speedscale.com/",
+    },
+  },
   onBrokenLinks: "throw",
   favicon: "img/favicon.ico",
   organizationName: "speedscale", // Usually your GitHub org/user name.
@@ -1678,6 +1685,9 @@ const config = {
             "/index_old/**",
             "/markdown-page/**",
             "/search/**",
+            "/**/index_old/**",
+            "/**/markdown-page/**",
+            "/**/search/**",
           ],
           filename: "sitemap.xml",
         },
@@ -1702,13 +1712,6 @@ const config = {
           content: "https://docs.speedscale.com/img/speedscale.svg",
         },
       ],
-      algolia: {
-        // The application ID provided by Algolia
-        appId: "G1CYU179LN",
-        // Public API key: it is safe to commit it
-        apiKey: "96ea3a26c0551c1f0e9729366ef87cd5",
-        indexName: "speedscale",
-      },
       colorMode: {
         disableSwitch: false,
       },

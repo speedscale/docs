@@ -79,6 +79,10 @@ jobs:
       if: steps.preview.outputs.run == 'true'
       run: node --test scripts/security-regressions.test.mjs scripts/tests/ssg-pool.test.mjs
 
+    - name: search indexing regression tests
+      if: steps.preview.outputs.run == 'true'
+      run: yarn test:search
+
     - name: check redirects
       if: steps.preview.outputs.run == 'true'
       env:
