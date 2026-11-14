@@ -1,0 +1,76 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:03.936
+Let's turn a busy traffic view into a
+snapshot you can replay.
+
+00:00:04.106 --> 00:00:07.506
+In this example, we only need requests to
+create orders.
+
+00:00:08.052 --> 00:00:12.651
+Open Traffic and start with a time range
+that includes the requests you want.
+
+00:00:12.822 --> 00:00:16.013
+In the Filters bar, set Service to
+orders-api.
+
+00:00:16.184 --> 00:00:19.504
+If the service is already selected, you can
+edit its chip.
+
+00:00:20.052 --> 00:00:21.412
+Click the Filters bar.
+
+00:00:21.583 --> 00:00:26.388
+Choose Add a filter, select Endpoint, and
+enter /api/orders.
+
+00:00:26.559 --> 00:00:29.073
+Check the Reads as summary, then click
+Apply.
+
+00:00:29.244 --> 00:00:30.686
+Both rows must match.
+
+00:00:31.252 --> 00:00:33.656
+The results now show only traffic for this
+
+00:00:33.656 --> 00:00:36.404
+service and endpoint within the selected
+window.
+
+00:00:36.575 --> 00:00:40.931
+Open a POST request from the grid to
+confirm you've got the right traffic.
+
+00:00:41.485 --> 00:00:44.387
+In the Request tab, inspect the headers or
+body.
+
+00:00:44.558 --> 00:00:47.085
+Use the Response tab to check what came
+back.
+
+00:00:47.256 --> 00:00:52.330
+Here the request creates an order, and the
+recorded response returned status 201.
+
+00:00:52.885 --> 00:00:54.613
+Click Save at the top of Traffic.
+
+00:00:54.784 --> 00:00:58.878
+Speedscale creates a snapshot from the
+current filters and time range.
+
+00:00:59.049 --> 00:01:01.292
+You can find that snapshot later under
+
+00:01:01.292 --> 00:01:04.126
+Snapshots and use it as the source for a
+replay.
+
+00:01:04.685 --> 00:01:08.350
+The next time you need to test this
+endpoint, start with that snapshot.

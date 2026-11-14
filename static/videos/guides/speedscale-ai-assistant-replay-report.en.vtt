@@ -1,0 +1,77 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:05.048
+When a replay has a long list of failed
+checks, the dashboard assistant can help
+
+00:00:05.048 --> 00:00:07.548
+you pick the first request to investigate.
+
+00:00:08.085 --> 00:00:11.149
+Open the replay report, then click the chat
+icon.
+
+00:00:11.320 --> 00:00:13.612
+The assistant already has this report in
+
+00:00:13.612 --> 00:00:16.764
+scope, so you can ask about the current run
+right away.
+
+00:00:17.319 --> 00:00:19.396
+Start with, What changed in this replay?
+
+00:00:19.566 --> 00:00:21.395
+Which endpoint should I check first?
+
+00:00:21.566 --> 00:00:24.531
+If you already know the endpoint, name it
+in the prompt.
+
+00:00:24.702 --> 00:00:28.218
+The example here asks why assertions failed
+for /order.
+
+00:00:28.785 --> 00:00:33.844
+In the example, the assistant groups the
+failures by assertion type for /order.
+
+00:00:34.015 --> 00:00:36.700
+Both JSON schema and body checks failed.
+
+00:00:36.871 --> 00:00:39.800
+Use those details to choose a request to
+inspect.
+
+00:00:40.352 --> 00:00:41.385
+Ask a follow-up.
+
+00:00:41.556 --> 00:00:45.588
+Show me one /order request with a failed
+JSON body assertion.
+
+00:00:45.758 --> 00:00:50.620
+Ask for the request link, or filter the
+report’s Accuracy tab by endpoint and
+
+00:00:50.620 --> 00:00:52.830
+assertion type to find it yourself.
+
+00:00:53.385 --> 00:00:56.000
+Open the affected request in the report and
+
+00:00:56.000 --> 00:00:58.675
+compare the recorded and replayed
+responses.
+
+00:00:58.846 --> 00:01:02.439
+This separate example shows where to find
+Expected and Actual.
+
+00:01:02.610 --> 00:01:04.710
+Look for the difference the assertion
+flagged.
+
+00:01:05.252 --> 00:01:08.228
+Try this on your next replay with a failed
+assertion.
