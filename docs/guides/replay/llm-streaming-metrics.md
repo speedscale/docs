@@ -4,6 +4,8 @@ description: "Measure time to first token, inter-token latency and token through
 sidebar_position: 7.7
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # LLM Streaming Metrics
 
 When a replay sends requests to a model server and the responses stream back token by token, Speedscale measures the numbers teams use to judge LLM serving performance: time to first token (TTFT), inter-token latency (ITL), request latency and token throughput. The definitions match [NVIDIA AIPerf](https://github.com/ai-dynamo/aiperf), the benchmarking tool in NVIDIA's NIM guides, so a Speedscale number means the same thing as the AIPerf number with the same name.
@@ -97,6 +99,14 @@ A replay that sent no LLM stream reports none of these metrics, and a percentile
 In a [test config](../../reference/configuration/goals.md), add a goal on any goal metric in the table above. Use **too high** for durations and counts such as `llmTtftP95` or `llmIncompleteCount`, and **too low** for rates such as `llmUserTokensPerSecP50`. LLM goals apply to the whole run, so leave the location empty; they cannot be scoped to an endpoint or a load stage. The replay launcher shows them with labels such as **LLM TTFT p95**.
 
 ## Read the results
+
+Watch how to compare recorded and replayed stream timing, inspect an individual response, and set a time-to-first-token goal.
+
+<video controls playsInline preload="none" aria-label="Catch LLM streaming latency regressions" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/replay/speedscale-llm-streaming-metrics.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/replay/speedscale-llm-streaming-metrics.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/replay/speedscale-llm-streaming-metrics.mp4')}>Download the video</a>
+</video>
 
 A report from a replay that sent LLM streams has an **LLM** tab. It shows TTFT, request latency, ITL and tokens per second per user at p50, p95 and max, with the number of streams, output tokens, output tokens per second and the share of approximate token counts. Alerts above the table explain cut-off streams and approximate counts when there are any.
 
