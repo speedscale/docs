@@ -1,0 +1,70 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:04.370
+A checkout touches the gateway,
+authentication, orders, and shipping.
+
+00:00:04.541 --> 00:00:09.820
+In proxymock, start with an identifier you
+already know and find the recorded calls
+
+00:00:09.820 --> 00:00:11.219
+across those services.
+
+00:00:11.785 --> 00:00:15.856
+Open the demo recording in proxymock web
+and go to Requests.
+
+00:00:16.027 --> 00:00:20.132
+The grid starts with all captured
+transactions, so calls from different
+
+00:00:20.132 --> 00:00:21.808
+customers are mixed together.
+
+00:00:22.352 --> 00:00:24.933
+Open Filters, choose Full Text, and enter
+
+00:00:24.933 --> 00:00:28.396
+the demo customer's email with the contains
+comparator.
+
+00:00:28.567 --> 00:00:32.924
+The same value can match a header, a
+request body, or a response body.
+
+00:00:33.485 --> 00:00:34.834
+Switch to the Trace view.
+
+00:00:35.005 --> 00:00:37.232
+Follow one checkout from the gateway to
+
+00:00:37.232 --> 00:00:39.859
+auth and orders, then from orders to
+shipping.
+
+00:00:40.029 --> 00:00:41.992
+The email found the matching traffic.
+
+00:00:42.163 --> 00:00:45.405
+The trace headers in this demo help show
+which calls are nested.
+
+00:00:45.952 --> 00:00:49.651
+Select a hop to inspect its recorded
+request and response.
+
+00:00:49.822 --> 00:00:53.256
+Here the checkout payload contains the
+email you filtered on.
+
+00:00:53.426 --> 00:00:57.106
+The response contains the order ID and
+delivery estimate.
+
+00:00:57.652 --> 00:01:00.283
+Use the same method with a customer ID,
+
+00:01:00.283 --> 00:01:04.129
+order ID, or another value carried through
+your requests.

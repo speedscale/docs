@@ -4,11 +4,23 @@ description: "The Readiness view of the service page shows every graded replay o
 sidebar_position: 9
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Service Trend
 
 The Readiness view of the service page shows how a service's letters moved across its graded replays.
 
 Open a service and switch the view to **Readiness**, or use the Service trend link on the Trend family of any report.
+
+## Find where readiness dropped
+
+Find the first replay that changed and follow its verdict to the report.
+
+<video controls playsInline preload="none" aria-label="Find where readiness dropped" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-find-readiness-regression-build.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-find-readiness-regression-build.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-find-readiness-regression-build.mp4')}>Download the video</a>
+</video>
 
 ## Range and build
 

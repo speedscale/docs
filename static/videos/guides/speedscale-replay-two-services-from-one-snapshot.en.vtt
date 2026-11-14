@@ -1,0 +1,68 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:02.619
+Suppose you want to test the frontend and
+
+00:00:02.619 --> 00:00:05.352
+payment service together using recorded
+traffic.
+
+00:00:05.523 --> 00:00:09.114
+Start with the two captures and combine
+them into one snapshot.
+
+00:00:09.652 --> 00:00:14.654
+Record the frontend and payment traffic,
+then open the frontend snapshot and append
+
+00:00:14.654 --> 00:00:15.919
+the payment snapshot.
+
+00:00:16.090 --> 00:00:18.757
+In the guide's example, the merged snapshot
+
+00:00:18.757 --> 00:00:21.735
+contains a login the payment requests can
+reuse.
+
+00:00:22.285 --> 00:00:27.008
+Open Replay from the merged snapshot and
+select the test cluster and namespace.
+
+00:00:27.179 --> 00:00:29.566
+Make sure both target workloads are running
+there.
+
+00:00:30.119 --> 00:00:33.520
+In Tests, edit the frontend row and select
+its workload.
+
+00:00:33.691 --> 00:00:34.907
+Repeat for payment.
+
+00:00:35.078 --> 00:00:37.540
+In the routing table, confirm each service
+
+00:00:37.540 --> 00:00:40.412
+points to its own deployment before you
+continue.
+
+00:00:40.952 --> 00:00:42.354
+Select a test config.
+
+00:00:42.525 --> 00:00:46.978
+In the review, confirm you have both
+inbound traffic sources and check the
+
+00:00:46.978 --> 00:00:49.385
+recorded dependencies you chose to mock.
+
+00:00:49.556 --> 00:00:51.034
+Then select Start Replay.
+
+00:00:51.585 --> 00:00:53.724
+Open the resulting report and check it
+
+00:00:53.724 --> 00:00:56.201
+against the two service selections you
+made.
