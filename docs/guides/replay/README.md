@@ -7,6 +7,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Dashboard
 
+## Run your first dashboard replay
+
 Once your service has recorded traffic you can start a replay with the "Replay
 traffic" button from the traffic viewer, which will start the replay wizard.
 
