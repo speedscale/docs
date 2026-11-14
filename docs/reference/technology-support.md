@@ -145,7 +145,7 @@ Model servers you run yourself, such as vLLM, LM Studio, TGI or Ollama, and gate
 
 | Label                 | Type | Support | Detected from                                           |
 | --------------------- | ---- | ------- | ------------------------------------------------------- |
-| Ollama                | LLM  | Full    | Port 11434, or a native `/api/chat`, `/api/generate` or `/api/embed` request answered with Ollama's `done` field |
+| Ollama                | LLM  | Full    | Port 11434, or a request to Ollama's native `/api/chat`, `/api/generate`, `/api/embed` or `/api/embeddings` route that names a `model` and gets Ollama's response shape |
 | OpenAI-compatible     | LLM  | Full    | A `/chat/completions`, `/v1/completions`, `/embeddings` or `/responses` request whose JSON body names a `model` and carries that API's input |
 | Anthropic-compatible  | LLM  | Full    | A `/v1/messages` request whose JSON body names a `model` and has `messages`, sent with `anthropic-version` or `max_tokens` |
 
