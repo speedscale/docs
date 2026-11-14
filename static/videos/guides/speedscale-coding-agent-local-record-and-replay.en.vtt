@@ -1,0 +1,62 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:05.657
+With proxymock connected, your coding agent
+can record a local service and replay that
+
+00:00:05.657 --> 00:00:07.843
+traffic with recorded dependencies.
+
+00:00:08.014 --> 00:00:09.791
+We'll use the mock-lab orders app.
+
+00:00:10.352 --> 00:00:15.441
+Once the tutorial app is set up, ask the
+agent to use the record traffic skill while
+
+00:00:15.441 --> 00:00:16.895
+the traffic driver runs.
+
+00:00:17.066 --> 00:00:21.435
+Include the app's database calls and its C
+N C F API calls.
+
+00:00:21.985 --> 00:00:24.026
+Open one of the recorded requests.
+
+00:00:24.197 --> 00:00:27.873
+Here, a post to /orders returned two oh one
+created.
+
+00:00:28.044 --> 00:00:32.269
+The corresponding outbound calls were
+captured in separate host folders.
+
+00:00:32.819 --> 00:00:38.146
+Follow the tutorial's tuning chapters, then
+ask the agent to start the mocks and run a
+
+00:00:38.146 --> 00:00:40.809
+local replay with the tutorial test config.
+
+00:00:40.980 --> 00:00:44.753
+Ask it to report assertion results and mock
+matches separately.
+
+00:00:45.319 --> 00:00:50.753
+In this recorded tutorial run, four hundred
+and five assertions passed across a hundred
+
+00:00:50.753 --> 00:00:52.877
+and thirty-five replayed requests.
+
+00:00:53.048 --> 00:00:55.391
+The mock report also shows that all
+
+00:00:55.391 --> 00:00:58.805
+observed outbound calls matched recorded
+responses.
+
+00:00:59.352 --> 00:01:03.351
+Follow the same loop after a code change
+and compare the next result.
