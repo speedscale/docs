@@ -1,6 +1,6 @@
 ---
 title: Databases
-description: "Record your app's PostgreSQL and MySQL traffic with proxymock, then watch it live, inspect each statement with its bound values, link queries to the request that ran them, compare two runs, export runnable SQL, mock the database, and replay the traffic against a database."
+description: "Record your app's PostgreSQL, MySQL and SQL Server traffic with proxymock, then watch it live, inspect each statement with its bound values, link queries to the request that ran them, compare two runs, export runnable SQL, mock the database, and replay the traffic against a database."
 sidebar_label: Overview
 ---
 
@@ -16,7 +16,7 @@ What that gives you:
 - **Run without the database.** Mock it from the recording so tests and coding agents run offline and deterministically.
 - **Test the database with real traffic.** Replay the recorded statements against a new schema or version, or with many sessions as a load test.
 
-Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Postgres, MySQL and SQL Server recordings can all be watched, inspected, linked to requests, inventoried and exported as SQL. Mocking the database and replaying against one cover Postgres and MySQL. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Record your database
 
@@ -26,7 +26,7 @@ Start the recorder with a port mapped to your database and point your app at tha
 proxymock record --map 15432=postgres://localhost:5432 --app-port 8080
 ```
 
-The setup pages cover each database: [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md), [MongoDB](./record/mongodb.md), [Redis](./record/redis.md) and [DynamoDB](../aws/dynamodb.md).
+The setup pages cover each database: [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md), [SQL Server](./record/sqlserver.md), [MongoDB](./record/mongodb.md), [Redis](./record/redis.md) and [DynamoDB](../aws/dynamodb.md).
 
 ## Watch and inspect statements
 
@@ -56,15 +56,15 @@ Record before and after a change and compare the two recordings to see new and r
 
 ## Export runnable SQL
 
-Since 2.5.1152, **Export SQL script** in the Requests tab's Actions menu, **Export as .sql** on a call's Connection tab, and `proxymock sql-script` write the recorded statements as a `.sql` script in recorded order, with bound values filled in, that `psql` or `mysql` can run. Statements whose values were not captured are written commented out.
+Since 2.5.1152, **Export SQL script** in the Requests tab's Actions menu, **Export as .sql** on a call's Connection tab, and `proxymock sql-script` write the recorded statements as a `.sql` script in recorded order, with bound values filled in, that `psql`, `mysql` or `sqlcmd` can run. Statements whose values were not captured are written commented out.
 
 ## Mock the database
 
-`proxymock mock` answers your app's database calls from the recording, so the app runs with no database. [Mock a database](../../guides/databases/mock-a-database.md) explains what a SQL mock matches on and how to tune it, and [Improve Mock Match Rate with AI](../guides/mock-match-rate.md) fixes the calls that miss.
+`proxymock mock` answers your app's Postgres, MySQL, MongoDB and Redis calls from the recording, so the app runs with no database. [Mock a database](../../guides/databases/mock-a-database.md) explains what a SQL mock matches on and how to tune it, and [Improve Mock Match Rate with AI](../guides/mock-match-rate.md) fixes the calls that miss.
 
 ## Load and regression test the database
 
-Replay the recorded statements against a database to find every statement a migration or an upgrade breaks, or with many sessions to load test it. See [Load and Regression Test a Database](./load-and-regression-testing.md).
+Replay the recorded Postgres or MySQL statements against a database to find every statement a migration or an upgrade breaks, or with many sessions to load test it. See [Load and Regression Test a Database](./load-and-regression-testing.md).
 
 ## Try it
 

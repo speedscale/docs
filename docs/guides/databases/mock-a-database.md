@@ -5,7 +5,7 @@ sidebar_position: 7
 
 # Matching SQL mocks
 
-When your app queries Postgres or MySQL during a replay, the mock server looks for a recording of the same statement and answers with it. This page explains what counts as the same statement, what the mock server already ignores for you, and how to tune matching with the SQL transforms.
+When your app queries Postgres or MySQL during a replay, the mock server looks for a recording of the same statement and answers with it. This page explains what counts as the same statement, what the mock server already ignores for you, and how to tune matching with the SQL transforms. SQL Server calls are recorded and shown in the database views but are not mocked.
 
 ## What a SQL mock matches on
 

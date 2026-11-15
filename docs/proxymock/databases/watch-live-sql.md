@@ -1,17 +1,17 @@
 ---
 title: Watch live SQL
-description: "Watch your app's PostgreSQL and MySQL statements arrive as proxymock records them, like a database profiler: filter them with templates, pause and clear, save what you caught as a recording, and copy it as runnable SQL."
+description: "Watch your app's PostgreSQL, MySQL and SQL Server statements arrive as proxymock records them, like a database profiler: filter them with templates, pause and clear, save what you caught as a recording, and copy it as runnable SQL."
 ---
 
 # Watch live SQL
 
-The **Live SQL** lens in proxymock web streams your app's database calls as they are recorded, the way SQL Server Profiler streams a trace. Run a request in your app and its statements appear a moment later, with who ran them, how long they took and how they ended. It works on a local `proxymock record` in progress and on a live tap of a Kubernetes workload, and it needs proxymock 2.5.1149 or later.
+The **Live SQL** lens in proxymock web streams your app's database calls as they are recorded, the way SQL Server Profiler streams a trace. It follows Postgres, MySQL and SQL Server calls. Run a request in your app and its statements appear a moment later, with who ran them, how long they took and how they ended. It works on a local `proxymock record` in progress and on a live tap of a Kubernetes workload, and it needs proxymock 2.5.1149 or later.
 
 Use it when you want to see what a change does to the database while you click through the app: which statements a page runs, whether a loop fires one query per row, which call is slow, or which one fails.
 
 ## Open the lens
 
-1. Start recording your app with its database mapped, as described in [Record your database](./record/postgresql.md).
+1. Start recording your app with its database mapped, as described for [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md) or [SQL Server](./record/sqlserver.md).
 2. Run `proxymock web` and open **Requests**.
 3. Pick the run that is recording from the **Run** list and choose **Live SQL** next to **Grid**, **Report** and **Trace**.
 
@@ -67,7 +67,7 @@ Select a row to see a strip with its event, session, route, user and database, a
 ## Keep what you caught
 
 - **Save as recording** writes the calls in the lens to a new recorded run named `recorded-live-sql-<time>`, which you can mock, replay or compare like any other recording. Protocol chatter is left out, so the run holds statements, logins and logouts.
-- **Copy as SQL** in the toolbar copies the rows on screen, in recorded order, as one script that `psql` or `mysql` can run, with bound values filled in. Statements whose values were not captured are written commented out. When the clipboard is not available the script downloads instead. It needs proxymock 2.5.1154 or later. See [Export a SQL script](./export-sql-script.md) for the whole run.
+- **Copy as SQL** in the toolbar copies the rows on screen, in recorded order, as one script that `psql`, `mysql` or `sqlcmd` can run, with bound values filled in. Statements whose values were not captured are written commented out. When the clipboard is not available the script downloads instead. It needs proxymock 2.5.1154 or later. See [Export a SQL script](./export-sql-script.md) for the whole run.
 
 ## Watch a cluster workload
 

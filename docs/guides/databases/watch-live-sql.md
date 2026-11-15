@@ -1,18 +1,18 @@
 ---
 title: Watch live SQL
-description: "Follow your services' PostgreSQL and MySQL statements as they run on the Speedscale Traffic page, like a SQL Server Profiler trace: database columns, trace templates for slow statements, errors, locks and logins, Follow, Clear and Save as snapshot."
+description: "Follow your services' PostgreSQL, MySQL and SQL Server statements as they run on the Speedscale Traffic page, like a SQL Server Profiler trace: database columns, trace templates for slow statements, errors, locks and logins, Follow, Clear and Save as snapshot."
 ---
 
 # Watch live SQL
 
-The **Traffic** page can follow a service's database calls as they happen, one row per statement, login or logout, with who ran it, how long it took and how it ended. It works like a SQL Server Profiler trace, but it reads the traffic your services already send, so it needs no access to the database, no extended events session and no slow query log.
+The **Traffic** page can follow a service's database calls as they happen, one row per statement, login or logout, with who ran it, how long it took and how it ended. It works like a SQL Server Profiler trace and covers SQL Server, Postgres and MySQL alike, but it reads the traffic your services already send, so it needs no access to the database, no extended events session and no slow query log.
 
 Use it to watch what a deploy does to the database, to catch the errors, lock waits or slow statements of an incident while it happens, or to see what a feature actually asks of the database while you click through it.
 
 ## Open it
 
 1. On the **Traffic** page, keep a relative time range such as **Last 15 minutes** and auto refresh on.
-2. Filter to the service, and to a database with **L7 Protocol** is `postgres` or `mysql`, or with any **Database** filter.
+2. Filter to the service, and to a database with **L7 Protocol** is `postgres`, `mysql` or `mssql`, or with any **Database** filter.
 
 The grid switches to the database columns: Event, Statement, Application, User, Database, Session, Duration, Rows and Status. The database icon in the toolbar switches between these and the default columns. See [Find statements with filters](./find-statements.md) for every Database filter.
 

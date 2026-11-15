@@ -16,7 +16,7 @@ This guide shows how to turn your app's real PostgreSQL or MySQL traffic into th
 
 Every step works two ways. You can ask an AI coding assistant that has the [proxymock MCP server](../how-it-works/mcp-tools.md) installed, or you can run the proxymock CLI yourself. The load and regression steps also work from the Speedscale dashboard for traffic recorded in Kubernetes.
 
-Pick your database once in any of the tabs below and every section follows. The MySQL steps also work for MariaDB, which speaks the MySQL protocol. The MySQL replay has been tested against MySQL 8.0, MySQL 8.4 and MariaDB 11.4.
+Pick your database once in any of the tabs below and every section follows. The MySQL steps also work for MariaDB, which speaks the MySQL protocol. The MySQL replay has been tested against MySQL 8.0, MySQL 8.4 and MariaDB 11.4. SQL Server traffic can be recorded and inspected but not replayed against a database.
 
 [Watch database replay and testing on YouTube](https://www.youtube.com/watch?v=Q4sIn21pfQc).
 
