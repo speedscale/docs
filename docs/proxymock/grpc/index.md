@@ -16,7 +16,7 @@ What that gives you:
 - **Catch contract breaks.** `proxymock validate` checks recorded responses against the `.proto` message types and flags a field whose type changed, an enum value the enum does not declare, or a field the message does not declare.
 - **Know what a recording covers.** `proxymock coverage` lists every RPC in the `.proto` and which of them, which status codes and which response fields the recording reached.
 
-The unary workflows work from the proxymock CLI and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Native server-streaming capture uses the CLI's explicit opt-in flag.
+The unary workflows work from the proxymock CLI and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Native streams are captured as calls with no extra flag.
 
 :::note
 `.proto` support in `generate`, `validate` and `coverage` needs proxymock 2.5.1249 or newer. Recording, mocking and replaying gRPC do not need it.
@@ -25,7 +25,8 @@ The unary workflows work from the proxymock CLI and from an AI coding assistant 
 ## The pages in this section
 
 - [Record gRPC traffic](./record.md): record a gRPC service, its gRPC dependencies, or both, and read what a recorded call looks like.
-- [Native server streaming](./server-streaming.md): opt into bounded capture, preserve message boundaries and outcomes, and compare every replay response.
+- [Native server streaming](./server-streaming.md): capture bounded streams, preserve message boundaries and outcomes, and compare every replay response.
+- [Native client streaming](./client-streaming.md): mock a client stream by its whole ordered request sequence and replay every request with its recorded spacing.
 - [Mock a gRPC dependency](./mock-a-grpc-dependency.md): answer a dependency's calls from a recording and fix calls that do not match.
 - [Generate tests and mocks from a .proto](./generate-from-a-proto.md): start a recording from the `.proto` when there is no traffic yet.
 - [Validate and measure coverage](./validate-and-coverage.md): check recorded responses against the `.proto` and see which RPCs, statuses and fields a recording reaches.
@@ -102,5 +103,6 @@ The Speedscale dashboard shows the same switch in the traffic viewer's Body tab.
 - **Unary RPCs remain supported.** Bounded native server streaming is captured automatically, and unary calls are recorded exactly as before. A call with one request and a client half-close can round-trip all messages through JSON and streaming Markdown, mock with pacing and recorded status, and replay with every response compared. See [native server streaming](./server-streaming.md) for version requirements and limits.
 - **Long or cancelled streams remain partial.** Capture retains a bounded prefix and termination reason. Partial or unsupported calls are excluded from strict execution with diagnostics. A mixed replay executes eligible calls only; a recording with no eligible traffic exits unsuccessfully.
 - **Existing unary Markdown keeps its format.** Streaming call recordings use Markdown v3, with editable decoded messages where they re-encode exactly and base64 wire messages otherwise. Older readers must not be used for the new format.
-- **Client streaming, bidirectional execution and grpc-web streaming are separate phases.** Capturing their messages does not qualify them for Phase 1 execution.
+- **Client streams are mocked and replayed.** The mock matches the whole ordered request sequence, and replay sends every request with its recorded spacing. See [native client streaming](./client-streaming.md).
+- **Bidirectional execution and grpc-web streaming are separate phases.** A call that sends several messages in each direction is excluded from mock and replay with a diagnostic.
 - **`proxymock generate`** does not write streaming RPCs. It lists them as skipped. Streaming generation and kraken qualification remain follow-up work.

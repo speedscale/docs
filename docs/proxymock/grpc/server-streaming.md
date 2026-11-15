@@ -32,7 +32,7 @@ Once a call has streamed, capture keeps a bounded prefix when it resets, is canc
 | Call duration | 5 minutes |
 | Serialized recording | Less than 1,000,000 bytes |
 
-Connection and process capture budgets can stop a call earlier under pressure. Local request preparation also requires a half-close within one minute, and mock playback has a five-minute deadline. An unlimited watch cannot be represented as a complete Phase 1 recording.
+Connection and process capture budgets can stop a call earlier under pressure. Local request preparation also requires a half-close within one minute, and mock playback has a five-minute deadline. An unlimited watch cannot be represented as a complete recording.
 
 ### Recording formats and compatibility
 
@@ -42,12 +42,12 @@ Use a version that understands call format 1 throughout the recording workflow. 
 
 Per-message stream recordings from older releases are not supported for mock or replay. They lack the request, half-close and terminal evidence a call needs, so mock and replay skip them with one warning per stream and keep loading the rest of the recording. Recapture those streams to mock or replay them.
 
-Whole-call recordings made without `--grpc-streaming`, including those from earlier releases, already hold every message in one record. When such a record has one request and a recorded gRPC status, mock and replay import it as a complete call with unknown timing, so its messages play immediately. Any other shape keeps its previous unary behavior, and the recording files are never rewritten.
+Whole-call recordings from releases before native streaming capture already hold every message in one record. When such a record has one request and a recorded gRPC status, mock and replay import it as a complete call with unknown timing, so its messages play immediately. Any other shape keeps its previous unary behavior, and the recording files are never rewritten.
 
 Content redaction visits every decoded message. If requested content redaction cannot safely handle an opaque or partial call, the payload is withheld and an explicit failure is recorded; local recording refuses to save that call.
 
 ### Known limits
 
-Client-streaming and bidirectional execution, streaming scenario generation, grpc-web streaming and kraken qualification are separate follow-up phases. Capturing a call with multiple request messages does not make it executable by the Phase 1 mock or replay client. Counts alone do not establish the declared method cardinality.
+[Client streams](./client-streaming.md) are mocked and replayed as well. Bidirectional execution, streaming scenario generation, grpc-web streaming and kraken qualification are separate follow-up phases. A call that sends several messages in each direction is treated as bidirectional and excluded from mock and replay with a diagnostic.
 
-Cloud capture writers remain disabled by default until storage, cache, analyzer, responder and generator readers have been deployed together. Reader-first rollout is required before enabling `GRPC_STREAMING_ENABLED`. The local proxymock binary ships the compatible readers and writer together, so it always captures streams as calls. Keep streaming methods out of bootstrap-generated recordings until the Phase 1 release is available.
+Cloud capture writers remain disabled by default until storage, cache, analyzer, responder and generator readers have been deployed together. Reader-first rollout is required before enabling `GRPC_STREAMING_ENABLED`. The local proxymock binary ships the compatible readers and writer together, so it always captures streams as calls. Keep bidirectional methods out of bootstrap-generated recordings.
