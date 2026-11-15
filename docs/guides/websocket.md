@@ -37,7 +37,7 @@ WebSocket traffic appears in the [Traffic Viewer](./capture/filter.md) like any 
 
 When you replay a snapshot that contains WebSocket traffic, each virtual user opens its own WebSocket sessions with the service under test:
 
-1. The upgrade handshake is sent with the recorded path, query string, headers and subprotocols. The client sets a fresh `Sec-WebSocket-Key`, version and extensions.
+1. The upgrade handshake is sent with the recorded path, query string, headers and subprotocols. The client sets a fresh `Sec-WebSocket-Key`, version and extensions. When the test config honors `Set-Cookie`, the handshake sends the cookies the service set earlier in the replay in place of the recorded ones, as HTTP requests do.
 2. Each recorded client message is sent with its recorded type (text, binary or close).
 3. For each recorded server message, the replay reads the next message the service sends and keeps it as that message's response, so the report compares what the service sent now with what it sent when it was recorded.
 4. When the recording closes the session, the replay sends the close and waits for the service's closing reply.
