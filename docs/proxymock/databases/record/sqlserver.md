@@ -1,6 +1,6 @@
 ---
 title: Record SQL Server
-description: "Record your app's SQL Server, Azure SQL and Amazon RDS for SQL Server traffic with proxymock: the port map, the encryption setting for SqlClient, mssql-jdbc and go-mssqldb, what each call records, and the limits."
+description: "Record your app's SQL Server, Amazon RDS for SQL Server and Azure SQL Managed Instance traffic with proxymock: the port map, the encryption setting for SqlClient, mssql-jdbc and go-mssqldb, what each call records, and the limits."
 sidebar_position: 7
 ---
 
@@ -8,7 +8,7 @@ sidebar_position: 7
 
 proxymock records the calls your app makes to Microsoft SQL Server and shows them in every database view: [Live SQL](../watch-live-sql.md), [inspect a statement](../inspect-a-statement.md), [link queries to requests](../link-queries-to-requests.md), the [SQL inventory](../sql-inventory.md) and [SQL script export](../export-sql-script.md). The Speedscale dashboard shows the same calls for traffic recorded in Kubernetes; see [Databases](../../../guides/databases/index.md).
 
-It reads the TDS protocol that SQL Server speaks, so it works with SQL Server, Azure SQL Database, Azure SQL Managed Instance and Amazon RDS for SQL Server, and with any client that connects to them, such as SqlClient for .NET, mssql-jdbc for Java, go-mssqldb for Go and `sqlcmd`.
+It reads the TDS protocol that SQL Server speaks, so it works with SQL Server, Amazon RDS for SQL Server and Azure SQL Managed Instance, and with any client that connects to them, such as SqlClient for .NET, mssql-jdbc for Java, go-mssqldb for Go and `sqlcmd`. Azure SQL Database requires every connection to encrypt the whole session, which the recorder does not read (see [Encryption](#encryption)), so its traffic is not recorded.
 
 SQL Server traffic is recorded and inspected. [Mocking a database](../mock-a-database.md) and [replaying statements against one](../load-and-regression-testing.md) cover PostgreSQL and MySQL, not SQL Server.
 

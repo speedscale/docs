@@ -73,7 +73,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MySQL                 | DBMS | Full         | See [Database features](#database-features) |
 | Postgres              | DBMS | Full         | See [Database features](#database-features) and [captured bodies](/guides/capture/bodies#postgres) |
 | Redis                 | DBMS | Full         | See [Redis mocking](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
-| SQL Server            | DBMS | Capture Only | Includes Azure SQL Database, Azure SQL Managed Instance and Amazon RDS for SQL Server. Recorded and shown in every database view; not mocked or replayed. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
+| SQL Server            | DBMS | Capture Only | Includes Amazon RDS for SQL Server and Azure SQL Managed Instance. Azure SQL Database encrypts every whole session, which is not recorded. Recorded and shown in every database view; not mocked or replayed. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
 | Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/proxymock/databases/record/redis). |
 
 ### Database features
