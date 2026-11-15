@@ -42,7 +42,7 @@ Below the card, each database fact of the call (event, operation, table, stateme
 
 ## Who connected
 
-A login call shows a login card: the user, the database, the client application, the authentication method, the session id, the server version and the client address. A refused login shows why it was refused. For a SQL Server connection whose driver encrypted only the login packet, the user and application are not known, and the database comes from the server's reply; see [Record SQL Server](../../proxymock/databases/record/sqlserver.md#encryption).
+A login call shows a login card: the user, the database, the client application, the authentication method, the session id, the server version and the client address. A refused login shows why it was refused. For a SQL Server connection recorded without TLS interception whose driver encrypted the login packet, the user and application are not known, and the database comes from the server's reply; see [Record SQL Server](../../proxymock/databases/record/sqlserver.md#encryption).
 
 ![The login card of a Postgres connection: user traffic, database coverage, application PostgreSQL JDBC Driver, auth SCRAM-SHA-256, session 207370, server 17.11 and the client address, with the facts as one-click filters](./overview/login-card.png)
 

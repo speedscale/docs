@@ -50,7 +50,7 @@ The top of the Response tab says how the call ended:
 - A successful call shows what it did, such as `INSERT 0 1` or the rows it returned. Writes return no rows, so this is where an `UPDATE` or `DELETE` says how many rows it changed.
 - A failed call shows an error card with the message, the SQLSTATE or the MySQL or SQL Server error number and its name, the objects the server named, and the line of SQL the server pointed at with a caret under the position.
 - A call that was cancelled, timed out, deadlocked, waited too long for a lock or was terminated shows why, and lists what other sessions were running at the same time, which is usually where the cause is.
-- A login shows who connected to which database, the client application, the authentication method and the server version. For a SQL Server connection whose driver encrypted only the login packet, the user and application are not known; see [Record SQL Server](./record/sqlserver.md#encryption).
+- A login shows who connected to which database, the client application, the authentication method and the server version. For a SQL Server connection recorded without TLS interception whose driver encrypted the login packet, the user and application are not known; see [Record SQL Server](./record/sqlserver.md#encryption).
 
 The **Result sets** view shows each table the query returned as a grid.
 

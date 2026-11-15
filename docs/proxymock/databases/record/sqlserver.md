@@ -1,6 +1,6 @@
 ---
 title: Record SQL Server
-description: "Record your app's SQL Server, Amazon RDS for SQL Server and Azure SQL Managed Instance traffic with proxymock: the port map, the encryption setting for SqlClient, mssql-jdbc and go-mssqldb, what each call records, and the limits."
+description: "Record your app's SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance traffic with proxymock: the port map, encrypted connections with SqlClient, mssql-jdbc and go-mssqldb, what each call records, and the limits."
 sidebar_position: 7
 ---
 
@@ -8,7 +8,7 @@ sidebar_position: 7
 
 proxymock records the calls your app makes to Microsoft SQL Server and shows them in every database view: [Live SQL](../watch-live-sql.md), [inspect a statement](../inspect-a-statement.md), [link queries to requests](../link-queries-to-requests.md), the [SQL inventory](../sql-inventory.md) and [SQL script export](../export-sql-script.md). The Speedscale dashboard shows the same calls for traffic recorded in Kubernetes; see [Databases](../../../guides/databases/index.md).
 
-It reads the TDS protocol that SQL Server speaks, so it works with SQL Server, Amazon RDS for SQL Server and Azure SQL Managed Instance, and with any client that connects to them, such as SqlClient for .NET, mssql-jdbc for Java, go-mssqldb for Go and `sqlcmd`. Azure SQL Database requires every connection to encrypt the whole session, which the recorder does not read (see [Encryption](#encryption)), so its traffic is not recorded.
+It reads the TDS protocol that SQL Server speaks, so it works with SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, and with any client that connects to them, such as SqlClient for .NET, mssql-jdbc for Java, go-mssqldb for Go and `sqlcmd`. Encrypted connections are recorded too: proxymock decrypts them the way it decrypts HTTPS (see [Encryption](#encryption)).
 
 SQL Server traffic is recorded and inspected. [Mocking a database](../mock-a-database.md) and [replaying statements against one](../load-and-regression-testing.md) cover PostgreSQL and MySQL, not SQL Server.
 
@@ -24,45 +24,50 @@ The recorder listens on port 11433 and forwards to SQL Server on 1433. proxymock
 
 ## Point your app at the recorder {#configure-client}
 
-Change the server address in your connection string to the mapped port, and turn encryption off for the recording. The next section explains why.
+Change the server address in your connection string to the mapped port. Keep your encryption setting, and let the driver accept the certificate proxymock presents, as the next section explains.
 
 SqlClient (.NET):
 
 ```text
-Server=localhost,11433;Database=shop;User Id=app;Password=<password>;Encrypt=False;TrustServerCertificate=True
+Server=localhost,11433;Database=shop;User Id=app;Password=<password>;Encrypt=True;TrustServerCertificate=True
 ```
 
 mssql-jdbc (Java):
 
 ```text
-jdbc:sqlserver://localhost:11433;databaseName=shop;encrypt=false;trustServerCertificate=true
+jdbc:sqlserver://localhost:11433;databaseName=shop;encrypt=true;trustServerCertificate=true
 ```
 
 go-mssqldb (Go):
 
 ```text
-sqlserver://app:<password>@localhost:11433?database=shop&encrypt=disable
+sqlserver://app:<password>@localhost:11433?database=shop&encrypt=true&TrustServerCertificate=true
 ```
 
 `sqlcmd`:
 
 ```bash
-sqlcmd -S tcp:localhost,11433 -d shop -U app -N o
+sqlcmd -S tcp:localhost,11433 -d shop -U app -N m -C
 ```
 
-Change these settings only for the environment you record, such as a local or test database, and keep encryption on everywhere else.
+Change these settings only for the environment you record, such as a local or test database. Keep the driver checking the server certificate everywhere else.
 
 ## Encryption {#encryption}
 
-proxymock reads SQL Server traffic as it passes through, so it can decode only what the driver does not encrypt. How much it records depends on the driver's encryption setting:
+proxymock decrypts encrypted SQL Server connections and records them in full, the way it records HTTPS. It ends the driver's TLS session with a certificate signed by the proxymock certificate authority, and opens its own TLS session to SQL Server. Every encryption setting is recorded, including the login, so each call knows its user, database and application name:
 
-| Driver setting | What is recorded |
-|---|---|
-| No encryption, such as go-mssqldb `encrypt=disable` | Everything, including the login, so each call knows its user, database and application name. |
-| Encryption off, such as SqlClient `Encrypt=False`, mssql-jdbc `encrypt=false`, `sqlcmd -N o`, or the default of older drivers | Everything after the login. The driver still encrypts the login packet, so the user and application name of the connection are not known. The database is known from the server's reply. |
-| Encryption on, such as `Encrypt=True` or `Encrypt=Mandatory`, the default of SqlClient 4.0 and later and mssql-jdbc 10.2 and later, or TDS 8.0 `Encrypt=Strict` | Only the PRELOGIN that opens the connection. No statements are recorded. |
+| Driver setting | How the driver encrypts | What the driver must trust |
+|---|---|---|
+| No encryption, such as go-mssqldb `encrypt=disable` | Nothing | Nothing |
+| Encryption off, such as SqlClient `Encrypt=False`, mssql-jdbc `encrypt=false`, `sqlcmd -N o`, or the default of older drivers | The login packet only | The proxymock certificate, or `TrustServerCertificate=True` |
+| Encryption on, such as `Encrypt=True` or `Encrypt=Mandatory`, the default of SqlClient 4.0 and later and mssql-jdbc 10.2 and later | The whole connection | The proxymock certificate, or `TrustServerCertificate=True` |
+| TDS 8.0 strict, such as SqlClient `Encrypt=Strict` or mssql-jdbc `encrypt=strict` | The whole connection, from its first byte | The proxymock certificate. Strict encryption always checks the certificate and ignores `TrustServerCertificate`. |
 
-The same rule applies to the Speedscale sidecar in Kubernetes. If a recording shows SQL Server connections with a PRELOGIN and nothing after it, the driver encrypted the session: set `Encrypt=False;TrustServerCertificate=True` for SqlClient or `encrypt=false` for mssql-jdbc in the environment you record, and record again.
+To make the driver trust proxymock's certificate authority instead of skipping the check, add `~/.speedscale/certs/tls.crt` to the trust store your driver uses. For Java, `proxymock admin certs --jks` creates `~/.speedscale/certs/cacerts.jks` with the password `changeit`, which mssql-jdbc reads with `trustStore=<path>;trustStorePassword=changeit` or the JVM's `javax.net.ssl.trustStore` setting. See [Java](../../guides/java.md).
+
+For strict encryption the certificate proxymock presents carries the host name the driver connects to. If the driver checks a different name, set it with `HostNameInCertificate` in SqlClient or `hostNameInCertificate` in mssql-jdbc.
+
+The Speedscale sidecar in Kubernetes decrypts SQL Server connections when outbound TLS interception is on, with the `sidecar.speedscale.com/tls-out: "true"` annotation, and the app trusts the Speedscale certificate authority. See [TLS support](../../../getting-started/installation/sidecar/tls.md). Without it the sidecar records what the driver does not encrypt: everything after the login on a connection that encrypts only the login packet, with the user and application name unknown, and only the PRELOGIN on a fully encrypted connection.
 
 ## What gets recorded
 
@@ -89,11 +94,12 @@ Passwords, Windows (SSPI) authentication data and Microsoft Entra ID access toke
 
 ## Limits
 
-- Connections that encrypt the whole session record only their PRELOGIN. See [Encryption](#encryption).
+- An Azure SQL Database client inside Azure uses the redirect connection policy by default: after the login the server sends the driver to the database node, and the driver reconnects there directly, around the recorder. Record from outside Azure, where the proxy policy is the default, or set the server's connection policy to **Proxy** for the recording.
+- An inbound SQL Server, one that proxymock or the sidecar receives connections for rather than connects to, records encrypted connections as the sidecar does without `tls-out`. See [Encryption](#encryption).
 - Connections with MultipleActiveResultSets (MARS) turned on, such as `MultipleActiveResultSets=True` in SqlClient, are not decoded past the PRELOGIN. Turn MARS off for the recording.
 - Bulk load data sent by BCP or SqlBulkCopy, table-valued parameters and Always Encrypted columns are not decoded.
 - SQL Server calls are not mocked by `proxymock mock` and not replayed against a database.
 
 ## In Kubernetes {#kubernetes}
 
-When your app runs in Kubernetes with the Speedscale operator, the sidecar records SQL Server calls with the rest of the workload's traffic, with no `--map` and no change to the app beyond the encryption setting above. The calls appear on the dashboard's **Traffic** page with the database columns and filters; see [Watch live SQL](../../../guides/databases/watch-live-sql.md).
+When your app runs in Kubernetes with the Speedscale operator, the sidecar records SQL Server calls with the rest of the workload's traffic, with no `--map`. Turn on outbound TLS interception to record encrypted connections; see [Encryption](#encryption). The calls appear on the dashboard's **Traffic** page with the database columns and filters; see [Watch live SQL](../../../guides/databases/watch-live-sql.md).
