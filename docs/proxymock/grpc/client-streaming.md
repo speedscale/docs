@@ -11,7 +11,7 @@ These steps require a proxymock release with native client streaming. Releases w
 
 A client-streaming RPC sends any number of request messages, half-closes, and gets one response or an error. Uploads, batched writes and telemetry senders usually work this way. `proxymock record` and `proxymock mock` capture these calls with no extra flag, under the same rules, limits and recording formats as [server streams](./server-streaming.md).
 
-A recorded call with any number of requests and at most one response is a client stream. A call that sends several messages in each direction is bidirectional, and mock and replay exclude it with a diagnostic.
+A recorded call with any number of requests and at most one response is a client stream. A call that sends several messages in each direction is [bidirectional](./bidi-streaming.md).
 
 ### Mocking a client stream
 
@@ -19,7 +19,7 @@ The mock reads the client's whole request stream up to its half-close before it 
 
 On a match, the mock returns the recorded response, metadata, terminal status and trailers. An error the server returned without a response is returned the same way.
 
-The request stream must half-close within one minute and stay within the streaming limits. A bidirectional client that waits for a response before it half-closes therefore times out against the mock.
+The request stream must half-close within one minute and stay within the streaming limits.
 
 ### Replaying a client stream
 
