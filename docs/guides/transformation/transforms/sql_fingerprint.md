@@ -1,11 +1,11 @@
 ---
-description: "Make a Postgres or MySQL mock match its statement whatever literal values it carries, with the sql_fingerprint transform."
+description: "Make a Postgres, MySQL or SQL Server mock match its statement whatever literal values it carries, with the sql_fingerprint transform."
 sidebar_position: 35
 ---
 
 # sql_fingerprint
 
-The `sql_fingerprint` transform makes a Postgres or MySQL mock match its SQL statement whatever literal values the statement carries.
+The `sql_fingerprint` transform makes a Postgres, MySQL or SQL Server mock match its SQL statement whatever literal values the statement carries.
 
 - **Transform type name (config/API):** `sql_fingerprint`
 - **Shorthand format:** `sql_fingerprint()`
@@ -24,7 +24,7 @@ The `sql_fingerprint` transform makes a Postgres or MySQL mock match its SQL sta
 
 Every string and number literal and every bound parameter placeholder becomes `?`, and IN lists and multi-row VALUES collapse to a single `(?)`. This is exactly the fingerprint the mock server falls back to when nothing matches exactly, so adding the transform turns that fallback into the normal match for the statements it covers.
 
-The transform rewrites the SQL statement in the signature of Postgres and MySQL requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
+The transform rewrites the SQL statement in the signature of Postgres, MySQL and SQL Server requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
 
 ## Example
 

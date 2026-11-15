@@ -1,5 +1,5 @@
 ---
-description: "Extract or rewrite one cell of a Postgres or MySQL query result with the sql_column extractor."
+description: "Extract or rewrite one cell of a Postgres, MySQL or SQL Server query result with the sql_column extractor."
 sidebar_position: 23
 ---
 
@@ -7,7 +7,7 @@ sidebar_position: 23
 
 ### Purpose
 
-**sql_column** extracts one cell of a Postgres or MySQL result set, so transforms such as `date` or `rand_string` can fix up timestamps and generated ids in mock responses the same way they do in JSON bodies.
+**sql_column** extracts one cell of a Postgres, MySQL or SQL Server result set, so transforms such as `date` or `rand_string` can fix up timestamps and generated ids in mock responses the same way they do in JSON bodies.
 
 ### Usage
 

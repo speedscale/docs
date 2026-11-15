@@ -1,6 +1,6 @@
 ---
 title: Record SQL Server
-description: "Record your app's SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance traffic with proxymock: the port map, encrypted connections with SqlClient, mssql-jdbc and go-mssqldb, what each call records, and the limits."
+description: "Record and mock your app's SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance traffic with proxymock: the port map, encrypted connections with SqlClient, mssql-jdbc and go-mssqldb, what each call records, the mock, and the limits."
 sidebar_position: 7
 ---
 
@@ -10,7 +10,7 @@ proxymock records the calls your app makes to Microsoft SQL Server and shows the
 
 It reads the TDS protocol that SQL Server speaks, so it works with SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, and with any client that connects to them, such as SqlClient for .NET, mssql-jdbc for Java, go-mssqldb for Go and `sqlcmd`. Encrypted connections are recorded too: proxymock decrypts them the way it decrypts HTTPS (see [Encryption](#encryption)).
 
-SQL Server traffic is recorded and inspected. [Mocking a database](../mock-a-database.md) and [replaying statements against one](../load-and-regression-testing.md) cover PostgreSQL and MySQL, not SQL Server.
+SQL Server traffic is recorded, inspected and mocked: `proxymock mock` answers your app's SQL Server calls from a recording, so the app runs without its database (see [Mock SQL Server](#mock)). [Replaying statements against a database](../load-and-regression-testing.md) covers PostgreSQL and MySQL, not SQL Server.
 
 ## Start the recorder {#start-recording}
 
@@ -92,13 +92,31 @@ In the statement view, **With values** fills the parameters into the SQL as T-SQ
 
 Passwords, Windows (SSPI) authentication data and Microsoft Entra ID access tokens are never recorded.
 
+## Mock SQL Server {#mock}
+
+Start the mock with the same port map the recording used, and keep the app's connection string pointed at the mapped port:
+
+```bash
+proxymock mock --map 11433=mssql://localhost:1433 -- your-app
+```
+
+The mock answers each SQL batch and RPC with the reply recorded for the same statement, matched the way PostgreSQL and MySQL mocks are: on the normalized SQL, not on the values bound to it. See [Mock a database](../mock-a-database.md) for what happens when nothing matches exactly and how a transform makes a bound value part of the match. A call with no recording gets SQL Server error 50000, `Speedscale: responder miss`, and appears as a miss in the mock's output.
+
+The mock accepts any SQL Server login, whatever its password, and answers it for the database the app asks for. It negotiates the same encryption a server does, so the connection strings above work unchanged against it, encryption on or off, and so does TDS 8.0 strict encryption. A driver that checks the certificate needs to trust the proxymock certificate authority, as for recording (see [Encryption](#encryption)).
+
+Prepared statements work across the mock: an `sp_prepexec` gets a statement handle of the mock's own, and the `sp_execute` calls that reuse it are answered from the recordings of the same SQL. Requests a driver or pool sends for its own housekeeping are answered even when the recording does not hold them: `SET` options, `BEGIN TRANSACTION`, `COMMIT` and `ROLLBACK` as T-SQL or as transaction manager requests, `SELECT @@SPID`, `@@VERSION` and `@@TRANCOUNT`, a pooled connection's reset, and an attention.
+
+To key the mock on a bound value, such as the id a lookup asks for, use [`sql_key_params`](/guides/transformation/transforms/sql_key_params), or [`mssql_param`](/guides/transformation/extractors/mssql_param) for a single parameter.
+
 ## Limits
 
 - An Azure SQL Database client inside Azure uses the redirect connection policy by default: after the login the server sends the driver to the database node, and the driver reconnects there directly, around the recorder. Record from outside Azure, where the proxy policy is the default, or set the server's connection policy to **Proxy** for the recording.
 - An inbound SQL Server, one that proxymock or the sidecar receives connections for rather than connects to, records encrypted connections as the sidecar does without `tls-out`. See [Encryption](#encryption).
 - Connections with MultipleActiveResultSets (MARS) turned on, such as `MultipleActiveResultSets=True` in SqlClient, are not decoded past the PRELOGIN. Turn MARS off for the recording.
 - Bulk load data sent by BCP or SqlBulkCopy, table-valued parameters and Always Encrypted columns are not decoded.
-- SQL Server calls are not mocked by `proxymock mock` and not replayed against a database.
+- The mock accepts SQL Server logins only. An app that logs in with Windows authentication (SSPI) or Microsoft Entra ID needs a SQL Server login for the mocked run.
+- The mock does not offer MARS, column encryption (Always Encrypted) or session recovery: a driver that asks for them goes on without them.
+- SQL Server calls are not replayed against a database.
 
 ## In Kubernetes {#kubernetes}
 

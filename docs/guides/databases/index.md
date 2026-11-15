@@ -15,7 +15,7 @@ That turns database traffic into something you can use:
 - **Understand a single call.** The SQL with its values filled in, the error with its name, and what else ran on the same connection.
 - **Test without the database, or test the database.** Mock the database so a service runs with no database at all, or replay the recorded statements against a database to regression test a migration or load test it.
 
-Postgres, MySQL and SQL Server calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Mocking a database and replaying against one cover Postgres and MySQL. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Postgres, MySQL and SQL Server calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Postgres, MySQL and SQL Server can be mocked, and replaying against a database covers Postgres and MySQL. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Watch database traffic
 
@@ -73,7 +73,7 @@ A snapshot with database traffic shows the tables and columns its statements rea
 
 ## Mock a database
 
-A snapshot serves recorded Postgres and MySQL responses as mocks, so a service runs in a replay without its database. SQL Server calls are recorded but not mocked. [Mock a database](./mock-a-database.md) explains what a SQL mock matches on and the transforms that tune it.
+A snapshot serves recorded Postgres, MySQL and SQL Server responses as mocks, so a service runs in a replay without its database. [Mock a database](./mock-a-database.md) explains what a SQL mock matches on and the transforms that tune it.
 
 ## Load and regression test a database
 

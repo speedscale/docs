@@ -1,11 +1,11 @@
 ---
-description: "Make a Postgres or MySQL mock match any LIMIT, OFFSET or FETCH value, with the sql_strip_pagination transform."
+description: "Make a Postgres, MySQL or SQL Server mock match any LIMIT, OFFSET or FETCH value, with the sql_strip_pagination transform."
 sidebar_position: 37
 ---
 
 # sql_strip_pagination
 
-The `sql_strip_pagination` transform makes a Postgres or MySQL mock match whatever page of results a statement asks for.
+The `sql_strip_pagination` transform makes a Postgres, MySQL or SQL Server mock match whatever page of results a statement asks for.
 
 - **Transform type name (config/API):** `sql_strip_pagination`
 - **Shorthand format:** `sql_strip_pagination()`
@@ -24,7 +24,7 @@ The `sql_strip_pagination` transform makes a Postgres or MySQL mock match whatev
 
 The numbers after `LIMIT`, `OFFSET` and `FETCH FIRST` or `FETCH NEXT` become `?`, including both numbers of the MySQL `LIMIT offset, count` form. Every other literal is kept.
 
-The transform rewrites the SQL statement in the signature of Postgres and MySQL requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
+The transform rewrites the SQL statement in the signature of Postgres, MySQL and SQL Server requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
 
 ## Example
 
