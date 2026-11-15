@@ -1,0 +1,58 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:04.462
+You've reviewed a known readiness finding
+and the team needs a week to fix it.
+
+00:00:04.632 --> 00:00:09.389
+Use a time-limited acceptance to record
+that decision and see what changes.
+
+00:00:09.952 --> 00:00:12.652
+Open the report's Readiness tab, choose the
+
+00:00:12.652 --> 00:00:15.540
+family, and select Accept on that one
+finding.
+
+00:00:15.710 --> 00:00:18.923
+Check the scope in the dialog before you
+choose an end date.
+
+00:00:19.485 --> 00:00:24.534
+For this example, choose an end date one
+week out, within the test config's policy.
+
+00:00:24.705 --> 00:00:29.037
+Add a reason that explains the exception,
+and confirm who owns the fix.
+
+00:00:29.208 --> 00:00:31.172
+Check whether it applies across builds.
+
+00:00:31.719 --> 00:00:34.593
+Read What changes to see the effect on the
+family.
+
+00:00:34.763 --> 00:00:37.822
+The existing report keeps the verdict it
+already had.
+
+00:00:37.993 --> 00:00:40.654
+Confirm once you've reviewed the proposed
+change.
+
+00:00:41.219 --> 00:00:45.485
+Run a fresh replay to get a new verdict
+with the acceptance in effect.
+
+00:00:45.656 --> 00:00:50.448
+Use the Acceptances in effect ledger to
+check when it expires, or reopen the
+
+00:00:50.448 --> 00:00:52.339
+finding once the fix is ready.
+
+00:00:52.885 --> 00:00:57.294
+If the next replay still says Not ready,
+look for the family that's still blocking.
