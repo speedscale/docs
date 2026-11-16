@@ -95,7 +95,7 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 
 | Technology                  | Type | Support | Notes                                  |
 | --------------------------- | ---- | ------- | -------------------------------------- |
-| Agent 2 Agent               | API  | Full    |                                        |
+| Agent 2 Agent (A2A)         | API  | Full    | Labeled A2A from JSON-RPC methods (0.2, 0.3 and 1.0 names), the `A2A-Version` header, the agent card and HTTP+JSON routes such as `/message:send` |
 | Amazon MQ                  | API  | Full    | See [details](../guides/message-brokers/amazon-mq.md)      |
 | Apache ActiveMQ             | API  | Full    | See [details](../guides/message-brokers/apache-activemq.md)      |
 | Apache Pulsar               | API  | Full    | See [details](../guides/message-brokers/apache-pulsar.md)      |
@@ -108,7 +108,7 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 | Azure Event Hubs            | API  | Full    | See [details](../guides/message-brokers/azure-event-hubs.md)      |
 | Gmail                       | API  | Full    |                                        |
 | Google Pub/Sub               | API  | Full    | See [details](../guides/message-brokers/google-pubsub.md)      |
-| MCP                         | API  | Full    |                                        |
+| MCP                         | API  | Full    | Labeled MCP from the `Mcp-Session-Id` and `MCP-Protocol-Version` headers, MCP JSON-RPC methods, and the HTTP+SSE `endpoint` event |
 | Microsoft Outlook 365       | API  | Full    |                                        |
 | Microsoft Azure Service Bus | API  | Full    | See [details](../guides/message-brokers/azure-service-bus.md)      |
 | Salesforce                  | API  | Full    | Both the legacy SOAP and new REST APIs |
@@ -120,14 +120,36 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 
 Speedscale automatically detects and supports popular LLM (Large Language Model) provider APIs. This enables visibility into AI/LLM traffic and mocking of LLM responses for testing without live API calls.
 
-| Technology      | Type | Support | Notes                                                   |
-| --------------- | ---- | ------- | ------------------------------------------------------- |
-| Anthropic Claude | LLM  | Full    | Auto-detected via `api.anthropic.com`                   |
-| Google Gemini    | LLM  | Full    | Auto-detected via `generativelanguage.googleapis.com`   |
-| Grok (xAI)      | LLM  | Full    | Auto-detected via `api.x.ai`                            |
-| OpenAI           | LLM  | Full    | Auto-detected via `api.openai.com`                      |
-| OpenRouter       | LLM  | Full    | Auto-detected via `openrouter.ai`                       |
-| Perplexity       | LLM  | Full    | Auto-detected via `api.perplexity.ai`                   |
+| Technology            | Type | Support | Notes                                                   |
+| --------------------- | ---- | ------- | ------------------------------------------------------- |
+| Amazon Bedrock        | LLM  | Full    | Auto-detected via `bedrock-runtime`, `bedrock-agent-runtime` and `bedrock-mantle` endpoints, including FIPS and VPC endpoint names |
+| Anthropic Claude      | LLM  | Full    | Auto-detected via `api.anthropic.com`                   |
+| Azure AI Foundry      | LLM  | Full    | Auto-detected via `*.services.ai.azure.com` and `*.models.ai.azure.com` |
+| Azure OpenAI          | LLM  | Full    | Auto-detected via `*.openai.azure.com`, and `*.cognitiveservices.azure.com` under `/openai/` |
+| Cohere                | LLM  | Full    | Auto-detected via `api.cohere.com` and `api.cohere.ai`  |
+| DeepSeek              | LLM  | Full    | Auto-detected via `api.deepseek.com`                    |
+| Fireworks AI          | LLM  | Full    | Auto-detected via `api.fireworks.ai`                    |
+| Google Gemini         | LLM  | Full    | Auto-detected via `generativelanguage.googleapis.com`   |
+| Google Vertex AI      | LLM  | Full    | Auto-detected via `aiplatform.googleapis.com` and regional `<region>-aiplatform.googleapis.com` |
+| Grok (xAI)            | LLM  | Full    | Auto-detected via `api.x.ai`                            |
+| Groq                  | LLM  | Full    | Auto-detected via `api.groq.com`                        |
+| Mistral AI            | LLM  | Full    | Auto-detected via `api.mistral.ai` and `codestral.mistral.ai` |
+| OpenAI                | LLM  | Full    | Auto-detected via `api.openai.com`                      |
+| OpenRouter            | LLM  | Full    | Auto-detected via `openrouter.ai`                       |
+| Perplexity            | LLM  | Full    | Auto-detected via `api.perplexity.ai`                   |
+| Together AI           | LLM  | Full    | Auto-detected via `api.together.xyz` and `api.together.ai` |
+
+### Self-hosted models and gateways
+
+Model servers you run yourself, such as vLLM, LM Studio, TGI or Ollama, and gateways such as LiteLLM can run on any host. Speedscale labels them from the request instead of the hostname.
+
+| Label                 | Type | Support | Detected from                                           |
+| --------------------- | ---- | ------- | ------------------------------------------------------- |
+| Ollama                | LLM  | Full    | Port 11434, or a request to Ollama's native `/api/chat`, `/api/generate`, `/api/embed` or `/api/embeddings` route that names a `model` and gets Ollama's response shape |
+| OpenAI-compatible     | LLM  | Full    | A `/chat/completions`, `/v1/completions`, `/embeddings` or `/responses` request whose JSON body names a `model` and carries that API's input |
+| Anthropic-compatible  | LLM  | Full    | A `/v1/messages` request whose JSON body names a `model` and has `messages`, sent with `anthropic-version` or `max_tokens` |
+
+A call to a hosted provider keeps that provider's label, so the OpenAI-compatible endpoints of Gemini, Groq or Bedrock are not also labeled OpenAI-compatible. Request bodies sent with a `Content-Encoding` are not read for these labels.
 
 :::tip
 LLM provider traffic is standard HTTP/HTTPS. No special configuration is required. Speedscale automatically detects and labels LLM API calls when the traffic is captured. See the [LLM Simulation guide](../guides/mocking/llm-simulation.md) for how to use recorded LLM traffic as mocks in development, CI, and load testing.
