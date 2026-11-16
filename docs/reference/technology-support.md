@@ -73,7 +73,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MongoDB               | DBMS | Full         | See [Database features](#database-features) and the [proxymock guide](/proxymock/databases/record/mongodb) |
 | MySQL                 | DBMS | Full         | See [Database features](#database-features) |
 | Postgres              | DBMS | Full         | See [Database features](#database-features) and [captured bodies](/guides/capture/bodies#postgres) |
-| Redis                 | DBMS | Full         | See [Redis mocking and replay](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported for capture, mocking and replay against a single-node server. Pub/Sub and `MONITOR` are not supported. |
+| Redis                 | DBMS | Full         | See [Redis mocking and replay](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported for capture, mocking and replay against a single-node server, including [Pub/Sub](/proxymock/databases/record/redis#pubsub) with channels, patterns and shard channels. `MONITOR` is not supported. |
 | Valkey                | DBMS | Full         | Uses Redis protocol capture, mocking and replay. See [Redis mocking and replay](/proxymock/databases/record/redis). |
 
 ### Database features

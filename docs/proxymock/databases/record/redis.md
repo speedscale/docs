@@ -1,6 +1,6 @@
 ---
 title: Redis Mocking and Replay
-description: Capture Redis and Valkey traffic, mock it with recorded RESP2 and RESP3 responses, or replay the recorded commands against a disposable Redis or Valkey server.
+description: Capture Redis and Valkey traffic, mock it with recorded RESP2 and RESP3 responses and Pub/Sub messages, or replay the recorded commands and messages against a disposable Redis or Valkey server.
 sidebar_position: 5
 ---
 
@@ -19,7 +19,7 @@ Redis mocking is recorded-response playback. It does not create a stateful Redis
 | Pipelines | Full | Record the complete pipeline so each response is available during playback. |
 | `MULTI`, `EXEC`, and `WATCH` | Full with complete history | The recording must preserve the chronological connection history and connection metadata. |
 | Lua and expiration outcomes | Recorded playback | The recorded result is returned; the script or expiration clock is not executed again. |
-| Pub/Sub | Not supported | Pub/Sub mode is rejected. |
+| Pub/Sub, pattern and shard channel subscriptions | Full | A subscriber gets the messages a recorded subscriber received. See [Pub/Sub](#pubsub). |
 | `MONITOR` | Not supported | Monitor mode is rejected. |
 | Replay against a real server | Full for a single-node server | See [Replay against Redis or Valkey](#replay). |
 
@@ -62,6 +62,30 @@ proxymock mock \
 Run the application again with `REDIS_ADDR=127.0.0.1:56379`. A matching command receives its recorded response without contacting Redis. `--no-passthrough` prevents an unmatched request from reaching the real backend.
 
 If the mock cannot match a Redis request, it returns an error instead of inventing state. Capture the missing command sequence or restore transaction history that was filtered from the recording.
+
+## Pub/Sub {#pubsub}
+
+Apps that use Redis as a lightweight message bus can be recorded, mocked and replayed with their subscriptions. This covers `SUBSCRIBE`, `PSUBSCRIBE` and `SSUBSCRIBE` and their unsubscribe forms, in RESP2 and RESP3.
+
+### Capture subscriptions {#pubsub-capture}
+
+Each subscribe or unsubscribe command is recorded with every confirmation the server sent, one per channel or pattern. Each message the server delivers to a subscription is recorded as its own entry, named `message`, `pmessage` or `smessage` with the channel as its location, and the messages of one subscription are kept together in the order they arrived.
+
+In RESP3 the server can push a message between any two replies, and the recording keeps every command paired with its own reply. Other RESP3 pushes, such as client-side caching invalidations, are not recorded. When capture joins a connection that subscribed before it started, as the eBPF collector can, the messages it then sees are recorded as that subscription's.
+
+### Mock subscribers {#pubsub-mock}
+
+The mock answers subscribe and unsubscribe commands the way the server would, whether or not the recording has them. Each new subscription then gets the messages a recorded subscriber of the same channel or pattern received, in order and with the gaps the recording had between them. The first message is sent right after the confirmation. When the recording has several subscribers of one channel, such as one per app instance, each new subscriber gets the next one's messages in turn.
+
+Ordinary commands on a RESP3 connection are answered as usual between messages. A RESP2 connection with subscriptions accepts only the subscribe commands, `PING`, `QUIT` and `RESET`, as on the server.
+
+`PUBLISH` and `SPUBLISH` from your app get the recorded reply when the recording has the same command. Otherwise the mock answers with the number of live subscribers on the mock that the message would reach. The message itself is not routed to them: subscribers get the recorded messages, which already include any message your app published to itself.
+
+### Replay messages to a subscriber {#pubsub-replay}
+
+Replay hands your app the messages it received when it was recorded. The replay does not subscribe for it: the app subscribes to the target server on its own connection, as it does in production, and the replay publishes each recorded message to that server with `PUBLISH`, or `SPUBLISH` for a shard channel. A pattern subscription's message is published to the channel that matched. Messages your app published itself replay like any other command.
+
+The app may subscribe a little after the replay starts. While a message reaches no subscriber, the replay publishes it again for up to five seconds. A message that no subscriber received fails with an error reply that names the channel, and later messages to that channel are published once without waiting. The generator's `redis.messages_published` and `redis.messages_unreceived` metrics count both outcomes.
 
 ## Replay against Redis or Valkey {#replay}
 
@@ -143,7 +167,11 @@ The recording interleaves your app's connections. The replay opens one live conn
 | `AUTH` | Skipped: each connection authenticates with the replay's own credentials |
 | `EVALSHA` | Loads the script with `SCRIPT LOAD` first when the recording holds its body in an `EVAL` or `SCRIPT LOAD`, so a fresh server does not answer `NOSCRIPT`. Inside `MULTI`, when the script is not loaded on that connection yet, the command is sent as `EVAL` instead. |
 | Blocking commands: `BLPOP`, `BRPOP`, `BRPOPLPUSH`, `BLMOVE`, `BLMPOP`, `BZPOPMIN`, `BZPOPMAX`, `BZMPOP`, `XREAD` and `XREADGROUP` with `BLOCK`, `WAIT`, `WAITAOF` | Sends them with the timeout capped at one second, because no other client will push what the recording waited for. A recorded timeout of 0 waits forever and is capped too. |
-| `SUBSCRIBE`, `PSUBSCRIBE`, `SSUBSCRIBE` and their unsubscribe forms, `MONITOR`, `QUIT`, `RESET`, `SHUTDOWN`, `DEBUG`, replication commands, `CLIENT KILL`, `CLIENT PAUSE` and `CLIENT REPLY` | Skipped. The replay log names each skipped command once, and the generator's `redis.commands_skipped` metric counts them. |
+| Messages a subscription received (`message`, `pmessage`, `smessage`) | Publishes each one with `PUBLISH` or `SPUBLISH` so your subscribed app receives it again. See [Replay messages to a subscriber](#pubsub-replay). |
+| `SUBSCRIBE`, `PSUBSCRIBE`, `SSUBSCRIBE` and their unsubscribe forms | Skipped: your app makes its own subscriptions on the target. |
+| `MONITOR`, `QUIT`, `RESET`, `SHUTDOWN`, `DEBUG`, replication commands, `CLIENT KILL`, `CLIENT PAUSE` and `CLIENT REPLY` | Skipped. |
+
+The replay log names each skipped command once, and the generator's `redis.commands_skipped` metric counts them.
 
 Each replayed command keeps the server's reply in place of the recorded one, so the report shows both. A command scores as failed when the server answers with an error reply, and the report names it by its error code, such as `ERROR WRONGTYPE` or `ERROR NOSCRIPT`. Values that differ from the recording, such as counters and timestamps, do not count as failures. Each reply keeps at most 1,000 elements per list, set or map.
 
@@ -155,7 +183,7 @@ At the end of each pass, a transaction or `WATCH` left open is discarded so the 
 - **Amazon ElastiCache IAM authentication** is not supported yet. Use a password or an ACL user and password.
 - **Functions** (`FCALL`) are sent as recorded. The replay does not load libraries with `FUNCTION LOAD`.
 - **A recorded `NOSCRIPT`** is replayed as recorded. Once a script is loaded on the target, a later `EVALSHA` succeeds even where the recording failed.
-- **Pub/Sub** is not replayed.
+- **Pub/Sub replay needs a subscriber.** The app under test must be running and subscribed to the target server, or every recorded message fails as not received.
 - **Scripts loaded before recording started** cannot be loaded for `EVALSHA`, because the recording does not hold their body. Start recording before your app loads its scripts.
 
 ## Kubernetes capture and replay
