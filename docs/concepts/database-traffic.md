@@ -38,7 +38,7 @@ Connection facts (user, database, application, session) need a capture from prox
 |---|---|---|---|
 | PostgreSQL | Yes | Yes | Yes |
 | MySQL and MariaDB | Yes | Yes | Yes |
-| SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance | Yes | Yes | No |
+| SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance | Yes | Yes | Yes |
 | MongoDB | Yes | No | No |
 | Redis and Valkey | Yes | No | No |
 | DynamoDB | Yes, as AWS API calls | No | No |

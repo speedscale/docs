@@ -10,7 +10,7 @@ proxymock records the calls your app makes to Microsoft SQL Server and shows the
 
 It reads the TDS protocol that SQL Server speaks, so it works with SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, and with any client that connects to them, such as SqlClient for .NET, mssql-jdbc for Java, go-mssqldb for Go and `sqlcmd`. Encrypted connections are recorded too: proxymock decrypts them the way it decrypts HTTPS (see [Encryption](#encryption)).
 
-SQL Server traffic is recorded, inspected and mocked: `proxymock mock` answers your app's SQL Server calls from a recording, so the app runs without its database (see [Mock SQL Server](#mock)). [Replaying statements against a database](../load-and-regression-testing.md) covers PostgreSQL and MySQL, not SQL Server.
+SQL Server traffic is recorded, inspected and mocked: `proxymock mock` answers your app's SQL Server calls from a recording, so the app runs without its database (see [Mock SQL Server](#mock)). The recorded statements also replay against a real SQL Server to regression or load test it; see [Load and Regression Test a Database](../load-and-regression-testing.md).
 
 ## Start the recorder {#start-recording}
 
@@ -118,7 +118,7 @@ To read or rewrite one bound value, for example to store the id a lookup asks fo
 - Bulk load data sent by BCP or SqlBulkCopy, table-valued parameters and Always Encrypted columns are not decoded.
 - The mock accepts SQL Server logins only. An app that logs in with Windows authentication (SSPI) or Microsoft Entra ID needs a SQL Server login for the mocked run.
 - The mock does not offer MARS, column encryption (Always Encrypted) or session recovery: a driver that asks for them goes on without them.
-- SQL Server calls are not replayed against a database.
+- A replay against a database signs in with a SQL Server login or Microsoft Entra ID, not Windows authentication, and skips server cursors, bulk load and MARS sessions.
 
 ## In Kubernetes {#kubernetes}
 
