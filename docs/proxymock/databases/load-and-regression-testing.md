@@ -261,7 +261,9 @@ MSSQL_USER=replay MSSQL_PASSWORD=<password> proxymock replay \
   --test-against 'sqlserver://localhost:1433?database=app'
 ```
 
-To sign in with Microsoft Entra ID instead, as for Azure SQL Database, add `fedauth=ActiveDirectoryDefault` to the address. proxymock then gets a token the way the Azure SDK's default credential does: a service principal from `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_CLIENT_SECRET`, workload identity, a managed identity, or your Azure CLI sign-in. Windows authentication (NTLM or Kerberos) is not supported for replay.
+To sign in with Microsoft Entra ID instead, as for Azure SQL Database, add `fedauth=ActiveDirectoryDefault` to the address. proxymock then gets a token the way the Azure SDK's default credential does: a service principal from `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_CLIENT_SECRET`, workload identity, a managed identity, or your Azure CLI sign-in.
+
+To sign in with a Windows login, add `authenticator=ntlm` to the address and give the user as `DOMAIN\user` with the domain password, or add `authenticator=krb5` and give the user as the principal, `user@REALM`, with its password. For Kerberos, `krb5-configfile` names the krb5.conf that lists your realm's KDCs (by default `KRB5_CONFIG`, then `/etc/krb5.conf`), `krb5-keytabfile` or `krb5-credcachefile` replaces the password (a ticket from `kinit` in `KRB5CCNAME` works too), and `serverspn` names the server when its service principal is not `MSSQLSvc/<host>:<port>`.
 
 An AI assistant runs proxymock through the MCP server, which inherits the environment the assistant was started with, so start the assistant with these variables set.
 
@@ -339,6 +341,8 @@ The same settings are the `generator.postgres`, `generator.mysql` or `generator.
 ```
 
 For Microsoft Entra ID, leave out `username` and `password` and set `"authMethod": "PROTOCOL_AUTH_METHOD_ENTRA_ID"`.
+
+For a Windows login, set `"authMethod"` to `"PROTOCOL_AUTH_METHOD_NTLM"` with `username` as `DOMAIN\user` and the domain password, or to `"PROTOCOL_AUTH_METHOD_KERBEROS"` with `username` as `user@REALM` and its `password` or a `kerberosKeytab` secret holding the base64 keytab. `kerberosConfig` holds the krb5.conf that names the realm's KDCs, and `servicePrincipal` the server's service principal when it is not `MSSQLSvc/<host>:<port>`. The dashboard's test config editor offers both as the SQL Server Sign-in choice.
 
 </TabItem>
 </Tabs>
