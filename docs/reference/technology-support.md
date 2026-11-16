@@ -63,7 +63,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | --------------------- | ---- | ------------ | ------------------------------------------------ |
 | AWS Athena            | DBMS | Full         |                                                  |
 | AWS DynamoDB          | DBMS | Full         |                                                  |
-| AWS RDS               | DBMS | Full         | Supported for Postgres and MySQL engines.        |
+| AWS RDS               | DBMS | Full         | Full for the Postgres and MySQL engines. The SQL Server engine is Partial, the same as SQL Server below. |
 | AWS Redshift          | DBMS | Full         |                                                  |
 | Elasticsearch         | DBMS | Full         | For the REST API                                 |
 | Google BigQuery       | DBMS | Full         | If using the Google SDK with standard pagination |
@@ -74,23 +74,26 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MySQL                 | DBMS | Full         | See [Database features](#database-features) |
 | Postgres              | DBMS | Full         | See [Database features](#database-features) and [captured bodies](/guides/capture/bodies#postgres) |
 | Redis                 | DBMS | Full         | See [Redis mocking and replay](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported for capture, mocking and replay against a single-node server, including [Pub/Sub](/proxymock/databases/record/redis#pubsub) with channels, patterns and shard channels. `MONITOR` is not supported. |
+| SQL Server            | DBMS | Partial      | Includes Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, encrypted or not. Recorded, shown in every database view, mocked, and replayed against a database for load and regression tests. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
 | Valkey                | DBMS | Full         | Uses Redis protocol capture, mocking and replay. See [Redis mocking and replay](/proxymock/databases/record/redis). |
 
 ### Database features
 
-Every supported database can be recorded and mocked. PostgreSQL and MySQL are decoded statement by statement, which adds the features below. PostgreSQL, MySQL and MongoDB traffic can also be replayed against a live database. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
+Every supported database can be recorded and mocked. PostgreSQL, MySQL and SQL Server are decoded statement by statement, which adds the features below. PostgreSQL, MySQL, SQL Server and MongoDB traffic can also be replayed against a live database. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
 
-| Feature | PostgreSQL | MySQL | MongoDB | Redis, Valkey |
-| --- | --- | --- | --- | --- |
-| [Record](/proxymock/databases/) and [mock](/proxymock/databases/mock-a-database) | Yes | Yes | Yes | Yes |
-| Statements with bound values, outcome and errors ([inspect a statement](/guides/databases/inspect-a-statement)) | Yes | Yes | No | No |
-| Connection view with transactions | Yes | Yes | No | No |
-| [Database filters](/guides/databases/find-statements) and columns | Yes | Yes | No | No |
-| [Inferred schema](/guides/databases/inferred-schema) | Yes | Yes | No | No |
-| Live SQL ([dashboard](/guides/databases/watch-live-sql), [proxymock](/proxymock/databases/watch-live-sql)) and [SQL inventory](/proxymock/databases/sql-inventory) | Yes | Yes | No | No |
-| SQL script export ([dashboard](/guides/databases/export-sql-script), [proxymock](/proxymock/databases/export-sql-script)) | Yes | Yes | No | No |
-| Link queries to requests by trace id ([dashboard](/guides/databases/link-queries-to-requests), [proxymock](/proxymock/databases/link-queries-to-requests)) | Yes | Yes | No | No |
-| Load and regression replay against a database ([PostgreSQL, MySQL and MongoDB](/proxymock/databases/load-and-regression-testing), [Redis and Valkey](/proxymock/databases/record/redis#replay)) | Yes | Yes | Yes | Yes |
+| Feature | PostgreSQL | MySQL | SQL Server | MongoDB | Redis, Valkey |
+| --- | --- | --- | --- | --- | --- |
+| [Record](/proxymock/databases/) and [mock](/proxymock/databases/mock-a-database) | Yes | Yes | Yes | Yes | Yes |
+| Statements with bound values, outcome and errors ([inspect a statement](/guides/databases/inspect-a-statement)) | Yes | Yes | Yes | No | No |
+| Connection view with transactions | Yes | Yes | Yes | No | No |
+| [Database filters](/guides/databases/find-statements) and columns | Yes | Yes | Yes | No | No |
+| [Inferred schema](/guides/databases/inferred-schema) | Yes | Yes | Yes | No | No |
+| Live SQL ([dashboard](/guides/databases/watch-live-sql), [proxymock](/proxymock/databases/watch-live-sql)) and [SQL inventory](/proxymock/databases/sql-inventory) | Yes | Yes | Yes | No | No |
+| SQL script export ([dashboard](/guides/databases/export-sql-script), [proxymock](/proxymock/databases/export-sql-script)) | Yes | Yes | Yes | No | No |
+| Link queries to requests by trace id ([dashboard](/guides/databases/link-queries-to-requests), [proxymock](/proxymock/databases/link-queries-to-requests)) | Yes | Yes | Yes | No | No |
+| Load and regression replay against a database ([PostgreSQL, MySQL, SQL Server and MongoDB](/proxymock/databases/load-and-regression-testing), [Redis and Valkey](/proxymock/databases/record/redis#replay)) | Yes | Yes | Yes | Yes | Yes |
+
+SQL Server is decoded on encrypted connections too, including TDS 8.0 strict encryption, when the driver trusts the proxymock or Speedscale certificate authority; the sidecar needs outbound TLS interception for it. [Record SQL Server](/proxymock/databases/record/sqlserver) shows the connection settings and the limits.
 
 ### Supported APIs
 

@@ -368,6 +368,7 @@ const sidebars = {
               items: [
                 "proxymock/databases/record/postgresql",
                 "proxymock/databases/record/mysql",
+                "proxymock/databases/record/sqlserver",
                 "proxymock/databases/record/mongodb",
                 "proxymock/databases/record/redis",
                 { type: "link", label: "DynamoDB", href: "/proxymock/aws/dynamodb/" },

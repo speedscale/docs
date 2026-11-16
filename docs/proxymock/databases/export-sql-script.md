@@ -1,18 +1,19 @@
 ---
 title: Export a SQL script
-description: "Turn recorded PostgreSQL and MySQL traffic into a .sql script that psql or mysql can run: every executed statement in recorded order with its bound values filled in, from proxymock web, the Live SQL lens or the proxymock sql-script command."
+description: "Turn recorded PostgreSQL, MySQL and SQL Server traffic into a .sql script that psql, mysql or sqlcmd can run: every executed statement in recorded order with its bound values filled in, from proxymock web, the Live SQL lens or the proxymock sql-script command."
 ---
 
 # Export a SQL script
 
-proxymock can write the statements your app ran as a plain `.sql` file: every executed statement in the order it ran, with the values of prepared statements filled in as literals, so a statement reads like the SQL the database actually executed. Run the file with `psql` or `mysql` to reproduce a bug on a scratch database, hand it to a DBA, attach it to a ticket, or diff two of them.
+proxymock can write the statements your app ran as a plain `.sql` file: every executed statement in the order it ran, with the values of prepared statements filled in as literals, so a statement reads like the SQL the database actually executed. Run the file with `psql`, `mysql` or `sqlcmd` to reproduce a bug on a scratch database, hand it to a DBA, attach it to a ticket, or diff two of them.
 
-It is the database counterpart of exporting a trace as a script in SQL Server Profiler, and it needs proxymock 2.5.1152 or later.
+It is the database counterpart of exporting a trace as a script in SQL Server Profiler, and it works on SQL Server traffic as well as Postgres and MySQL. It needs proxymock 2.5.1152 or later.
 
 ## What the script holds
 
 - One statement per execution. In the extended protocol a statement also arrives as Parse, Bind and Describe messages, which carry the same SQL; only the execution is written, so nothing runs twice.
-- Bound parameters filled in as literals, quoted and typed for the database.
+- Bound parameters filled in as literals, quoted and typed for the database. SQL Server values are written as T-SQL, such as `N'text'` and `0x0A1B`.
+- For SQL Server, each recorded batch or RPC as its own batch ending in `GO`, as `sqlcmd` and SQL Server Management Studio expect, so a batch such as `CREATE PROCEDURE` still runs alone.
 - A comment before each statement with its time, duration and outcome: the rows it returned or changed, or the error.
 - Logins, logouts and changes of connection as comments, so a script that covers several connections says which one ran what.
 - A statement whose values were not captured, or whose SQL was prepared before recording started, written commented out with the reason. The script never runs SQL with unbound placeholders.
@@ -67,7 +68,7 @@ proxymock sql-script --in proxymock/recorded-2026-10-06_17-40-00.000000000Z \
 | Flag | What it does |
 |---|---|
 | `--in` | The recording, or several, to extract from |
-| `--session` | Keep one server session: the Postgres backend pid or the MySQL connection id, as shown in the Session column |
+| `--session` | Keep one server session: the Postgres backend pid, the MySQL connection id or the SQL Server session id (SPID), as shown in the Session column |
 | `--start`, `--end` | Keep the statements that started in this window (RFC 3339) |
 | `--out` | Write the script to a file instead of standard output |
 

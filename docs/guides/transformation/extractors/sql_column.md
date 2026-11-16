@@ -1,5 +1,5 @@
 ---
-description: "Extract or rewrite one cell of a Postgres or MySQL query result with the sql_column extractor."
+description: "Extract or rewrite one cell of a Postgres, MySQL or SQL Server query result with the sql_column extractor."
 sidebar_position: 23
 ---
 
@@ -7,7 +7,7 @@ sidebar_position: 23
 
 ### Purpose
 
-**sql_column** extracts one cell of a Postgres or MySQL result set, so transforms such as `date` or `rand_string` can fix up timestamps and generated ids in mock responses the same way they do in JSON bodies.
+**sql_column** extracts one cell of a Postgres, MySQL or SQL Server result set, so transforms such as `date` or `rand_string` can fix up timestamps and generated ids in mock responses the same way they do in JSON bodies.
 
 ### Usage
 
@@ -32,7 +32,7 @@ It applies to responses only. NULL extracts as an empty value and stays NULL whe
 ### Limits
 
 - Only text-format cells can be read and changed. Postgres drivers such as pgx often ask for binary results on prepared statements, and the extractor skips those cells.
-- Column names are only available where the response carries them: a Postgres simple query or any MySQL result. A Postgres prepared statement describes its columns in a separate message, so select its columns by position.
+- Column names are only available where the response carries them: a Postgres simple query, any MySQL result, or a SQL Server result that starts with its column metadata. A Postgres prepared statement describes its columns in a separate message, and a SQL Server execute sent with `no_metadata` reuses the metadata of an earlier one, so select their columns by position.
 - A MySQL prepared statement returns binary rows, where each cell keeps its column's type. A new value that does not fit the type, such as text in an integer column, is refused and the cell keeps its recorded value.
 - A name selects the first column with that name. When a join returns two columns with the same name, select the later ones by position.
 

@@ -1,28 +1,38 @@
 ---
 title: Inspect a statement
-description: "Open a recorded PostgreSQL or MySQL call in the Speedscale dashboard to see the statement with its bound values, why it failed or needed attention, who logged in, and every other call on the same database connection."
+description: "Open a recorded PostgreSQL, MySQL or SQL Server call in the Speedscale dashboard to see the statement with its bound values, why it failed or needed attention, who logged in, and every other call on the same database connection."
 ---
 
 # Inspect a statement
 
-Open any Postgres or MySQL call on the **Traffic** page to see what you would otherwise have to reconstruct from logs and code: the exact SQL with its values, how it ended, who ran it, and what else that connection was doing. Everything comes from the recorded traffic, so you can inspect a production call without access to the production database.
+Open any Postgres, MySQL or SQL Server call on the **Traffic** page to see what you would otherwise have to reconstruct from logs and code: the exact SQL with its values, how it ended, who ran it, and what else that connection was doing. Everything comes from the recorded traffic, so you can inspect a production call without access to the production database.
 
 ## The SQL with its values
 
 The **Request** tab shows the statement. A prepared statement arrives with placeholders and its values separately, so the panel shows both:
 
-- **SQL** is the statement as the app sent it, with `$1` or `?` placeholders.
-- **With values** fills the bound values in as literals, so you can copy the statement and run it.
+- **SQL** is the statement as the app sent it, with `$1`, `?` or `@p1` placeholders.
+- **With values** fills the bound values in as literals, so you can copy the statement and run it. SQL Server values are written as T-SQL, such as `N'text'` for a string and `0x0A1B` for binary.
 - **Parameters** lists each placeholder with its type and value.
 
 ![The Request tab of a Postgres Execute call: the statement DELETE FROM records WHERE id = $1 shown With values as DELETE FROM records WHERE id = 'postgres-138205', and its Parameters table with $1, varchar, postgres-138205](./overview/statement-values.png)
+
+## SQL Server calls
+
+A SQL Server call is one SQL batch, one RPC or one transaction request:
+
+- A batch shows its full T-SQL text, which can hold several statements and return several result sets.
+- An `sp_executesql` or `sp_prepexec` call shows the SQL it carries with its typed parameters. An `sp_execute` call shows the SQL its handle was prepared with.
+- A stored procedure called by name shows the procedure and its parameters, and its response shows the rows, the return value and the return status.
+- Informational messages, such as `PRINT` output and `RAISERROR` at severity 10 or below, appear with the response.
+- `BEGIN`, `COMMIT` and `ROLLBACK`, whether sent as T-SQL or as the driver's transaction requests, mark the transaction on the Connection tab.
 
 ## How it ended
 
 The top of the **Response** tab says how the call ended:
 
 - A successful call shows what it did: the command tag, such as `UPDATE 1`, and the rows it returned. Writes return no rows, so this is where an `UPDATE` or `DELETE` says how many rows it changed.
-- A failed call shows an error card with the message, the SQLSTATE or MySQL error number and its name, and the line of SQL the server pointed at with a caret under the position.
+- A failed call shows an error card with the message, the SQLSTATE or the MySQL or SQL Server error number and its name, and the line of SQL the server pointed at with a caret under the position.
 - A call that was cancelled, timed out, deadlocked, waited too long for a lock or was terminated shows why. For a deadlock, a lock timeout, a timeout or a cancel, the card also lists the statements that were running at the same time on other connections, which is usually where the cause is.
 - A chip says when the statement ran inside a transaction, or inside one that had already failed.
 
@@ -32,7 +42,7 @@ Below the card, each database fact of the call (event, operation, table, stateme
 
 ## Who connected
 
-A login call shows a login card: the user, the database, the client application, the authentication method, the session id, the server version and the client address. A refused login shows why it was refused.
+A login call shows a login card: the user, the database, the client application, the authentication method, the session id, the server version and the client address. A refused login shows why it was refused. For a SQL Server connection recorded without TLS interception whose driver encrypted the login packet, the user and application are not known, and the database comes from the server's reply; see [Record SQL Server](../../proxymock/databases/record/sqlserver.md#encryption).
 
 ![The login card of a Postgres connection: user traffic, database coverage, application PostgreSQL JDBC Driver, auth SCRAM-SHA-256, session 207370, server 17.11 and the client address, with the facts as one-click filters](./overview/login-card.png)
 

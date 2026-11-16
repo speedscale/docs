@@ -112,7 +112,7 @@ When goals fail, the Overview shows their metric, expected value, and actual val
 
 ## Outbound HTTP calls
 
-When the test config has an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion, the **Accuracy** tab shows **Outbound HTTP calls** next to the Kafka output and SQL results.
+When the test config has an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion, the **Accuracy** tab shows **Outbound HTTP calls** next to the Kafka output and [SQL output](/reference/configuration/assertions/sqloutput.md) results.
 
 A summary says whether the app's outbound calls matched the recording, with the recorded and replayed call counts and how many times the replay ran the recorded tests. If the comparison could not run, an error says why, and a warning appears when the list of differences was truncated.
 

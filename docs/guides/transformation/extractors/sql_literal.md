@@ -1,5 +1,5 @@
 ---
-description: "Extract or rewrite one string or number literal in a Postgres or MySQL statement with the sql_literal extractor."
+description: "Extract or rewrite one string or number literal in a Postgres, MySQL or SQL Server statement with the sql_literal extractor."
 sidebar_position: 22
 ---
 
@@ -7,7 +7,7 @@ sidebar_position: 22
 
 ### Purpose
 
-**sql_literal** extracts one string or number literal from the SQL statement of a Postgres or MySQL request. Inserting a value rewrites that literal in the statement.
+**sql_literal** extracts one string or number literal from the SQL statement of a Postgres, MySQL or SQL Server request. Inserting a value rewrites that literal in the statement.
 
 ### Usage
 

@@ -5,7 +5,7 @@ description: "List every distinct SQL statement your app ran in a proxymock reco
 
 # SQL inventory and sql-report
 
-The SQL inventory answers "what SQL does this app actually run?" from a recording. It groups every Postgres and MySQL call by statement shape, so a query that ran a thousand times with different values is one row, and ranks the statements by how often they ran and how slow they were. It also counts how many statements each kind of inbound request runs, which is where an N+1 loop, one query becoming one query per row, shows up.
+The SQL inventory answers "what SQL does this app actually run?" from a recording. It groups every Postgres, MySQL and SQL Server call by statement shape, so a query that ran a thousand times with different values is one row, and ranks the statements by how often they ran and how slow they were. It also counts how many statements each kind of inbound request runs, which is where an N+1 loop, one query becoming one query per row, shows up.
 
 The values are masked as `?`, so the report holds no recorded data and is safe to paste into a ticket or hand to an AI assistant.
 

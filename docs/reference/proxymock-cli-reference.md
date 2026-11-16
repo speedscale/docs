@@ -205,6 +205,10 @@ proxymock replay --test-against localhost:9092
 # load test a MySQL database with the statements your app sent (user and password from MYSQL_USER / MYSQL_PWD or ~/.my.cnf)
 proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
   --test-against 'mysql://localhost:3306/app?ssl-mode=REQUIRED' --vus 10 --for 1m
+
+# regression test a SQL Server database with the statements your app sent (user and password from MSSQL_USER / MSSQL_PASSWORD)
+proxymock replay --tests-filter '(direction IS OUT) AND (tech IS "SQL Server")' \
+  --test-against 'sqlserver://localhost:1433?database=app&encrypt=true&trustservercertificate=true'
 ```
 
 **Flags**

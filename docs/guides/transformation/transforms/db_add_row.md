@@ -1,17 +1,17 @@
 ---
-description: "Inject new rows into recorded PostgreSQL and MySQL response payloads using the db_add_row transform in Speedscale, with control over append/prepend/index position, multi-resultset targeting, NULL handling, and variable-substituted row values."
+description: "Inject new rows into recorded PostgreSQL, MySQL and SQL Server response payloads using the db_add_row transform in Speedscale, with control over append/prepend/index position, multi-resultset targeting, NULL handling, and variable-substituted row values."
 sidebar_position: 8
 ---
 
 # db_add_row
 
-The `db_add_row` transform inserts a new row into the result set of a recorded database response — PostgreSQL or MySQL — and emits the modified response. It is the way to add test data, simulate "one more record" scenarios, or grow a fixture row count during replay or mocking without re-recording.
+The `db_add_row` transform inserts a new row into the result set of a recorded PostgreSQL, MySQL or SQL Server response and emits the modified response. It is the way to add test data, simulate "one more record" scenarios, or grow a fixture row count during replay or mocking without re-recording.
 
 It does **not** synthesize a response from scratch. It works against an existing recorded response body, using the first existing row (when present) as a template for column types and binary-vs-string encoding, then writes the new row into the right position.
 
 - **Transform type name (config/API):** `db_add_row`
 - **Shorthand format:** `db_add_row(position=...,index=...)`
-- **Supported protocols:** PostgreSQL simple-query responses, MySQL text-protocol resultsets, MySQL binary-protocol resultsets.
+- **Supported protocols:** PostgreSQL simple-query responses, MySQL text-protocol resultsets, MySQL binary-protocol resultsets, SQL Server replies (every result set of a batch, RPC or stored procedure call).
 
 ## Quick Start
 
@@ -50,6 +50,7 @@ The transform inspects the stored response JSON and picks the handler based on t
 | Top-level `"query"` key | PostgreSQL simple-query response (`QueryResponse`) |
 | Top-level `"resultsets"` key, first entry has `"includedMetadata"` | MySQL text protocol |
 | Top-level `"resultsets"` key, no `"includedMetadata"` | MySQL binary protocol |
+| Top-level `"tokens"` key | SQL Server reply (TDS token stream) |
 | Anything else | Error: `unable to detect database tech from JSON structure` |
 
 If the detection fails, the chain returns an error and the response is left unmodified.
@@ -70,7 +71,20 @@ If the recorded PostgreSQL response ends with a `CommandComplete` message whose 
 
 Tags that don't start with `SELECT ` (e.g. `INSERT 0 1`, `UPDATE 2`) are left untouched.
 
+### SQL Server Replies
+
+A SQL Server reply follows its own rules, because each result set carries its column types:
+
+- Each column metadata token starts a result set. Without `index` the row is added to every result set of the reply; with `index` only to that one (zero-based). An `index` past the last result set changes nothing.
+- Supply exactly one value per column. A different count is an error, `result set N has X columns, got Y values`, and so is a value that does not fit its column type.
+- Values are converted to the column's type: integers, `bit` as `1`, `0`, `true` or `false`, floats, decimals and money as numbers, binary as hex with or without `0x`, `uniqueidentifier`, dates and times as text, and everything else as a string. An empty string stays an empty string; there is no way to insert NULL.
+- The DONE token that ends the result set has its row count raised by one when it carries a count, so the driver reports the new number of rows.
+- A reply with no column metadata, such as an execute sent with `no_metadata`, has no result set to add to and fails with `the sql server reply has no result set to add a row to`.
+
 ### NULL and Length Mismatches
+
+These rules are for PostgreSQL and MySQL; see [SQL Server Replies](#sql-server-replies) for SQL Server.
+
 
 | Situation | Behavior |
 |---|---|
@@ -84,22 +98,22 @@ Tags that don't start with `SELECT ` (e.g. `INSERT 0 1`, `UPDATE 2`) are left un
 "type": "db_add_row",
 "config": {
     "position": "<append|prepend|<numeric index>>",
-    "index": "<resultset index (MySQL only)>"
+    "index": "<resultset index (MySQL and SQL Server)>"
 }
 ```
 
 | Parameter | Required | Default | Description |
 |---|---|---|---|
 | `position` | No | `append` | Where to insert the new row. See [Position Semantics](#position-semantics). |
-| `index` | No | unset (all resultsets) | **MySQL only.** Which resultset to modify when the recorded response carries more than one. If unset, the row is added to every resultset. If the index is out of range, no resultset is modified. Must be a parseable integer — chain init fails with `invalid index value: ...` otherwise. |
+| `index` | No | unset (all resultsets) | **MySQL and SQL Server.** Which resultset to modify when the recorded response carries more than one. If unset, the row is added to every resultset. If the index is out of range, no resultset is modified. Must be a parseable integer; chain init fails with `invalid index value: ...` otherwise. |
 
 ### Position Semantics
 
-| `position` value | PostgreSQL behavior | MySQL behavior |
-|---|---|---|
-| `append` (default) | Insert as the last data row, immediately before the trailing `CommandComplete` message if present. | Insert as the last row of the targeted resultset(s). |
-| `prepend` | Insert as the first message in the `QueryResponse.Messages` slice — **before** any `RowDescription`. Most clients still accept this but it is unusual; consider numeric `position` to land after the row description. | Insert as the first row of the targeted resultset(s). |
-| `"0"`, `"1"`, `"2"`, … | Numeric index into the **messages slice** (not just data rows). For example, `position="1"` lands the new row after a leading `RowDescription` but before the first existing `DataRow`. Out-of-range or negative indices fall back to `append`. | Numeric index into the **rows slice** of the targeted resultset(s). Out-of-range falls back to `append`. |
+| `position` value | PostgreSQL behavior | MySQL behavior | SQL Server behavior |
+|---|---|---|---|
+| `append` (default) | Insert as the last data row, immediately before the trailing `CommandComplete` message if present. | Insert as the last row of the targeted resultset(s). | Insert after the last row of the targeted result set(s), or right after the column metadata when the set has no rows. |
+| `prepend` | Insert as the first message in the `QueryResponse.Messages` slice, **before** any `RowDescription`. Most clients still accept this but it is unusual; consider numeric `position` to land after the row description. | Insert as the first row of the targeted resultset(s). | Insert right after the column metadata, as the first row. |
+| `"0"`, `"1"`, `"2"`, … | Numeric index into the **messages slice** (not just data rows). For example, `position="1"` lands the new row after a leading `RowDescription` but before the first existing `DataRow`. Out-of-range or negative indices fall back to `append`. | Numeric index into the **rows slice** of the targeted resultset(s). Out-of-range falls back to `append`. | Zero-based row index; the row count itself appends. A negative or larger index is an error. |
 
 The PostgreSQL numeric-index semantics differ from MySQL's — Postgres counts messages (which interleaves `RowDescription`, `DataRow`s, and `Complete`), MySQL counts rows. When in doubt for PostgreSQL, use `append` and rely on the automatic `Complete`-tag-preserving placement.
 
@@ -206,16 +220,16 @@ The cache variables are resolved when `db_add_row.Insert` runs, so values learne
    The transform detects and modifies simple-query responses (top-level `"query"`). Extended-query responses with a different top-level shape will fall into the `unable to detect database tech` branch.
 
 4. **"It re-types the new row's values from the supplied strings."**
-   No. New values are always written as strings (`AsString` for both Postgres and MySQL). The recorded **column type** is copied across (for MySQL) so the wire format reads correctly; the **value encoding** is string-only. For PostgreSQL, the per-column choice between `asString` and `asBytes` is taken from the template row.
+   For SQL Server, yes: each value is converted to its column's type. For PostgreSQL and MySQL, no. New values are always written as strings (`AsString` for both Postgres and MySQL). The recorded **column type** is copied across (for MySQL) so the wire format reads correctly; the **value encoding** is string-only. For PostgreSQL, the per-column choice between `asString` and `asBytes` is taken from the template row.
 
 5. **"`index` works on PostgreSQL too."**
-   No. `index` is MySQL-only. PostgreSQL responses are single result sets in this transform; `index` is silently ignored.
+   No. `index` works on MySQL and SQL Server only. PostgreSQL responses are single result sets in this transform; `index` is silently ignored.
 
 6. **"An empty string inserts a literal empty value."**
-   No. An empty supplied value is treated as NULL. Use a placeholder if your engine distinguishes the two.
+   For SQL Server, yes. For PostgreSQL and MySQL, no: an empty supplied value is treated as NULL. Use a placeholder if your engine distinguishes the two.
 
 7. **"It modifies the row count metadata too."**
-   Only for PostgreSQL `Complete` tags that start with `SELECT `. MySQL row counts are derived from the resultset rows themselves and update automatically. PostgreSQL `INSERT`/`UPDATE`/`DELETE` tags are left alone.
+   Only for PostgreSQL `Complete` tags that start with `SELECT `. MySQL row counts are derived from the resultset rows themselves and update automatically. PostgreSQL `INSERT`/`UPDATE`/`DELETE` tags are left alone. A SQL Server DONE token that carries a row count is raised by one.
 
 ## Troubleshooting
 
@@ -231,6 +245,10 @@ The cache variables are resolved when `db_add_row.Insert` runs, so values learne
 | Numeric `position` lands in the wrong place on PostgreSQL | Index counts all messages, not just data rows | Use `append`/`prepend`, or pick an index that accounts for `RowDescription` |
 | MySQL row added to every resultset when only one was wanted | `index` is unset | Set `index` to the target resultset's zero-based position |
 | MySQL row not added at all when `index` is set | Out-of-range index | Check the resultset count; out-of-range silently skips |
+| Runtime: `result set N has X columns, got Y values` | SQL Server needs one value per column | Supply exactly as many values as the result set has columns |
+| Runtime: `result set N column C: "..." is not an integer` (or a bit, or a number) | The value does not fit the SQL Server column type | Supply text the column type accepts |
+| Runtime: `the sql server reply has no result set to add a row to` | The reply has no column metadata, such as a `no_metadata` execute or a statement that returns no rows | Apply the transform to a reply that returns a result set |
+| Runtime: `invalid position "..." for a result set of N rows` | A SQL Server `position` past the row count or negative | Use `append`, `prepend` or an index up to the row count |
 
 ## Related Transforms
 
