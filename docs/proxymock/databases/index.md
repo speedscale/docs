@@ -60,7 +60,7 @@ Since 2.5.1152, **Export SQL script** in the Requests tab's Actions menu, **Expo
 
 ## Mock the database
 
-`proxymock mock` answers your app's Postgres, MySQL, MongoDB and Redis calls from the recording, so the app runs with no database. [Mock a database](../../guides/databases/mock-a-database.md) explains what a SQL mock matches on and how to tune it, and [Improve Mock Match Rate with AI](../guides/mock-match-rate.md) fixes the calls that miss.
+`proxymock mock` answers your app's Postgres, MySQL, SQL Server, MongoDB and Redis calls from the recording, so the app runs with no database. [Mock a database](../../guides/databases/mock-a-database.md) explains what a SQL mock matches on and how to tune it, and [Improve Mock Match Rate with AI](../guides/mock-match-rate.md) fixes the calls that miss.
 
 ## Load and regression test the database
 

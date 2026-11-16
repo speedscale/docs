@@ -7,7 +7,7 @@ description: "See the PostgreSQL, MySQL and SQL Server tables and columns a serv
 
 A snapshot with database traffic shows the tables and columns its statements read and write, worked out from the traffic itself. You see the part of the schema a service actually depends on, with column types, keys and how often each column is read and written, without a connection to the database, a schema dump or a migration history.
 
-Use it to learn an unfamiliar service, to check which columns a migration would affect, to see which service writes a table, and to know what a test database needs before you mock or replay against one (mocking and replay cover Postgres and MySQL).
+Use it to learn an unfamiliar service, to check which columns a migration would affect, to see which service writes a table, and to know what a test database needs before you mock or replay against one (mocking and replay cover Postgres, MySQL and SQL Server).
 
 ## Open it
 
