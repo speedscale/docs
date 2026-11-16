@@ -18,7 +18,7 @@ For more information about Google Pub/Sub, see the [Google Cloud Pub/Sub documen
 |---|---|---|---|
 | `Publish`, `Acknowledge`, `ModifyAckDeadline` and other unary calls | Yes, as gRPC | Yes, as gRPC | Yes, as gRPC |
 | `Pull` | Yes, as gRPC | Yes, as gRPC | Its messages can be republished to drive a subscriber |
-| `StreamingPull` | Yes, as a streamed gRPC call, usually partial | Not yet (tracked in S-14278) | Its messages can be republished to drive a subscriber |
+| `StreamingPull` | Yes, as a streamed gRPC call, usually partial | Not yet | Its messages can be republished to drive a subscriber |
 
 Capture needs TLS interception, as for any gRPC service. A `StreamingPull` stream normally stays open longer than the capture keeps one streamed call, so it is recorded as a partial call. A partial call cannot be mocked or replayed as a stream, but the messages it recorded in full can be republished.
 
