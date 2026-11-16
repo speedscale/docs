@@ -1,5 +1,5 @@
 ---
-description: "How Speedscale and proxymock match Postgres and MySQL mocks, what they ignore by default, and the SQL transforms that make a mock match on the values that matter."
+description: "How Speedscale and proxymock match Postgres, MySQL and SQL Server mocks, what they ignore by default, and the SQL transforms that make a mock match on the values that matter."
 sidebar_position: 7
 ---
 
@@ -9,7 +9,7 @@ When your app queries Postgres, MySQL or SQL Server during a replay, the mock se
 
 ## What a SQL mock matches on
 
-A Postgres or MySQL mock matches on the kind of message (a query, a prepare, an execute, and so on) and on the SQL statement, normalized so that whitespace and comments do not matter.
+A Postgres, MySQL or SQL Server mock matches on the kind of message (a query or batch, a prepare, an execute, an RPC such as `sp_executesql`, and so on) and on the SQL statement, normalized so that whitespace and comments do not matter.
 
 Two things are deliberately left out:
 
@@ -41,7 +41,7 @@ The SQL transforms change only the mock signature, the key the mock server match
 
 Three SQL extractors let the rest of the transform library work on database traffic:
 
-- [`sql_query`](../transformation/extractors/sql_query.md) reads the statement of any Postgres or MySQL request.
+- [`sql_query`](../transformation/extractors/sql_query.md) reads the statement of any Postgres, MySQL or SQL Server request.
 - [`sql_literal`](../transformation/extractors/sql_literal.md) reads or rewrites one literal in a statement, for example to send a new unique value on every replay.
 - [`sql_column`](../transformation/extractors/sql_column.md) reads or rewrites one cell of a query result, so `date` or `rand_string` can fix up timestamps and generated ids in mock responses.
 
@@ -86,5 +86,5 @@ An id that was never recorded still gets an answer. The mock server drops the ke
 ## Limits
 
 - `sql_column` changes text-format cells only. Postgres drivers such as pgx often ask for binary results on prepared statements, and those cells are skipped.
-- `sql_column` finds columns by name only where the response carries column names: a Postgres simple query or any MySQL result. Select Postgres prepared-statement columns by position.
+- `sql_column` finds columns by name only where the response carries column names: a Postgres simple query, any MySQL result, or a SQL Server result other than a `no_metadata` execute. Select Postgres prepared-statement columns, and the columns of a SQL Server execute that reuses earlier metadata, by position.
 - `sql_literal` counts string and number literals. MySQL strings in double quotes are read as identifiers and are not counted.

@@ -13,7 +13,7 @@ It is the database counterpart of exporting a trace as a script in SQL Server Pr
 
 Filter the grid to the statements you want, then choose **Export SQL** next to **Save** and **Replay**. The script holds the Postgres, MySQL and SQL Server statements that match the current filters and time range, so filter first to narrow it to a service, a table, a session or an incident's few minutes. [Watch live SQL](./watch-live-sql.md) and [Find statements with filters](./find-statements.md) show how.
 
-![The Traffic toolbar with the pointer on Export SQL, next to Save and Replay, and its tooltip: download the Postgres and MySQL statements matching these filters and time range as a runnable .sql script, bound parameters inlined](./export-sql-script/export-button.png)
+![The Traffic toolbar with Export SQL next to Replay, and its tooltip: download the Postgres, MySQL and SQL Server statements matching these filters and time range as a runnable .sql script, bound parameters inlined](./export-sql-script/export-button.png)
 
 ## From one connection
 

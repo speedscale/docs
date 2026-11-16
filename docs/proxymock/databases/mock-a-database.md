@@ -1,6 +1,6 @@
 ---
 title: Mock a database
-description: "Run your app against a mock of its PostgreSQL, MySQL, MongoDB or Redis database built from a proxymock recording, so tests and AI coding assistants run with no database at all."
+description: "Run your app against a mock of its PostgreSQL, MySQL, SQL Server, MongoDB or Redis database built from a proxymock recording, so tests and AI coding assistants run with no database at all."
 ---
 
 # Mock a database
