@@ -106,7 +106,9 @@ The mock accepts any SQL Server login, whatever its password, and answers it for
 
 Prepared statements work across the mock: an `sp_prepexec` gets a statement handle of the mock's own, and the `sp_execute` calls that reuse it are answered from the recordings of the same SQL. Requests a driver or pool sends for its own housekeeping are answered even when the recording does not hold them: `SET` options, `BEGIN TRANSACTION`, `COMMIT` and `ROLLBACK` as T-SQL or as transaction manager requests, `SELECT @@SPID`, `@@VERSION` and `@@TRANCOUNT`, a pooled connection's reset, and an attention.
 
-To key the mock on a bound value, such as the id a lookup asks for, use [`sql_key_params`](/guides/transformation/transforms/sql_key_params), or [`mssql_param`](/guides/transformation/extractors/mssql_param) for a single parameter.
+To key the mock on bound values, so a lookup recorded with several ids answers each id with its own result, use [`sql_key_params`](/guides/transformation/transforms/sql_key_params). It keys on every bound value by default; set its `params` to `1` to key on only the first, such as `@P0`.
+
+To read or rewrite one bound value, for example to store the id a lookup asks for in a variable, use the [`mssql_param`](/guides/transformation/extractors/mssql_param) extractor. It does not change what the mock matches on.
 
 ## Limits
 
