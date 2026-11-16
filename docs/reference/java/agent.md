@@ -55,7 +55,7 @@ These limits apply across the four tested JDK versions in this matrix.
 | JDK `SocketChannel` gathering writes (sending several buffers at once), including plain HTTP from JDK HttpClient and Jetty HttpClient | Response captured; request missing | Check for complete request/response pairs. Use a supported capture path if these requests are needed. |
 | Netty NIO or epoll **server-side TLS** with the JDK provider | Not captured by the agent in the harness | A working Netty TLS client does not establish inbound TLS coverage. |
 | `AsynchronousSocketChannel` methods returning `Future` | Not captured by the agent | Callback-based methods and Future-returning methods have different coverage. |
-| Netty TLS using OpenSSL/tcnative 2.0.69.Final | Not captured by the Java agent | TLS happens in native code. Native eBPF capture has separate library and platform requirements. |
+| Netty TLS using OpenSSL/tcnative 2.0.69.Final, with Java-agent images older than v0.1.94 | Not captured by the Java agent | TLS happens in native code. From v0.1.94 the agent captures Netty TLS over BoringSSL; see [gRPC Java and Google Cloud clients](#grpc-java). |
 
 ### Spring Boot, WebFlux, gRPC, and database clients
 
@@ -63,9 +63,22 @@ Framework names alone do not determine capture support. The network transport is
 
 - **Spring Boot MVC / Tomcat:** check the server connector and the outbound HTTP client separately. The matrix's JDK socket tests are not a full Tomcat compatibility test.
 - **Spring WebFlux / Reactor Netty:** determine whether it uses NIO or Linux epoll, and JDK TLS or native OpenSSL. Client and server TLS have different results above.
-- **gRPC Java:** check its Netty transport and TLS provider. A transport-level test does not verify all gRPC streaming behavior in your application.
+- **gRPC Java:** check its Netty transport and TLS provider, and the agent version below. A transport-level test does not verify all gRPC streaming behavior in your application.
 - **JDBC, MongoDB, and Redis clients:** check the driver version and I/O implementation. A driver's use of a covered socket API is useful evidence, but does not establish end-to-end database record/replay support.
 - **OpenTelemetry:** the tested OTLP/HTTP exporter row verifies that exporter path. It does not certify coexistence with every auto-instrumentation agent or classpath. Confirm that your existing telemetry still arrives after enabling capture.
+
+### gRPC Java and Google Cloud clients {#grpc-java}
+
+Google Cloud Java client libraries, such as `google-cloud-pubsub`, call their services over gRPC with `grpc-netty-shaded`. That library carries its own copy of Netty. On Linux it uses Netty's native epoll transport, and for TLS it uses BoringSSL from its bundled `netty-tcnative`, not the JDK's TLS provider.
+
+| Java-agent image | Plaintext gRPC | gRPC over TLS (BoringSSL) |
+| --- | --- | --- |
+| v0.1.93 and older | Not captured | Not captured |
+| v0.1.94 and newer | Captured | Captured. The agent reads the data before encryption and after decryption, and the application keeps its own TLS trust. |
+
+This was tested on November 16, 2026, with `google-cloud-pubsub` 1.160.0 on JDK 21, publishing and subscribing against the Pub/Sub emulator over plaintext gRPC and over TLS. The captured bytes were compared with what a recording proxy saw on the same connections. In the TLS runs the handshake ran in BoringSSL; the JDK's TLS engine did not handshake.
+
+A sidecar that decrypts outbound TLS captures these clients too. `grpc-netty-shaded` verifies the server with the JVM's default trust store even when BoringSSL runs the handshake, so the Speedscale truststore set in `JAVA_TOOL_OPTIONS` works for it. See [Java TLS trust](./tls.md#kubernetes).
 
 For an application using a custom TLS provider, native-image runtime, or an unlisted JDK, validate that exact configuration before depending on the recording. See [Technology Support](../technology-support.md) for protocol-level support.
 
