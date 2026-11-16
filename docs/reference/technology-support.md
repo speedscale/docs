@@ -97,7 +97,7 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 | Technology                  | Type | Support | Notes                                  |
 | --------------------------- | ---- | ------- | -------------------------------------- |
 | Agent 2 Agent (A2A)         | API  | Full    | Labeled A2A from JSON-RPC methods (0.2, 0.3 and 1.0 names), the `A2A-Version` header, the agent card and HTTP+JSON routes such as `/message:send` |
-| Amazon MQ                  | API  | Full    | See [details](../guides/message-brokers/amazon-mq.md)      |
+| Amazon MQ                  | API  | Partial | RabbitMQ brokers are supported as AMQP 0.9.1 over TLS on 5671: recorded, mocked and replayed. See [RabbitMQ](../guides/message-brokers/rabbitmq.md). ActiveMQ brokers are not supported yet. See [details](../guides/message-brokers/amazon-mq.md) |
 | Apache ActiveMQ             | API  | Full    | See [details](../guides/message-brokers/apache-activemq.md)      |
 | Apache Pulsar               | API  | Full    | See [details](../guides/message-brokers/apache-pulsar.md)      |
 | Auth0                       | API  | Full    |                                        |
