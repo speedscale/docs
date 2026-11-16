@@ -19,7 +19,7 @@ Replay sends the request once, half-closes and receives the complete response se
 
 ### Bounded and partial recordings
 
-Once a call has streamed, capture keeps a bounded prefix when it resets, is cancelled, reaches a quota or exceeds its idle or duration limit. A unary-shaped call that resets or never finishes is not recorded, as before. These records carry an explicit incomplete outcome and remain available for inspection. They are excluded from strict mock and replay expectations with a diagnostic; a missing status never becomes an implicit OK. A mixed replay runs its eligible calls without counting excluded calls as passing. If no eligible traffic remains, replay exits unsuccessfully.
+Once a call has streamed, a stream that reaches the message budget, a body budget or the duration limit continues in a new part instead of stopping; see [long-lived streams](./long-lived-streams.md). A stream that never reached one of those limits keeps a bounded prefix when it resets, is cancelled, reaches another quota or exceeds its idle limit. A unary-shaped call that resets or never finishes is not recorded, as before. These records carry an explicit incomplete outcome and remain available for inspection. They are excluded from strict mock and replay expectations with a diagnostic; a missing status never becomes an implicit OK. A mixed replay runs its eligible calls without counting excluded calls as passing. If no eligible traffic remains, replay exits unsuccessfully.
 
 | Limit | Default |
 | --- | --- |
@@ -29,10 +29,10 @@ Once a call has streamed, capture keeps a bounded prefix when it resets, is canc
 | Messages across both directions | 1,024 |
 | Metadata per call | 64 KiB |
 | Idle time | 60 seconds |
-| Call duration | 5 minutes |
+| Call duration, or one part of a long-lived stream | 5 minutes |
 | Serialized recording | Less than 1,000,000 bytes |
 
-Connection and process capture budgets can stop a call earlier under pressure. Local request preparation also requires a half-close within one minute, and mock playback has a five-minute deadline. An unlimited watch cannot be represented as a complete recording.
+Connection and process capture budgets can stop a call earlier under pressure. Local request preparation also requires a half-close within one minute, and mock playback has a five-minute deadline. An unlimited watch is recorded as a sequence of [long-lived stream parts](./long-lived-streams.md).
 
 ### Recording formats and compatibility
 

@@ -28,6 +28,7 @@ The unary workflows work from the proxymock CLI and from an AI coding assistant 
 - [Native server streaming](./server-streaming.md): capture bounded streams, preserve message boundaries and outcomes, and compare every replay response.
 - [Native client streaming](./client-streaming.md): mock a client stream by its whole ordered request sequence and replay every request with its recorded spacing.
 - [Native bidirectional streaming](./bidi-streaming.md): mock an interactive client message by message and replay both directions in their recorded order.
+- [Long-lived streams](./long-lived-streams.md): record streams that outlive the per-call limits as ordered parts and mock a live stream from them.
 - [Mock a gRPC dependency](./mock-a-grpc-dependency.md): answer a dependency's calls from a recording and fix calls that do not match.
 - [Generate tests and mocks from a .proto](./generate-from-a-proto.md): start a recording from the `.proto` when there is no traffic yet.
 - [Validate and measure coverage](./validate-and-coverage.md): check recorded responses against the `.proto` and see which RPCs, statuses and fields a recording reaches.
@@ -102,7 +103,8 @@ The Speedscale dashboard shows the same switch in the traffic viewer's Body tab.
 ## Known limits
 
 - **Unary RPCs remain supported.** Bounded native server streaming is captured automatically, and unary calls are recorded exactly as before. A call with one request and a client half-close can round-trip all messages through JSON and streaming Markdown, mock with pacing and recorded status, and replay with every response compared. See [native server streaming](./server-streaming.md) for version requirements and limits.
-- **Long or cancelled streams remain partial.** Capture retains a bounded prefix and termination reason. Partial or unsupported calls are excluded from strict execution with diagnostics. A mixed replay executes eligible calls only; a recording with no eligible traffic exits unsuccessfully.
+- **Long-lived streams are recorded as parts.** A stream that reaches the message budget, a body budget or the duration limit continues in a new part, and the mock serves the stitched parts on one live call. See [long-lived streams](./long-lived-streams.md).
+- **Cancelled and reset streams remain partial.** Capture retains a bounded prefix and termination reason. Partial or unsupported calls are excluded from strict execution with diagnostics. A mixed replay executes eligible calls only; a recording with no eligible traffic exits unsuccessfully.
 - **Existing unary Markdown keeps its format.** Streaming call recordings use Markdown v3, with editable decoded messages where they re-encode exactly and base64 wire messages otherwise. Older readers must not be used for the new format.
 - **Client streams are mocked and replayed.** The mock matches the whole ordered request sequence, and replay sends every request with its recorded spacing. See [native client streaming](./client-streaming.md).
 - **Bidirectional calls are mocked and replayed.** The mock answers an interactive client message by message, and replay follows the recorded order in both directions. See [native bidirectional streaming](./bidi-streaming.md).
