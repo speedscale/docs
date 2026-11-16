@@ -8,6 +8,12 @@ on:
 permissions:
   contents: read
 
+# Overlapping s3 sync --delete runs remove assets that another run's HTML references.
+# Queue instead of cancelling; GitHub keeps only the newest pending run, so the latest commit deploys last.
+concurrency:
+  group: docs-production-deploy
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
