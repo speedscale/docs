@@ -26,7 +26,11 @@ A part holds only whole messages. A message that is still arriving when a part c
 
 The stream ends in its final part. The idle limit, 60 seconds without a message, closes the final part. So do the real end of the stream, a reset, a cancelled capture and a closed connection, each recorded as the final part's termination. When the server ended the stream with a status, the final part is a complete call with that status and its trailers.
 
-Other limits still end the stream as a partial call: a single message over 256 KiB, metadata over 64 KiB, an unsupported encoding, a framing error, or connection and process capture budgets under pressure. A stream that ends before it reaches any budget is recorded as one call, exactly as before.
+Other limits still end the stream as a partial call: a single message over 256 KiB, metadata over 64 KiB, an unsupported encoding, a framing error, or connection and process capture budgets under pressure. A stream that ends with a status before it reaches any budget is recorded as one call, exactly as before.
+
+### Streams that the client cancels
+
+Subscribers such as Pub/Sub StreamingPull never half-close. They end their stream by cancelling it, which the client sends as an HTTP/2 `RST_STREAM` with the `CANCEL` or `NO_ERROR` code. Once a call has streamed, a client cancel closes its final part as a stream that the client ended, with the reset as its termination, and mock and replay use it. A stream that fits in one part is recorded as a single final part. A message cut short by the cancel is dropped, and every whole message before it is kept. In a stream that fits in one part, a reset with any other code or a reset from the server still leaves a partial call.
 
 ### How parts appear in a recording
 
@@ -67,6 +71,7 @@ Later parts are not replayed as calls of their own. Replay skips them with one l
 ### Known limits
 
 - Replay follows the first part only. It does not continue the stream through later parts.
+- A call that sent at most one message in each direction before the client cancelled it is not recorded, as before.
 - The mock keeps up to 1,024 recordings per method for message-by-message matching, and each part counts as one recording. A stream with more parts than that is served up to the last part kept.
 - After the opening requests, the mock does not match request content. A stream whose responses depend on later requests is served in its recorded order whatever the client sends.
 - Cloud capture writes stream parts only when `GRPC_STREAMING_ENABLED` is set, like every native stream. The local proxymock binary always captures them.
