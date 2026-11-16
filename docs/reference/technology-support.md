@@ -43,6 +43,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Protobuf          | Protocol | Full         |                                                                                    |
 | RabbitMQ          | Protocol | Full         | See [details](../guides/message-brokers/rabbitmq.md)                              |
 | SOAP              | Protocol | Full         |                                                                                    |
+| WebSocket         | Protocol | Full         | Capture, replay and mock, over `ws://` and `wss://`. See [WebSocket Testing](../guides/websocket.md) |
 | XML               | Protocol | Full         |                                                                                    |
 | YAML              | Protocol | Full         |                                                                                    |
 

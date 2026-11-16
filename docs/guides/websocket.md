@@ -35,12 +35,37 @@ WebSocket traffic appears in the [Traffic Viewer](./capture/filter.md) like any 
 
 ## Replaying WebSocket sessions
 
-When you replay a snapshot that contains WebSocket traffic, Speedscale:
+When you replay a snapshot that contains WebSocket traffic, each virtual user opens its own WebSocket sessions with the service under test:
 
-1. Sends the upgrade handshake to the service under test
-2. Sends each captured message frame in order, respecting the original timing
-3. Compares the service's responses against the captured responses
-4. Reports accuracy and latency for each message exchange
+1. The upgrade handshake is sent with the recorded path, query string, headers and subprotocols. The client sets a fresh `Sec-WebSocket-Key`, version and extensions. When the test config honors `Set-Cookie`, the handshake sends the cookies the service set earlier in the replay in place of the recorded ones, as HTTP requests do.
+2. Each recorded client message is sent with its recorded type (text, binary or close).
+3. For each recorded server message, the replay reads the next message the service sends and keeps it as that message's response, so the report compares what the service sent now with what it sent when it was recorded.
+4. When the recording closes the session, the replay sends the close and waits for the service's closing reply.
+
+A server message of the wrong type, a close the recording did not have, or no message within the request timeout fails that message. Pings and pongs are not replayed, because the WebSocket client answers them itself.
+
+Server messages are matched to recorded ones in order. A service that sends a message the recording did not have, such as an unprompted status update, shifts every later comparison in that session.
+
+### Replay with proxymock
+
+Record your service's inbound WebSocket traffic, then replay it against the service:
+
+```bash
+proxymock record --app-port 8080
+proxymock replay --in proxymock/recorded-<timestamp> --test-against http://localhost:8080
+```
+
+Use `--test-against https://...` for a service that accepts `wss://` connections.
+
+### Load testing
+
+Each virtual user replays the recorded sessions on its own connections, so `--vus` runs that many sessions at once:
+
+```bash
+proxymock replay --in proxymock/recorded-<timestamp> --test-against http://localhost:8080 --vus 50 --for 5m
+```
+
+Connection count and message fan-out are where real-time services usually fail under load, so watch the handshake latency and the failure column as the virtual users ramp up.
 
 ### Timing and ordering
 
@@ -48,7 +73,7 @@ WebSocket messages are replayed in the order they were captured. The replay engi
 
 ### Assertions
 
-Response assertions work the same as HTTP traffic. Each message frame response is compared against the expected captured response. You can configure assertions to:
+Response assertions work the same as HTTP traffic. Each server message is compared against the captured one. Every message in a session shares the session's path, so a field that varies from message to message in the recording, such as an echoed value or a counter, is treated as volatile when comparing, while a change to a field that is the same in every message fails the comparison. You can configure assertions to:
 
 - Ignore fields that change between runs (timestamps, sequence numbers)
 - Compare specific JSON fields in the message payload
@@ -90,7 +115,7 @@ Each replayed WebSocket connection performs a fresh upgrade handshake. proxymock
 |---|---|---|---|
 | Text frames | Yes | Yes | Yes |
 | Binary frames | Yes | Yes | Yes |
-| Ping/Pong | Yes | Yes | Yes |
+| Ping/Pong | Yes | Answered by the client | Yes |
 | Close | Yes | Yes | Yes |
 
 :::caution
