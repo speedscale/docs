@@ -1,0 +1,70 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:03.847
+A service was ready in yesterday's replay,
+and now it isn't.
+
+00:00:04.018 --> 00:00:06.308
+Start from its history to find the first
+
+00:00:06.308 --> 00:00:08.884
+replay that changed and what changed with
+it.
+
+00:00:09.452 --> 00:00:11.617
+Open the service and switch to Readiness.
+
+00:00:11.788 --> 00:00:12.971
+Set the date range.
+
+00:00:13.142 --> 00:00:15.885
+Leave Build empty to see build changes, or
+
+00:00:15.885 --> 00:00:19.476
+select an image tag to compare runs of just
+that build.
+
+00:00:20.019 --> 00:00:23.275
+Each column is a graded replay, oldest on
+the left.
+
+00:00:23.446 --> 00:00:26.481
+Find the first Not ready column after a
+Ready run.
+
+00:00:26.652 --> 00:00:31.529
+In this example, the latest replay drops
+after two Ready runs of the same build.
+
+00:00:32.085 --> 00:00:35.193
+Read What moved in this range next to the
+numbered marks.
+
+00:00:35.364 --> 00:00:38.074
+A mark may describe a new build, a changed
+
+00:00:38.074 --> 00:00:41.172
+grading rule, or a change in how the replay
+ran.
+
+00:00:41.343 --> 00:00:43.851
+Use the labels to see what applied to this
+run.
+
+00:00:44.419 --> 00:00:48.070
+Use Behind the letters to compare the
+actual measure to its floor.
+
+00:00:48.241 --> 00:00:50.361
+Here, the regression pass rate dipped.
+
+00:00:50.532 --> 00:00:53.064
+Open the replay column for the Readiness
+
+00:00:53.064 --> 00:00:56.545
+tab, or select the family letter to jump to
+its detail.
+
+00:00:57.085 --> 00:01:00.994
+Start your investigation with the report
+where the verdict first changed.

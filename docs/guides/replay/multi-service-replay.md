@@ -3,9 +3,21 @@ description: "Configure Speedscale for Multi-Service Replay to simulate API inte
 sidebar_position: 7
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Multi-Service Replay
 
 Some applications require communication between multiple services to work correctly.  For example, imagine an API server which requires an authentication token.  In production a client might make a request to an auth service to get a token, then send that token to the API server.  In this guide we will configure Speedscale to run a [replay](/reference/glossary.md#replay) simulating this example.
+
+## Replay two services from one snapshot
+
+Append a snapshot and map each recorded service to its test workload.
+
+<video controls playsInline preload="none" aria-label="Replay two services from one snapshot" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-replay-two-services-from-one-snapshot.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-replay-two-services-from-one-snapshot.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-replay-two-services-from-one-snapshot.mp4')}>Download the video</a>
+</video>
 
 ## Create Snapshot
 

@@ -1,0 +1,133 @@
+WEBVTT
+
+00:00.000 --> 00:02.340
+Front-end end-to-end testing can be
+
+00:02.360 --> 00:04.620
+super flaky, but Speedscale's new
+
+00:04.640 --> 00:06.940
+Playwright automated testing fixes that.
+
+00:07.700 --> 00:09.700
+Normally, every time a test breaks,
+
+00:09.920 --> 00:10.840
+you have to figure out whether
+
+00:10.860 --> 00:12.360
+you broke the page, the API
+
+00:12.380 --> 00:14.640
+changed, or somebody reset the data
+
+00:14.660 --> 00:16.060
+in your shared test environment.
+
+00:16.780 --> 00:18.600
+So before you can investigate your
+
+00:18.620 --> 00:20.620
+change, you're investigating everything
+
+00:20.640 --> 00:22.840
+around the change, including its environment.
+
+00:23.980 --> 00:25.760
+Speedscale's browser journeys are
+
+00:25.780 --> 00:27.620
+unique because they run Playwright
+
+00:27.640 --> 00:29.300
+tests and then connect them to
+
+00:29.320 --> 00:31.780
+the API traffic behind the change.
+
+00:32.040 --> 00:33.720
+You can run a normal end-to-end
+
+00:33.740 --> 00:35.220
+test against your working frontend and
+
+00:35.240 --> 00:37.840
+backend, or you can record the
+
+00:37.860 --> 00:40.280
+API responses, turn the backend off,
+
+00:40.300 --> 00:41.740
+and run the same test again.
+
+00:41.820 --> 00:43.160
+You are no longer tied to
+
+00:43.180 --> 00:44.500
+a test environment, and you can
+
+00:44.520 --> 00:46.240
+run it locally or in CI.
+
+00:46.620 --> 00:48.160
+The browser still loads the real
+
+00:48.180 --> 00:49.960
+frontend, clicks the button, and checks
+
+00:49.980 --> 00:50.820
+what the user sees.
+
+00:50.840 --> 00:52.980
+Its backend requests are answered by
+
+00:53.000 --> 00:54.660
+controlled mocks built from that
+
+00:54.680 --> 00:56.900
+recording, orchestrated all as part of
+
+00:56.920 --> 00:57.720
+the same test.
+
+00:58.660 --> 01:00.420
+You can also run the real
+
+01:00.440 --> 01:02.720
+API and compare its responses with
+
+01:02.740 --> 01:04.840
+the recording, helping identify backend
+
+01:04.860 --> 01:07.300
+changes behind a failed browser step.
+
+01:08.660 --> 01:11.240
+The useful part is choosing what
+
+01:11.260 --> 01:13.220
+the test depends on, the whole
+
+01:13.240 --> 01:15.120
+deployed system or a known set
+
+01:15.140 --> 01:16.760
+of backend responses that let you
+
+01:16.780 --> 01:19.400
+test the frontend without a stable shared environment.
+
+01:20.040 --> 01:21.700
+The full walkthrough is in our
+
+01:21.720 --> 01:23.760
+blog, including the demo and commands
+
+01:23.780 --> 01:24.640
+to try it yourself.
+
+01:24.780 --> 01:26.220
+Just follow the link and have
+
+01:26.240 --> 01:28.160
+your AI set up your own Playwright tests.

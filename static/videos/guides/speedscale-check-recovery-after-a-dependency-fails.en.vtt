@@ -1,0 +1,70 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:05.156
+A service can handle normal traffic and
+still fail when a dependency goes down.
+
+00:00:05.327 --> 00:00:07.535
+Replay the traffic with one dependency
+
+00:00:07.535 --> 00:00:10.615
+fault, then check what happens once the
+fault clears.
+
+00:00:11.185 --> 00:00:15.170
+In the replay test config, scope the rule
+to a mocked dependency.
+
+00:00:15.341 --> 00:00:17.944
+For example, give the payments mock a 503
+
+00:00:17.944 --> 00:00:21.564
+status, and use the route to target just
+the charge call.
+
+00:00:22.119 --> 00:00:25.303
+A faulted request and recovery are judged
+separately.
+
+00:00:25.474 --> 00:00:30.132
+In a grading test, one order request passed
+the payments error through to the caller.
+
+00:00:30.303 --> 00:00:35.190
+Later, the orders endpoint answered
+successfully after the rule stopped firing.
+
+00:00:35.752 --> 00:00:37.943
+To measure recovery in one dashboard
+
+00:00:37.943 --> 00:00:41.655
+replay, set when the chaos rule starts and
+how long it lasts.
+
+00:00:41.826 --> 00:00:46.690
+Keep sending requests to the affected
+endpoint after the window closes so the
+
+00:00:46.690 --> 00:00:48.333
+report can judge recovery.
+
+00:00:48.885 --> 00:00:51.152
+Open Readiness and choose Resilience.
+
+00:00:51.323 --> 00:00:56.498
+Check how many faulted requests the app
+handled, then look for retry and latency
+
+00:00:56.498 --> 00:00:58.956
+amplification and the recovery result.
+
+00:00:59.127 --> 00:01:01.746
+The Mocks action takes you to the perturbed
+calls.
+
+00:01:02.285 --> 00:01:07.181
+If recovery is unknown, check whether any
+requests reached the affected endpoint
+
+00:01:07.181 --> 00:01:08.527
+after the fault ended.

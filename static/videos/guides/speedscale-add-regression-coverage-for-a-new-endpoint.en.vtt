@@ -1,0 +1,69 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:01.769
+You add a receipt endpoint.
+
+00:00:01.940 --> 00:00:03.492
+The replay gate is green.
+
+00:00:03.663 --> 00:00:07.296
+Before you ship, check whether the
+recording ever asks for a receipt.
+
+00:00:07.852 --> 00:00:13.553
+The original mock-lab recording exercised
+the Orders API, and the old gate exited
+
+00:00:13.553 --> 00:00:15.665
+zero after we added the route.
+
+00:00:15.835 --> 00:00:19.415
+Searching the recording for /receipt found
+zero matches.
+
+00:00:19.985 --> 00:00:22.063
+Keep the first recording and baseline.
+
+00:00:22.234 --> 00:00:26.509
+Record the original traffic again, plus the
+three calls in the receipt script.
+
+00:00:26.679 --> 00:00:28.641
+A valid order returns a receipt.
+
+00:00:28.812 --> 00:00:32.943
+An unknown order and a malformed ID each
+return 404.
+
+00:00:33.485 --> 00:00:36.780
+Create a fresh baseline from the correct
+implementation.
+
+00:00:36.951 --> 00:00:39.524
+This receipt has two lines and three items.
+
+00:00:39.695 --> 00:00:44.055
+Save the baseline that says three, then
+confirm the updated gate passes.
+
+00:00:44.619 --> 00:00:47.279
+Temporarily change the handler to count
+lines.
+
+00:00:47.450 --> 00:00:50.277
+The gate exits three and names the items
+field.
+
+00:00:50.448 --> 00:00:52.540
+The response still has status 200.
+
+00:00:52.711 --> 00:00:56.710
+Restore the quantity sum, then verify the
+gate exits zero again.
+
+00:00:57.252 --> 00:00:59.506
+Use the same pattern whenever you add a
+
+00:00:59.506 --> 00:01:02.164
+route to a service with an existing
+recording.

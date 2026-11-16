@@ -4,6 +4,8 @@ description: "The Spec adherence readiness family checks every replayed HTTP or 
 sidebar_position: 3
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Spec Adherence
 
 Spec adherence grades how well the replayed traffic matches the service's own API contract.
@@ -11,6 +13,16 @@ Spec adherence grades how well the replayed traffic matches the service's own AP
 Every replayed inbound call is checked against the contract attached to the service: an OpenAPI document for HTTP APIs, or a protobuf schema for gRPC APIs. The family's measure is the share of checked calls that conform.
 
 The default role is Off; switch it on in the [test config](./test-config-settings.md) once a spec is attached.
+
+## Catch an OpenAPI contract break
+
+Follow a response type mismatch from the saved response to the schema and the Readiness finding.
+
+<video controls playsInline preload="none" aria-label="Catch an OpenAPI contract break" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-catch-openapi-contract-break.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-catch-openapi-contract-break.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-catch-openapi-contract-break.mp4')}>Download the video</a>
+</video>
 
 ## Attaching a spec
 

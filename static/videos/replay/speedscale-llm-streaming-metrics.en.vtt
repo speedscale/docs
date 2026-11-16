@@ -1,0 +1,98 @@
+WEBVTT
+
+00:00:00.222 --> 00:00:04.394
+The replay passed, and the response looked
+right. But users waited longer for the
+
+00:00:04.394 --> 00:00:08.668
+answer to start. Here's how to find that
+slowdown in Speedscale and catch it on the
+
+00:00:08.668 --> 00:00:09.286
+next replay.
+
+00:00:09.694 --> 00:00:15.095
+Open the replay report and select the LLM
+tab. Start with p95 time to first token.
+
+00:00:15.095 --> 00:00:19.969
+About 95 percent of streams that produced
+output started within that time.
+
+00:00:20.389 --> 00:00:24.620
+The top number is from the replay. If the
+capture included frame timing, the
+
+00:00:24.620 --> 00:00:28.907
+recorded value appears underneath. Here,
+the first token is arriving about 20
+
+00:00:28.907 --> 00:00:29.687
+percent later.
+
+00:00:30.111 --> 00:00:34.211
+Next, check inter-token latency. It
+measures the average gap per token once
+
+00:00:34.211 --> 00:00:38.748
+output starts. A higher number means the
+answer arrives more slowly after the first
+
+00:00:38.748 --> 00:00:39.076
+token.
+
+00:00:39.500 --> 00:00:43.784
+Open a streamed response and select
+Stream. The timeline shows when each frame
+
+00:00:43.784 --> 00:00:48.124
+arrived. The first frame may just identify
+the assistant, while the first-token
+
+00:00:48.124 --> 00:00:50.321
+marker shows when output actually began.
+
+00:00:50.750 --> 00:00:54.745
+The last-output marker shows when the
+model stopped producing output. Use these
+
+00:00:54.745 --> 00:00:58.438
+two markers to see whether the wait is at
+the start or during the stream.
+
+00:00:58.861 --> 00:01:04.338
+To catch this on the next run, add an LLM
+TTFT p95 goal to your test config. Set the
+
+00:01:04.338 --> 00:01:09.423
+comparison to Too High and enter 800
+milliseconds. Leave the location blank so
+
+00:01:09.423 --> 00:01:11.835
+the goal applies to the whole replay.
+
+00:01:12.250 --> 00:01:16.580
+Now replay the same recorded prompts
+against your model server. In this lab, we
+
+00:01:16.580 --> 00:01:20.854
+start with the baseline server, then run
+the same test config against a slower
+
+00:01:20.854 --> 00:01:21.238
+server.
+
+00:01:21.667 --> 00:01:25.942
+The slower server still passes the
+response checks, but its p95 time to first
+
+00:01:25.942 --> 00:01:29.441
+token exceeds the limit. Check the missed
+goal before you ship.
+
+00:01:29.861 --> 00:01:34.392
+Try the LLM streaming lab to run both
+versions and set a latency limit for your
+
+00:01:34.392 --> 00:01:35.080
+own service.

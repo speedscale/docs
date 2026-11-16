@@ -3,7 +3,19 @@ description: "Refine signatures in proxymock to enhance mock accuracy, ensuring 
 sidebar_position: 22
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # How to Refine Signatures to Improve Mock Accuracy
+
+## Fix one mock miss
+
+Open a missed request, inspect its signature, and verify a scoped change in a fresh replay.
+
+<video controls playsInline preload="none" aria-label="Fix one mock miss in the dashboard" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-fix-one-dashboard-mock-miss.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-fix-one-dashboard-mock-miss.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-fix-one-dashboard-mock-miss.mp4')}>Download the video</a>
+</video>
 
 ## 1. Introduction
 

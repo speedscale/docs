@@ -1,0 +1,81 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:02.837
+A replay can finish and still say Not
+ready.
+
+00:00:03.007 --> 00:00:07.210
+The readiness scorecard tells you which
+checks are holding back the build and gives
+
+00:00:07.210 --> 00:00:08.273
+you a place to start.
+
+00:00:08.819 --> 00:00:12.980
+Open a completed Speedscale replay report
+and select Readiness.
+
+00:00:13.151 --> 00:00:15.244
+Start with What gets this build to ready.
+
+00:00:15.414 --> 00:00:19.693
+Here, both Regression and Resilience are
+below their required grades.
+
+00:00:20.252 --> 00:00:23.354
+The tiles under Must pass to ship can block
+the verdict.
+
+00:00:23.525 --> 00:00:25.709
+Regression is a D and needs a B.
+
+00:00:25.880 --> 00:00:29.204
+The advisory tiles can still guide your
+investigation.
+
+00:00:29.375 --> 00:00:31.572
+This time, open Regression first.
+
+00:00:32.119 --> 00:00:35.110
+The family detail shows how the grade was
+computed.
+
+00:00:35.281 --> 00:00:40.152
+Here, ninety-two point six percent of
+assertions passed, and the B floor requires
+
+00:00:40.152 --> 00:00:41.415
+ninety-eight percent.
+
+00:00:41.585 --> 00:00:43.785
+The scorecard shows what needs to improve.
+
+00:00:44.352 --> 00:00:45.647
+Scroll to Findings.
+
+00:00:45.817 --> 00:00:50.542
+The first row shows status-code assertion
+failures for the account lookup endpoint.
+
+00:00:50.713 --> 00:00:54.603
+The count tells you how many times that
+finding occurred in this replay.
+
+00:00:55.152 --> 00:00:59.193
+Click Open Requests to inspect the
+transactions behind the family.
+
+00:00:59.364 --> 00:01:02.855
+Compare recorded and replayed responses to
+see what changed.
+
+00:01:03.026 --> 00:01:07.898
+Fix the problem, rerun the replay, and
+return to Readiness to check both blockers.
+
+00:01:08.452 --> 00:01:10.752
+Use the Readiness verdict on the new report
+
+00:01:10.752 --> 00:01:13.641
+to see whether the build meets your
+configured floors.

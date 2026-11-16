@@ -4,6 +4,8 @@ description: "Use proxymock drift to find the fields whose values change from ru
 sidebar_position: 11.5
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Find What Changes Between Runs
 
 Record the same flow twice and the responses will not be identical. Timestamps move, ids are new, trace headers change. Diff the two runs naively and every real change is buried under that noise; ignore whole responses and you miss the real change.
@@ -51,6 +53,16 @@ The command writes JSON to stdout, or to the `--out` file. It exits 0 whether or
 ### In proxymock web
 
 On the Requests view, open **Actions** and choose **Compare traffic for drift**. Pick two or more runs and proxymock web lists each drifting field with its sample values. Accepting a field writes an active blueprint that wildcards it in the mock signature, named after the field, so the next mocked run stops missing on it.
+
+## Find what changed between responses
+
+Compare two order responses after filtering timestamps and generated IDs.
+
+<video controls playsInline preload="none" aria-label="Find what changed between responses" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-find-what-changed-between-responses.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-find-what-changed-between-responses.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-find-what-changed-between-responses.mp4')}>Download the video</a>
+</video>
 
 ## Compare two runs' responses
 

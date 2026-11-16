@@ -4,6 +4,8 @@ description: Build the first recording and regression gate for a service or a ne
 sidebar_position: 1.6
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Bootstrap a Regression Test With No Recording
 
 Use this guide when a service, or a new endpoint on it, has never been recorded and you want a regression test for it anyway. Your coding agent builds the first recording for you, tunes it, and leaves a gate you run before every change.
@@ -234,6 +236,16 @@ Then register it in `Routes()` in `handlers.go`, after the status route:
 ```
 
 Run `sh scripts/regression-gate.sh` from `mock-lab/tutorial/go`. The gate from part 1 still passes because no recorded request reaches the receipt endpoint. Before adding coverage, search `proxymock/recorded-orders/localhost/` for `/receipt` to confirm the gap.
+
+### Add regression coverage for a new endpoint {#video-add-regression-coverage-for-a-new-endpoint}
+
+See how the receipt requests extend the recording and how the updated gate catches a changed item count.
+
+<video controls playsInline preload="none" aria-label="Add regression coverage for a new endpoint" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-add-regression-coverage-for-a-new-endpoint.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-add-regression-coverage-for-a-new-endpoint.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-add-regression-coverage-for-a-new-endpoint.mp4')}>Download the video</a>
+</video>
 
 ### What the agent does
 

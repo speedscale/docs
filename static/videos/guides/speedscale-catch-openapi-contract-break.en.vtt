@@ -1,0 +1,68 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:02.970
+An order request still returns 201, but a
+
+00:00:02.970 --> 00:00:05.851
+new build sends the order total as a
+string.
+
+00:00:06.022 --> 00:00:08.538
+The API contract says it's an integer.
+
+00:00:08.709 --> 00:00:10.857
+Spec adherence helps you find that break.
+
+00:00:11.419 --> 00:00:16.208
+On the service page, open Contract and
+attach the OpenAPI document.
+
+00:00:16.379 --> 00:00:19.825
+Then enable Spec Adherence in the replay's
+test config.
+
+00:00:19.996 --> 00:00:23.523
+This screenshot shows the Contract section
+on a demo service.
+
+00:00:24.085 --> 00:00:28.673
+In the mock-lab orders demo, the spec
+requires total_cents to be an integer.
+
+00:00:28.844 --> 00:00:32.287
+The original build returns 3,600 as a
+number.
+
+00:00:32.458 --> 00:00:36.068
+The changed build returns the same digits
+inside quotes.
+
+00:00:36.619 --> 00:00:40.870
+We checked both saved responses against the
+same OpenAPI file.
+
+00:00:41.040 --> 00:00:42.473
+The original conforms.
+
+00:00:42.644 --> 00:00:45.497
+The changed response violates the schema at
+
+00:00:45.497 --> 00:00:48.748
+total_cents, even though the status is
+still 201.
+
+00:00:49.319 --> 00:00:52.927
+In a dashboard report, open Readiness, then
+Spec Adherence.
+
+00:00:53.098 --> 00:00:58.097
+Look under Fix in code for response type
+mismatches, and use Requests to open
+
+00:00:58.097 --> 00:01:01.343
+Accuracy and inspect the calls behind the
+finding.
+
+00:01:01.885 --> 00:01:05.839
+Correct the response type and replay again
+against the same contract.

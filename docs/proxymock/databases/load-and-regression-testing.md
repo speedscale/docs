@@ -1,6 +1,6 @@
 ---
 title: Load and Regression Test a Database
-description: "Record your app's real PostgreSQL or MySQL traffic once, then replay those exact statements to regression test a schema change or a database upgrade and to load test the database, from an AI coding assistant, the proxymock CLI or the Speedscale dashboard."
+description: "Record your app's real PostgreSQL, MySQL or MongoDB traffic once, then replay those exact statements to regression test a schema change or a database upgrade and to load test the database, from an AI coding assistant, the proxymock CLI or the Speedscale dashboard."
 ---
 
 import Tabs from '@theme/Tabs';
@@ -8,15 +8,15 @@ import TabItem from '@theme/TabItem';
 
 # Load and Regression Test a Database
 
-This guide shows how to turn your app's real PostgreSQL or MySQL traffic into three kinds of test:
+This guide shows how to turn your app's real PostgreSQL, MySQL or MongoDB traffic into three kinds of test:
 
 - **A quick mock check.** Record once, run your app against a mocked database, and replay your app's own traffic to confirm it still works with no database running.
-- **A database regression test.** Replay the recorded statements once against a new schema, a migration or a new database version, such as PostgreSQL 15 to 16 or MySQL 8.0 to 8.4 LTS, and see every statement that now fails.
+- **A database regression test.** Replay the recorded statements once against a new schema, a migration or a new database version, such as PostgreSQL 15 to 16, MySQL 8.0 to 8.4 LTS or MongoDB 7.0 to 8.0, and see every statement that now fails.
 - **A database load test.** Replay the recorded statements with many concurrent sessions to find out how the database holds up under your app's real statement mix.
 
 Every step works two ways. You can ask an AI coding assistant that has the [proxymock MCP server](../how-it-works/mcp-tools.md) installed, or you can run the proxymock CLI yourself. The load and regression steps also work from the Speedscale dashboard for traffic recorded in Kubernetes.
 
-Pick your database once in any of the tabs below and every section follows. The MySQL steps also work for MariaDB, which speaks the MySQL protocol. The MySQL replay has been tested against MySQL 8.0, MySQL 8.4 and MariaDB 11.4.
+Pick your database once in any of the tabs below and every section follows. The MySQL steps also work for MariaDB, which speaks the MySQL protocol. The MySQL replay has been tested against MySQL 8.0, MySQL 8.4 and MariaDB 11.4. The MongoDB replay has been tested against MongoDB 7.0 and 8.0; for MongoDB, "statement" on this page means a command such as `find` or `insert`.
 
 [Watch database replay and testing on YouTube](https://www.youtube.com/watch?v=Q4sIn21pfQc).
 
@@ -127,6 +127,53 @@ proxymock mock --map 13306=localhost:3306 -- env MYSQL_PORT=13306 go run .
 Your app now talks to proxymock on port 13306 as if it were the database.
 
 </TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+**1. Record.** Start the recorder, then start your app with its MongoDB address pointed at the recorder:
+
+<Tabs groupId="interface">
+<TabItem value="ai" label="AI assistant">
+
+> "Record my app's traffic with proxymock. My app listens on port 8080 and talks to MongoDB on localhost:27017, so map a local port to it and start my app pointed at that port."
+
+</TabItem>
+<TabItem value="cli" label="proxymock CLI">
+
+```bash
+proxymock record --map 37017=localhost:27017 --app-port 8080
+```
+
+In a second terminal, start your app against the recorder:
+
+```bash
+MONGO_URL=mongodb://localhost:37017/app node app.js
+```
+
+</TabItem>
+</Tabs>
+
+Use your app for a minute so it runs its usual commands. Then stop the recorder. The recording is in the `proxymock` directory: your app's inbound requests, and every MongoDB command it sent. See [Record MongoDB](./record/mongodb.md) for other languages.
+
+**2. Run the mock.** Stop your local MongoDB server so nothing else is listening on 27017, then start the mock with your app:
+
+<Tabs groupId="interface">
+<TabItem value="ai" label="AI assistant">
+
+> "Stop recording and run a proxymock mock server, then start my app against it."
+
+</TabItem>
+<TabItem value="cli" label="proxymock CLI">
+
+```bash
+proxymock mock -- node app.js
+```
+
+</TabItem>
+</Tabs>
+
+Your app now talks to proxymock on port 27017 as if it were the database.
+
+</TabItem>
 </Tabs>
 
 **3. Check the mock with a replay.** Replay the recorded inbound requests against your app while the mock answers its statements:
@@ -156,16 +203,18 @@ To load or regression test the database itself, flip that for the database traff
 
 | Where you replay | How to choose the tests |
 |---|---|
-| proxymock CLI | `--tests-filter '(direction IS OUT) AND (tech IS Postgres)'`, or `tech IS MySQL`, on `proxymock replay` |
+| proxymock CLI | `--tests-filter '(direction IS OUT) AND (tech IS Postgres)'`, or `tech IS MySQL` or `tech IS MongoDB`, on `proxymock replay` |
 | AI assistant (proxymock MCP) | Ask for it, or pass the `tests-filter` parameter of the `replay_traffic` tool |
 | proxymock web | The **Tests filter** field on the Replay tab |
 | Speedscale dashboard | **Choose replay tests** on the snapshot's **Traffic** tab, then pick the database under **Outbound dependencies** |
 
-To keep your app's inbound tests too, use `(direction IS IN) OR (tech IS Postgres)`, or `tech IS MySQL`. [Choose What a Replay Tests](../guides/choose-replay-tests.md) covers the filter syntax, saving a filter with the workspace, promoting a single file, and the removed **reverse services** setting that tests filters replace.
+To keep your app's inbound tests too, use `(direction IS IN) OR (tech IS Postgres)`, or `tech IS MySQL` or `tech IS MongoDB`. [Choose What a Replay Tests](../guides/choose-replay-tests.md) covers the filter syntax, saving a filter with the workspace, promoting a single file, and the removed **reverse services** setting that tests filters replace.
 
 ## Connect to the database {#credentials}
 
 The replay connects to the database with its own sessions, so it needs a user and password. Point the replay at the database with a `postgres://` or `mysql://` address that includes the host, port and database name, but no credentials. Credentials in the address are rejected so they never end up in shell history or reports.
+
+For MongoDB, use a `mongodb://host:port/authdb` address. The path names the database that holds the replay user, as in any MongoDB connection string, and `admin` is used when it is empty. Each command still runs against the database it was recorded on. The address takes only the `tls` and `authSource` parameters, and names one host: `mongodb+srv://` addresses and host lists are rejected, because the replay connects straight to the one server you name.
 
 There are three ways to give the replay its user and password. Pick one by where the replay runs and by how private the password is:
 
@@ -175,7 +224,7 @@ There are three ways to give the replay its user and password. Pick one by where
 | [A password typed into the test config](#credentials-typed) | proxymock and the Speedscale dashboard | In plain text, in the test config and in every replay report that uses it | A test database whose password is not sensitive |
 | [A secret reference in the test config](#credentials-secret) | proxymock and the Speedscale dashboard | In a file in your proxymock workspace, or in a Kubernetes Secret in the cluster the replay runs in. The test config keeps only the reference. | Any password that must stay private |
 
-When more than one is set, the database name and TLS mode in the address win over the test config, and the test config wins over the environment.
+When more than one is set, the database name and TLS mode in the address win over the test config, and the test config wins over the environment. MongoDB clients share no standard environment variables, so for MongoDB use option 2 or 3.
 
 ### Option 1: the database client's environment {#credentials-environment}
 
@@ -208,6 +257,11 @@ password = "your-password"
 An AI assistant runs proxymock through the MCP server, which inherits the environment the assistant was started with, so `~/.my.cnf` is the simplest option there.
 
 </TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+MongoDB clients have no shared environment variables or option file, so proxymock reads MongoDB credentials only from the test config. Use [option 2](#credentials-typed) for a test database, or [option 3](#credentials-secret) to keep the password in a file in your workspace.
+
+</TabItem>
 </Tabs>
 
 A replay in a Kubernetes cluster does not read your machine's environment, so for a replay started from the Speedscale dashboard use option 2 or 3.
@@ -230,7 +284,9 @@ In the Speedscale dashboard:
 
 When you open the test config again, the **Password** field starts on **Constant** because it holds a typed password. Switching between **Constant** and **Kubernetes secret** clears the field.
 
-The same settings are the `generator.postgres` or `generator.mysql` section of the test config's JSON, which is also how you set them for proxymock. Each section takes `username`, `password`, `database`, `tlsMode` and `connectTimeout`:
+The same settings are the `generator.postgres` or `generator.mysql` section of the test config's JSON, which is also how you set them for proxymock. Each section takes `username`, `password`, `database`, `tlsMode` and `connectTimeout`.
+
+MongoDB uses the `generator.mongodb` section. The dashboard's **Database credentials** form does not show it yet, so in the dashboard edit it in the test config's JSON on the **Advanced** tab. Its `database` is the database that holds the user, `admin` when empty. It also takes `clientCertificate` and `caCertificate`; see [TLS](#tls).
 
 <Tabs groupId="engine">
 <TabItem value="postgres" label="PostgreSQL">
@@ -259,6 +315,22 @@ The same settings are the `generator.postgres` or `generator.mysql` section of t
       "password": "test-only-password",
       "database": "app",
       "tlsMode": "PROTOCOL_TLS_MODE_REQUIRE"
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+```json
+{
+  "generator": {
+    "mongodb": {
+      "username": "replay",
+      "password": "test-only-password",
+      "database": "admin",
+      "tlsMode": "PROTOCOL_TLS_MODE_VERIFY_FULL"
     }
   }
 }
@@ -295,7 +367,7 @@ kubectl create secret generic pg-creds --from-literal=password='<password>' -n <
 
 In the Speedscale dashboard, select **Kubernetes secret** under **Password**, which is where an empty password starts. Then either type the reference or select **Pick secret** to choose the cluster, namespace, Secret and key from your cluster. The field then holds the reference, not the password. If the Secret does not exist yet, **No secret yet?** shows the `kubectl create secret` command to create it.
 
-With Speedscale v2.5.1371 or later in the cluster, the operator mounts every Secret that `generator.postgres` or `generator.mysql` references into the replay. If the Secret or the key is missing, the replay stops before it sends any traffic with a message such as `Generator cannot start: Secret pg-creds is missing in namespace ...`. With an older operator, also add the Secret to the replay's `secretRefs`.
+With Speedscale v2.5.1371 or later in the cluster, the operator mounts every Secret that `generator.postgres`, `generator.mysql` or `generator.mongodb` references into the replay. If the Secret or the key is missing, the replay stops before it sends any traffic with a message such as `Generator cannot start: Secret pg-creds is missing in namespace ...`. With an older operator, also add the Secret to the replay's `secretRefs`.
 
 ### TLS {#tls}
 
@@ -322,9 +394,40 @@ The two verifying modes trust the system's certificate authorities, or the file 
 MySQL 8.4 authenticates with `caching_sha2_password` by default. Over TLS the password is sent inside the encrypted connection. Without TLS, proxymock asks the server for its public key and encrypts the password with it, as `mysql --get-server-public-key` does.
 
 </TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+Turn TLS on with `?tls=true` on the address, which verifies the server's certificate and host name, or set `tlsMode` in the test config. MongoDB has no TLS negotiation, so a connection either uses TLS or it does not:
+
+| Test config `tlsMode` | What it does |
+|---|---|
+| Unset | Connects without TLS, unless a client or CA certificate is set, which turns on `PROTOCOL_TLS_MODE_VERIFY_FULL` |
+| `PROTOCOL_TLS_MODE_DISABLE`, `PROTOCOL_TLS_MODE_ALLOW` or `PROTOCOL_TLS_MODE_PREFER` | Connects without TLS |
+| `PROTOCOL_TLS_MODE_REQUIRE` | Always encrypts, without checking the server's certificate |
+| `PROTOCOL_TLS_MODE_VERIFY_CA` | Checks that a trusted CA signed the certificate |
+| `PROTOCOL_TLS_MODE_VERIFY_FULL` | Also checks that the certificate names the host |
+
+The verifying modes trust the system's certificate authorities, or the PEM certificate in `caCertificate`. MongoDB Atlas requires TLS.
+
+With a `username` and `password`, the replay authenticates with SCRAM, and the server picks SCRAM-SHA-256 or SCRAM-SHA-1. To authenticate with an X.509 certificate instead, leave `password` empty and set `clientCertificate` to the PEM certificate followed by its private key. The user then comes from the certificate's subject, and `username` is optional. Keep the certificate in a secret, because it holds the private key:
+
+```json
+{
+  "generator": {
+    "mongodb": {
+      "clientCertificate": "${{secret:mongo-replay/client.pem}}",
+      "caCertificate": "${{secret:mongo-replay/ca.pem}}",
+      "tlsMode": "PROTOCOL_TLS_MODE_VERIFY_FULL"
+    }
+  }
+}
+```
+
+A typed `clientCertificate` is replaced with `REDACTED` in the replay's logs, as a typed password is, but it is still stored with the test config.
+
+</TabItem>
 </Tabs>
 
-Before any load starts, the replay connects once to each database. A wrong password or a missing database stops the replay straight away with the server's error message, such as `1045` for a MySQL access denied, instead of failing every statement.
+Before any load starts, the replay connects once to each database. A wrong password or a missing database stops the replay straight away with the server's error message, such as `1045` for a MySQL access denied or `AuthenticationFailed` for MongoDB, instead of failing every statement.
 
 ## Regression test the database {#regression}
 
@@ -388,6 +491,34 @@ For example, the demo recorded on MySQL 8.4 replays against a fresh MySQL 8.0 wi
 The replayed RRPair in the output directory holds the full MySQL error, including its number and SQLSTATE, here `1054` with the message `Unknown column 'order_count' in 'field list'`.
 
 </TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+<Tabs groupId="interface">
+<TabItem value="ai" label="AI assistant">
+
+> "Replay only the recorded MongoDB traffic against mongodb://localhost:27017/admin once, and list every command whose result differs from the recording, with the MongoDB error."
+
+</TabItem>
+<TabItem value="cli" label="proxymock CLI">
+
+Create a workspace test config with `proxymock test-config new mongo-replay`, add the `generator.mongodb` section from [Connect to the database](#credentials) to `proxymock/testconfigs/mongo-replay.json`, then pass that test config:
+
+```bash
+proxymock replay \
+  --tests-filter '(direction IS OUT) AND (tech IS MongoDB)' \
+  --test-against mongodb://localhost:27017/admin \
+  --test-config mongo-replay \
+  --fail-if "requests.result-match-pct < 100"
+```
+
+</TabItem>
+</Tabs>
+
+A command that succeeded when it was recorded but fails now is reported under **RESULT MISMATCH** for its command and collection, such as `insert` on `shop.orders`. A MongoDB command counts as failed when its reply has `ok: 0`, or when a write was rejected with `writeErrors` or `writeConcernError`, even though the command itself ran. The replayed RRPair in the output directory holds the server's reply, including `code`, `codeName` and `errmsg`.
+
+For example, a recording of an app that inserts 30 orders, pages through them with `find` and three `getMore`s, and then inserts and updates an order in a transaction replays against an empty MongoDB 8.0 replica set with every command matching. Replaying it a second time without restoring the database reports both inserts as result mismatches with code `11000` for a duplicate key, as [Regenerate unique values](#regenerate) explains. The transaction's insert fails, so the server aborts the transaction, and its update and `commitTransaction` fail with `251 NoSuchTransaction`.
+
+</TabItem>
 </Tabs>
 
 The `--fail-if` condition makes the command exit with code 1 when any statement's result changed, which is what you want in CI.
@@ -439,6 +570,28 @@ MYSQL_USER=<user> MYSQL_PWD=<password> proxymock replay \
 </Tabs>
 
 </TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+<Tabs groupId="interface">
+<TabItem value="ai" label="AI assistant">
+
+> "Load test my MongoDB server at mongodb://localhost:27017/admin with the recorded MongoDB traffic: 10 virtual users for one minute in load-test mode. Summarize latency and failures by command."
+
+</TabItem>
+<TabItem value="cli" label="proxymock CLI">
+
+```bash
+proxymock replay \
+  --tests-filter '(direction IS OUT) AND (tech IS MongoDB)' \
+  --test-against mongodb://localhost:27017/admin \
+  --test-config mongo-replay \
+  --vus 10 --for 1m --load-test
+```
+
+</TabItem>
+</Tabs>
+
+</TabItem>
 </Tabs>
 
 Each virtual user opens one database session, keeps it for the whole run, and replays the recorded statements in order, so prepared statements carry over from one statement to the next. When a pass through the recording ends inside a transaction, that transaction is rolled back so the next pass starts clean. `--load-test` skips response scoring, which keeps the replay itself light so the database is the bottleneck. The results table shows latency percentiles and throughput for every statement, and the **FAILED** column shows how many statements failed, with their share of the total.
@@ -466,6 +619,23 @@ While the test runs, each virtual user holds one session, and the sessions carry
 ```sql
 SELECT count(*) FROM performance_schema.session_connect_attrs
 WHERE attr_name = 'program_name' AND attr_value = 'speedscale-generator';
+```
+
+</TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+For MongoDB, each virtual user opens its own client to the server, which holds one connection for commands and one for server monitoring. Every recorded logical session gets one live session of its own on that client. A cursor's `getMore` and a transaction's commands therefore run on the session that opened them, as the server requires, even when the recording interleaves many app sessions. When a pass ends, the replay aborts any transaction the pass left open and closes the cursors it left open.
+
+On a laptop, the recording from the regression example replayed by 5 virtual users for 10 seconds sent about 51,500 commands, about 5,100 a second, with none failing to send. The inserts and the transaction failed after the first pass, for the duplicate `_id` reason above.
+
+While the test runs, the replay's connections carry the app name `speedscale-generator`, two for each virtual user. Count them from `mongosh` as a user that can run `$currentOp`:
+
+```javascript
+db.getSiblingDB("admin").aggregate([
+  { $currentOp: { allUsers: true, idleConnections: true } },
+  { $match: { appName: "speedscale-generator" } },
+  { $count: "connections" }
+])
 ```
 
 </TabItem>
@@ -534,6 +704,11 @@ The `mysql_param` extractor picks the parameter by its position, counting the `?
 With it, the demo's user `INSERT` went from nearly every statement failing with `1062` to no mismatches, and each pass wrote new users. You can build the same blueprint in the **Blueprints** editor of `proxymock web`, where the extractor is listed as **MySQL Statement Parameter**. See [mysql_param](/guides/transformation/extractors/mysql_param).
 
 </TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+MongoDB drivers generate each document's `_id` in the app, so the recording holds the exact `_id`s the app inserted. Every pass, and every virtual user, sends those same `_id`s again, so after the first insert the rest fail with `E11000 duplicate key error`, code `11000`, unless a transform rewrites them. There is no MongoDB extractor like `postgres_param` or `mysql_param` yet, so for now replay a regression test once against a freshly restored database, and expect duplicate key failures on repeated inserts in a load test.
+
+</TabItem>
 </Tabs>
 
 ## Replay from the Speedscale dashboard {#dashboard}
@@ -572,20 +747,37 @@ For traffic recorded in Kubernetes, you can run the same regression and load tes
 Each replayed statement keeps its OK packet (affected rows, insert id and warnings) or its error, and a sample of up to 20 rows.
 
 </TabItem>
+<TabItem value="mongodb" label="MongoDB">
+
+| Recorded command | What the replay does |
+|---|---|
+| Any OP_MSG command, such as `find`, `insert`, `update`, `delete`, `aggregate` or `findAndModify` | Sends the recorded command against its recorded `$db`, without the recorded `lsid`, `$clusterTime`, `txnNumber` and `$readPreference`, which the replay's own driver supplies |
+| Commands sent as an OP_MSG document sequence, such as the documents of an `insert` | Sends them as one command |
+| `getMore` and `killCursors` | Sends them with the live cursor id that the replayed `find` or `aggregate` returned. Skipped when the replay holds no live cursor for them, for example after the live cursor returned everything in its first batch |
+| A transaction: `startTransaction`, the commands with `autocommit: false`, `commitTransaction` and `abortTransaction` | Runs the transaction on the live session that stands in for the recorded one. A transaction command whose start was not replayed is skipped |
+| `hello`, `isMaster`, `saslStart`, `saslContinue`, `ping`, `buildInfo`, `getLastError`, `endSessions` and other handshake, authentication and monitoring commands | Skipped: the replay manages its own connections and sessions |
+| Change streams (`$changeStream`) and tailable or `awaitData` cursors | Skipped, and counted apart in the `streams_skipped` metric. proxymock logs one warning per virtual user when a recording holds them |
+| Legacy OP_QUERY commands | Skipped |
+
+Each replayed command keeps the server's reply, with cursor batches cut to the first 20 documents. The fields a server fills in for every reply, such as `$clusterTime`, `operationTime` and `electionId`, are left out, and a cursor id shows the recorded id that the live cursor stands in for.
+
+</TabItem>
 </Tabs>
 
 ## Tips and limits {#limits}
 
-- **Use a disposable database.** Replays change data. Reset it between runs, for example with `TRUNCATE ... RESTART IDENTITY` in PostgreSQL, by restoring a dump, or by restoring a snapshot.
+- **Use a disposable database.** Replays change data. Reset it between runs, for example with `TRUNCATE ... RESTART IDENTITY` in PostgreSQL, by restoring a dump with `mongorestore --drop` for MongoDB, or by restoring a snapshot.
 - **Row ids come from the recording.** Recorded updates and deletes use the row ids from the original database, so on a fresh copy they may match no rows, and repeated inserts can hit unique constraints. In MySQL, auto-increment ids can also differ once concurrent inserts fail and use up ids, so recorded foreign keys may point at rows that do not exist and fail with `1452`. These show up as SQL results, not replay failures. Start regression tests from a copy of the recorded database, and a blueprint can [regenerate the unique values](#regenerate).
 - **Transactions across connections.** Recorded traffic mixes statements from many app connections, and a replay does not yet regroup them by connection. A replay can therefore send a `COMMIT` without its `BEGIN` or `START TRANSACTION`, and proxymock logs a warning when that happens. Workloads that depend on multi-statement transactions are not reproduced faithfully yet.
 - **MySQL statements prepared before recording started** are skipped, because the recording does not hold their SQL. Start recording before your app opens its connections.
 - **Insert ids and timestamps differ from the recording** on every run. They do not count as mismatches: a statement's result is scored by whether it succeeded, not by the values it returned.
+- **MongoDB replies compare without server bookkeeping.** Cluster time, operation time, election ids and the other fields a server fills in for every reply differ on every run, so they are left out when a recorded reply is compared with a replayed one, and live cursor ids are compared as the recorded ids they stand in for. A command whose result did not change therefore matches its recording with no assertion config. The raw recorded reply still holds those fields.
+- **MongoDB replays connect to one server.** The replay talks straight to the host in the recording or in the address, without discovering the rest of a replica set, so point it at the primary for writes and transactions. Transactions need a replica set or a sharded cluster, not a standalone server.
 - **Queries that return a whole table** get slower as a load test inserts more rows. That is real behaviour of your query mix, but reset the data between runs you want to compare.
 
 ## Related {#related}
 
 - [Choose What a Replay Tests](../guides/choose-replay-tests.md)
-- [Record PostgreSQL](./record/postgresql.md) and [Record MySQL](./record/mysql.md)
+- [Record PostgreSQL](./record/postgresql.md), [Record MySQL](./record/mysql.md) and [Record MongoDB](./record/mongodb.md)
 - [Compare SQL between runs](./sql-compare.md)
 - [proxymock CLI reference](/reference/proxymock-cli-reference)

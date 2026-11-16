@@ -1,0 +1,72 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:02.355
+An outbound request missed its mock.
+
+00:00:02.526 --> 00:00:06.466
+Start with that one call and find out what
+the responder used to match it.
+
+00:00:07.019 --> 00:00:10.244
+Open the replay report and select Mocked
+Responses.
+
+00:00:10.415 --> 00:00:14.280
+Filter by Match Status, choose No Match,
+and open one request.
+
+00:00:14.451 --> 00:00:16.417
+Stay on the endpoint you want to fix.
+
+00:00:16.985 --> 00:00:20.201
+Open Signature and inspect the keys used
+for matching.
+
+00:00:20.372 --> 00:00:24.675
+Compare the incoming request with a
+candidate from Suggested Signatures.
+
+00:00:24.846 --> 00:00:28.747
+A differing value can explain why the
+recorded response was skipped.
+
+00:00:29.285 --> 00:00:33.841
+If you've confirmed a key changes between
+runs and does not select a different
+
+00:00:33.841 --> 00:00:35.477
+response, queue its removal.
+
+00:00:35.647 --> 00:00:38.809
+Keep the HTTP method and endpoint filters.
+
+00:00:38.979 --> 00:00:42.312
+For a database lookup, keep the keys that
+select the row.
+
+00:00:42.852 --> 00:00:47.474
+Open Pending Transform Changes and check
+the key, method, and endpoint.
+
+00:00:47.645 --> 00:00:50.134
+Apply the change and create a new report.
+
+00:00:50.305 --> 00:00:54.050
+Keeping the change small makes it easier to
+tell what fixed the miss.
+
+00:00:54.619 --> 00:00:59.550
+Go back to Mocked Responses, find the same
+request pattern, and check that it now
+
+00:00:59.550 --> 00:01:02.411
+shows Match and returned the expected
+response.
+
+00:01:02.582 --> 00:01:06.095
+Use the overall mock accuracy metric as a
+second check.
+
+00:01:06.652 --> 00:01:11.083
+If the mock responds with the wrong data,
+put the key back and narrow the change.

@@ -4,6 +4,8 @@ description: "The Resilience readiness family pairs every fault a chaos rule inj
 sidebar_position: 6
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Resilience
 
 Resilience grades what the service did with the faults the test config's [chaos rules](/concepts/chaos) injected.
@@ -15,6 +17,16 @@ The measure is the share of faulted requests handled within the bounds.
 The default role is Off.
 
 Chaos fires on HTTP mocks only, so non-HTTP inbound requests and non-HTTP mocks are not paired.
+
+## Check recovery after a dependency fails
+
+See how to set up a fault window and read the recovery result in a replay report.
+
+<video controls playsInline preload="none" aria-label="Check recovery after a dependency fails" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-check-recovery-after-a-dependency-fails.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-check-recovery-after-a-dependency-fails.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-check-recovery-after-a-dependency-fails.mp4')}>Download the video</a>
+</video>
 
 ## Fault windows and pairing
 
