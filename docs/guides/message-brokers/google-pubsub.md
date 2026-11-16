@@ -10,6 +10,33 @@ Google Pub/Sub uses HTTP-based APIs, which means you can use Speedscale's standa
 
 For more information about Google Pub/Sub, see the [Google Cloud Pub/Sub documentation](https://cloud.google.com/pubsub).
 
+## Mock a Pub/Sub subscriber
+
+When the service under test is a Pub/Sub subscriber, `proxymock mock` and the Speedscale responder answer its subscriber calls from the messages recorded for its subscription, so it runs with no Google Cloud project and no emulator. The Google client libraries call Pub/Sub over gRPC, and a high-level subscriber opens a bidirectional `StreamingPull` stream and acknowledges messages with separate unary `Acknowledge` and `ModifyAckDeadline` calls. Its keepalives, lease extensions and acknowledgement batches differ on every run, so the mock does not match these calls by signature.
+
+Record the subscriber with proxymock, which records `StreamingPull` streams, including the long-lived streams a subscriber keeps open and ends by cancelling (see [long-lived gRPC streams](/proxymock/grpc/long-lived-streams/)). Cloud capture records them only when `GRPC_STREAMING_ENABLED` is on. Then run the mock with the same mapping you recorded with, as for any [gRPC dependency](/proxymock/grpc/mock-a-grpc-dependency/). With the emulator, set `PUBSUB_EMULATOR_HOST` to the mapped port.
+
+| Call | What the mock does |
+|---|---|
+| `StreamingPull` | Matches the stream by the subscription in its first request only. Pushes the messages recorded for that subscription, with their data, attributes, ordering key and message ID, at the pace they arrived in the recording. Then keeps the stream open until the client cancels it. |
+| `Pull` | Answers from the same recorded messages, up to `max_messages`, and returns an empty response once none are left. |
+| `Acknowledge` and `ModifyAckDeadline` | Answers success whatever the ack IDs. |
+| Publisher calls such as `Publish`, and other subscriber calls such as `GetSubscription` | Matched by signature, like any other gRPC call. |
+
+The mock answers these four calls this way for a Pub/Sub host once the recording holds at least one of them for that host.
+
+The mock uses the messages of every recorded `StreamingPull` and `Pull` call for the subscription, in the order they were recorded, including streams recorded as several parts and streams the client cancelled. A message recorded twice with the same ack ID is sent once, and a redelivery recorded with a new ack ID is sent again as recorded. Use `proxymock mock --grpc-streaming-immediate` to send the messages without the recorded gaps.
+
+The mock honors the `max_outstanding_messages` and `max_outstanding_bytes` that the client sends in its first `StreamingPull` request. It stops sending while the messages it sent and the client has not acknowledged reach either limit, and splits a recorded response when only part of it fits. An acknowledgement frees room whether it arrives on the stream or as an `Acknowledge` call, and so does a nack, which is a `ModifyAckDeadline` of 0 seconds. A lease extension frees nothing, and keepalives are ignored.
+
+Each recorded message is sent once per mock instance and subscription. Two subscribers on the same subscription share the recorded messages, as they share a real subscription, instead of both receiving all of them. A `Pull` takes from the same messages, so it gets only what the streams have not taken. Restart or reload the mock to send the messages again.
+
+A `StreamingPull` for a subscription with no recorded `StreamingPull` or `Pull` call returns `NOT_FOUND`. A `Pull` for such a subscription goes to the normal gRPC match instead, which can answer it from a `Pull` recorded by an older release. A subscription whose recordings hold no messages keeps its stream open and answers `Pull` with an empty response.
+
+Every call is saved to the mock's observed output as a match or a miss. A `StreamingPull` is saved when the stream ends, with the requests the client sent and the messages the mock sent.
+
+The mock does not redeliver a message that is nacked, never acknowledged, or left outstanding on a stream the client cancelled, as Pub/Sub would after the ack deadline. It does not simulate exactly-once delivery or ordering-key delivery rules.
+
 ## Prerequisites
 
 1. [speedctl](/reference/glossary.md#speedctl) is installed

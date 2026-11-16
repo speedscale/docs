@@ -30,7 +30,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | ----------------- | -------- | ------------ | ---------------------------------------------------------------------------------- |
 | AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
-| Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
+| Google PubSub     | Protocol | Partial      | gRPC calls such as `Publish` and `Acknowledge` are captured, mocked and replayed as gRPC. `StreamingPull` and `Pull` subscribers can be mocked from the messages they received. See [details](../guides/message-brokers/google-pubsub.md#mock-a-pubsub-subscriber) |
 | GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |
 | gRPC              | Protocol | Partial      | Unary and bounded native server, client and bidirectional streaming. Streams that outlive the per-call limits are recorded as ordered parts and mocked as one live stream; replay follows the first part only. grpc-web streaming remains a separate phase. See [gRPC known limits](/proxymock/grpc/#known-limits), [native server streaming](/proxymock/grpc/server-streaming/), [native client streaming](/proxymock/grpc/client-streaming/), [native bidirectional streaming](/proxymock/grpc/bidi-streaming/) and [long-lived streams](/proxymock/grpc/long-lived-streams/). |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
@@ -107,7 +107,7 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 | AWS SQS                     | API  | Full    | See [details](../guides/message-brokers/aws-sqs.md)      |
 | Azure Event Hubs            | API  | Full    | See [details](../guides/message-brokers/azure-event-hubs.md)      |
 | Gmail                       | API  | Full    |                                        |
-| Google Pub/Sub               | API  | Full    | See [details](../guides/message-brokers/google-pubsub.md)      |
+| Google Pub/Sub               | API  | Partial | gRPC calls such as `Publish` and `Acknowledge` are captured, mocked and replayed as gRPC. `StreamingPull` and `Pull` subscribers can be mocked from the messages they received. See [details](../guides/message-brokers/google-pubsub.md#mock-a-pubsub-subscriber) |
 | MCP                         | API  | Full    |                                        |
 | Microsoft Outlook 365       | API  | Full    |                                        |
 | Microsoft Azure Service Bus | API  | Full    | See [details](../guides/message-brokers/azure-service-bus.md)      |
