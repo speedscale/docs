@@ -110,7 +110,7 @@ Full support for AWS SQS. Since SQS uses HTTP-based APIs, you can capture and re
 
 ### Google Pub/Sub
 
-Full support for Google Pub/Sub including record and replay. Speedscale can capture Pub/Sub traffic and replay it using standard Speedscale replay capabilities. Message extraction and custom load driver approaches similar to Kafka and RabbitMQ can also be applied.
+The Google Cloud client libraries call Pub/Sub over gRPC. Publish and acknowledge calls are captured, mocked and replayed as gRPC, and a subscriber can be driven by republishing the messages its recording received. `StreamingPull` mocking is not yet supported.
 
 [Learn how to replay Google Pub/Sub traffic](./google-pubsub.md)
 
@@ -193,7 +193,8 @@ To begin load testing your message broker integrations:
 3. Follow the broker-specific guide for your message broker:
    - **Kafka Protocol**: [Kafka](./kafka.md), [AWS Kinesis](./aws-kinesis.md), [Azure Event Hubs](./azure-event-hubs.md), [Apache Pulsar](./apache-pulsar.md)
    - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1), [Azure Service Bus](./azure-service-bus.md), [Apache ActiveMQ](./apache-activemq.md), [Amazon MQ](./amazon-mq.md)
-   - **HTTP-based**: [AWS SQS](./aws-sqs.md), [AWS SNS](./aws-sns.md), [Google Pub/Sub](./google-pubsub.md), [Azure Service Bus](./azure-service-bus.md)
+   - **gRPC**: [Google Pub/Sub](./google-pubsub.md)
+   - **HTTP-based**: [AWS SQS](./aws-sqs.md), [AWS SNS](./aws-sns.md), [Azure Service Bus](./azure-service-bus.md)
 4. Build and run your load driver (if using custom approach) or start a standard replay
 
 ## Need Help?
