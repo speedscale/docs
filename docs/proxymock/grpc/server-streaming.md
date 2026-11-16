@@ -48,6 +48,6 @@ Content redaction visits every decoded message. If requested content redaction c
 
 ### Known limits
 
-[Client streams](./client-streaming.md) are mocked and replayed as well. Bidirectional execution, streaming scenario generation, grpc-web streaming and kraken qualification are separate follow-up phases. A call that sends several messages in each direction is treated as bidirectional and excluded from mock and replay with a diagnostic.
+[Client streams](./client-streaming.md) and [bidirectional calls](./bidi-streaming.md) are mocked and replayed as well. Streaming scenario generation, grpc-web streaming and kraken qualification are separate follow-up phases.
 
-Cloud capture writers remain disabled by default until storage, cache, analyzer, responder and generator readers have been deployed together. Reader-first rollout is required before enabling `GRPC_STREAMING_ENABLED`. The local proxymock binary ships the compatible readers and writer together, so it always captures streams as calls. Keep bidirectional methods out of bootstrap-generated recordings.
+Cloud capture writers remain disabled by default until storage, cache, analyzer, responder and generator readers have been deployed together. Reader-first rollout is required before enabling `GRPC_STREAMING_ENABLED`. The local proxymock binary ships the compatible readers and writer together, so it always captures streams as calls. Bootstrap-generated recordings can include every kind of finite stream.
