@@ -30,9 +30,9 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | ----------------- | -------- | ------------ | ---------------------------------------------------------------------------------- |
 | AMQP              | Protocol | Full         | 0.9.1: captured by the sidecar, eBPF and proxymock, mocked, and replayed by publishing recorded deliveries. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
-| Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
+| Google PubSub     | Protocol | Partial      | gRPC calls such as `Publish` and `Acknowledge` are captured, mocked and replayed as gRPC. A subscriber can be driven by republishing the messages its `StreamingPull` and `Pull` calls received. `StreamingPull` mocking is not yet supported. See [details](../guides/message-brokers/google-pubsub.md) |
 | GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |
-| gRPC              | Protocol | Partial      | Unary and bounded native server streaming. Client streaming, bidi and grpc-web streaming remain separate phases. See [gRPC known limits](/proxymock/grpc/#known-limits) and [native server streaming](/proxymock/grpc/server-streaming/). |
+| gRPC              | Protocol | Partial      | Unary and bounded native server, client and bidirectional streaming. grpc-web streaming remains a separate phase. See [gRPC known limits](/proxymock/grpc/#known-limits), [native server streaming](/proxymock/grpc/server-streaming/), [native client streaming](/proxymock/grpc/client-streaming/) and [native bidirectional streaming](/proxymock/grpc/bidi-streaming/). |
 | HTTP 1.1          | Protocol | Full         |                                                                                    |
 | HTTP 2.0          | Protocol | Full         |                                                                                    |
 | HTTP/S TLS        | Protocol | Full         | See [TLS capture](/guides/tls/)                                                                          |
@@ -70,7 +70,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Google BigTable       | DBMS | Full         | If using the Google SDK with standard pagination |
 | Google Spanner        | DBMS | Full         | If using the Google SDK with standard pagination |
 | Microsoft Outlook 365 | API  | Full         |                                                  |
-| MongoDB               | DBMS | Full         | See [proxymock guide](/proxymock/databases/record/mongodb)  |
+| MongoDB               | DBMS | Full         | See [Database features](#database-features) and the [proxymock guide](/proxymock/databases/record/mongodb) |
 | MySQL                 | DBMS | Full         | See [Database features](#database-features) |
 | Postgres              | DBMS | Full         | See [Database features](#database-features) and [captured bodies](/guides/capture/bodies#postgres) |
 | Redis                 | DBMS | Full         | See [Redis mocking and replay](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported for capture, mocking and replay against a single-node server. Pub/Sub and `MONITOR` are not supported. |
@@ -78,7 +78,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 ### Database features
 
-Every supported database can be recorded and mocked. PostgreSQL and MySQL are decoded statement by statement, which adds the features below. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
+Every supported database can be recorded and mocked. PostgreSQL and MySQL are decoded statement by statement, which adds the features below. PostgreSQL, MySQL and MongoDB traffic can also be replayed against a live database. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
 
 | Feature | PostgreSQL | MySQL | MongoDB | Redis, Valkey |
 | --- | --- | --- | --- | --- |
@@ -90,14 +90,14 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 | Live SQL ([dashboard](/guides/databases/watch-live-sql), [proxymock](/proxymock/databases/watch-live-sql)) and [SQL inventory](/proxymock/databases/sql-inventory) | Yes | Yes | No | No |
 | SQL script export ([dashboard](/guides/databases/export-sql-script), [proxymock](/proxymock/databases/export-sql-script)) | Yes | Yes | No | No |
 | Link queries to requests by trace id ([dashboard](/guides/databases/link-queries-to-requests), [proxymock](/proxymock/databases/link-queries-to-requests)) | Yes | Yes | No | No |
-| Load and regression replay against a database ([PostgreSQL and MySQL](/proxymock/databases/load-and-regression-testing), [Redis and Valkey](/proxymock/databases/record/redis#replay)) | Yes | Yes | No | Yes |
+| Load and regression replay against a database ([PostgreSQL, MySQL and MongoDB](/proxymock/databases/load-and-regression-testing), [Redis and Valkey](/proxymock/databases/record/redis#replay)) | Yes | Yes | Yes | Yes |
 
 ### Supported APIs
 
 | Technology                  | Type | Support | Notes                                  |
 | --------------------------- | ---- | ------- | -------------------------------------- |
 | Agent 2 Agent (A2A)         | API  | Full    | Labeled A2A from JSON-RPC methods (0.2, 0.3 and 1.0 names), the `A2A-Version` header, the agent card and HTTP+JSON routes such as `/message:send` |
-| Amazon MQ                  | API  | Full    | See [details](../guides/message-brokers/amazon-mq.md)      |
+| Amazon MQ                  | API  | Partial | RabbitMQ brokers are supported as AMQP 0.9.1 over TLS on 5671: recorded, mocked and replayed. See [RabbitMQ](../guides/message-brokers/rabbitmq.md). ActiveMQ brokers are not supported yet. See [details](../guides/message-brokers/amazon-mq.md) |
 | Apache ActiveMQ             | API  | Full    | See [details](../guides/message-brokers/apache-activemq.md)      |
 | Apache Pulsar               | API  | Full    | See [details](../guides/message-brokers/apache-pulsar.md)      |
 | Auth0                       | API  | Full    |                                        |
@@ -108,7 +108,7 @@ Every supported database can be recorded and mocked. PostgreSQL and MySQL are de
 | AWS SQS                     | API  | Full    | See [details](../guides/message-brokers/aws-sqs.md)      |
 | Azure Event Hubs            | API  | Full    | See [details](../guides/message-brokers/azure-event-hubs.md)      |
 | Gmail                       | API  | Full    |                                        |
-| Google Pub/Sub               | API  | Full    | See [details](../guides/message-brokers/google-pubsub.md)      |
+| Google Pub/Sub               | API  | Partial | gRPC calls such as `Publish` and `Acknowledge` are captured, mocked and replayed as gRPC. A subscriber can be driven by republishing the messages its `StreamingPull` and `Pull` calls received. `StreamingPull` mocking is not yet supported. See [details](../guides/message-brokers/google-pubsub.md) |
 | MCP                         | API  | Full    | Labeled MCP from the `Mcp-Session-Id` and `MCP-Protocol-Version` headers, MCP JSON-RPC methods, and the HTTP+SSE `endpoint` event |
 | Microsoft Outlook 365       | API  | Full    |                                        |
 | Microsoft Azure Service Bus | API  | Full    | See [details](../guides/message-brokers/azure-service-bus.md)      |

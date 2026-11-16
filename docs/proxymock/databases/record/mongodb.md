@@ -1,5 +1,5 @@
 ---
-description: "Mock MongoDB database connections and queries for local development using proxymock to record and replay real MongoDB wire protocol traffic."
+description: "Mock MongoDB database connections and queries for local development using proxymock to record real MongoDB wire protocol traffic, and replay the recorded commands against a MongoDB server to load or regression test it."
 sidebar_position: 7
 ---
 
@@ -125,6 +125,25 @@ proxymock cloud pull transform <id>
 ```
 
 The template is written to `proxymock/blueprints/<id>.json`, and the next `proxymock mock` applies it.
+
+## Load and Regression Testing {#load-testing}
+
+The commands you recorded can also be replayed against a real MongoDB server, to load test it or to catch regressions after an upgrade, such as MongoDB 7.0 to 8.0, or a move to another server that speaks the MongoDB protocol. Select the MongoDB traffic as the tests and point the replay at the server:
+
+```bash
+proxymock replay \
+  --tests-filter '(direction IS OUT) AND (tech IS MongoDB)' \
+  --test-against mongodb://localhost:27017/admin \
+  --test-config mongo-replay
+```
+
+The replay user, with a SCRAM password or an X.509 certificate, goes in `generator.mongodb` of the test config, never in the address. The replay maps the recorded cursors and sessions onto live ones, so `getMore` paging and transactions replay. It skips the handshake, authentication, change streams and tailable cursors.
+
+:::warning
+The replay writes to the server it targets, so point it at a disposable database. The recorded `_id`s are sent again on every pass, so a second pass or a second virtual user fails its inserts with duplicate key errors unless the database is restored first.
+:::
+
+See [Load and Regression Test a Database](../load-and-regression-testing.md) for credentials, TLS, scoring and limits.
 
 ## Kubernetes and eBPF {#kubernetes}
 
