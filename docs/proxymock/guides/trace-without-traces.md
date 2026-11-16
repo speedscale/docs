@@ -4,6 +4,8 @@ description: "Follow one customer's request across every service it touches in p
 sidebar_position: 10
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Trace a request without traces
 
 Distributed tracing is great when every service is instrumented, nothing is
@@ -21,6 +23,16 @@ The result is a Grafana-style waterfall, scoped to a single person, built from
 real recorded requests:
 
 ![The Trace lens showing one customer's checkout journey as a nested waterfall across the gateway, auth, orders, and shipping services, with a service legend and per-span durations](./trace-without-traces/07-trace-waterfall.png)
+
+## Trace one checkout across services
+
+Filter recorded traffic by a customer email, then inspect the related requests in Trace view.
+
+<video controls playsInline preload="none" aria-label="Trace one checkout across services" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-trace-checkout-across-services.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-trace-checkout-across-services.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-trace-checkout-across-services.mp4')}>Download the video</a>
+</video>
 
 ## What you'll need
 

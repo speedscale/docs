@@ -4,6 +4,8 @@ title: Applying Rules to Production
 description: Learn how to apply DLP rules to forwarders in your production environment to protect sensitive data.
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Applying Rules to Production
 
 Once you've created DLP rules from recommendations, the next step is to apply them to forwarders in your production environment. This enables real-time data redaction before traffic reaches Speedscale's cloud storage.
@@ -51,6 +53,14 @@ Before applying rules to production:
 - **Validate Redaction**: Verify redaction is working correctly
 
 ### Safety and Validation Steps
+
+See how to test a redaction rule on synthetic traffic, compare the two payloads, and verify what the rule changes before rollout.
+
+<video controls playsInline preload="none" aria-label="Verify redaction before enabling a DLP rule" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-verify-dlp-redaction.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-verify-dlp-redaction.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-verify-dlp-redaction.mp4')}>Download the video</a>
+</video>
 
 Before applying:
 

@@ -3,6 +3,8 @@ description: "Fail a replay when the outbound HTTP calls an app makes to its moc
 sidebar_position: 6
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # HTTP Output
 
 The `httpOutput` assertion compares the outbound HTTP calls the app made to its mocked dependencies during a replay with the calls it made in the recording.
@@ -10,6 +12,16 @@ The `httpOutput` assertion compares the outbound HTTP calls the app made to its 
 It judges the replay as a whole rather than each replayed request, so it does not change the per-request assertion counts. A difference adds a notification to the report, which then ends in Missed Goals.
 
 The mock answers whatever the app sends as long as the request matches a signature, so a changed write to a dependency can still pass every response check. This assertion is where that change shows.
+
+## Catch an outbound HTTP regression
+
+Compare recorded and replayed payment requests even when checkout still returns success.
+
+<video controls playsInline preload="none" aria-label="Catch an outbound HTTP regression" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-catch-outbound-http-regression.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-catch-outbound-http-regression.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-catch-outbound-http-regression.mp4')}>Download the video</a>
+</video>
 
 ### Example <a href="#example" id="example"></a>
 

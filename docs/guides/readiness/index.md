@@ -4,6 +4,8 @@ description: "The replay readiness scorecard grades every Speedscale replay repo
 sidebar_position: 0
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Replay Readiness Scorecard
 
 The readiness scorecard answers one question about a replay report: is this build ready for production?
@@ -19,6 +21,16 @@ Use the scorecard when you want a replay to act as a release gate rather than a 
 The test config decides which families block the verdict and at which letter, so a team can start with the Speedscale defaults and tighten them as the service matures.
 
 Local proxymock replays and replays that never reach the Speedscale cloud are not graded; the scorecard needs the cloud analyzer.
+
+## Investigate a Not ready verdict
+
+Follow the scorecard from a blocking family to the requests behind its grade.
+
+<video controls playsInline preload="none" aria-label="Investigate a Not ready verdict" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-replay-readiness-scorecard.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-replay-readiness-scorecard.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-replay-readiness-scorecard.mp4')}>Download the video</a>
+</video>
 
 ## Where readiness appears
 

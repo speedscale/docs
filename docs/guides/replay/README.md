@@ -2,12 +2,25 @@
 description: "Explore the Speedscale Dashboard to replay recorded traffic, configure settings, and view detailed reports for effective API testing and traffic management"
 sidebar_position: 1
 ---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Dashboard
+
+## Run your first dashboard replay
 
 Once your service has recorded traffic you can start a replay with the "Replay
 traffic" button from the traffic viewer, which will start the replay wizard.
 
 ![Replay](./replay-button.png)
+
+Start with a saved snapshot, choose the requests and mocks to use, and follow the run to its report.
+
+<video controls playsInline preload="none" aria-label="Run your first dashboard replay" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-first-dashboard-replay.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-first-dashboard-replay.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-first-dashboard-replay.mp4')}>Download the video</a>
+</video>
 
 Follow the instructions in the wizard to select **inbound** traffic, the requests to be replayed against your service
 

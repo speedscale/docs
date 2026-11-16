@@ -1,0 +1,57 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:03.836
+Both versions of the Orders API return 201.
+
+00:00:04.006 --> 00:00:09.422
+The order identifiers and timestamps change
+every time, so a raw comparison makes it
+
+00:00:09.422 --> 00:00:11.421
+hard to spot the changed total.
+
+00:00:11.985 --> 00:00:15.743
+Save the baseline and candidate traffic to
+separate folders.
+
+00:00:15.914 --> 00:00:20.285
+In this example, each folder contains three
+successful order responses.
+
+00:00:20.456 --> 00:00:22.124
+The orders are the same size.
+
+00:00:22.685 --> 00:00:27.830
+Run proxymock automation response-diff with
+the baseline and candidate folders.
+
+00:00:28.001 --> 00:00:30.850
+Add -o pretty to read the result in the
+terminal.
+
+00:00:31.021 --> 00:00:35.689
+The command pairs responses and filters
+fields it recognizes as volatile.
+
+00:00:36.252 --> 00:00:39.669
+The report shows one finding across three
+compared responses.
+
+00:00:39.839 --> 00:00:43.816
+Total cents changed from 3,600 to 4,800.
+
+00:00:43.987 --> 00:00:48.320
+The generated identifiers and timestamps
+don't appear as regressions.
+
+00:00:48.885 --> 00:00:53.401
+Follow the method, endpoint, and field path
+to the exact response value.
+
+00:00:53.572 --> 00:00:58.661
+Check whether the new total is intentional,
+then use the same baseline after a fix.
+
+00:00:59.219 --> 00:01:03.764
+Save your baseline so you can run the
+comparison again when the service changes.

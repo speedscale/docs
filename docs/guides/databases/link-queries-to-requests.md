@@ -3,9 +3,21 @@ title: Link queries to the request that ran them
 description: "See which inbound request ran a PostgreSQL, MySQL or SQL Server statement, and which statements one request ran, in the Speedscale dashboard: Caused by, Queries in this request, the Trace ID filter and the trace waterfall, linked exactly by the trace id in the SQL comment or by timing."
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Link queries to the request that ran them
 
 A slow page, an N+1 loop or a failing write starts with an inbound request and ends in the database. The Traffic page links the two in both directions: from a statement to the request that ran it, and from a request to every statement it ran. You need no APM agent for this, since Speedscale links them from the recorded traffic.
+
+## Find the SQL behind a slow request
+
+Open an inbound request, inspect the SQL it ran, and follow one statement back to the request.
+
+<video controls playsInline preload="none" aria-label="Find the SQL behind a slow request" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-find-sql-behind-a-slow-request.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-find-sql-behind-a-slow-request.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-find-sql-behind-a-slow-request.mp4')}>Download the video</a>
+</video>
 
 ## How statements are linked
 
