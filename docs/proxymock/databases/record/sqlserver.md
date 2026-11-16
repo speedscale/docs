@@ -104,7 +104,7 @@ proxymock mock --map 11433=mssql://localhost:1433 -- your-app
 
 The mock answers each SQL batch and RPC with the reply recorded for the same statement, matched the way PostgreSQL and MySQL mocks are: on the normalized SQL, not on the values bound to it. See [Mock a database](../mock-a-database.md) for what happens when nothing matches exactly and how a transform makes a bound value part of the match. A call with no recording gets SQL Server error 50000, `Speedscale: responder miss`, and appears as a miss in the mock's output.
 
-The mock accepts any SQL Server login, whatever its password, and answers it for the database the app asks for. It negotiates the same encryption a server does, so the connection strings above work unchanged against it, encryption on or off, and so does TDS 8.0 strict encryption. A driver that checks the certificate needs to trust the proxymock certificate authority, as for recording (see [Encryption](#encryption)).
+The mock accepts any SQL Server login, whatever its password, and answers it for the database the app asks for. It accepts Windows logins too: an NTLM login gets a challenge and whatever answer follows is taken, and a Kerberos ticket is taken without being checked, since the mock has no domain to check them against. SqlClient, mssql-jdbc and go-mssqldb sign in to it with integrated security unchanged. It negotiates the same encryption a server does, so the connection strings above work unchanged against it, encryption on or off, and so does TDS 8.0 strict encryption. A driver that checks the certificate needs to trust the proxymock certificate authority, as for recording (see [Encryption](#encryption)).
 
 Prepared statements work across the mock: an `sp_prepexec` gets a statement handle of the mock's own, and the `sp_execute` calls that reuse it are answered from the recordings of the same SQL. Requests a driver or pool sends for its own housekeeping are answered even when the recording does not hold them: `SET` options, `BEGIN TRANSACTION`, `COMMIT` and `ROLLBACK` as T-SQL or as transaction manager requests, `SELECT @@SPID`, `@@VERSION` and `@@TRANCOUNT`, a pooled connection's reset, and an attention.
 
@@ -118,9 +118,9 @@ To read or rewrite one bound value, for example to store the id a lookup asks fo
 - An inbound SQL Server, one that proxymock or the sidecar receives connections for rather than connects to, records encrypted connections as the sidecar does without `tls-out`. See [Encryption](#encryption).
 - Connections with MultipleActiveResultSets (MARS) turned on, such as `MultipleActiveResultSets=True` in SqlClient, are not decoded past the PRELOGIN. Turn MARS off for the recording.
 - Bulk load data sent by BCP or SqlBulkCopy, table-valued parameters and Always Encrypted columns are not decoded.
-- The mock accepts SQL Server logins only. An app that logs in with Windows authentication (SSPI) or Microsoft Entra ID needs a SQL Server login for the mocked run.
+- The mock accepts SQL Server logins and Windows logins over NTLM or Kerberos. NTLM inside Negotiate (SPNEGO), which a Windows client falls back to when it cannot get a Kerberos ticket, gets error 18452; for the mocked run, give the app a Kerberos ticket, NTLM directly, or a SQL Server login. An app that logs in with Microsoft Entra ID needs a SQL Server login for the mocked run.
 - The mock does not offer MARS, column encryption (Always Encrypted) or session recovery: a driver that asks for them goes on without them.
-- A replay against a database signs in with a SQL Server login or Microsoft Entra ID, not Windows authentication, and skips server cursors, bulk load and MARS sessions.
+- A replay against a database signs in with a SQL Server login, Microsoft Entra ID, or a Windows login over NTLM or Kerberos, and skips server cursors, bulk load and MARS sessions.
 
 ## In Kubernetes {#kubernetes}
 
