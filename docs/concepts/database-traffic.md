@@ -38,7 +38,7 @@ Connection facts (user, database, application, session) need a capture from prox
 |---|---|---|---|
 | PostgreSQL | Yes | Yes | Yes |
 | MySQL and MariaDB | Yes | Yes | Yes |
-| SQL Server, Amazon RDS for SQL Server and Azure SQL Managed Instance | Recorded, not mocked | Yes | No |
+| SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance | Recorded, not mocked | Yes | No |
 | MongoDB | Yes | No | No |
 | Redis and Valkey | Yes | No | No |
 | DynamoDB | Yes, as AWS API calls | No | No |
@@ -52,7 +52,7 @@ Connection facts (user, database, application, session) need a capture from prox
 
 Decoding SQL needs the conversation in clear text where it is recorded. Locally, connect your app to proxymock without TLS for the recording, for example with `sslmode=disable` for Postgres or `ssl-mode=DISABLED` for MySQL. The eBPF collector reads Postgres and MySQL TLS traffic before it is encrypted.
 
-SQL Server is recorded through proxymock or the sidecar, and the driver must not encrypt the whole session. With encryption turned off, such as `Encrypt=False` for SqlClient or `encrypt=false` for mssql-jdbc, the driver still encrypts the login packet, so everything after it is recorded but the user and application name of that connection are not known. With encryption turned on, the default of current SqlClient and mssql-jdbc releases, only the opening handshake is recorded. [Record SQL Server](../proxymock/databases/record/sqlserver.md) shows the settings for each driver and the limits.
+SQL Server is recorded through proxymock or the sidecar, which decrypt encrypted connections the way they decrypt HTTPS, when the driver trusts the proxymock or Speedscale certificate authority. The sidecar needs outbound TLS interception for this; without it, a connection that encrypts only its login is recorded without the user and application name, and a fully encrypted one records only its opening handshake. [Record SQL Server](../proxymock/databases/record/sqlserver.md) shows the settings for each driver and the limits.
 
 ## Privacy
 

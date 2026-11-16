@@ -57,7 +57,7 @@ In the request drawer, every database fact of a call carries a filter and an exc
 
 - The connection facts (user, database, application, session) need a capture from Speedscale 2.5.1103 or later, and the route and trace id need 2.5.1153 or later. Traffic indexed before an upgrade keeps the facts it was indexed with, so filter on a recent time range.
 - Database filters match PostgreSQL, MySQL and SQL Server calls. Other databases are found with the usual filters, such as Host or L7 Protocol.
-- On a SQL Server connection whose driver encrypted only the login packet, DB user and Application are empty, so filter those calls by Database or Session instead. See [Record SQL Server](../../proxymock/databases/record/sqlserver.md#encryption).
+- On a SQL Server connection recorded without TLS interception whose driver encrypted the login packet, DB user and Application are empty, so filter those calls by Database or Session instead. See [Record SQL Server](../../proxymock/databases/record/sqlserver.md#encryption).
 
 ## Related
 
