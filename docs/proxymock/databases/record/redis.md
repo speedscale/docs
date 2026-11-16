@@ -98,7 +98,7 @@ An AI coding assistant with the proxymock MCP server can run the same replay. As
 
 ### Connect to the server {#replay-credentials}
 
-The address is `redis://host:port/db`, or `rediss://host:port/db` for TLS. The path is the logical database the replay selects, and it defaults to 0. Credentials in the address are rejected so they never end up in shell history or reports.
+The address is `redis://host:port/db`, or `rediss://host:port/db` for TLS. The path is the logical database the replay selects, and it defaults to 0. When the path or `generator.redis.database` names a database, the recorded `SELECT` commands are skipped so every command runs there; otherwise they are sent as recorded. Credentials in the address are rejected so they never end up in shell history or reports.
 
 The replay never sends the recording's own `AUTH` or `HELLO` credentials. It authenticates every connection with the password from one of these places:
 
