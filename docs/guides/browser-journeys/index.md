@@ -4,6 +4,8 @@ description: "Run your Playwright front-end tests through a Speedscale or proxym
 sidebar_label: Overview
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Browser Journeys
 
 A browser journey is a Playwright test that clicks through your frontend the way a user does: open the shop, add an item, check out. Speedscale runs your journeys in Chromium as a replay, against the frontend you name, and reports how each one went.
@@ -15,6 +17,16 @@ Running journeys as a replay gives you what a plain Playwright run does not:
 - **Real APIs checked against the recording.** With mocks off, the browser calls the real APIs and the report names the calls whose answer differs from the recording.
 - **Web vitals as goals.** Largest Contentful Paint, First Contentful Paint, Time to First Byte and Cumulative Layout Shift are measured on every journey and can fail the replay like any other goal.
 - **A screenshot and trace of every failure.** Playwright keeps them for failed journeys. The report shows the screenshot and opens the trace in Playwright's trace viewer, without the trace leaving your browser.
+
+## Watch Browser Journeys in action
+
+See how a Playwright journey runs against live APIs or recorded responses. Then [read the results](./read-results.md) to find the requests behind each step.
+
+<video controls playsInline preload="none" aria-label="Speedscale Browser Journeys" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-browser-journeys.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-browser-journeys.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-browser-journeys.mp4')}>Download the video</a>
+</video>
 
 ## How a journey replay runs
 

@@ -1,0 +1,61 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:01.877
+A sales report is slow.
+
+00:00:02.048 --> 00:00:06.047
+Start with one example request and see what
+it did in the database.
+
+00:00:06.585 --> 00:00:11.094
+On the Traffic page, select the service and
+open the slow inbound request.
+
+00:00:11.265 --> 00:00:16.043
+This demo uses a sales report endpoint with
+several PostgreSQL calls.
+
+00:00:16.585 --> 00:00:17.933
+Open the Request tab.
+
+00:00:18.104 --> 00:00:20.566
+The query count says how many statements
+
+00:00:20.566 --> 00:00:23.520
+the request ran and how many linked by
+trace ID.
+
+00:00:23.691 --> 00:00:26.120
+Choose Show these queries to filter the
+grid.
+
+00:00:26.685 --> 00:00:28.070
+Look at the statement text.
+
+00:00:28.241 --> 00:00:32.389
+This example loads orders and then fetches
+order lines repeatedly.
+
+00:00:32.560 --> 00:00:35.569
+That's a pattern worth checking for an N+1
+query.
+
+00:00:36.119 --> 00:00:38.571
+Open a statement and look for Caused by.
+
+00:00:38.742 --> 00:00:40.976
+It points back to the sales report request.
+
+00:00:41.147 --> 00:00:43.134
+A link by trace ID is exact.
+
+00:00:43.305 --> 00:00:46.872
+A link by timing can be approximate when
+requests overlap.
+
+00:00:47.419 --> 00:00:49.660
+After you change the query, capture the
+
+00:00:49.660 --> 00:00:52.821
+same route again and check how many
+statements it runs.

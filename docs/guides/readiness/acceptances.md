@@ -4,6 +4,8 @@ description: "Accept a readiness finding with an owner, a reason and an end date
 sidebar_position: 8
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Acceptances
 
 An acceptance records that a team knows about a finding and has decided to ship with it.
@@ -15,6 +17,16 @@ Nothing is silenced for good: every acceptance has an end date, and the grade wi
 Acceptances are per finding and per service.
 
 Performance and Trend produce no findings, so nothing can be accepted on them.
+
+## Accept a known finding for one week
+
+Preview the change to the family grade, then replay to get a fresh verdict.
+
+<video controls playsInline preload="none" aria-label="Accept a known finding for one week" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-accept-a-known-readiness-finding-for-one-week.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-accept-a-known-readiness-finding-for-one-week.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-accept-a-known-readiness-finding-for-one-week.mp4')}>Download the video</a>
+</video>
 
 ## Accepting a finding
 

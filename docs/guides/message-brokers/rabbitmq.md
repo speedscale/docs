@@ -1,12 +1,12 @@
 ---
-title: Replaying RabbitMQ
-description: "Replay RabbitMQ traffic captured by Speedscale by extracting messages and creating a load producer to simulate original interactions effectively."
+title: RabbitMQ
+description: "Record, mock, and replay RabbitMQ (AMQP 0.9.1) traffic with Speedscale and proxymock: mock the broker in development and CI, and replay recorded deliveries to load test a consumer."
 sidebar_position: 13
 ---
 
 ## Background
 
-In this guide we will show you how to replay RabbitMQ traffic using data captured by Speedscale. The network level modelling of AMQP does not match most people's mental model which leads to confusion and an undesirable replay scenario. Most people view their app interacting with RabbitMQ like this.
+This guide covers how to record, mock, and replay RabbitMQ traffic using Speedscale and proxymock. Speedscale captures AMQP 0.9.1 with the sidecar, eBPF and proxymock. The network level modelling of AMQP does not match most people's mental model which leads to confusion and an undesirable replay scenario. Most people view their app interacting with RabbitMQ like this.
 
 For more information about RabbitMQ, see the [official RabbitMQ documentation](https://www.rabbitmq.com/).
 
@@ -32,14 +32,91 @@ sequenceDiagram
 
 This is why when observed in Speedscale, you see something like this that has a lot of internal AMQP protocol calls along with the most important `Basic.Deliver` messages.
 
-This sort of inbound traffic would typically be played back during a replay. In the case of RabbitMQ however, we can simplify the replay process by extracting `Basic.Deliver` messages and converting them into `Basic.Publish` calls controlled by our homemade load driver.
+Your app opened the connection to the broker, so all of this traffic is outbound, including the `Basic.Deliver` messages the broker pushed. A replay mocks outbound traffic by default. Replaying a consumer works the other way round: Speedscale publishes each recorded `Basic.Deliver` to the exchange and routing key it arrived through, so your app consumes the same messages again.
 
 ## Prerequisites
 
 1. [speedctl](/reference/glossary.md#speedctl) is installed
 1. [Create a snapshot](/guides/creating-a-snapshot.md) containing the traffic you need.
 
-## Extract the data
+## Replay in your cluster
+
+**1. Choose the deliveries to replay** when you create the snapshot. This filter replays every message the consumer received:
+
+```bash
+speedctl create snapshot --name orders-consumer --service orders-consumer --tests-filter '(command IS "Basic.Deliver")'
+```
+
+In the dashboard, open the snapshot's **Traffic** tab and use **Choose replay tests** instead. [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md) covers the filter syntax. A recorded `Basic.Get` result can be replayed the same way with `(command IS "Basic.Get")`, and a recorded `Basic.Publish` replays the messages your app sent as load against the broker.
+
+**2. Replay the snapshot.** Each message is published with its recorded properties, headers and body, in confirm mode, so the replay waits for the broker to accept it:
+
+```bash
+speedctl infra replay orders-consumer --snapshot-id <snapshot-id> --test-config-id <test-config-id> --no-mocks
+```
+
+To publish to a different broker, add `--test-against '<recorded broker>=<broker host>:<port>'`. An `amqp://` or `amqps://` URI works too, but only its host and port are used: the login, virtual host and TLS come from the test config, as described below.
+
+A message the broker cannot route to any queue fails, because a delivery that reaches no consumer tests nothing. The report shows `312 NO_ROUTE` with the exchange and routing key. Make sure the queue your consumer reads from exists and is bound before the replay starts; most consumers declare their own queues when they start.
+
+The recorded `user_id` property is not sent, because the broker refuses a message whose `user_id` is not the user that published it.
+
+## Replay locally with proxymock
+
+Run your consumer against a local broker, then replay the recorded deliveries into that broker:
+
+```bash
+proxymock replay --in proxymock/recorded-<timestamp> --tests-filter '(command IS "Basic.Deliver")' --test-against amqp://localhost:5672
+```
+
+The replay prints a row per destination with the count and any failures.
+
+## Mock RabbitMQ
+
+A replay or `proxymock mock` can stand in for the broker, so your app runs in development and CI with no RabbitMQ.
+
+- The connection handshake, channels, heartbeats, publisher confirms and closing behave like a real broker. Any username, password and virtual host are accepted.
+- Declares, binds, `Basic.Qos` and `Basic.Get` are answered with the recorded response, including a recorded refusal such as `NOT_FOUND`. An unrecorded declare still succeeds, and shows as a miss in the report.
+- `Basic.Consume` delivers, in order, the messages a recorded consumer of the same queue received.
+- Messages your app publishes are accepted and acknowledged in confirm mode. The mock does not route them to consumers.
+
+With proxymock, map a local port to the broker when you record and when you mock:
+
+```bash
+proxymock record --map 15672=amqp://localhost:5672
+proxymock mock --in proxymock/recorded-<timestamp> --map 15672=amqp://localhost:5672
+```
+
+Point your app at `amqp://localhost:15672` in both cases.
+
+## Brokers that require credentials or TLS
+
+Add `generator.amqp` to the test config with the user and password the replay logs in with. The `database` field names the virtual host, and `/` is used when it is unset. Set `tlsMode` to `PROTOCOL_TLS_MODE_REQUIRE` to connect over TLS without verifying the broker's certificate, or to `PROTOCOL_TLS_MODE_VERIFY_FULL` to verify it. Without credentials the replay logs in as `guest`.
+
+Use secret references for passwords, because a literal value is stored with the test config:
+
+```json
+{
+  "generator": {
+    "amqp": {
+      "username": "${{secret:rabbitmq-credentials/username}}",
+      "password": "${{secret:rabbitmq-credentials/password}}",
+      "database": "orders",
+      "tlsMode": "PROTOCOL_TLS_MODE_VERIFY_FULL"
+    }
+  }
+}
+```
+
+:::note
+The latency on the report is the time for the broker to confirm each message, not the time for your consumer to process it.
+:::
+
+## Alternative: a custom load driver
+
+If you need full control over pacing or message content, you can extract the recorded messages and publish them with your own producer.
+
+### Extract the data
 
 Grab your snapshot id and run this command. This will extract the message body and timestamps from RabbitMQ Basic.Deliver frames which are deeply nested in Speedscale's RRPair format.
 
@@ -61,7 +138,7 @@ This example assumes the message body is in the standard location. If you need t
 
 :::
 
-## Create your producer
+### Create your producer
 
 Next up, using the language and LLM of your choice, create a small load producer to send these messages to your RabbitMQ broker. The steps here are
 
@@ -458,7 +535,7 @@ if __name__ == "__main__":
 </TabItem>
 </Tabs>
 
-### Usage Examples
+#### Usage Examples
 
 <Tabs>
 <TabItem value="go" label="Go">

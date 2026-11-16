@@ -49,7 +49,7 @@ graph LR
 
 :::note
 
-This approach is only available for HTTP or gRPC-based brokers. Kafka and RabbitMQ (AMQP) do not support virtualization and require Approach 2 with custom scripts.
+This approach is available for HTTP or gRPC-based brokers, and for Kafka and RabbitMQ (AMQP 0.9.1), which Speedscale can mock from recorded traffic.
 
 :::
 
@@ -98,7 +98,7 @@ Support for replaying Kafka traffic through open source load generation. Speedsc
 
 ### RabbitMQ (AMQP)
 
-Support for replaying RabbitMQ traffic using AMQP protocol through open source load generation. Speedscale can capture message deliveries and help you create custom load drivers to replay traffic. Note: RabbitMQ uses AMQP protocol, so custom load driver scripts are required (standard Speedscale replay is not available for AMQP).
+Full support for RabbitMQ (AMQP 0.9.1), including record, mock and replay. A replay publishes your consumer's recorded deliveries to the broker so it consumes them again, and a mock stands in for the broker in development and CI.
 
 [Learn how to replay RabbitMQ traffic](./rabbitmq.md)
 
@@ -110,7 +110,7 @@ Full support for AWS SQS. Since SQS uses HTTP-based APIs, you can capture and re
 
 ### Google Pub/Sub
 
-Full support for Google Pub/Sub including record and replay. Speedscale can capture Pub/Sub traffic and replay it using standard Speedscale replay capabilities. Message extraction and custom load driver approaches similar to Kafka and RabbitMQ can also be applied.
+The Google Cloud client libraries call Pub/Sub over gRPC. Publish and acknowledge calls are captured, mocked and replayed as gRPC, and a subscriber can be driven by republishing the messages its recording received. `StreamingPull` mocking is not yet supported.
 
 [Learn how to replay Google Pub/Sub traffic](./google-pubsub.md)
 
@@ -158,9 +158,9 @@ Full support for Apache ActiveMQ. ActiveMQ supports AMQP 1.0 protocol, allowing 
 
 ### Amazon MQ
 
-Full support for Amazon MQ. Amazon MQ provides managed ActiveMQ or RabbitMQ brokers, so you can use the same approaches as those brokers. Speedscale can capture and replay Amazon MQ traffic using AMQP protocols.
+Amazon MQ for RabbitMQ is supported as AMQP 0.9.1 over TLS on port 5671: Speedscale records, mocks and replays it as it does any [RabbitMQ](./rabbitmq.md) broker. Amazon MQ for ActiveMQ is not supported yet.
 
-[Learn how to replay Amazon MQ traffic](./amazon-mq.md)
+[Learn how to record, mock and replay Amazon MQ traffic](./amazon-mq.md)
 
 ## Key Concepts
 
@@ -178,7 +178,7 @@ When load testing message broker integrations:
 
 1. **Use Standard Speedscale Replay** (for HTTP/gRPC-based brokers): For brokers using HTTP or gRPC protocols (AWS SQS, Google Pub/Sub, Azure Service Bus, etc.), use Speedscale's standard replay capabilities. Simply capture traffic, create a snapshot, and run a replay - no custom scripts needed.
 
-2. **Use Custom Load Driver Scripts** (for Kafka and RabbitMQ/AMQP): For Kafka and RabbitMQ (AMQP protocol), you must use custom load driver scripts because these protocols require specialized handling:
+2. **Use Custom Load Driver Scripts** (optional for Kafka and RabbitMQ): Speedscale replays recorded Kafka Fetches and RabbitMQ deliveries natively. Write a custom load driver when you need full control over pacing or message content:
    - **Capture Production Traffic**: Use Speedscale to capture real message patterns and timing
    - **Extract Payloads**: Use `speedctl extract data` to pull message contents from captures
    - **Build Load Drivers**: Create simple producer clients that replay extracted messages
@@ -192,8 +192,9 @@ To begin load testing your message broker integrations:
 2. [Create a snapshot](/guides/creating-a-snapshot.md) of your application traffic
 3. Follow the broker-specific guide for your message broker:
    - **Kafka Protocol**: [Kafka](./kafka.md), [AWS Kinesis](./aws-kinesis.md), [Azure Event Hubs](./azure-event-hubs.md), [Apache Pulsar](./apache-pulsar.md)
-   - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1, requires custom scripts), [Azure Service Bus](./azure-service-bus.md), [Apache ActiveMQ](./apache-activemq.md), [Amazon MQ](./amazon-mq.md)
-   - **HTTP-based**: [AWS SQS](./aws-sqs.md), [AWS SNS](./aws-sns.md), [Google Pub/Sub](./google-pubsub.md), [Azure Service Bus](./azure-service-bus.md)
+   - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1), [Azure Service Bus](./azure-service-bus.md), [Apache ActiveMQ](./apache-activemq.md), [Amazon MQ](./amazon-mq.md)
+   - **gRPC**: [Google Pub/Sub](./google-pubsub.md)
+   - **HTTP-based**: [AWS SQS](./aws-sqs.md), [AWS SNS](./aws-sns.md), [Azure Service Bus](./azure-service-bus.md)
 4. Build and run your load driver (if using custom approach) or start a standard replay
 
 ## Need Help?

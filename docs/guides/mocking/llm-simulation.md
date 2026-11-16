@@ -58,11 +58,19 @@ Speedscale automatically detects and supports popular LLM provider APIs. No spec
 |---|---|
 | OpenAI | `api.openai.com` |
 | Anthropic Claude | `api.anthropic.com` |
+| Amazon Bedrock | `bedrock-runtime.<region>.amazonaws.com` and the other Bedrock endpoints |
+| Azure OpenAI | `<resource>.openai.azure.com` |
+| Azure AI Foundry | `<resource>.services.ai.azure.com` |
 | Google Gemini | `generativelanguage.googleapis.com` |
+| Google Vertex AI | `aiplatform.googleapis.com` and `<region>-aiplatform.googleapis.com` |
 | Grok (xAI) | `api.x.ai` |
 | OpenRouter | `openrouter.ai` |
+| Perplexity | `api.perplexity.ai` |
+| Mistral AI, Cohere, Groq, DeepSeek, Together AI, Fireworks AI | Each provider's API hostname |
 
-Any HTTP-based LLM API will work even if it is not on this list. The auto-detection simply adds provider-specific labeling. See the full [technology support](../../reference/technology-support.md#supported-llm-providers) page for details.
+Model servers you host yourself and gateways are labeled from the shape of the request, whatever their hostname: Ollama, OpenAI-compatible servers such as vLLM and LiteLLM, and Anthropic-compatible servers.
+
+Any HTTP-based LLM API will work even if it is not on this list. The auto-detection simply adds provider-specific labeling. See the full [technology support](../../reference/technology-support.md#supported-llm-providers) page for the hostnames and request shapes.
 
 ## How It Works
 

@@ -1,0 +1,71 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:02.261
+You've saved a snapshot from Traffic.
+
+00:00:02.432 --> 00:00:06.756
+Now use those captured requests to test a
+running copy of your service.
+
+00:00:07.319 --> 00:00:10.740
+Open Snapshots, select your snapshot, and
+click Replay.
+
+00:00:10.910 --> 00:00:15.754
+This is the same Orders API demo snapshot
+from the Traffic View walkthrough.
+
+00:00:16.319 --> 00:00:20.004
+Choose the cluster and namespace where your
+test workload is running.
+
+00:00:20.175 --> 00:00:22.783
+Then select a test config, which controls
+
+00:00:22.783 --> 00:00:26.281
+how the requests are sent and how the run
+is evaluated.
+
+00:00:26.819 --> 00:00:29.035
+Select the inbound requests you want
+
+00:00:29.035 --> 00:00:31.806
+Speedscale to send to the service under
+test.
+
+00:00:31.976 --> 00:00:34.790
+These are the requests your clients
+originally sent.
+
+00:00:34.961 --> 00:00:38.495
+Check that the target is the staging
+workload you want to test.
+
+00:00:39.052 --> 00:00:43.939
+Select the outbound dependencies you want
+Speedscale to answer from the recording.
+
+00:00:44.110 --> 00:00:48.546
+Here, we attach the recorded pricing API
+calls to the orders workload.
+
+00:00:49.085 --> 00:00:51.428
+Review the selection and launch the replay.
+
+00:00:51.599 --> 00:00:53.278
+The report updates as it runs.
+
+00:00:53.449 --> 00:00:55.324
+When it finishes, check the outcome.
+
+00:00:55.494 --> 00:01:00.547
+This example report shows where to open
+Accuracy for assertion differences and
+
+00:01:00.547 --> 00:01:04.239
+Mocked Responses to see whether dependency
+calls matched.
+
+00:01:04.785 --> 00:01:08.091
+Run the same snapshot again when you have a
+new build to check.

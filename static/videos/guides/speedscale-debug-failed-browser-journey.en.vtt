@@ -1,0 +1,66 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:03.993
+A browser journey failed because the
+Checkout button never appeared.
+
+00:00:04.164 --> 00:00:07.345
+Let's look at what Playwright saw and what
+the browser called.
+
+00:00:07.885 --> 00:00:10.469
+Open the replay report and select Journeys.
+
+00:00:10.640 --> 00:00:12.287
+The badge counts failed journeys.
+
+00:00:12.458 --> 00:00:14.645
+Expand the test that failed to see the
+
+00:00:14.645 --> 00:00:17.235
+actions and assertions in the order they
+ran.
+
+00:00:17.785 --> 00:00:19.387
+Scroll to the failure files.
+
+00:00:19.558 --> 00:00:23.773
+The screenshot shows the demo shop and its
+items, with no Checkout button.
+
+00:00:23.944 --> 00:00:26.766
+Select Open trace to see where the journey
+stopped.
+
+00:00:27.319 --> 00:00:31.952
+In the trace viewer, select the failed
+visibility assertion under Go to checkout.
+
+00:00:32.123 --> 00:00:34.713
+Check the page snapshot and the locator to
+
+00:00:34.713 --> 00:00:37.857
+confirm what the test expected to see at
+that step.
+
+00:00:38.419 --> 00:00:42.218
+Return to the journey steps to see the
+requests tied to each action.
+
+00:00:42.389 --> 00:00:44.463
+In this separate run, the items call
+
+00:00:44.463 --> 00:00:47.344
+returned a different JSON body from the
+recording.
+
+00:00:47.515 --> 00:00:50.619
+The report lists the difference under the
+step that made the call.
+
+00:00:51.185 --> 00:00:53.698
+Use the trace to see what the browser did
+
+00:00:53.698 --> 00:00:56.394
+and the report to see what the API
+returned.

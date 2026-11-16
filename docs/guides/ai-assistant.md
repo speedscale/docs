@@ -4,6 +4,8 @@ title: AI Chat Assistant
 description: Use the Speedscale AI assistant to replay traffic, analyze reports, browse snapshots, and more using natural language.
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # AI Chat Assistant
 
 The Speedscale AI assistant is a chat interface built into the dashboard that lets you interact with Speedscale using natural language. Instead of navigating menus and forms, you can ask the assistant to replay traffic, analyze reports, browse snapshots, configure tests, and search through captured requests.
@@ -23,6 +25,16 @@ The assistant shows suggested prompts to help you get started, and you can type 
 The assistant knows what you're looking at. When you're on a report page, the assistant automatically has the report in scope, so you don't have to paste a report ID or describe what you're viewing. The same applies to snapshot pages, cluster views, and other parts of the dashboard.
 
 This means you can ask direct questions like "Why did the assertions fail?" or "Is this ready to replay?" without any setup. The assistant picks up your current context from the page and uses it to give precise, relevant answers.
+
+## Investigate a replay with the assistant
+
+Ask about the current report, then open an affected request to verify what changed.
+
+<video controls playsInline preload="none" aria-label="Investigate a replay with the AI Chat Assistant" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-ai-assistant-replay-report.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-ai-assistant-replay-report.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-ai-assistant-replay-report.mp4')}>Download the video</a>
+</video>
 
 ## What the Assistant Can Do
 
