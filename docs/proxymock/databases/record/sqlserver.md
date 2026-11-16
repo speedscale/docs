@@ -12,6 +12,8 @@ It reads the TDS protocol that SQL Server speaks, so it works with SQL Server, A
 
 SQL Server traffic is recorded, inspected and mocked: `proxymock mock` answers your app's SQL Server calls from a recording, so the app runs without its database (see [Mock SQL Server](#mock)). The recorded statements also replay against a real SQL Server to regression or load test it; see [Load and Regression Test a Database](../load-and-regression-testing.md).
 
+To try every step on a sample app first, the [SQL Server lab](https://github.com/speedscale/mock-lab/tree/main/labs/sqlserver) runs the same shop API in Go, Java, Node.js and Python against SQL Server 2022 in Docker, then records it, mocks it and replays its SQL against the database.
+
 ## Start the recorder {#start-recording}
 
 Map a local port to your SQL Server and start the recorder:
