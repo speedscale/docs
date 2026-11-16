@@ -62,7 +62,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | --------------------- | ---- | ------------ | ------------------------------------------------ |
 | AWS Athena            | DBMS | Full         |                                                  |
 | AWS DynamoDB          | DBMS | Full         |                                                  |
-| AWS RDS               | DBMS | Full         | Full for the Postgres and MySQL engines. The SQL Server engine is Capture Only, the same as SQL Server below. |
+| AWS RDS               | DBMS | Full         | Full for the Postgres and MySQL engines. The SQL Server engine is Partial, the same as SQL Server below. |
 | AWS Redshift          | DBMS | Full         |                                                  |
 | Elasticsearch         | DBMS | Full         | For the REST API                                 |
 | Google BigQuery       | DBMS | Full         | If using the Google SDK with standard pagination |
@@ -73,17 +73,17 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MySQL                 | DBMS | Full         | See [Database features](#database-features) |
 | Postgres              | DBMS | Full         | See [Database features](#database-features) and [captured bodies](/guides/capture/bodies#postgres) |
 | Redis                 | DBMS | Full         | See [Redis mocking](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
-| SQL Server            | DBMS | Capture Only | Includes Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, encrypted or not. Recorded and shown in every database view; not mocked or replayed. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
+| SQL Server            | DBMS | Partial      | Includes Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, encrypted or not. Recorded, shown in every database view and mocked; not replayed against a database. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
 | Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/proxymock/databases/record/redis). |
 
 ### Database features
 
-Every supported database can be recorded, and every one but SQL Server can be mocked. PostgreSQL, MySQL and SQL Server are decoded statement by statement, which adds the features below. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
+Every supported database can be recorded and mocked. PostgreSQL, MySQL and SQL Server are decoded statement by statement, which adds the features below. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
 
 | Feature | PostgreSQL | MySQL | SQL Server | MongoDB | Redis, Valkey |
 | --- | --- | --- | --- | --- | --- |
 | [Record](/proxymock/databases/) | Yes | Yes | Yes | Yes | Yes |
-| [Mock](/proxymock/databases/mock-a-database) | Yes | Yes | No | Yes | Yes |
+| [Mock](/proxymock/databases/mock-a-database) | Yes | Yes | Yes | Yes | Yes |
 | Statements with bound values, outcome and errors ([inspect a statement](/guides/databases/inspect-a-statement)) | Yes | Yes | Yes | No | No |
 | Connection view with transactions | Yes | Yes | Yes | No | No |
 | [Database filters](/guides/databases/find-statements) and columns | Yes | Yes | Yes | No | No |

@@ -1,5 +1,5 @@
 ---
-description: "Extract the SQL statement of a Postgres or MySQL request with the sql_query extractor."
+description: "Extract the SQL statement of a Postgres, MySQL or SQL Server request with the sql_query extractor."
 sidebar_position: 21
 ---
 
@@ -7,7 +7,7 @@ sidebar_position: 21
 
 ### Purpose
 
-**sql_query** extracts the SQL statement of a Postgres or MySQL request: a simple query, or the statement behind a prepare, describe, bind or execute.
+**sql_query** extracts the SQL statement of a Postgres, MySQL or SQL Server request: a simple query or batch, or the statement behind a prepare, describe, bind, execute or RPC, such as the statement of an `sp_executesql`.
 
 ### Usage
 
