@@ -514,7 +514,7 @@ proxymock replay \
 </TabItem>
 </Tabs>
 
-A command that succeeded when it was recorded but fails now is reported under **RESULT MISMATCH** for its command and collection, such as `insert` on `shop.orders`. A MongoDB command counts as failed when its reply has `ok: 0`, or when a write was rejected with `writeErrors` or `writeConcernError`, even though the command itself ran. The replayed RRPair in the output directory holds the server's whole reply, including `code`, `codeName` and `errmsg`.
+A command that succeeded when it was recorded but fails now is reported under **RESULT MISMATCH** for its command and collection, such as `insert` on `shop.orders`. A MongoDB command counts as failed when its reply has `ok: 0`, or when a write was rejected with `writeErrors` or `writeConcernError`, even though the command itself ran. The replayed RRPair in the output directory holds the server's reply, including `code`, `codeName` and `errmsg`.
 
 For example, a recording of an app that inserts 30 orders, pages through them with `find` and three `getMore`s, and then inserts and updates an order in a transaction replays against an empty MongoDB 8.0 replica set with every command matching. Replaying it a second time without restoring the database reports both inserts as result mismatches with code `11000` for a duplicate key, as [Regenerate unique values](#regenerate) explains. The transaction's insert fails, so the server aborts the transaction, and its update and `commitTransaction` fail with `251 NoSuchTransaction`.
 
@@ -759,7 +759,7 @@ Each replayed statement keeps its OK packet (affected rows, insert id and warnin
 | Change streams (`$changeStream`) and tailable or `awaitData` cursors | Skipped, and counted apart in the `streams_skipped` metric. proxymock logs one warning per virtual user when a recording holds them |
 | Legacy OP_QUERY commands | Skipped |
 
-Each replayed command keeps the server's whole reply, with cursor batches cut to the first 20 documents.
+Each replayed command keeps the server's reply, with cursor batches cut to the first 20 documents. The fields a server fills in for every reply, such as `$clusterTime`, `operationTime` and `electionId`, are left out, and a cursor id shows the recorded id that the live cursor stands in for.
 
 </TabItem>
 </Tabs>
@@ -771,7 +771,7 @@ Each replayed command keeps the server's whole reply, with cursor batches cut to
 - **Transactions across connections.** Recorded traffic mixes statements from many app connections, and a replay does not yet regroup them by connection. A replay can therefore send a `COMMIT` without its `BEGIN` or `START TRANSACTION`, and proxymock logs a warning when that happens. Workloads that depend on multi-statement transactions are not reproduced faithfully yet.
 - **MySQL statements prepared before recording started** are skipped, because the recording does not hold their SQL. Start recording before your app opens its connections.
 - **Insert ids and timestamps differ from the recording** on every run. They do not count as mismatches: a statement's result is scored by whether it succeeded, not by the values it returned.
-- **MongoDB replies carry values that change on every run**, such as `$clusterTime`, `operationTime` and cursor ids. They do not change `requests.result-match-pct`, which scores whether each command succeeded. If you compare response bodies, add `$clusterTime` and `operationTime` to the response body assertion's ignore list.
+- **MongoDB replies compare without server bookkeeping.** Cluster time, operation time, election ids and the other fields a server fills in for every reply differ on every run, so they are left out when a recorded reply is compared with a replayed one, and live cursor ids are compared as the recorded ids they stand in for. A command whose result did not change therefore matches its recording with no assertion config. The raw recorded reply still holds those fields.
 - **MongoDB replays connect to one server.** The replay talks straight to the host in the recording or in the address, without discovering the rest of a replica set, so point it at the primary for writes and transactions. Transactions need a replica set or a sharded cluster, not a standalone server.
 - **Queries that return a whole table** get slower as a load test inserts more rows. That is real behaviour of your query mix, but reset the data between runs you want to compare.
 
