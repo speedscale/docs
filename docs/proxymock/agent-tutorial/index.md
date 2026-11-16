@@ -5,11 +5,23 @@ sidebar_position: 1
 sidebar_label: "Start here"
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Agent tutorial: start here
 
 In this tutorial your coding agent does every step. You paste one prompt per chapter, the agent runs it with the Speedscale [agent skills](../agent-skills.md) and proxymock, and you read what it found.
 
 Time: about 25 minutes of agent work for all nine chapters. This chapter takes under a minute.
+
+## Watch the record and replay workflow
+
+See what the agent captures from the tutorial app and what to check after replaying it with recorded mocks.
+
+<video controls playsInline preload="none" aria-label="Record and replay local traffic with a coding agent" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-coding-agent-local-record-and-replay.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-coding-agent-local-record-and-replay.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-coding-agent-local-record-and-replay.mp4')}>Download the video</a>
+</video>
 
 ## What you build
 

@@ -3,6 +3,7 @@ description: "Explore the Speedscale Traffic View to filter and replicate traffi
 sidebar_position: 2
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import ViewTagsImg from './filter/snapshot-actions.jpg'
 import RawSizeImg from './filter/raw-size.png'
 
@@ -55,7 +56,15 @@ Editing simple filters can be accomplished in different three ways:
 
 ![shortcuts](./filter/shortcuts.png)
 
-## The filter editor <a href="#filter-editor" id="filter-editor"></a>
+## The filter editor {#filter-editor}
+
+Watch how to filter by service and endpoint, inspect a request, and save the filtered traffic as a snapshot.
+
+<video controls playsInline preload="none" aria-label="Filter traffic and save a snapshot" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-traffic-filter-snapshot.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-traffic-filter-snapshot.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-traffic-filter-snapshot.mp4')}>Download the video</a>
+</video>
 
 The filter editor reads like a sentence: "Requests in the selected time range that match all of these", followed by one row per filter. The same editor is used everywhere you pick a subset of traffic, including snapshots, reports, filter rules, transform chains and test configs.
 

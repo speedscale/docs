@@ -1,0 +1,70 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:02.638
+Checkout still returns a success response.
+
+00:00:02.809 --> 00:00:06.467
+But the app changed how much it asked the
+payment service to charge.
+
+00:00:06.638 --> 00:00:10.854
+Here's how to catch that change with an
+outbound HTTP assertion.
+
+00:00:11.419 --> 00:00:13.935
+In this demo, the recording calls the
+
+00:00:13.935 --> 00:00:17.130
+payment endpoint with an amount of 2,400
+cents.
+
+00:00:17.301 --> 00:00:19.880
+The changed fixture sends 4,800.
+
+00:00:20.051 --> 00:00:21.916
+The checkout response stays the same.
+
+00:00:22.485 --> 00:00:26.029
+Add the HTTP Output assertion to your test
+config.
+
+00:00:26.200 --> 00:00:31.250
+Use include only to compare calls to the
+payment host, and run with recorded mocks
+
+00:00:31.250 --> 00:00:34.206
+attached so there's outbound traffic to
+compare.
+
+00:00:34.752 --> 00:00:39.648
+After analysis, open Accuracy and find
+Outbound HTTP calls.
+
+00:00:39.819 --> 00:00:42.151
+The Argument row points to the amount
+field.
+
+00:00:42.322 --> 00:00:44.120
+Expected came from the recording.
+
+00:00:44.291 --> 00:00:47.774
+Actual came from the request the app sent
+during the replay.
+
+00:00:48.319 --> 00:00:52.644
+The local scorer passes the baseline
+fixtures and reports one Argument
+
+00:00:52.644 --> 00:00:54.869
+difference for the changed fixtures.
+
+00:00:55.040 --> 00:00:59.397
+On a cloud report, that run-wide difference
+puts the replay in Missed Goals.
+
+00:00:59.952 --> 00:01:02.373
+Fix the outbound request, rerun the same
+
+00:01:02.373 --> 00:01:05.157
+recording, and confirm the difference is
+gone.

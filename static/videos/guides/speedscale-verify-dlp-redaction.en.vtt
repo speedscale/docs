@@ -1,0 +1,65 @@
+WEBVTT
+
+00:00:00.285 --> 00:00:05.318
+Before you enable a redaction rule, test it
+against a sample request from staging.
+
+00:00:05.489 --> 00:00:09.113
+Let's use a synthetic checkout payload with
+an email address.
+
+00:00:09.652 --> 00:00:12.582
+This rule extracts the email from the JSON
+
+00:00:12.582 --> 00:00:16.489
+request body and passes it to the D L P
+field transform.
+
+00:00:16.660 --> 00:00:18.833
+Keep a copy of the input and choose a
+
+00:00:18.833 --> 00:00:21.711
+record that also has fields the replay will
+need.
+
+00:00:22.252 --> 00:00:25.768
+Run proxymock D L P test on the staged
+recording.
+
+00:00:25.939 --> 00:00:28.550
+The result shows one recorded request would
+
+00:00:28.550 --> 00:00:31.344
+be redacted and identifies the matching
+field.
+
+00:00:31.515 --> 00:00:33.582
+This preview leaves the file as it was.
+
+00:00:34.152 --> 00:00:36.879
+Inspect the before and after for the same
+request.
+
+00:00:37.050 --> 00:00:40.033
+The synthetic email became a redaction
+token.
+
+00:00:40.204 --> 00:00:44.826
+The order identifier, currency, amount, and
+response status still match.
+
+00:00:45.385 --> 00:00:50.972
+If you need a copy to inspect, run D L P
+apply and write it to a separate directory.
+
+00:00:51.143 --> 00:00:56.108
+Then send another synthetic request through
+a staging forwarder configured with the
+
+00:00:56.108 --> 00:00:59.638
+rule and confirm the captured result before
+rolling it out.
+
+00:01:00.185 --> 00:01:05.255
+Keep the before and after example so the
+next person can verify what the rule does.

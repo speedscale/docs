@@ -4,11 +4,23 @@ description: "Read a browser journey replay in the Speedscale report: the Journe
 sidebar_position: 4
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 # Read the results
 
 A replay that ran journeys gets a **Journeys** tab in its report. The tab's badge counts the journeys that failed.
 
 ![The report's Journeys tab for a replay of three journeys: 2 passed, 1 failed, with p95 LCP, FCP, TTFB and CLS chips. The expanded journey "shopper pages through the items" lists its steps with their category: Navigate to "/" with 1 call, the test.step "load the item list" with its click (1 call) and expect, and the test.step "load the next page" with 1 call, followed by the web vitals of its last page](./images/report-journeys-tab.png)
+
+## Debug a failed browser journey
+
+Follow a failed Playwright step to its screenshot, trace, and related API calls.
+
+<video controls playsInline preload="none" aria-label="Debug a failed browser journey" style={{width: '100%', maxWidth: 800, aspectRatio: '16 / 9'}}>
+  <source src={useBaseUrl('/videos/guides/speedscale-debug-failed-browser-journey.mp4')} type="video/mp4" />
+  <track kind="captions" src={useBaseUrl('/videos/guides/speedscale-debug-failed-browser-journey.en.vtt')} srcLang="en" label="English" />
+  <a href={useBaseUrl('/videos/guides/speedscale-debug-failed-browser-journey.mp4')}>Download the video</a>
+</video>
 
 ## Journeys
 
