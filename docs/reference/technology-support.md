@@ -28,7 +28,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology        | Type     | Support      | Notes                                                                              |
 | ----------------- | -------- | ------------ | ---------------------------------------------------------------------------------- |
-| AMQP              | Protocol | Full         | 0.9.1 or newer. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
+| AMQP              | Protocol | Full         | 0.9.1: captured by the sidecar, eBPF and proxymock, mocked, and replayed by publishing recorded deliveries. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Full         | See [details](../guides/message-brokers/google-pubsub.md)                          |
 | GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |

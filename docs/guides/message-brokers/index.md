@@ -49,7 +49,7 @@ graph LR
 
 :::note
 
-This approach is only available for HTTP or gRPC-based brokers. Kafka and RabbitMQ (AMQP) do not support virtualization and require Approach 2 with custom scripts.
+This approach is available for HTTP or gRPC-based brokers, and for Kafka and RabbitMQ (AMQP 0.9.1), which Speedscale can mock from recorded traffic.
 
 :::
 
@@ -98,7 +98,7 @@ Support for replaying Kafka traffic through open source load generation. Speedsc
 
 ### RabbitMQ (AMQP)
 
-Support for replaying RabbitMQ traffic using AMQP protocol through open source load generation. Speedscale can capture message deliveries and help you create custom load drivers to replay traffic. Note: RabbitMQ uses AMQP protocol, so custom load driver scripts are required (standard Speedscale replay is not available for AMQP).
+Full support for RabbitMQ (AMQP 0.9.1), including record, mock and replay. A replay publishes your consumer's recorded deliveries to the broker so it consumes them again, and a mock stands in for the broker in development and CI.
 
 [Learn how to replay RabbitMQ traffic](./rabbitmq.md)
 
@@ -178,7 +178,7 @@ When load testing message broker integrations:
 
 1. **Use Standard Speedscale Replay** (for HTTP/gRPC-based brokers): For brokers using HTTP or gRPC protocols (AWS SQS, Google Pub/Sub, Azure Service Bus, etc.), use Speedscale's standard replay capabilities. Simply capture traffic, create a snapshot, and run a replay - no custom scripts needed.
 
-2. **Use Custom Load Driver Scripts** (for Kafka and RabbitMQ/AMQP): For Kafka and RabbitMQ (AMQP protocol), you must use custom load driver scripts because these protocols require specialized handling:
+2. **Use Custom Load Driver Scripts** (optional for Kafka and RabbitMQ): Speedscale replays recorded Kafka Fetches and RabbitMQ deliveries natively. Write a custom load driver when you need full control over pacing or message content:
    - **Capture Production Traffic**: Use Speedscale to capture real message patterns and timing
    - **Extract Payloads**: Use `speedctl extract data` to pull message contents from captures
    - **Build Load Drivers**: Create simple producer clients that replay extracted messages
@@ -192,7 +192,7 @@ To begin load testing your message broker integrations:
 2. [Create a snapshot](/guides/creating-a-snapshot.md) of your application traffic
 3. Follow the broker-specific guide for your message broker:
    - **Kafka Protocol**: [Kafka](./kafka.md), [AWS Kinesis](./aws-kinesis.md), [Azure Event Hubs](./azure-event-hubs.md), [Apache Pulsar](./apache-pulsar.md)
-   - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1, requires custom scripts), [Azure Service Bus](./azure-service-bus.md), [Apache ActiveMQ](./apache-activemq.md), [Amazon MQ](./amazon-mq.md)
+   - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1), [Azure Service Bus](./azure-service-bus.md), [Apache ActiveMQ](./apache-activemq.md), [Amazon MQ](./amazon-mq.md)
    - **HTTP-based**: [AWS SQS](./aws-sqs.md), [AWS SNS](./aws-sns.md), [Google Pub/Sub](./google-pubsub.md), [Azure Service Bus](./azure-service-bus.md)
 4. Build and run your load driver (if using custom approach) or start a standard replay
 
