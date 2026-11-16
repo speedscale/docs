@@ -1,13 +1,13 @@
 ---
 title: Inferred database schema
-description: "See the PostgreSQL and MySQL tables and columns a service actually uses, with types, keys and how often each is read and written, inferred from a snapshot's recorded traffic with no access to the database."
+description: "See the PostgreSQL, MySQL and SQL Server tables and columns a service actually uses, with types, keys and how often each is read and written, inferred from a snapshot's recorded traffic with no access to the database."
 ---
 
 # Inferred database schema
 
 A snapshot with database traffic shows the tables and columns its statements read and write, worked out from the traffic itself. You see the part of the schema a service actually depends on, with column types, keys and how often each column is read and written, without a connection to the database, a schema dump or a migration history.
 
-Use it to learn an unfamiliar service, to check which columns a migration would affect, to see which service writes a table, and to know what a test database needs before you mock or replay against one.
+Use it to learn an unfamiliar service, to check which columns a migration would affect, to see which service writes a table, and to know what a test database needs before you mock or replay against one (mocking and replay cover Postgres, MySQL and SQL Server).
 
 ## Open it
 
@@ -35,13 +35,15 @@ Below the columns, the statements that touch the table are listed busiest first 
 
 ## How it is inferred
 
-Speedscale reads each recorded Postgres and MySQL statement and its response when the snapshot is analyzed:
+Speedscale reads each recorded Postgres, MySQL and SQL Server statement and its response when the snapshot is analyzed:
 
 - the tables and columns each statement names, and whether it reads or writes them;
 - the column names and types of the result sets queries returned;
-- the types of the values bound to prepared statements;
+- the types of the values bound to prepared statements and RPC parameters;
 - DDL statements such as `CREATE TABLE`, when the traffic holds any;
 - errors that name a constraint or column, such as a unique or not-null violation.
+
+A SQL Server table that a statement names without a schema is listed under the default schema, `dbo`.
 
 It only knows what the traffic touched. A column no recorded statement used does not appear, and a type stays **unknown** when nothing in the traffic said what it is.
 

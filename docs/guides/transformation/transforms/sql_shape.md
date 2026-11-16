@@ -1,11 +1,11 @@
 ---
-description: "Make a Postgres or MySQL mock match whatever columns a SELECT lists, with the sql_shape transform."
+description: "Make a Postgres, MySQL or SQL Server mock match whatever columns a SELECT lists, with the sql_shape transform."
 sidebar_position: 38
 ---
 
 # sql_shape
 
-The `sql_shape` transform makes a Postgres or MySQL mock match whatever columns a SELECT lists.
+The `sql_shape` transform makes a Postgres, MySQL or SQL Server mock match whatever columns a SELECT lists.
 
 - **Transform type name (config/API):** `sql_shape`
 - **Shorthand format:** `sql_shape()`
@@ -24,7 +24,7 @@ The `sql_shape` transform makes a Postgres or MySQL mock match whatever columns 
 
 The select list of every top-level SELECT becomes `*`. Subqueries and the bodies of WITH clauses are kept, because they change what the statement reads. Statements other than SELECT are unchanged.
 
-The transform rewrites the SQL statement in the signature of Postgres and MySQL requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
+The transform rewrites the SQL statement in the signature of Postgres, MySQL and SQL Server requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
 
 ## Example
 

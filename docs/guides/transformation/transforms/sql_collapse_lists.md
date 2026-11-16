@@ -1,11 +1,11 @@
 ---
-description: "Make a Postgres or MySQL mock match however many items an IN list or VALUES carries, with the sql_collapse_lists transform."
+description: "Make a Postgres, MySQL or SQL Server mock match however many items an IN list or VALUES carries, with the sql_collapse_lists transform."
 sidebar_position: 36
 ---
 
 # sql_collapse_lists
 
-The `sql_collapse_lists` transform makes a Postgres or MySQL mock match however many items an IN list or a multi-row VALUES carries.
+The `sql_collapse_lists` transform makes a Postgres, MySQL or SQL Server mock match however many items an IN list or a multi-row VALUES carries.
 
 - **Transform type name (config/API):** `sql_collapse_lists`
 - **Shorthand format:** `sql_collapse_lists()`
@@ -24,7 +24,7 @@ The `sql_collapse_lists` transform makes a Postgres or MySQL mock match however 
 
 The contents of every `IN (...)` list and all the rows of a `VALUES (...), (...)` list become a single `(?)`. Every other literal is kept, so the statement still has to match on them. An `IN (SELECT ...)` subquery is left alone.
 
-The transform rewrites the SQL statement in the signature of Postgres and MySQL requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
+The transform rewrites the SQL statement in the signature of Postgres, MySQL and SQL Server requests and passes the token through unchanged, so the statement the recording shows and the statement the app sends stay as written. Chains of SQL transforms compose: each one starts from the statement the previous one left in the signature. On any other traffic, and during load generation, it does nothing.
 
 ## Example
 
