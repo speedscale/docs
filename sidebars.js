@@ -407,6 +407,7 @@ const sidebars = {
             "proxymock/grpc/server-streaming",
             "proxymock/grpc/client-streaming",
             "proxymock/grpc/bidi-streaming",
+            "proxymock/grpc/long-lived-streams",
             "proxymock/grpc/mock-a-grpc-dependency",
             "proxymock/grpc/generate-from-a-proto",
             "proxymock/grpc/validate-and-coverage",
