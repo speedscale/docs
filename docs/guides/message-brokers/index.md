@@ -158,9 +158,9 @@ Full support for Apache ActiveMQ. ActiveMQ supports AMQP 1.0 protocol, allowing 
 
 ### Amazon MQ
 
-Full support for Amazon MQ. Amazon MQ provides managed ActiveMQ or RabbitMQ brokers, so you can use the same approaches as those brokers. Speedscale can capture and replay Amazon MQ traffic using AMQP protocols.
+Amazon MQ for RabbitMQ is supported as AMQP 0.9.1 over TLS on port 5671: Speedscale records, mocks and replays it as it does any [RabbitMQ](./rabbitmq.md) broker. Amazon MQ for ActiveMQ is not supported yet.
 
-[Learn how to replay Amazon MQ traffic](./amazon-mq.md)
+[Learn how to record, mock and replay Amazon MQ traffic](./amazon-mq.md)
 
 ## Key Concepts
 
