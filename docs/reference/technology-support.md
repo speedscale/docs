@@ -73,7 +73,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | MySQL                 | DBMS | Full         | See [Database features](#database-features) |
 | Postgres              | DBMS | Full         | See [Database features](#database-features) and [captured bodies](/guides/capture/bodies#postgres) |
 | Redis                 | DBMS | Full         | See [Redis mocking](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported; Pub/Sub and `MONITOR` are not. |
-| SQL Server            | DBMS | Partial      | Includes Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, encrypted or not. Recorded, shown in every database view and mocked; not replayed against a database. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
+| SQL Server            | DBMS | Partial      | Includes Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, encrypted or not. Recorded, shown in every database view, mocked, and replayed against a database for load and regression tests. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
 | Valkey                | DBMS | Full         | Uses Redis protocol capture and mocking. See [Redis mocking](/proxymock/databases/record/redis). |
 
 ### Database features
@@ -91,7 +91,7 @@ Every supported database can be recorded and mocked. PostgreSQL, MySQL and SQL S
 | Live SQL ([dashboard](/guides/databases/watch-live-sql), [proxymock](/proxymock/databases/watch-live-sql)) and [SQL inventory](/proxymock/databases/sql-inventory) | Yes | Yes | Yes | No | No |
 | SQL script export ([dashboard](/guides/databases/export-sql-script), [proxymock](/proxymock/databases/export-sql-script)) | Yes | Yes | Yes | No | No |
 | Link queries to requests by trace id ([dashboard](/guides/databases/link-queries-to-requests), [proxymock](/proxymock/databases/link-queries-to-requests)) | Yes | Yes | Yes | No | No |
-| [Load and regression replay](/proxymock/databases/load-and-regression-testing) against a database | Yes | Yes | No | No | No |
+| [Load and regression replay](/proxymock/databases/load-and-regression-testing) against a database | Yes | Yes | Yes | No | No |
 
 SQL Server is decoded on encrypted connections too, including TDS 8.0 strict encryption, when the driver trusts the proxymock or Speedscale certificate authority; the sidecar needs outbound TLS interception for it. [Record SQL Server](/proxymock/databases/record/sqlserver) shows the connection settings and the limits.
 
