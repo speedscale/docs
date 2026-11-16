@@ -18,9 +18,9 @@ For more information about Google Pub/Sub, see the [Google Cloud Pub/Sub documen
 |---|---|---|---|
 | `Publish`, `Acknowledge`, `ModifyAckDeadline` and other unary calls | Yes, as gRPC | Yes, as gRPC | Yes, as gRPC |
 | `Pull` | Yes, as gRPC | Yes, as gRPC | Its messages can be republished to drive a subscriber |
-| `StreamingPull` | Yes, as a streamed gRPC call, usually partial | Not yet | Its messages can be republished to drive a subscriber |
+| `StreamingPull` | Yes, as a streamed gRPC call, always partial | Not yet | Its messages can be republished to drive a subscriber |
 
-Capture needs TLS interception, as for any gRPC service. A `StreamingPull` stream normally stays open longer than the capture keeps one streamed call, so it is recorded as a partial call. A partial call cannot be mocked or replayed as a stream, but the messages it recorded in full can be republished.
+Capture needs TLS interception, as for any gRPC service. A subscriber always ends its `StreamingPull` stream by cancelling it, so even a short stream is recorded as a partial call. A partial call cannot be mocked or replayed as a stream, but the messages it recorded in full can be republished. proxymock always records streamed calls; cloud capture records them only when `GRPC_STREAMING_ENABLED` is on (see [native server streaming](/proxymock/grpc/server-streaming/)).
 
 ## Drive a subscriber by republishing
 
