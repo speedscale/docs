@@ -1,13 +1,13 @@
 ---
 title: Export a SQL script
-description: "Turn recorded PostgreSQL, MySQL and SQL Server traffic into a .sql script that psql, mysql or sqlcmd can run: every executed statement in recorded order with its bound values filled in, from proxymock web, the Live SQL lens or the proxymock sql-script command."
+description: "Turn recorded PostgreSQL, MySQL, SQL Server and Oracle traffic into a .sql script that psql, mysql or sqlcmd can run: every executed statement in recorded order with its bound values filled in, from proxymock web, the Live SQL lens or the proxymock sql-script command."
 ---
 
 # Export a SQL script
 
 proxymock can write the statements your app ran as a plain `.sql` file: every executed statement in the order it ran, with the values of prepared statements filled in as literals, so a statement reads like the SQL the database actually executed. Run the file with `psql`, `mysql` or `sqlcmd` to reproduce a bug on a scratch database, hand it to a DBA, attach it to a ticket, or diff two of them.
 
-It is the database counterpart of exporting a trace as a script in SQL Server Profiler, and it works on SQL Server traffic as well as Postgres and MySQL. It needs proxymock 2.5.1152 or later.
+It is the database counterpart of exporting a trace as a script in SQL Server Profiler, and it works on SQL Server and Oracle traffic as well as Postgres and MySQL. It needs proxymock 2.5.1152 or later.
 
 ## What the script holds
 
@@ -68,7 +68,7 @@ proxymock sql-script --in proxymock/recorded-2026-10-06_17-40-00.000000000Z \
 | Flag | What it does |
 |---|---|
 | `--in` | The recording, or several, to extract from |
-| `--session` | Keep one server session: the Postgres backend pid, the MySQL connection id or the SQL Server session id (SPID), as shown in the Session column |
+| `--session` | Keep one server session: the Postgres backend pid, the MySQL connection id, the SQL Server session id (SPID) or the Oracle session id (SID), as shown in the Session column |
 | `--start`, `--end` | Keep the statements that started in this window (RFC 3339) |
 | `--out` | Write the script to a file instead of standard output |
 

@@ -54,7 +54,7 @@ proxymock record --map 65432=postgres://localhost:5432
 proxymock record --map 1443=https://httpbin.org:443
 ```
 
-For more examples, see the [Redis mocking guide](/proxymock/databases/record/redis), [MongoDB guide](../databases/record/mongodb.md), [MySQL guide](../databases/record/mysql.md), [PostgreSQL guide](../databases/record/postgresql.md), [SQL Server guide](../databases/record/sqlserver.md), and [Kafka guide](/guides/message-brokers/kafka).
+For more examples, see the [Redis mocking guide](/proxymock/databases/record/redis), [MongoDB guide](../databases/record/mongodb.md), [MySQL guide](../databases/record/mysql.md), [PostgreSQL guide](../databases/record/postgresql.md), [SQL Server guide](../databases/record/sqlserver.md), [Oracle guide](../databases/record/oracle.md), and [Kafka guide](/guides/message-brokers/kafka).
 
 <Tabs groupId="language">
 <TabItem value="golang" label="Go">

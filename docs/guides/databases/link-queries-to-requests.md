@@ -1,6 +1,6 @@
 ---
 title: Link queries to the request that ran them
-description: "See which inbound request ran a PostgreSQL, MySQL or SQL Server statement, and which statements one request ran, in the Speedscale dashboard: Caused by, Queries in this request, the Trace ID filter and the trace waterfall, linked exactly by the trace id in the SQL comment or by timing."
+description: "See which inbound request ran a PostgreSQL, MySQL, SQL Server or Oracle statement, and which statements one request ran, in the Speedscale dashboard: Caused by, Queries in this request, the Trace ID filter and the trace waterfall, linked exactly by the trace id in the SQL comment or by timing."
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -28,7 +28,7 @@ Untagged traffic still links, by timing, so the views below work for every servi
 
 ## From a statement to its request
 
-Open a Postgres, MySQL or SQL Server call on the **Traffic** page. Its **Request** tab shows **Caused by**: the inbound request's method and path, its service, status and duration, marked **linked by trace ID** or **by timing**.
+Open a Postgres, MySQL, SQL Server or Oracle call on the **Traffic** page. Its **Request** tab shows **Caused by**: the inbound request's method and path, its service, status and duration, marked **linked by trace ID** or **by timing**.
 
 ![The Request tab of a Postgres Prepare Statement call: Caused by GET /reports/sales, shop, 200, 203 ms, linked by trace ID, with a Filter: this trace button, above the statement and its sqlcommenter comment carrying the route and traceparent](./link-queries-to-requests/caused-by.png)
 

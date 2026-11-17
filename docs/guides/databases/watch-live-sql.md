@@ -1,11 +1,11 @@
 ---
 title: Watch live SQL
-description: "Follow your services' PostgreSQL, MySQL and SQL Server statements as they run on the Speedscale Traffic page, like a SQL Server Profiler trace: database columns, trace templates for slow statements, errors, locks and logins, Follow, Clear and Save as snapshot."
+description: "Follow your services' PostgreSQL, MySQL, SQL Server and Oracle statements as they run on the Speedscale Traffic page, like a SQL Server Profiler trace: database columns, trace templates for slow statements, errors, locks and logins, Follow, Clear and Save as snapshot."
 ---
 
 # Watch live SQL
 
-The **Traffic** page can follow a service's database calls as they happen, one row per statement, login or logout, with who ran it, how long it took and how it ended. It works like a SQL Server Profiler trace and covers SQL Server, Postgres and MySQL alike, but it reads the traffic your services already send, so it needs no access to the database, no extended events session and no slow query log.
+The **Traffic** page can follow a service's database calls as they happen, one row per statement, login or logout, with who ran it, how long it took and how it ended. It works like a SQL Server Profiler trace and covers SQL Server, Postgres, MySQL and Oracle alike, but it reads the traffic your services already send, so it needs no access to the database, no extended events session and no slow query log.
 
 Use it to watch what a deploy does to the database, to catch the errors, lock waits or slow statements of an incident while it happens, or to see what a feature actually asks of the database while you click through it.
 
