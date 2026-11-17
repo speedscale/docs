@@ -100,7 +100,7 @@ Each round trip is one RRPair:
 
 Every call also carries the connection's user, service name and session id, and whether it ran inside a transaction. [Database traffic](../../../concepts/database-traffic.md) lists every fact and how to filter on it.
 
-Connection pool pings, such as `SELECT 1 FROM DUAL` and the driver's own ping calls, are recorded but hidden from Live SQL, as they are for the other databases.
+Connection pool pings written as SQL, such as `SELECT 1 FROM DUAL`, are left out of the recording, as they are for the other databases. The driver's own ping calls are recorded.
 
 Recordings never contain passwords. The login's encrypted password, its session keys, salts and the server's proof are dropped when the call is decoded; the recording only notes that they were sent.
 
