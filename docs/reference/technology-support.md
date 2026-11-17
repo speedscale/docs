@@ -97,7 +97,7 @@ Every supported database can be recorded and mocked. PostgreSQL, MySQL, SQL Serv
 
 SQL Server is decoded on encrypted connections too, including TDS 8.0 strict encryption, when the driver trusts the proxymock or Speedscale certificate authority; the sidecar needs outbound TLS interception for it. [Record SQL Server](/proxymock/databases/record/sqlserver) shows the connection settings and the limits.
 
-Oracle is decoded on TCPS connections when the [eBPF collector](/reference/ebpf-traffic-collection) records them from a thin driver. Native Network Encryption cannot be decoded. [Record Oracle](/proxymock/databases/record/oracle) lists the tested drivers and the limits.
+Oracle is decoded on TCPS connections when the [eBPF collector](/reference/ebpf-traffic-collection) records them from a thin driver. Native Network Encryption is decoded through the proxy for clients that use the legacy negotiation, such as go-ora, but not for modern JDBC thin, and not under eBPF. [Record Oracle](/proxymock/databases/record/oracle) lists the tested drivers and the limits.
 
 ### Supported APIs
 
