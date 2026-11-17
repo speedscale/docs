@@ -15,7 +15,7 @@ That turns database traffic into something you can use:
 - **Understand a single call.** The SQL with its values filled in, the error with its name, and what else ran on the same connection.
 - **Test without the database, or test the database.** Mock the database so a service runs with no database at all, or replay the recorded statements against a database to regression test a migration or load test it.
 
-Postgres, MySQL, SQL Server and Oracle calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Postgres, MySQL and SQL Server can be mocked and replayed against a database; mocking and replaying Oracle are coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Postgres, MySQL, SQL Server and Oracle calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Postgres, MySQL and SQL Server can be mocked and replayed against a database. Oracle can be mocked, and replaying it against a database is coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Watch database traffic
 

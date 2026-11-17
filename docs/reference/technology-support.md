@@ -72,7 +72,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 | Microsoft Outlook 365 | API  | Full         |                                                  |
 | MongoDB               | DBMS | Full         | See [Database features](#database-features) and the [proxymock guide](/proxymock/databases/record/mongodb) |
 | MySQL                 | DBMS | Full         | See [Database features](#database-features) |
-| Oracle Database       | DBMS | Capture Only | Recorded over plain TCP and TCPS from the JDBC thin, python-oracledb, node-oracledb, go-ora and ODP.NET managed drivers, and shown in every database view. Mocking and replay are coming. See [Database features](#database-features) and [Record Oracle](/proxymock/databases/record/oracle). |
+| Oracle Database       | DBMS | Partial      | Recorded over plain TCP and TCPS from the JDBC thin, python-oracledb, node-oracledb, go-ora and ODP.NET managed drivers, and shown in every database view. Mocked for the JDBC thin, python-oracledb, node-oracledb and go-ora drivers over plain TCP and TCPS; the mock needs the database user's password in the test config. Replay is coming. See [Database features](#database-features) and [Record Oracle](/proxymock/databases/record/oracle#mock). |
 | Postgres              | DBMS | Full         | See [Database features](#database-features) and [captured bodies](/guides/capture/bodies#postgres) |
 | Redis                 | DBMS | Full         | See [Redis mocking and replay](/proxymock/databases/record/redis) and [captured bodies](/guides/capture/bodies#redis). RESP2 and RESP3 are supported for capture, mocking and replay against a single-node server, including [Pub/Sub](/proxymock/databases/record/redis#pubsub) with channels, patterns and shard channels. `MONITOR` is not supported. |
 | SQL Server            | DBMS | Partial      | Includes Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance, encrypted or not. Recorded, shown in every database view, mocked, and replayed against a database for load and regression tests. See [Database features](#database-features) and [Record SQL Server](/proxymock/databases/record/sqlserver). |
@@ -80,12 +80,12 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 ### Database features
 
-Every supported database can be recorded, and every one but Oracle can be mocked. PostgreSQL, MySQL, SQL Server and Oracle are decoded statement by statement, which adds the features below. PostgreSQL, MySQL, SQL Server and MongoDB traffic can also be replayed against a live database. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
+Every supported database can be recorded and mocked. PostgreSQL, MySQL, SQL Server and Oracle are decoded statement by statement, which adds the features below. PostgreSQL, MySQL, SQL Server and MongoDB traffic can also be replayed against a live database. See [Databases](/guides/databases/) for the dashboard and [Databases](/proxymock/databases/) for proxymock.
 
 | Feature | PostgreSQL | MySQL | SQL Server | Oracle | MongoDB | Redis, Valkey |
 | --- | --- | --- | --- | --- | --- | --- |
 | [Record](/proxymock/databases/) | Yes | Yes | Yes | Yes | Yes | Yes |
-| [Mock](/proxymock/databases/mock-a-database) | Yes | Yes | Yes | Coming | Yes | Yes |
+| [Mock](/proxymock/databases/mock-a-database) | Yes | Yes | Yes | Yes | Yes | Yes |
 | Statements with bound values, outcome and errors ([inspect a statement](/guides/databases/inspect-a-statement)) | Yes | Yes | Yes | Yes | No | No |
 | Connection view with transactions | Yes | Yes | Yes | Yes | No | No |
 | [Database filters](/guides/databases/find-statements) and columns | Yes | Yes | Yes | Yes | No | No |

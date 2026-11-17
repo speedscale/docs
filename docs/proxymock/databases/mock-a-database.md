@@ -1,6 +1,6 @@
 ---
 title: Mock a database
-description: "Run your app against a mock of its PostgreSQL, MySQL, SQL Server, MongoDB or Redis database built from a proxymock recording, so tests and AI coding assistants run with no database at all."
+description: "Run your app against a mock of its PostgreSQL, MySQL, SQL Server, Oracle, MongoDB or Redis database built from a proxymock recording, so tests and AI coding assistants run with no database at all."
 ---
 
 # Mock a database
@@ -16,7 +16,13 @@ proxymock record --map 15432=postgres://localhost:5432 -- your-app   # once, aga
 proxymock mock --map 15432=postgres://localhost:5432 -- your-app     # from now on, no database needed
 ```
 
-The mapping tells proxymock which port speaks which protocol. In mock mode, calls that match a recording are answered from it, and the mock's output says which calls matched and which did not. The setup pages show the client configuration for each database: [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md), [SQL Server](./record/sqlserver.md#mock), [MongoDB](./record/mongodb.md) and [Redis](./record/redis.md). A SQL Server map uses the `mssql://` scheme, such as `--map 11433=mssql://localhost:1433`.
+The mapping tells proxymock which port speaks which protocol. In mock mode, calls that match a recording are answered from it, and the mock's output says which calls matched and which did not. The setup pages show the client configuration for each database: [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md), [SQL Server](./record/sqlserver.md#mock), [Oracle](./record/oracle.md#mock), [MongoDB](./record/mongodb.md) and [Redis](./record/redis.md). A SQL Server map uses the `mssql://` scheme, such as `--map 11433=mssql://localhost:1433`.
+
+## Oracle needs the password {#oracle}
+
+An Oracle mock maps the listener port the recording used, such as `--map 11521=localhost:1521`, and it needs one thing the other databases do not: the password of the database user the app logs in as. Oracle drivers check that the server knows the password before they finish the login, so a mock without it refuses the login with `ORA-01017`. Recordings never contain the password.
+
+Put the user and password in the `responder.oracle` section of a [test config](../guides/test-configs.md), with the password as a secret reference such as `${{secret:oracle-credentials/password}}` rather than a literal, and pass it to the mock with `--test-config`. An empty `username` accepts the password for any user. [Mock Oracle](./record/oracle.md#mock) shows the test config, the drivers tested against the mock, TCPS, and what the mock answers on its own.
 
 ## When a call does not match
 
