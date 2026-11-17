@@ -74,13 +74,23 @@ User Id=app;Password=<password>;Data Source=localhost:11521/FREEPDB1
 
 ## TCPS {#tcps}
 
+proxymock records TCPS connections by ending the driver's TLS session with a certificate signed by the proxymock certificate authority, the same way its other TLS recorders do, so the driver must trust it: add `~/.speedscale/certs/tls.crt` to the trust store or wallet the driver reads. Map the TCPS listener port, usually 2484, the same way as a plain one.
+
+A server that asks the client to renegotiate TLS and present a wallet client certificate cannot be recorded through the proxy, because the recorder has no such certificate to present. That connection passes through untouched, so the app keeps working, but the session is not recorded.
+
 In Kubernetes, the [eBPF collector](/reference/ebpf-traffic-collection) records TCPS connections from the thin drivers above in full. It reads the traffic inside the app, before the driver encrypts it, so the app needs no certificate changes. Thick-mode clients use Oracle's own TLS library, which the collector cannot read, so their TCPS connections are not recorded.
 
 ## Native Network Encryption {#nne}
 
-Native Network Encryption (NNE) encrypts the session inside the driver, before the data reaches the socket, so the eBPF collector cannot read it for any client. A session that negotiates NNE is recorded up to its negotiation and no further. Use TCPS instead of NNE for the services you record. Recording NNE sessions through proxymock is not supported yet.
+Native Network Encryption (NNE) encrypts the session inside the driver, before the data reaches the socket.
 
-The mock does not offer NNE either, so a client that requires it cannot be mocked; see [Mock Oracle](#mock). A replay against a database cannot use NNE or checksumming; see [Replay against a database](#replay).
+proxymock records NNE sessions from go-ora and other clients that use Oracle's legacy encryption negotiation. It terminates the negotiation on each side of the proxy and re-encrypts toward the client and the server, so the call is recorded decoded. Encryption (AES) and the optional data-integrity checksum (SHA) are both handled.
+
+Modern JDBC thin (23ai) uses a newer negotiation that rejects a terminating proxy right after login, so its NNE sessions pass through the recorder untouched: the app keeps working, but the session is not recorded. Connect over TCPS instead to record a JDBC app that requires encryption.
+
+The eBPF collector cannot read NNE for any client, because the driver encrypts before the data reaches the socket. A session the collector sees negotiate NNE is recorded up to its negotiation and no further.
+
+The mock does not offer NNE, so a client that requires it cannot be mocked; see [Mock Oracle](#mock). A replay against a database cannot use NNE or checksumming; see [Replay against a database](#replay).
 
 ## What gets recorded
 
@@ -235,9 +245,10 @@ These drivers were recorded against Oracle AI Database 26ai Free and replayed ag
 
 ## Limits
 
-- Native Network Encryption cannot be recorded, and a client that requires it cannot be mocked; see [Native Network Encryption](#nne).
+- Native Network Encryption is recorded through the proxy for legacy-negotiation clients such as go-ora, but a modern JDBC NNE session passes through uncaptured, and the eBPF collector cannot read NNE for any client; see [Native Network Encryption](#nne). A client that requires NNE cannot be mocked.
+- A TCPS server that asks the client to renegotiate TLS with a wallet client certificate cannot be recorded through the proxy; see [TCPS](#tcps).
 - Thick-mode clients are not tested, and their TCPS traffic is not recorded by the eBPF collector; see [Supported drivers](#drivers).
-- A RAC SCAN listener redirects each client to a node listener on another address or port. Record every port the cluster uses, or connect the app to a node listener directly. Rewriting the redirect so the client stays on the recorder comes in a later release.
+- A RAC SCAN listener redirects each client to a node listener on another address or port. proxymock rewrites the redirect so the client reconnects through the recorder, and routes the new connection to the node the listener named, so the whole session is recorded. Under eBPF the collector sees both connections anyway, because it watches sockets rather than addresses.
 - Advanced Queuing, direct path loads, two-phase commit, object types and SQL\*Net compression are not decoded.
 - A connection that was already open when recording started cannot be decoded, because the recording missed its negotiation. Start recording before the app opens its connections.
 - The mock needs the database user's password in the test config; see [The mock needs the password](#mock-password).
