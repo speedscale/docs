@@ -12,6 +12,8 @@ It reads the TNS and TTC protocols that Oracle Database speaks, so it works with
 
 Oracle traffic is recorded, inspected and mocked: `proxymock mock` answers your app's Oracle calls from a recording, so the app runs without its database (see [Mock Oracle](#mock)). The recorded calls also replay against a real Oracle database to regression or load test it; see [Replay against a database](#replay).
 
+To try every step on a sample app first, the [Oracle lab](https://github.com/speedscale/mock-lab/tree/main/labs/oracle) runs the same shop API in Go, Java, Node.js and Python against Oracle AI Database 26ai Free in Docker, then records it, mocks it and replays its SQL against the database.
+
 ## Supported drivers {#drivers}
 
 These drivers are tested against Oracle AI Database 26ai Free 23.26.3, over plain TCP and over TCPS:
