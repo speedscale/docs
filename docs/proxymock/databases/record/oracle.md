@@ -76,6 +76,8 @@ User Id=app;Password=<password>;Data Source=localhost:11521/FREEPDB1
 
 proxymock records TCPS connections by ending the driver's TLS session with a certificate signed by the proxymock certificate authority, the same way its other TLS recorders do, so the driver must trust it: add `~/.speedscale/certs/tls.crt` to the trust store or wallet the driver reads. Map the TCPS listener port, usually 2484, the same way as a plain one.
 
+python-oracledb and node-oracledb in thin mode check that the server certificate names the host they connect to, but they do not tell the server that name, so the recorder's certificate cannot name it and the connection fails. To record them over TCPS, turn the check off for the recording: `ssl_server_dn_match=False` in python-oracledb, or `sslServerDNMatch: false` in node-oracledb. JDBC thin, go-ora and the ODP.NET managed driver record over TCPS with their checks on.
+
 A server that asks the client to renegotiate TLS and present a wallet client certificate cannot be recorded through the proxy, because the recorder has no such certificate to present. That connection passes through untouched, so the app keeps working, but the session is not recorded.
 
 In Kubernetes, the [eBPF collector](/reference/ebpf-traffic-collection) records TCPS connections from the thin drivers above in full. It reads the traffic inside the app, before the driver encrypts it, so the app needs no certificate changes. Thick-mode clients use Oracle's own TLS library, which the collector cannot read, so their TCPS connections are not recorded.
