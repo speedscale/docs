@@ -51,6 +51,27 @@ const config = {
             from: "/getting-started/poc-prerequisites/",
             to: "/getting-started/evaluation/",
           },
+          // Message brokers section: the Kafka pages moved into it
+          {
+            from: "/proxymock/kafka/",
+            to: "/proxymock/message-brokers/",
+          },
+          {
+            from: "/proxymock/kafka/record/",
+            to: "/proxymock/message-brokers/record/kafka/",
+          },
+          {
+            from: "/proxymock/kafka/consumer-group-health/",
+            to: "/proxymock/message-brokers/consumer-group-health/",
+          },
+          {
+            from: "/proxymock/kafka/mock-kafka/",
+            to: "/proxymock/message-brokers/mock-a-broker/",
+          },
+          {
+            from: "/proxymock/kafka/replay/",
+            to: "/proxymock/message-brokers/test-a-consumer/",
+          },
           // Databases sections (S-13517)
           {
             from: "/proxymock/guides/postgres/",

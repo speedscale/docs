@@ -1,5 +1,6 @@
 ---
 title: Record Kafka traffic
+sidebar_label: Kafka
 description: "Record a Kafka producer or consumer with proxymock: give the broker a listener that advertises proxymock's port so every call goes through it, map that port with --map, and read what each recorded call holds."
 ---
 
@@ -25,7 +26,7 @@ listener.security.protocol.map=PLAINTEXT:PLAINTEXT,RECORD:PLAINTEXT
 
 A broker in a container takes the same settings from its environment, such as `KAFKA_LISTENERS`, `KAFKA_ADVERTISED_LISTENERS` and `KAFKA_LISTENER_SECURITY_PROTOCOL_MAP`. If the broker only serves the app you are recording, you can instead change its one listener to advertise proxymock's port.
 
-The listener proxymock forwards to must use a port proxymock recognizes as Kafka: 9092, 9093, 9094, 9095, 9096, 9098, 9194, 9196 or 9198. proxymock identifies Kafka by the broker's port, so traffic to any other port is not recorded as Kafka.
+The listener proxymock forwards to must use a port proxymock recognizes as Kafka: 9092, 9093, 9094, 9095, 9096, 9098, 9194, 9196 or 9198. Kafka has no handshake that names the protocol, so proxymock identifies it by the broker's port, and traffic to any other port is not recorded as Kafka.
 
 ## Start the recorder
 
@@ -53,7 +54,7 @@ spring:
 KAFKA_BROKERS=localhost:19094 java -jar target/your-app.jar
 ```
 
-Use the app as you normally would, then stop the recorder with Ctrl-C. The recording is written to `proxymock/recorded-<timestamp>`. The `kafka://` scheme is optional when recording; it matters when you [mock the broker](./mock-kafka.md) with the same mapping.
+Use the app as you normally would, then stop the recorder with Ctrl-C. The recording is written to `proxymock/recorded-<timestamp>`. The `kafka://` scheme is optional when recording; it matters when you [mock the broker](../mock-a-broker.md#kafka) with the same mapping.
 
 ## What gets recorded
 
@@ -78,15 +79,19 @@ For each call, the file holds:
 - **The decoded request and response.** Produce requests and Fetch responses hold their record batches: base offset and timestamps, compression codec, producer id, and each record's key, value, headers, offset delta and timestamp delta. Compressed batches (gzip, snappy, lz4 and zstd) are decompressed, and a key, value or header that is UTF-8 is also shown as text, so a JSON value reads as JSON.
 - **Timing**, when the call started and how long it took.
 
+A consumer's records arrive in the `Fetch` responses it asked for, so what your consumer read is the set of `Fetch` calls on its topics.
+
 proxymock decodes the produce, fetch, offset, consumer-group, metadata, topic-administration and SASL calls of current Kafka clients. It is tested against Kafka 3.9, 4.1 and 4.3 brokers with the Java client, franz-go, librdkafka (which backs the Python, .NET and Node clients) and sarama, with both the classic group protocol and the KIP-848 consumer protocol.
 
-## Brokers that use SASL
+## Brokers that use SASL or TLS
 
 To record a client that authenticates, map the recording listener to `SASL_PLAINTEXT` in `listener.security.protocol.map` and set it up as you would any SASL listener. proxymock decodes the client's `SaslHandshake` and `SaslAuthenticate` requests along with the rest of the connection.
 
 :::caution
 The recording holds the bytes the client authenticated with. With SASL/PLAIN those include the username and password in clear. Record with a local or test account, and do not share or commit a recording made with real credentials.
 :::
+
+Give the recording listener a plaintext protocol, `PLAINTEXT` or `SASL_PLAINTEXT`, even when your production listener uses TLS: the recording listener exists only for your local app. To replay into or mock a broker that requires TLS, see [Connect to the broker](../connect-to-the-broker.md#kafka) and [Mock a broker](../mock-a-broker.md#kafka).
 
 ## Read the recording
 
@@ -98,14 +103,14 @@ proxymock web
 
 Select a call in **Requests**: **Info** shows its command and location, and **Request** and **Response** show the decoded call as JSON. The filter `(tech IS Kafka) AND (command IS "Fetch") AND (location IS "orders")` lists what your consumer read from `orders`, and `(command IS "Produce")` what your producer sent.
 
-To see how the app's consumer groups behaved, run [`proxymock kafka-report`](./consumer-group-health.md) on the recording.
+To see how the app's consumer groups behaved, run [`proxymock kafka-report`](../consumer-group-health.md) on the recording.
 
-## In Kubernetes
+## In a cluster {#in-a-cluster}
 
-The Speedscale operator records Kafka traffic in your cluster with no listener changes, because it captures each connection where the app opens it. See [Kubernetes and eBPF](../../guides/message-brokers/kafka.md#kubernetes).
+In Kubernetes, the Speedscale sidecar and the [eBPF collector](/reference/ebpf-traffic-collection/) record Kafka with no listener changes, `--map` setting or app change, because they capture each connection where the app opens it, including the connections to the brokers the metadata names. Kafka is still identified by the broker's port, so a broker on a port outside the list above is not recorded as Kafka. A TLS listener, such as Amazon MSK on 9094, is read once the sidecar's TLS interception or the eBPF collector has the plaintext.
 
 ## Next
 
-- [Kafka consumer-group health](./consumer-group-health.md)
-- [Mock a Kafka broker](./mock-kafka.md)
-- [Replay Kafka traffic](./replay.md)
+- [Kafka consumer-group health](../consumer-group-health.md)
+- [Mock a broker](../mock-a-broker.md#kafka)
+- [Test a consumer](../test-a-consumer.md#kafka)
