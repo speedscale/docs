@@ -1,6 +1,6 @@
 ---
 title: Record SQL Server
-description: "Record and mock your app's SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance traffic with proxymock: the port map, encrypted connections with SqlClient, mssql-jdbc and go-mssqldb, what each call records, the mock, and the limits."
+description: "Record and mock your app's SQL Server, Azure SQL Database, Amazon RDS for SQL Server and Azure SQL Managed Instance traffic with proxymock: the port map, encrypted connections with SqlClient, mssql-jdbc and go-mssqldb, MARS, bulk loads, Always Encrypted and server cursors, the mock, and the limits."
 sidebar_position: 7
 ---
 
@@ -87,6 +87,10 @@ Each call is one RRPair:
 - **Errors** with the SQL Server error number and message, such as `2627` for a duplicate key, and **informational messages**, such as `PRINT` output and `RAISERROR` at severity 10 or below.
 - **Transactions**: `BEGIN`, `COMMIT` and `ROLLBACK` sent as T-SQL or as the driver's transaction manager requests.
 - **Attention**: a cancel the driver sends when a command times out or the app cancels it.
+- **Server cursors**, such as mssql-jdbc with `selectMethod=cursor`: the open, fetch and close calls, with the rows of each fetch.
+- **Bulk loads** from BCP or SqlBulkCopy, with their columns and rows, and **table-valued parameters** with their rows.
+- **Always Encrypted** columns and parameters, which stay encrypted: the recording holds the ciphertext and the key metadata the server sent, never the keys, so a value can be read only by a client that holds the key.
+- **MARS sessions**: with MultipleActiveResultSets turned on, each session on the connection is recorded as a connection of its own, and every call shows the session it ran on.
 
 Every call also carries the connection's user, database, application name and session id (SPID), and whether it ran inside a transaction. [Database traffic](../../../concepts/database-traffic.md) lists every fact and how to filter on it.
 
@@ -106,6 +110,10 @@ The mock answers each SQL batch and RPC with the reply recorded for the same sta
 
 The mock accepts any SQL Server login, whatever its password, and answers it for the database the app asks for. It accepts Windows logins too: an NTLM login gets a challenge and whatever answer follows is taken, and a Kerberos ticket is taken without being checked, since the mock has no domain to check them against. SqlClient, mssql-jdbc and go-mssqldb sign in to it with integrated security unchanged. It negotiates the same encryption a server does, so the connection strings above work unchanged against it, encryption on or off, and so does TDS 8.0 strict encryption. A driver that checks the certificate needs to trust the proxymock certificate authority, as for recording (see [Encryption](#encryption)).
 
+Connections with MultipleActiveResultSets (MARS) work against the mock, each session answered on its own. The mock turns on column encryption for a driver that asks for it and answers `sp_describe_parameter_encryption` from the recording, so an Always Encrypted app reads and writes encrypted columns with its own keys. A bulk load gets the row count it sent. A call the app cancelled in the recording, such as one that hit a query timeout, waits for the driver's cancel before it is answered, so the timeout happens again.
+
+An app that signs in with Microsoft Entra ID signs in to the mock unchanged, whether the driver puts the access token in the login or gets it during the login: the mock accepts the token without checking it.
+
 Prepared statements work across the mock: an `sp_prepexec` gets a statement handle of the mock's own, and the `sp_execute` calls that reuse it are answered from the recordings of the same SQL. Requests a driver or pool sends for its own housekeeping are answered even when the recording does not hold them: `SET` options, `BEGIN TRANSACTION`, `COMMIT` and `ROLLBACK` as T-SQL or as transaction manager requests, `SELECT @@SPID`, `@@VERSION` and `@@TRANCOUNT`, a pooled connection's reset, and an attention.
 
 To key the mock on bound values, so a lookup recorded with several ids answers each id with its own result, use [`sql_key_params`](/guides/transformation/transforms/sql_key_params). It keys on every bound value by default; set its `params` to `1` to key on only the first, such as `@P0`.
@@ -114,13 +122,11 @@ To read or rewrite one bound value, for example to store the id a lookup asks fo
 
 ## Limits
 
-- An Azure SQL Database client inside Azure uses the redirect connection policy by default: after the login the server sends the driver to the database node, and the driver reconnects there directly, around the recorder. Record from outside Azure, where the proxy policy is the default, or set the server's connection policy to **Proxy** for the recording.
+- An Azure SQL Database client inside Azure uses the redirect connection policy by default: after the login the server sends the driver to the database node, and the driver reconnects there. With `--map`, proxymock sends that reconnect to a port of its own that forwards to the node, so the node's calls are recorded too, and the driver must trust the proxymock certificate for the address it reconnects to (see [Encryption](#encryption)). The sidecar in Kubernetes records the reconnect as it records any outbound connection.
 - An inbound SQL Server, one that proxymock or the sidecar receives connections for rather than connects to, records encrypted connections as the sidecar does without `tls-out`. See [Encryption](#encryption).
-- Connections with MultipleActiveResultSets (MARS) turned on, such as `MultipleActiveResultSets=True` in SqlClient, are not decoded past the PRELOGIN. Turn MARS off for the recording.
-- Bulk load data sent by BCP or SqlBulkCopy, table-valued parameters and Always Encrypted columns are not decoded.
-- The mock accepts SQL Server logins and Windows logins over NTLM or Kerberos. NTLM inside Negotiate (SPNEGO), which a Windows client falls back to when it cannot get a Kerberos ticket, gets error 18452; for the mocked run, give the app a Kerberos ticket, NTLM directly, or a SQL Server login. An app that logs in with Microsoft Entra ID needs a SQL Server login for the mocked run.
-- The mock does not offer MARS, column encryption (Always Encrypted) or session recovery: a driver that asks for them goes on without them.
-- A replay against a database signs in with a SQL Server login, Microsoft Entra ID, or a Windows login over NTLM or Kerberos, and skips server cursors, bulk load and MARS sessions.
+- The mock accepts SQL Server logins, Microsoft Entra ID logins and Windows logins over NTLM or Kerberos. NTLM inside Negotiate (SPNEGO), which a Windows client falls back to when it cannot get a Kerberos ticket, gets error 18452; for the mocked run, give the app a Kerberos ticket, NTLM directly, or a SQL Server login.
+- The mock does not offer session recovery: a driver that asks for it goes on without it.
+- A replay against a database signs in with a SQL Server login, Microsoft Entra ID, or a Windows login over NTLM or Kerberos. Always Encrypted calls replay against a database that holds the same keys; see [Load and Regression Test a Database](../load-and-regression-testing.md#limits).
 
 ## In Kubernetes {#kubernetes}
 
