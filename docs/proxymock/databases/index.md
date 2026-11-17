@@ -16,7 +16,7 @@ What that gives you:
 - **Run without the database.** Mock it from the recording so tests and coding agents run offline and deterministically.
 - **Test the database with real traffic.** Replay the recorded statements against a new schema or version, or with many sessions as a load test.
 
-Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Postgres, MySQL, SQL Server and Oracle recordings can all be watched, inspected, linked to requests, inventoried and exported as SQL. Mocking the database covers Postgres, MySQL, SQL Server and Oracle, and replaying against one covers Postgres, MySQL and SQL Server; Oracle replay is coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Postgres, MySQL, SQL Server and Oracle recordings can all be watched, inspected, linked to requests, inventoried and exported as SQL. Mocking the database and replaying against one both cover Postgres, MySQL, SQL Server and Oracle. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Record your database
 
@@ -60,11 +60,11 @@ Since 2.5.1152, **Export SQL script** in the Requests tab's Actions menu, **Expo
 
 ## Mock the database
 
-`proxymock mock` answers your app's Postgres, MySQL, SQL Server, MongoDB and Redis calls from the recording, so the app runs with no database. [Mock a database](../../guides/databases/mock-a-database.md) explains what a SQL mock matches on and how to tune it, and [Improve Mock Match Rate with AI](../guides/mock-match-rate.md) fixes the calls that miss.
+`proxymock mock` answers your app's Postgres, MySQL, SQL Server, Oracle, MongoDB and Redis calls from the recording, so the app runs with no database. [Mock a database](../../guides/databases/mock-a-database.md) explains what a SQL mock matches on and how to tune it, and [Improve Mock Match Rate with AI](../guides/mock-match-rate.md) fixes the calls that miss.
 
 ## Load and regression test the database
 
-Replay the recorded Postgres, MySQL or SQL Server statements against a database to find every statement a migration or an upgrade breaks, or with many sessions to load test it. See [Load and Regression Test a Database](./load-and-regression-testing.md).
+Replay the recorded Postgres, MySQL, SQL Server or Oracle statements against a database to find every statement a migration or an upgrade breaks, or with many sessions to load test it. See [Load and Regression Test a Database](./load-and-regression-testing.md).
 
 ## Try it
 

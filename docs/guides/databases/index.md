@@ -15,7 +15,7 @@ That turns database traffic into something you can use:
 - **Understand a single call.** The SQL with its values filled in, the error with its name, and what else ran on the same connection.
 - **Test without the database, or test the database.** Mock the database so a service runs with no database at all, or replay the recorded statements against a database to regression test a migration or load test it.
 
-Postgres, MySQL, SQL Server and Oracle calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Postgres, MySQL and SQL Server can be mocked and replayed against a database. Oracle can be mocked, and replaying it against a database is coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Postgres, MySQL, SQL Server and Oracle calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Postgres, MySQL, SQL Server and Oracle can be mocked and replayed against a database. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Watch database traffic
 
@@ -73,11 +73,11 @@ A snapshot with database traffic shows the tables and columns its statements rea
 
 ## Mock a database
 
-A snapshot serves recorded Postgres, MySQL and SQL Server responses as mocks, so a service runs in a replay without its database. [Mock a database](./mock-a-database.md) explains what a SQL mock matches on and the transforms that tune it.
+A snapshot serves recorded Postgres, MySQL, SQL Server and Oracle responses as mocks, so a service runs in a replay without its database. [Mock a database](./mock-a-database.md) explains what a SQL mock matches on and the transforms that tune it.
 
 ## Load and regression test a database
 
-Choose a Postgres, MySQL or SQL Server database as the replay target and the recorded statements become the tests: replay them once against a migrated schema or a new version to see every statement that now fails, or with many sessions to load test the database. See [Load and Regression Test a Database](../../proxymock/databases/load-and-regression-testing.md#dashboard). The replay signs in to the database with the user and password in the test config's **Database credentials**: under **Password**, choose **Constant** and type it in for a test database, or choose **Kubernetes secret** and pick one. See [Connect to the database](../../proxymock/databases/load-and-regression-testing.md#credentials).
+Choose a Postgres, MySQL, SQL Server or Oracle database as the replay target and the recorded statements become the tests: replay them once against a migrated schema or a new version to see every statement that now fails, or with many sessions to load test the database. See [Load and Regression Test a Database](../../proxymock/databases/load-and-regression-testing.md#dashboard). The replay signs in to the database with the user and password in the test config's **Database credentials**: under **Password**, choose **Constant** and type it in for a test database, or choose **Kubernetes secret** and pick one. See [Connect to the database](../../proxymock/databases/load-and-regression-testing.md#credentials).
 
 ## Develop locally
 
