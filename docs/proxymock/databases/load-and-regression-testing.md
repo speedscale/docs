@@ -300,7 +300,7 @@ To keep your app's inbound tests too, use `(direction IS IN) OR (tech IS Postgre
 
 ## Connect to the database {#credentials}
 
-The replay connects to the database with its own sessions, so it needs a user and password. Point the replay at the database with a `postgres://` or `mysql://` address that includes the host, port and database name, or a SQL Server address in the drivers' form, `sqlserver://host:port?database=name`, but no credentials. Credentials in the address are rejected so they never end up in shell history or reports.
+The replay connects to the database with its own sessions, so it needs a user and password. Point the replay at the database with a `postgres://` or `mysql://` address that includes the host, port and database name, a SQL Server address in the drivers' form, `sqlserver://host:port?database=name`, or an Oracle address that names the service, `oracle://host:port/SERVICE`, but no credentials. Credentials in the address are rejected so they never end up in shell history or reports.
 
 For Oracle, use an `oracle://host:port/SERVICE` address. The port defaults to 1521 and the path is the service name; with no path, the replay uses the service the recording connected to. `?ssl=true` connects over TCPS; see [TLS](#tls).
 
@@ -399,7 +399,7 @@ A typed password is saved in plain text with the test config and with every repl
 In the Speedscale dashboard:
 
 1. Open the test config you replay with, and select its **Traffic** tab.
-2. Under **Database credentials**, select the **Postgres**, **MySQL** or **SQL Server** tab. On the **SQL Server** tab, **Sign-in** chooses a **SQL Server login** or **Microsoft Entra ID**; with Entra ID there is no username or password to fill in.
+2. Under **Database credentials**, select the **Postgres**, **MySQL**, **SQL Server** or **Oracle** tab. On the **SQL Server** tab, **Sign-in** chooses a **SQL Server login** or **Microsoft Entra ID**; with Entra ID there is no username or password to fill in. On the **Oracle** tab, **Database** is the **Service name**, and **CA certificate** and **Client certificate** are for TCPS.
 3. Fill in **Username** and **Database**, and set **TLS mode** and **Connect timeout** if you need them. A field left empty falls back to the database client's own default.
 4. Under **Password**, select **Constant** and type the password. The field is masked; select the eye icon to show it. A warning above the field reminds you that it is stored in plain text.
 5. Save the test config.
