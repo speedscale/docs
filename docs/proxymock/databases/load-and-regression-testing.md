@@ -16,7 +16,7 @@ This guide shows how to turn your app's real PostgreSQL, MySQL, SQL Server, Orac
 
 Every step works two ways. You can ask an AI coding assistant that has the [proxymock MCP server](../how-it-works/mcp-tools.md) installed, or you can run the proxymock CLI yourself. The load and regression steps also work from the Speedscale dashboard for traffic recorded in Kubernetes.
 
-Pick your database once in any of the tabs below and every section follows. The MySQL steps also work for MariaDB, which speaks the MySQL protocol. The MySQL replay has been tested against MySQL 8.0, MySQL 8.4 and MariaDB 11.4. The SQL Server replay has been tested against SQL Server 2022 with sessions recorded from mssql-jdbc and Microsoft.Data.SqlClient. The Oracle replay has been tested against Oracle AI Database 26ai Free with sessions recorded from JDBC thin, python-oracledb, node-oracledb, go-ora and the ODP.NET managed driver, over TCP and TCPS. The MongoDB replay has been tested against MongoDB 7.0 and 8.0; for MongoDB, "statement" on this page means a command such as `find` or `insert`.
+Pick your database once in any of the tabs below and every section follows. The MySQL steps also work for MariaDB, which speaks the MySQL protocol. The MySQL replay has been tested against MySQL 8.0, MySQL 8.4 and MariaDB 11.4. The SQL Server replay has been tested against SQL Server 2022 with sessions recorded from mssql-jdbc and Microsoft.Data.SqlClient, and against SQL Server 2025 with TDS 8.0 strict encryption. The Oracle replay has been tested against Oracle AI Database 26ai Free with sessions recorded from JDBC thin, python-oracledb, node-oracledb, go-ora and the ODP.NET managed driver, over TCP and TCPS. The MongoDB replay has been tested against MongoDB 7.0 and 8.0; for MongoDB, "statement" on this page means a command such as `find` or `insert`.
 
 [Watch database replay and testing on YouTube](https://www.youtube.com/watch?v=Q4sIn21pfQc).
 
@@ -1139,8 +1139,13 @@ Each replayed command keeps the server's reply, with cursor batches cut to the f
 | `sp_execute` | Runs the statement with the session's handle and the recorded values; if the session has no handle for it, runs the same SQL as `sp_executesql` |
 | `sp_unprepare` | Skipped: the session keeps its handles until it closes |
 | Transaction begin, commit, rollback and savepoint requests | Sends them |
-| PRELOGIN, login and attention | Skipped: the replay manages its own connections |
-| Server cursors, bulk load, MARS sessions, Always Encrypted parameters | Skipped for now |
+| PRELOGIN and login | Skipped: the replay manages its own connections |
+| A request the app cancelled, and its attention | Sends the attention after as long as the request ran in the recording, so a query timeout or a cancel happens again |
+| Server cursors: `sp_cursoropen`, `sp_cursorprepare`, `sp_cursorexecute`, `sp_cursorprepexec`, `sp_cursorfetch` and `sp_cursorclose` | Sends them with the live cursor and prepared handles that the replayed open or prepare returned |
+| Bulk load, from BCP or SqlBulkCopy | Sends the recorded rows |
+| Table-valued parameters | Sends them with their recorded rows |
+| A MARS session | Replays each session's requests in that session's order, with its own statement handles, cursors and transaction |
+| Always Encrypted parameters | Sends the recorded ciphertext. The session asks for column encryption as the recorded app did, and an encrypted parameter names the live server's column encryption key, learned from the replayed `sp_describe_parameter_encryption` calls |
 
 Each replayed request keeps its row counts, return status and output parameters, messages and errors, and a sample of up to 20 rows per result set.
 
@@ -1167,6 +1172,7 @@ Each replayed call's result is compared with its recording as for the other data
 - **Use a disposable database.** Replays change data. Reset it between runs, for example with `TRUNCATE ... RESTART IDENTITY` in PostgreSQL, by restoring a dump with `mongorestore --drop` for MongoDB, or by restoring a snapshot.
 - **Row ids come from the recording.** Recorded updates and deletes use the row ids from the original database, so on a fresh copy they may match no rows, and repeated inserts can hit unique constraints. In MySQL, auto-increment ids can also differ once concurrent inserts fail and use up ids, so recorded foreign keys may point at rows that do not exist and fail with `1452`. These show up as SQL results, not replay failures. Start regression tests from a copy of the recorded database, and a blueprint can [regenerate the unique values](#regenerate).
 - **Transactions across connections.** Recorded traffic mixes statements from many app connections, and a replay does not yet regroup them by connection. A replay can therefore send a `COMMIT` without its `BEGIN` or `START TRANSACTION`, and proxymock logs a warning when that happens. Workloads that depend on multi-statement transactions are not reproduced faithfully yet.
+- **Always Encrypted replays need the same keys.** The replay sends the ciphertext the app sent, so the database must hold the same column encryption keys, such as a restored copy of the recorded one. A key created again with the same value works when the recording holds the `sp_describe_parameter_encryption` calls the app made, because the replay learns the new key's identity from them. An app that cached its parameter descriptions before the recording started sends no such calls.
 - **MySQL and SQL Server statements prepared before recording started** are skipped, because the recording does not hold their SQL. Oracle calls on a cursor or LOB opened before recording started are skipped too, except an execute that names its SQL. Start recording before your app opens its connections.
 - **Insert ids and timestamps differ from the recording** on every run. They do not count as mismatches: a statement's result is scored by whether it succeeded, not by the values it returned.
 - **MongoDB replies compare without server bookkeeping.** Cluster time, operation time, election ids and the other fields a server fills in for every reply differ on every run, so they are left out when a recorded reply is compared with a replayed one, and live cursor ids are compared as the recorded ids they stand in for. A command whose result did not change therefore matches its recording with no assertion config. The raw recorded reply still holds those fields.
