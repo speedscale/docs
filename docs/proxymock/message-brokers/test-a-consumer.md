@@ -27,7 +27,7 @@ The replay does not consume for your app. Start the consumer against the same br
 
 ## Pace and load {#pace-and-load}
 
-Each recorded delivery is one test, or for Kafka each recorded `Fetch` with all its records, and a test config's load stages decide how fast the tests go. A stage of virtual users with no request delay sends each test as soon as the broker accepted the one before, as fast as it can. To keep the gaps the recording had between deliveries, set the stage's request delay to the recorded time, or to a multiple of it: `0.5` halves every gap and `2` doubles it.
+Each recorded delivery is one test, or for Kafka each recorded `Fetch` with all its records, and a test config's load stages decide how fast the tests go. A top-level stage of virtual users with no request delay sends each test as soon as the broker accepted the one before, as fast as it can. A stage inside a load group with no request delay keeps the recorded pace instead. To keep the gaps the recording had between deliveries, set the stage's request delay to the recorded time, or to a multiple of it: `0.5` halves every gap and `2` doubles it.
 
 ```json
 {
