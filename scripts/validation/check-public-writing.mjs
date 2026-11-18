@@ -86,12 +86,13 @@ export function hashTerm(term) {
   return createHash("sha256").update(term).digest("hex");
 }
 
-// Candidates are runs of up to CONFIDENTIAL_MAX_WORDS words joined by single
-// spaces, plus each part of a hyphenated word.
+// Candidates are runs of up to CONFIDENTIAL_MAX_WORDS words joined by a
+// single space or hyphen, so a name still matches inside a compound.
 function confidentialSpans(text, hashes) {
-  const words = [...text.matchAll(/[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/g)].map(
-    (match) => ({ start: match.index, end: match.index + match[0].length }),
-  );
+  const words = [...text.matchAll(/[A-Za-z0-9]+/g)].map((match) => ({
+    start: match.index,
+    end: match.index + match[0].length,
+  }));
   const candidates = [];
   for (let first = 0; first < words.length; first += 1) {
     for (
@@ -99,19 +100,10 @@ function confidentialSpans(text, hashes) {
       last < words.length && last < first + CONFIDENTIAL_MAX_WORDS;
       last += 1
     ) {
-      if (
-        last > first &&
-        text.slice(words[last - 1].end, words[last].start) !== " "
-      )
-        break;
+      const separator =
+        last > first && text.slice(words[last - 1].end, words[last].start);
+      if (separator !== false && separator !== " " && separator !== "-") break;
       candidates.push({ start: words[first].start, end: words[last].end });
-    }
-    const word = text.slice(words[first].start, words[first].end);
-    if (word.includes("-")) {
-      for (const part of word.matchAll(/[A-Za-z0-9]+/g)) {
-        const start = words[first].start + part.index;
-        candidates.push({ start, end: start + part[0].length });
-      }
     }
   }
   return candidates.filter((span) =>

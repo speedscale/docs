@@ -197,7 +197,7 @@ test("matches a confidential acronym case-sensitively", () => {
 
 test("matches hyphenated, possessive and multi-word confidential terms", () => {
   const content =
-    "Place-hold-R and Placeholder Corp's team. PHC-based. Placeholder  Corp.\n";
+    "Place-hold-R and Placeholder Corp's team. PHC-based. Placeholder  Corp.\nPlaceholder Corp-based and Place-hold-R-based.\n";
   const findings = analyzeWithPlaceholders(
     "docs/example.md",
     content,
@@ -206,7 +206,7 @@ test("matches hyphenated, possessive and multi-word confidential terms", () => {
   assert.equal(
     findings.filter((finding) => finding.rule === "confidential customer")
       .length,
-    3,
+    5,
   );
 });
 
