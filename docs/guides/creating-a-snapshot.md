@@ -31,7 +31,7 @@ Did you know that you can filter traffic so that it is never sent to Speedscale 
 :::
 
 :::tip Fitting a large selection into a snapshot
-A snapshot supports up to 1,000,000 request/response pairs. Use a **Sampled** filter to reduce a large selection while keeping whole sessions together. For example, keeping one in five sessions reduces the amount of traffic to analyze and replay. See [Sampling a large selection](/guides/creating-filters.md#sampling-a-large-selection).
+A snapshot supports up to 10,000,000 request/response pairs. Larger snapshots take longer to analyze, so use a **Sampled** filter to reduce a large selection while keeping whole sessions together. For example, keeping one in five sessions reduces the amount of traffic to analyze and replay. See [Sampling a large selection](/guides/creating-filters.md#sampling-a-large-selection).
 :::
 
 ### Request Response Details <a href="#overview" id="overview"></a>
@@ -60,6 +60,21 @@ A traffic snapshot is created from the selected traffic when running a replay so
 <a href={SnapshotOverviewImage}>Open screenshot full size</a>
 
 The **Requests over time** chart separates Tests above zero from Mocks below zero. **Latency · p95** shows the recorded latency over time.
+
+### Watch a snapshot being processed
+
+While Speedscale analyzes a new or reanalyzed snapshot, the top of the snapshot page shows its progress in three phases: **Prepare**, **Process traffic**, and **Build and upload artifacts**.
+
+During **Process traffic** the panel shows:
+
+* How many request/response pairs have been processed and the percent complete. The total is the matching traffic Speedscale counted when you created the snapshot, or the count from the last analysis when you reanalyze. It is an estimate, so the bar does not fill until the phase finishes.
+* The current rate in request/response pairs per second, measured over the last minute, and about how long is left at that rate.
+* The time of the newest request processed, and when the snapshot's time window ends.
+* How long is left before the analysis time limit.
+
+Each analysis has a time limit, and snapshots with more than 1,000,000 request/response pairs get four hours. If processing at the current rate would not finish in time, the panel warns you. Narrow the time window, choose fewer services, or use a **Sampled** filter, then create the snapshot again.
+
+When Speedscale has no count, for example when the snapshot's traffic is more than 30 days old, the bar moves without a percentage and the panel shows the number processed so far.
 
 ### Lock a snapshot
 
