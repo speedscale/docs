@@ -38,7 +38,7 @@ Speedscale picks one kind of email for each tenant each week.
 | --- | --- | --- |
 | Setup | The tenant has never finished a replay | The four setup steps with your current step highlighted, and one next step |
 | Busy | At least one item needs an admin | The full digest |
-| Quiet | There was activity, and nothing needs an admin | A short digest headed "Nothing needs you this week" |
+| Quiet | There was activity, and nothing needs an admin | A short digest headed "Nothing is blocked this week", with the next thing worth doing in the subject |
 | Silent | No traffic and no replays for 3 weeks, on a tenant that had some before | A short note that Speedscale has seen nothing, with what to check |
 
 ### Setup email
