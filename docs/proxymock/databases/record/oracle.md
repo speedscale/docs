@@ -220,7 +220,7 @@ Every recorded call is sent as it was recorded: statements, array binds, PL/SQL 
 
 A call on a cursor or LOB that was opened before recording started is skipped, because the replay has nothing to map it to. An execute that names its SQL is the exception: the replay parses that SQL again and runs it.
 
-Each replayed call's result is compared with its recording as for the other databases: the result code, the row count and the rows.
+Each replayed call's status is compared with its recording: success or the `ORA-` error it returned. A call whose status differs, such as one that succeeded when it was recorded and now fails with an `ORA-` error, fails the replay. The rows a statement returns and its row count are not compared, and the [`sqlOutput`](/reference/configuration/assertions/sqloutput.md) assertion does not cover Oracle.
 
 ### Tested
 
