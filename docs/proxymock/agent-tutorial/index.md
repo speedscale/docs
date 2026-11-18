@@ -57,12 +57,13 @@ Start your agent in an empty directory and paste the prompts in order, in one co
 ## Prompt: install the skills
 
 ```text
-Install the Speedscale agent skills from https://github.com/speedscale/skills. If you are Claude Code, run `/plugin marketplace add speedscale/skills` and then `/plugin install speedscale@speedscale-skills`. Otherwise run `npx skills add speedscale/skills`. If neither works, download every folder under skills/ in that repo into your skills directory. Then list the skills you installed and what each is for.
+Install the Speedscale agent skills from https://github.com/speedscale/skills. If you are Claude Code, run `/plugin marketplace add speedscale/skills` and then `/plugin install speedscale@speedscale-skills`. If you are Codex, run `codex plugin marketplace add speedscale/skills` and then `codex plugin add speedscale@speedscale-skills`. Otherwise run `npx skills add speedscale/skills`. If none of these works, download every folder under skills/ in that repo into your skills directory. Then list the skills you installed and what each is for.
 ```
 
 ## What the agent does
 
 - In Claude Code, adds the `speedscale/skills` plugin marketplace and installs the `speedscale@speedscale-skills` plugin. The agent cannot type `/plugin` itself, so it runs the same steps with the `claude plugin` command. It installs for your user account, which makes the skills available in every project, or at project scope, which records the plugin in `.claude/settings.json` in the current directory.
+- In Codex, adds the same marketplace with `codex plugin marketplace add speedscale/skills` and installs `speedscale@speedscale-skills` with `codex plugin add`. Codex loads the plugin after a restart.
 - In other agents, runs `npx skills add speedscale/skills`. Cursor installs the skills into `.agents/skills/` in the current directory.
 - Lists the installed skills and what each is for.
 
@@ -74,7 +75,7 @@ The 15 skills and what each is for. Each agent words and groups the list in its 
 I installed the Speedscale plugin. Your session can't run /plugin commands directly, so I used the claude plugin command line instead:
 
 - claude plugin marketplace add speedscale/skills added the speedscale-skills marketplace.
-- claude plugin install speedscale@speedscale-skills installed version 0.1.0 for your user account.
+- claude plugin install speedscale@speedscale-skills installed it for your user account.
 
 The skills won't appear in this session yet. Run /reload-plugins or start a new session to load them.
 
@@ -94,7 +95,7 @@ The [agent skills](../agent-skills.md) page describes every skill.
 
 ## If it goes wrong
 
-- **The skills are not available yet.** Claude Code loads a newly installed plugin after a reload. Run `/reload-plugins`, or exit and start the agent again in the same directory (`claude --continue` keeps the conversation).
+- **The skills are not available yet.** Claude Code loads a newly installed plugin after a reload. Run `/reload-plugins`, or exit and start the agent again in the same directory (`claude --continue` keeps the conversation). In Codex or the ChatGPT desktop app, restart the app.
 - **The list includes `proxymock-replay-tuning`.** That skill was folded into `improve-mock-match-rate`, and your skills are an older copy. Install them again to pick up the current set.
 
 <details>
@@ -112,6 +113,13 @@ From a shell, for Claude Code:
 ```bash
 claude plugin marketplace add speedscale/skills --scope project
 claude plugin install speedscale@speedscale-skills --scope project
+```
+
+For Codex and the ChatGPT desktop app:
+
+```bash
+codex plugin marketplace add speedscale/skills
+codex plugin add speedscale@speedscale-skills
 ```
 
 For other agents:
