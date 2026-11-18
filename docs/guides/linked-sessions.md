@@ -24,7 +24,7 @@ Speedscale links two session keys only when the same value appears in both keys'
 
 For example, Alice's inbound requests are keyed by her user ID `u-alice-1001`. Her service calls a payment service with a JWT whose `sub` claim is `u-alice-1001`, so the inbound key and the JWT key have the same identity. The payment service returns `pay-9c2e4471`, and her browser later requests `/payments/pay-9c2e4471` with only a `jsessionid`. That ID links the browser's key to the JWT key, so all three keys become one actor.
 
-An ID from an earlier response only counts when it looks like an ID: at least six characters, a single token that contains a digit, and not a timestamp, URL, path or decimal number. Headers that describe the client or the connection, such as `User-Agent`, `Accept` or `Host`, are never read as IDs.
+An ID from an earlier response only counts when it looks like an ID: at least six characters, a single token that contains a digit, and not a timestamp, URL, path or decimal number. It links keys only when a later request sent it back, and only when every response that created it belongs to one request chain, such as a gateway passing on the payment ID its payment service just returned. A product ID that separate responses hand to several shoppers links nobody. Headers that describe the client or the connection, such as `User-Agent`, `Accept` or `Host`, are never read as IDs.
 
 Timing never links keys. A dependency call made while an inbound request was in flight is often part of that request, but under load many requests overlap, and linking on timing would merge unrelated people.
 
