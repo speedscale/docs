@@ -10,6 +10,15 @@ The weekly digest is one email to each tenant admin that answers four questions 
 
 The subject line and headline state the answer, so you learn the most important thing without opening the dashboard.
 
+Every digest has one button for the one thing it asks you to do, taken from what it found:
+
+| Kind | The button |
+| --- | --- |
+| Busy | The link of the top item under **Needs an admin**, such as **Open the report** |
+| Quiet | The link of the first suggestion, shown first, or **Review your services** when there is no suggestion |
+| Setup | Your next setup step, such as **Connect a cluster** |
+| Silent | The cluster that went quiet, such as **Check prod-east**, or **Start a replay** when the tenant has no cluster |
+
 ## Who gets it and when
 
 Every user with the admin role in a tenant gets their own copy, sent on its own to their address.
@@ -111,7 +120,7 @@ Each service is compared with its own [trend](../guides/readiness/service-trend.
 
 ### Worth doing next
 
-This shows up to 2 suggestions, or 1 when 3 or more items block a release. See [Suggestions](#suggestions).
+This shows up to 2 suggestions, or 1 when 3 or more items block a release. See [Suggestions](#suggestions). In a quiet week this section comes first, right under the headline.
 
 ### Setup and usage
 
