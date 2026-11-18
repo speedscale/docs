@@ -26,7 +26,7 @@ These drivers are tested against Oracle AI Database 26ai Free 23.26.3, over plai
 | go-ora | Go |
 | ODP.NET managed driver | .NET |
 
-Thick-mode clients, the ones that load the Oracle Call Interface (OCI) from Oracle Instant Client or a full client install, are not tested. These include SQL\*Plus, python-oracledb in thick mode, godror and the ODP.NET unmanaged driver. Under eBPF capture their TCPS traffic cannot be decrypted, because they use Oracle's own TLS library rather than OpenSSL.
+Thick-mode clients, the ones that load the Oracle Call Interface (OCI) from Oracle Instant Client or a full client install, are not supported. These include SQL\*Plus, python-oracledb in thick mode, godror and the ODP.NET unmanaged driver. They encode the protocol differently from the thin drivers, so proxymock decodes only their connection and security negotiation. Their login and statements are not decoded on plain TCP or TCPS, so they do not appear in the database views and cannot be mocked or replayed. Under eBPF capture their TCPS traffic is not decrypted either, because they use Oracle's own TLS library rather than OpenSSL.
 
 ## Start the recorder {#start-recording}
 
@@ -74,13 +74,25 @@ User Id=app;Password=<password>;Data Source=localhost:11521/FREEPDB1
 
 ## TCPS {#tcps}
 
+proxymock records TCPS connections by ending the driver's TLS session with a certificate signed by the proxymock certificate authority, the same way its other TLS recorders do, so the driver must trust it: add `~/.speedscale/certs/tls.crt` to the trust store or wallet the driver reads. Map the TCPS listener port, usually 2484, the same way as a plain one.
+
+python-oracledb and node-oracledb in thin mode check that the server certificate names the host they connect to, but they do not tell the server that name. The recorder's certificate names `localhost`, so a driver that connects to `localhost` records over TCPS with its check on. A driver that connects to the recorder by another name, such as an app in a container that reaches it as `host.docker.internal`, fails the check: turn it off for that recording, with `ssl_server_dn_match=False` in python-oracledb or `sslServerDNMatch: false` in node-oracledb. JDBC thin and the ODP.NET managed driver tell the server the name they connect to, so they record over TCPS with their checks on, and so does go-ora.
+
+A server that asks the client to renegotiate TLS and present a wallet client certificate cannot be recorded through the proxy, because the recorder has no such certificate to present. That connection passes through untouched, so the app keeps working, but the session is not recorded.
+
 In Kubernetes, the [eBPF collector](/reference/ebpf-traffic-collection) records TCPS connections from the thin drivers above in full. It reads the traffic inside the app, before the driver encrypts it, so the app needs no certificate changes. Thick-mode clients use Oracle's own TLS library, which the collector cannot read, so their TCPS connections are not recorded.
 
 ## Native Network Encryption {#nne}
 
-Native Network Encryption (NNE) encrypts the session inside the driver, before the data reaches the socket, so the eBPF collector cannot read it for any client. A session that negotiates NNE is recorded up to its negotiation and no further. Use TCPS instead of NNE for the services you record. Recording NNE sessions through proxymock is not supported yet.
+Native Network Encryption (NNE) encrypts the session inside the driver, before the data reaches the socket.
 
-The mock does not offer NNE either, so a client that requires it cannot be mocked; see [Mock Oracle](#mock). A replay against a database cannot use NNE or checksumming; see [Replay against a database](#replay).
+proxymock records NNE sessions from go-ora and other clients that use Oracle's legacy encryption negotiation. It terminates the negotiation on each side of the proxy and re-encrypts toward the client and the server, so the call is recorded decoded. Encryption (AES) and the optional data-integrity checksum (SHA) are both handled.
+
+Modern JDBC thin (23ai) uses a newer negotiation that rejects a terminating proxy right after login, so its NNE sessions pass through the recorder untouched: the app keeps working, but the session is not recorded. Connect over TCPS instead to record a JDBC app that requires encryption.
+
+The eBPF collector cannot read NNE for any client, because the driver encrypts before the data reaches the socket. A session the collector sees negotiate NNE is recorded up to its negotiation and no further.
+
+The mock does not offer NNE, so a client that requires it cannot be mocked; see [Mock Oracle](#mock). A replay against a database cannot use NNE or checksumming; see [Replay against a database](#replay).
 
 ## What gets recorded
 
@@ -116,7 +128,7 @@ proxymock mock --map 11521=localhost:1521 --test-config oracle-mock -- your-app
 
 The mock answers each statement execution and fetch with the reply recorded for the same statement, matched on the normalized SQL and not on the values bound to it, as the other SQL mocks are. See [Mock a database](../mock-a-database.md) for what happens when nothing matches exactly. A statement with no recording gets the user-defined Oracle error `ORA-20999: Speedscale: responder miss: no recorded reply for this call`, which every driver reports as an ordinary database error, and appears as a miss in the mock's output.
 
-These drivers are tested against the mock over plain TCP: JDBC thin, python-oracledb in thin mode, node-oracledb in thin mode, go-ora and the ODP.NET managed driver. Over TCPS, JDBC thin, go-ora and ODP.NET are tested, and python-oracledb and node-oracledb are tested with their server name check turned off; see [TCPS and Native Network Encryption](#mock-tcps). Thick-mode clients are not tested.
+These drivers are tested against the mock over plain TCP: JDBC thin, python-oracledb in thin mode, node-oracledb in thin mode, go-ora and the ODP.NET managed driver. Over TCPS, JDBC thin, go-ora and ODP.NET are tested, and python-oracledb and node-oracledb are tested with their server name check turned off; see [TCPS and Native Network Encryption](#mock-tcps). Thick-mode clients are not supported; see [Supported drivers](#drivers).
 
 A recording made with one driver serves another, but each reply is shaped by what the driver asked for, such as how many rows it fetches at a time. The mock answers with the recording of the same driver when it has one, and sends no more rows than the driver asks for.
 
@@ -235,9 +247,10 @@ These drivers were recorded against Oracle AI Database 26ai Free and replayed ag
 
 ## Limits
 
-- Native Network Encryption cannot be recorded, and a client that requires it cannot be mocked; see [Native Network Encryption](#nne).
-- Thick-mode clients are not tested, and their TCPS traffic is not recorded by the eBPF collector; see [Supported drivers](#drivers).
-- A RAC SCAN listener redirects each client to a node listener on another address or port. Record every port the cluster uses, or connect the app to a node listener directly. Rewriting the redirect so the client stays on the recorder comes in a later release.
+- Native Network Encryption is recorded through the proxy for legacy-negotiation clients such as go-ora, but a modern JDBC NNE session passes through uncaptured, and the eBPF collector cannot read NNE for any client; see [Native Network Encryption](#nne). A client that requires NNE cannot be mocked.
+- A TCPS server that asks the client to renegotiate TLS with a wallet client certificate cannot be recorded through the proxy; see [TCPS](#tcps).
+- Thick-mode (OCI) clients are not supported. Their login and statements are not decoded on any transport, so they cannot be mocked or replayed, and the eBPF collector does not record their TCPS traffic; see [Supported drivers](#drivers).
+- A RAC SCAN listener redirects each client to a node listener on another address or port. proxymock rewrites the redirect so the client reconnects through the recorder, and routes the new connection to the node the listener named, so the whole session is recorded. Under eBPF the collector sees both connections anyway, because it watches sockets rather than addresses.
 - Advanced Queuing, direct path loads, two-phase commit, object types and SQL\*Net compression are not decoded.
 - A connection that was already open when recording started cannot be decoded, because the recording missed its negotiation. Start recording before the app opens its connections.
 - The mock needs the database user's password in the test config; see [The mock needs the password](#mock-password).
