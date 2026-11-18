@@ -1162,7 +1162,7 @@ Each replayed request keeps its row counts, return status and output parameters,
 | The connection's handshake and login | Replays each recorded driver's own handshake, one session per driver. A recording with no login connects as go-ora does |
 | A call on a cursor or LOB opened before recording started | Skipped, except an execute that names its SQL, which is parsed again and run |
 
-Each replayed call's result is compared with its recording as for the other databases: the result code, the row count and the rows.
+Each replayed call's status is compared with its recording: success or the `ORA-` error it returned. A call whose status differs, such as one that succeeded when it was recorded and now fails with an `ORA-` error, fails the replay. The rows a statement returns and its row count are not compared, and the [`sqlOutput`](/reference/configuration/assertions/sqloutput.md) assertion does not cover Oracle.
 
 </TabItem>
 </Tabs>
