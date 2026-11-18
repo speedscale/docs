@@ -60,7 +60,7 @@ Start your agent in an empty directory and paste the prompts in order, in one co
 If you did the version on your machine and the skills are installed, skip to chapter 1.
 
 ```text
-Install the Speedscale agent skills from https://github.com/speedscale/skills. If you are Claude Code, run `/plugin marketplace add speedscale/skills` and then `/plugin install speedscale@speedscale-skills`. Otherwise run `npx skills add speedscale/skills`. If neither works, download every folder under skills/ in that repo into your skills directory. Then list the skills you installed and what each is for.
+Install the Speedscale agent skills from https://github.com/speedscale/skills. If you are Claude Code, run `/plugin marketplace add speedscale/skills` and then `/plugin install speedscale@speedscale-skills`. If you are Codex, run `codex plugin marketplace add speedscale/skills` and then `codex plugin add speedscale@speedscale-skills`. Otherwise run `npx skills add speedscale/skills`. If neither works, download every folder under skills/ in that repo into your skills directory. Then list the skills you installed and what each is for.
 ```
 
 ## What the agent does
