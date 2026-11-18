@@ -92,7 +92,7 @@ Modern JDBC thin (23ai) uses a newer negotiation that rejects a terminating prox
 
 The eBPF collector cannot read NNE for any client, because the driver encrypts before the data reaches the socket. A session the collector sees negotiate NNE is recorded up to its negotiation and no further.
 
-The mock does not offer NNE, so a client that requires it cannot be mocked; see [Mock Oracle](#mock). A replay against a database cannot use NNE or checksumming; see [Replay against a database](#replay).
+The mock offers NNE to clients that use the legacy negotiation, such as go-ora, but not to modern JDBC thin; see [TCPS and Native Network Encryption](#mock-tcps). A replay negotiates NNE and checksumming when the database requires them, whichever driver the recording came from; see [How the replay connects](#replay-connect).
 
 ## What gets recorded
 
@@ -128,13 +128,13 @@ proxymock mock --map 11521=localhost:1521 --test-config oracle-mock -- your-app
 
 The mock answers each statement execution and fetch with the reply recorded for the same statement, matched on the normalized SQL and not on the values bound to it, as the other SQL mocks are. See [Mock a database](../mock-a-database.md) for what happens when nothing matches exactly. A statement with no recording gets the user-defined Oracle error `ORA-20999: Speedscale: responder miss: no recorded reply for this call`, which every driver reports as an ordinary database error, and appears as a miss in the mock's output.
 
-These drivers are tested against the mock over plain TCP: JDBC thin, python-oracledb in thin mode, node-oracledb in thin mode, go-ora and the ODP.NET managed driver. Over TCPS, JDBC thin, go-ora and ODP.NET are tested, and python-oracledb and node-oracledb are tested with their server name check turned off; see [TCPS and Native Network Encryption](#mock-tcps). Thick-mode clients are not supported; see [Supported drivers](#drivers).
+These drivers are tested against the mock over plain TCP: JDBC thin, python-oracledb in thin mode, node-oracledb in thin mode, go-ora and the ODP.NET managed driver. Over TCPS, JDBC thin, go-ora and ODP.NET are tested, and python-oracledb and node-oracledb are tested connecting to `localhost` with their server name check on and by another name with it off; see [TCPS and Native Network Encryption](#mock-tcps). Thick-mode clients are not supported; see [Supported drivers](#drivers).
 
 A recording made with one driver serves another, but each reply is shaped by what the driver asked for, such as how many rows it fetches at a time. The mock answers with the recording of the same driver when it has one, and sends no more rows than the driver asks for.
 
 ### The mock needs the password {#mock-password}
 
-The mock needs the password of the database user your app logs in as. Oracle drivers check that the server knows the password before they finish the login (O5LOGON), so a mock without it cannot complete the login, and refuses it with `ORA-01017`. Recordings never contain the password, so the mock cannot learn it from them.
+The mock needs the password of the database user your app logs in as. Oracle drivers check that the server knows the password before they finish the login (O5LOGON), so a mock without it cannot complete the login, and refuses it with `ORA-01017`. Recordings never contain the password, so the mock cannot learn it from them. The mock logs the user in with the password verifier the recorded server used, 12c or 11g.
 
 Put the user and password in the `responder.oracle` section of a [test config](../../guides/test-configs.md), and pass the config to the mock with `--test-config`, as a workspace test config name such as `oracle-mock` or a path to the config's JSON file. A replay that starts the mock takes the same flag. Use a secret reference such as `${{secret:oracle-credentials/password}}`, which reads the file `proxymock/secrets/oracle-credentials/password`, rather than a literal password, because a literal value is stored with the test config; see [Secrets](../../guides/secrets.md):
 
@@ -158,9 +158,9 @@ In Kubernetes, add the same `responder.oracle` section to the test config the re
 
 The mock answers TCPS connections. It ends the driver's TLS session with a certificate signed by the proxymock certificate authority, so the driver must trust it, as with other TLS mocks: add `~/.speedscale/certs/tls.crt` to the trust store or wallet your driver reads. For Java, `proxymock admin certs --jks` creates `~/.speedscale/certs/cacerts.jks` with the password `changeit`, which the JDBC thin driver reads with the JVM's `javax.net.ssl.trustStore` setting; see [Java](../../guides/java.md). In Kubernetes, the app trusts the Speedscale certificate authority; see [TLS support](../../../getting-started/installation/sidecar/tls.md).
 
-python-oracledb and node-oracledb in thin mode check that the server certificate names the host they connect to, but they do not tell the server that name, so the mock's certificate cannot name it and the login fails with `DPY-6006` in python-oracledb or `NJS-508` in node-oracledb. For a test against the mock, turn the check off: `ssl_server_dn_match=False` in python-oracledb, or `sslServerDNMatch: false` in node-oracledb.
+python-oracledb and node-oracledb in thin mode check that the server certificate names the host they connect to, but they do not tell the server that name. The mock's certificate names `localhost`, so a driver that connects to `localhost` logs in with its check on. A driver that connects to the mock by another name, such as an app in a container that reaches it as `host.docker.internal`, fails the check with `DPY-6006` in python-oracledb or `NJS-508` in node-oracledb: turn the check off for the test, with `ssl_server_dn_match=False` in python-oracledb or `sslServerDNMatch: false` in node-oracledb.
 
-A client that requires Native Network Encryption, such as JDBC thin with `oracle.net.encryption_client=REQUIRED`, cannot be mocked, because the mock does not offer NNE. Connect over TCPS for the test, or turn NNE off for it.
+The mock offers Native Network Encryption and checksumming to a client that requires them and uses Oracle's legacy negotiation, such as go-ora: AES encryption, and the SHA-2, SHA-1 and MD5 checksums. It also offers them when the recorded server chose them. It cannot offer them to modern JDBC thin (23ai), so a JDBC app with `oracle.net.encryption_client=REQUIRED` cannot be mocked: connect over TCPS for the test, or turn NNE off for it.
 
 ### What the mock answers on its own
 
@@ -228,6 +228,10 @@ In Kubernetes, add the same `generator.oracle` section to the test config the re
 
 The replay connects to the database the way the recorded driver connected. It replays each driver's own handshake from the recording and opens one session per driver, so the database answers the replay as it answered your app. A recording that holds no login connects the way go-ora does.
 
+When the database requires Native Network Encryption or checksumming, the replay negotiates them with Oracle's legacy negotiation and encrypts the session, whichever driver the recording came from, including drivers that cannot use NNE themselves, such as python-oracledb and node-oracledb in thin mode. A database that only accepts them leaves them off, as it did for the recording.
+
+The replay logs in with whichever password verifier the database holds for the user: 12c, or 11g on a database upgraded from Oracle 11g.
+
 ### What the replay sends {#replay-sent}
 
 Every recorded call is sent as it was recorded: statements, array binds, PL/SQL calls with OUT binds, REF CURSORs, implicit results and LOB reads. Recorded cursor ids and LOB locators are mapped to the ones the replay's own session gets back.
@@ -240,22 +244,23 @@ Each replayed call's status is compared with its recording: success or the `ORA-
 
 These drivers were recorded against Oracle AI Database 26ai Free and replayed against it with identical results, over TCP and over TCPS: JDBC thin, python-oracledb in thin mode, node-oracledb in thin mode, go-ora and the ODP.NET managed driver. A load test with 4 virtual users for 30 seconds ran with 0 failed requests.
 
+The same recordings were replayed against 26ai Free with Native Network Encryption and checksumming required, both with AES256 and SHA-256 and with AES128 and SHA-1, with identical results. They were also replayed as a user that has only an 11g password verifier.
+
 ### Not supported {#replay-limits}
 
-- Native Network Encryption and checksumming. The replay reports a clear error when the database requires them; connect over TCPS instead.
-- Password verifiers older than 12c. The replay user needs a 12c or later password verifier.
+- Password verifiers older than 11g. The replay user needs an 11g or later password verifier.
 
 ## Limits
 
-- Native Network Encryption is recorded through the proxy for legacy-negotiation clients such as go-ora, but a modern JDBC NNE session passes through uncaptured, and the eBPF collector cannot read NNE for any client; see [Native Network Encryption](#nne). A client that requires NNE cannot be mocked.
+- Native Network Encryption is recorded through the proxy for legacy-negotiation clients such as go-ora, but a modern JDBC NNE session passes through uncaptured, and the eBPF collector cannot read NNE for any client; see [Native Network Encryption](#nne). A modern JDBC client that requires NNE cannot be mocked.
 - A TCPS server that asks the client to renegotiate TLS with a wallet client certificate cannot be recorded through the proxy; see [TCPS](#tcps).
 - Thick-mode (OCI) clients are not supported. Their login and statements are not decoded on any transport, so they cannot be mocked or replayed, and the eBPF collector does not record their TCPS traffic; see [Supported drivers](#drivers).
 - A RAC SCAN listener redirects each client to a node listener on another address or port. proxymock rewrites the redirect so the client reconnects through the recorder, and routes the new connection to the node the listener named, so the whole session is recorded. Under eBPF the collector sees both connections anyway, because it watches sockets rather than addresses.
 - Advanced Queuing, direct path loads, two-phase commit, object types and SQL\*Net compression are not decoded.
 - A connection that was already open when recording started cannot be decoded, because the recording missed its negotiation. Start recording before the app opens its connections.
 - The mock needs the database user's password in the test config; see [The mock needs the password](#mock-password).
-- Over TCPS, python-oracledb and node-oracledb need their server name check turned off for the mock; see [TCPS and Native Network Encryption](#mock-tcps).
-- A replay against a database cannot use Native Network Encryption or checksumming, or log in with a password verifier older than 12c; see [Replay against a database](#replay).
+- Over TCPS, python-oracledb and node-oracledb need their server name check turned off when they connect to the recorder or the mock by a name other than `localhost`; see [TCPS](#tcps) and [TCPS and Native Network Encryption](#mock-tcps).
+- A replay cannot log in with a password verifier older than 11g; see [Replay against a database](#replay).
 - A replay skips calls on a cursor or LOB that was opened before recording started, except an execute that names its SQL; see [What the replay sends](#replay-sent).
 
 ## Benchmark results {#benchmarks}

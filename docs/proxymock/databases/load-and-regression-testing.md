@@ -618,7 +618,7 @@ Turn on TCPS with `?ssl=true` on the address, as in a go-ora URL, or set `tlsMod
 
 The verifying modes trust the system's certificate authorities, or the PEM certificates in `caCertificate`. For a server that asks for a client certificate, set `clientCertificate` to the PEM certificate followed by its private key, and keep it in a secret.
 
-The replay cannot use Oracle Native Network Encryption or checksumming. A database that requires them refuses the replay with a clear error, so connect over TCPS instead.
+When the database requires Oracle Native Network Encryption or checksumming, the replay negotiates them with Oracle's legacy negotiation and encrypts the session, whichever driver the recording came from.
 
 </TabItem>
 </Tabs>
