@@ -52,6 +52,12 @@ Editing simple filters can be accomplished in different three ways:
 
 ![facets](./filter/facets.png)
 
+The sidebar narrows from cluster to namespace to service. Checking a cluster limits the Namespace and Service lists to what runs in it, and unchecks any service from another cluster (click **Undo** in the notice to keep them).
+
+With a cluster or namespace checked and no single service picked, the page shows traffic for every service in it, and the Service list shows them all checked. Uncheck a service to leave it out.
+
+Each open sidebar section has **All** and **Clear** next to its title. **All** checks every value the section's search box leaves visible, so you can search for `q-01` and check every match at once. The count next to the title, such as "3 of 12", shows how many values are checked.
+
 3. *Shortcuts* - Some data can be quickly filtered on. Look for the small magnifying glasses next to some fields.
 
 ![shortcuts](./filter/shortcuts.png)
