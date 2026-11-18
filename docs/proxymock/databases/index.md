@@ -16,7 +16,7 @@ What that gives you:
 - **Run without the database.** Mock it from the recording so tests and coding agents run offline and deterministically.
 - **Test the database with real traffic.** Replay the recorded statements against a new schema or version, or with many sessions as a load test.
 
-Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Postgres, MySQL, SQL Server and Oracle recordings can all be watched, inspected, linked to requests, inventoried and exported as SQL. Mocking the database and replaying against one cover Postgres, MySQL and SQL Server; Oracle mocking and replay are coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Postgres, MySQL, SQL Server and Oracle recordings can all be watched, inspected, linked to requests, inventoried and exported as SQL. Mocking the database covers Postgres, MySQL, SQL Server and Oracle, and replaying against one covers Postgres, MySQL and SQL Server; Oracle replay is coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Record your database
 
