@@ -7,6 +7,7 @@ import test from "node:test";
 
 import {
   analyzeFile,
+  hashTerm,
   parseAddedLines,
   run,
 } from "../validation/check-public-writing.mjs";
@@ -14,6 +15,12 @@ import { runPushed } from "../validation/check-pushed-writing.mjs";
 
 const allLines = (content) =>
   new Set(content.split("\n").map((_, index) => index + 1));
+
+const placeholderHashes = new Set(
+  ["Placeholder Corp", "Place-hold-R", "PHC"].map(hashTerm),
+);
+const analyzeWithPlaceholders = (file, content, lines) =>
+  analyzeFile(file, content, lines, { confidentialHashes: placeholderHashes });
 
 test("ignores violations on untouched lines", () => {
   const content = "SpeedScale is misspelled.\n\nThis line changed.\n";
@@ -24,8 +31,8 @@ test("ignores violations on untouched lines", () => {
 });
 
 test("blocks objective terminology and capitalization violations", () => {
-  const content = "Proxymock uses ground truth from Home Depot.\n";
-  const findings = analyzeFile(
+  const content = "Proxymock uses ground truth from Placeholder Corp.\n";
+  const findings = analyzeWithPlaceholders(
     "docs/example.md",
     content,
     allLines(content),
@@ -61,9 +68,9 @@ test("allows separate paragraphs and list items", () => {
 
 test("ignores fenced and inline code", () => {
   const content =
-    "```text\nSpeedScale and Home Depot\n```\nUse `SpeedScale` as test input.\n";
+    "```text\nSpeedScale and Placeholder Corp\n```\nUse `SpeedScale` as test input.\n";
   assert.equal(
-    analyzeFile("docs/example.md", content, allLines(content)).length,
+    analyzeWithPlaceholders("docs/example.md", content, allLines(content)).length,
     0,
   );
 });
@@ -176,15 +183,52 @@ test("ignores multiline HTML comments and JSX attributes", () => {
   assert.equal(findings[0].match, "Proxymock");
 });
 
-test("matches the confidential CFA acronym case-sensitively", () => {
-  const content = "A cfa is different from CFA.\n";
-  const findings = analyzeFile(
+test("matches a confidential acronym case-sensitively", () => {
+  const content = "A phc is different from PHC.\n";
+  const findings = analyzeWithPlaceholders(
     "docs/example.md",
     content,
     allLines(content),
   );
   assert.equal(findings.length, 1);
-  assert.equal(findings[0].match, "CFA");
+  assert.equal(findings[0].rule, "confidential customer");
+  assert.equal(findings[0].match, "[redacted]");
+});
+
+test("matches hyphenated, possessive and multi-word confidential terms", () => {
+  const content =
+    "Place-hold-R and Placeholder Corp's team. PHC-based. Placeholder  Corp.\nPlaceholder Corp-based and Place-hold-R-based.\n";
+  const findings = analyzeWithPlaceholders(
+    "docs/example.md",
+    content,
+    allLines(content),
+  );
+  assert.equal(
+    findings.filter((finding) => finding.rule === "confidential customer")
+      .length,
+    5,
+  );
+});
+
+test("redacts confidential terms in every finding", () => {
+  const content =
+    "Placeholder Corp wrapped this paragraph even though it is prose\nthat should remain on one source line.\n";
+  const findings = analyzeWithPlaceholders(
+    "docs/example.md",
+    content,
+    allLines(content),
+  );
+  assert.ok(findings.some((finding) => finding.rule === "hard-wrapped prose"));
+  for (const finding of findings)
+    assert.ok(!finding.match.includes("Placeholder Corp"), finding.match);
+});
+
+test("ships only hashed confidential terms", () => {
+  const source = fs.readFileSync(
+    new URL("../validation/check-public-writing.mjs", import.meta.url),
+    "utf8",
+  );
+  assert.equal(source.match(/\b[0-9a-f]{64}\b/g)?.length, 3);
 });
 
 test("reports style patterns as warnings", () => {
@@ -251,7 +295,7 @@ test("discovers docs surfaces, including the generated MCP reference", () => {
 test("ignores tilde fences while checking admonition prose", () => {
   const content = [
     "~~~text",
-    "SpeedScale and Home Depot",
+    "SpeedScale and Placeholder Corp",
     "~~~",
     "",
     ":::note",
@@ -259,7 +303,7 @@ test("ignores tilde fences while checking admonition prose", () => {
     ":::",
     "",
   ].join("\n");
-  const findings = analyzeFile(
+  const findings = analyzeWithPlaceholders(
     "docs/example.mdx",
     content,
     allLines(content),
@@ -323,7 +367,7 @@ test("checks committed push content without reading uncommitted files", () => {
     }).trim();
 
     fs.writeFileSync(readme, "Install Proxymock.\n");
-    fs.writeFileSync(path.join(root, "docs", "untracked.md"), "Home Depot.\n");
+    fs.writeFileSync(path.join(root, "docs", "untracked.md"), "Placeholder Corp.\n");
 
     const input = `refs/heads/feature ${localSha} refs/heads/feature ${remoteSha}\n`;
     const result = runPushed(root, input);
