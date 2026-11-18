@@ -50,7 +50,7 @@ When you're done, you should be able to click on the "Advanced" tab and see JSON
         ]
       },
       "extractor": {
-        "type": "http_res_body"
+        "type": "res_body"
       },
       "transforms": [
         {

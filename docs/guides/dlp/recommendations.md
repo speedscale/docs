@@ -113,8 +113,8 @@ Filters determine which RRPairs are processed by the transform chain. Examples i
 
 Extractors identify and extract data from specific locations in RRPairs. Examples include:
 
-- **HTTP Request**: Extract from headers (`http_req_header`), query parameters (`http_queryparam`), or body (`http_req_body`)
-- **HTTP Response**: Extract from response headers (`http_res_header`) or body (`http_res_body`)
+- **HTTP Request**: Extract from headers (`http_req_header`), query parameters (`http_queryparam`), or body (`req_body`)
+- **HTTP Response**: Extract from response headers (`http_res_header`) or body (`res_body`)
 - **JSONPath**: Use JSONPath expressions to extract specific fields from JSON data (e.g., `$.user.email`)
 
 ### Transforms
