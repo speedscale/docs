@@ -1,32 +1,58 @@
 ---
-description: "Analyze replay accuracy with Speedscale's errors dashboard, tracking response rates, accuracy comparisons, and assertion results for effective API testing."
+description: "Review replay accuracy in a Speedscale report: see how many checks and calls matched the recording, filter to failures, and open each failed call to compare recorded and replayed values."
 sidebar_position: 3
 ---
 
 # Accuracy
 
-Drill into the reasons for why this replay did not match the expected results.
+The **Accuracy** tab of a report shows how the replayed calls compared with the traffic snapshot. Use it to find the calls that did not match the recording and see why.
 
-The errors dashboard gives you a view into all the calls that were replayed against the service, and how they compared to the traffic snapshot. There are 3 high level KPIs that are tracked:
+![Accuracy tab with the two accuracy bars and the list of replayed calls](./accuracy-tab.png)
 
-* **Response Rate** this helps confirm that the generator is able to send traffic to the service. If you have errors here it could be because the service was not ready or you have a misconfiguration in your cluster.
-* **Accuracy** how did the responses compare with the traffic snapshot? These comparisons are made automatically based upon your configuration.
-* **Responder Matches** this is present if the responder was used during your traffic replay and is an indication if it was able to match the incoming calls.
+## Accuracy at a glance
 
-![](./screen-shot-2021-08-13-at-11.52.26-am.png)
+Two bars open the tab:
 
-Below that you can find a summary of failures by URL. Alternatively it may be interesting to understand what failure types happened in the environment regardless of URL.
+* **Checks passed** is the share of assertions that matched the recording, out of every assertion evaluated in the replay. The red part of the bar is the share that failed.
+* **Calls answered** is the share of replayed calls that got a response from the service. Errors here usually mean the service was not ready or the cluster is misconfigured, rather than a difference in the responses.
 
-![Errors by URL](./screen-shot-2021-08-13-at-11.52.46-am.png)
+When the test config has an [`httpOutput`](/reference/configuration/assertions/httpoutput.md), Kafka output or [`sqlOutput`](/reference/configuration/assertions/sqloutput.md) assertion, its results appear below the bars. See [Outbound HTTP calls](./README.md#outbound-http-calls).
 
-And finally there is a list of every single assertion that was performed automatically. You can click on any one of these to see the actual and expected results, with lines that did not match in red.  The margin is also red for the parts of the body which do not match.
+## Find the failed calls
 
-![assertions diff](./assertions-response-diff.png)
+The list below shows every replayed call and its assertions. The first column reads as a verdict, such as **1 of 3 failed** or **3 passed**, and failed calls carry a red line at their left edge.
 
-The `Actual` text for this assertion says "4/5 Lines Match" because the expected (captured) and actual (replayed) values differ.  Each line of the response body, including delimiters like curly braces, are compared. Assertions can be configured, in the [test config](/reference/glossary.md#test-config), to ignore fields that you don't want to affect body comparison.
+* Use **All**, **Failed** and **Passed** to show only the calls with that result. With a filter on, the verdict counts only the matching assertions.
+* Use **Assertion type** to show calls with one kind of check, such as Status Code or Body JSON.
+* Use **Filters** to narrow the list by service, endpoint or any other traffic field.
+
+In low data mode, only a sample of failed calls is collected, so the list is titled **Failed assertions (sampled)** and may be empty when nothing failed.
+
+## Review a call
+
+Click a call to open it in the sidebar.
+
+![Result sidebar for a failed call, showing the verdict, the recorded and replayed status and duration, and the list of checks](./accuracy-result-sidebar.png)
+
+The top of the sidebar names the call, says how many of its checks failed, and compares the recorded and replayed status and duration.
+
+Use the up and down arrows to move to the previous or next call, and **Next failure** to jump to the next failed call, without closing the sidebar. Expand gives the sidebar the whole page, and Escape returns it to its usual width.
+
+The **Checks** tab opens first. It lists every assertion that ran on the call, failures first, with the recorded value beside the replayed value. For body, header and cookie checks, **Show in response** opens the part of the response that the check compared.
+
+The other tabs hold the evidence:
+
+* **Response** and **Request** compare the recorded and replayed headers, cookies and body side by side. Lines that differ are red, and the margin is red beside the parts of the body that do not match.
+* **Call details** lists the call's fields, such as host, endpoint and duration.
+* **Sequence** shows the calls around this one as a sequence diagram.
+* **Log** lists the events the replay recorded for the call, when there are any.
+
+A body check compares each line of the body, including delimiters such as curly braces, so its replayed value reads like "4 lines matched" when the bodies differ. Assertions can be configured in the [test config](/reference/glossary.md#test-config) to ignore fields that should not affect the comparison.
 
 ![assertions ignore](./assertions-response-ignore.png)
 
-Ignored fields will still have red lines in the margin to indicate they are different, but the line itself is grey with the crossed eye icon to indicate that it was ignored.  See the [assertions reference](../../reference/configuration/assertions/README.md) for more information.
+Ignored fields still have red lines in the margin to show they differ, but the line itself is grey with a crossed eye icon to show that it was ignored. See the [assertions reference](../../reference/configuration/assertions/README.md) for more information.
 
-If a replay has an unexpectedly low success rate, inspect the failed assertions and request differences before changing the configuration. For expected differences such as credentials or dates, open the snapshot's **Prepare** tab to review and edit transform chains. Use the chain editor to preview changes against a recorded request, save the configuration, and replay again to check the result. See [Traffic Transformation](/guides/transformation/overview.md) for the workflow. For help with your configuration, ask in the [Speedscale Slack community](https://slack.speedscale.com) or [email support](mailto:support@speedscale.com).
+## Fix expected differences
+
+If a replay has an unexpectedly low success rate, inspect the failed checks and the response differences before changing the configuration. For expected differences such as credentials or dates, open the snapshot's **Prepare** tab to review and edit transform chains. Use the chain editor to preview changes against a recorded request, save the configuration, and replay again to check the result. See [Traffic Transformation](/guides/transformation/overview.md) for the workflow. For help with your configuration, ask in the [Speedscale Slack community](https://slack.speedscale.com) or [email support](mailto:support@speedscale.com).

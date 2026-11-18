@@ -21,3 +21,7 @@ After traffic ages out of the Traffic Viewer it is stored in the Speedscale clou
 ## Snapshots, Replay Results and Configuration
 
 Snapshots, Replay Results and Configuration are never deleted.
+
+## Deleting a Service's Data
+
+Admins can permanently delete the traffic captured from one service, and optionally the snapshots that hold only that service. The delete removes the service's captured requests from the Traffic Viewer and from long term traffic storage. Raw capture files expire on their normal schedule, and nothing in Speedscale reads them after the delete. See [Hide or delete a service](../guides/capture/hide-delete-services.md).

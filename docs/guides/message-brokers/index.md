@@ -110,7 +110,7 @@ Full support for AWS SQS. Since SQS uses HTTP-based APIs, you can capture and re
 
 ### Google Pub/Sub
 
-The Google Cloud client libraries call Pub/Sub over gRPC. Publish and acknowledge calls are captured, mocked and replayed as gRPC, and a subscriber can be driven by republishing the messages its recording received. `StreamingPull` mocking is not yet supported.
+The Google Cloud client libraries call Pub/Sub over gRPC. Publish and acknowledge calls are captured, mocked and replayed as gRPC. A subscriber can be [mocked](./google-pubsub.md#mock-a-pubsub-subscriber) from the messages its `StreamingPull` and `Pull` calls received, and driven in replay by republishing them.
 
 [Learn how to replay Google Pub/Sub traffic](./google-pubsub.md)
 
