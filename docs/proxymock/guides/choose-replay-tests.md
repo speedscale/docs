@@ -24,7 +24,7 @@ proxymock and Speedscale apply the same three rules, in this order:
 
 The recorded direction itself never changes. A database query recorded as outbound stays outbound in every file, report and view; the filter only decides what the replay does with it.
 
-Technology is detected automatically, so a filter such as `(tech IS Postgres)`, `(tech IS MySQL)` or `(tech IS "SQL Server")` works on a fresh `proxymock record` recording as well as on a snapshot.
+Technology is detected automatically, so a filter such as `(tech IS Postgres)`, `(tech IS MySQL)`, `(tech IS "SQL Server")` or `(tech IS Oracle)` works on a fresh `proxymock record` recording as well as on a snapshot.
 
 ## Write a tests filter {#syntax}
 
@@ -40,6 +40,7 @@ Two rules trip people up:
 | Replay a database your app called | `(direction IS OUT) AND (tech IS Postgres)` |
 | Replay a MySQL database your app called | `(direction IS OUT) AND (tech IS MySQL)` |
 | Replay a SQL Server database your app called | `(direction IS OUT) AND (tech IS "SQL Server")` |
+| Replay an Oracle database your app called | `(direction IS OUT) AND (tech IS Oracle)` |
 | Replay every call your app made | `(direction IS OUT)` |
 | Replay one dependency | `(networkaddr IS "rates.internal:443")` |
 | Keep your app's inbound tests as well | `(direction IS IN) OR (tech IS Postgres)` |
@@ -63,7 +64,7 @@ The following example selects the recorded Postgres dependency. The filter previ
 
 <a href={ReplaySelectionImage}>Open screenshot full size</a>
 
-Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database`, `mysql://host:port/database` or `sqlserver://host:port?database=name` address; see [Connect to the database](../databases/load-and-regression-testing.md#credentials) for credentials.
+Point the replay at the dependency with `--test-against`, the same way you point an ordinary replay at your app. For a database, use a `postgres://host:port/database`, `mysql://host:port/database`, `sqlserver://host:port?database=name` or `oracle://host:port/SERVICE` address; see [Connect to the database](../databases/load-and-regression-testing.md#credentials) for credentials.
 
 ### Save the filter with a workspace {#save}
 

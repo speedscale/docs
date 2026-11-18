@@ -1,6 +1,6 @@
 ---
 title: Record Oracle
-description: "Record and mock your app's Oracle Database traffic with proxymock or the eBPF collector and see it in every database view: the port map, the tested thin drivers, TCPS, what each call records, the mock and the password it needs, and the limits."
+description: "Record, mock and replay your app's Oracle Database traffic with proxymock or the eBPF collector and see it in every database view: the port map, the tested thin drivers, TCPS, what each call records, the mock and the password it needs, replay against a real database, and the limits."
 sidebar_position: 7
 ---
 
@@ -10,7 +10,7 @@ proxymock records the calls your app makes to Oracle Database and shows them in 
 
 It reads the TNS and TTC protocols that Oracle Database speaks, so it works with any client that talks to Oracle over the network, whatever language the app is written in.
 
-Oracle traffic is recorded, inspected and mocked: `proxymock mock` answers your app's Oracle calls from a recording, so the app runs without its database (see [Mock Oracle](#mock)). Replaying the recorded statements against an Oracle database is coming in a later release.
+Oracle traffic is recorded, inspected and mocked: `proxymock mock` answers your app's Oracle calls from a recording, so the app runs without its database (see [Mock Oracle](#mock)). The recorded calls also replay against a real Oracle database to regression or load test it; see [Replay against a database](#replay).
 
 ## Supported drivers {#drivers}
 
@@ -78,7 +78,7 @@ In Kubernetes, the [eBPF collector](/reference/ebpf-traffic-collection) records 
 
 Native Network Encryption (NNE) encrypts the session inside the driver, before the data reaches the socket, so the eBPF collector cannot read it for any client. A session that negotiates NNE is recorded up to its negotiation and no further. Use TCPS instead of NNE for the services you record. Recording NNE sessions through proxymock is not supported yet.
 
-The mock does not offer NNE either, so a client that requires it cannot be mocked; see [Mock Oracle](#mock).
+The mock does not offer NNE either, so a client that requires it cannot be mocked; see [Mock Oracle](#mock). A replay against a database cannot use NNE or checksumming; see [Replay against a database](#replay).
 
 ## What gets recorded
 
@@ -100,7 +100,7 @@ Each round trip is one RRPair:
 
 Every call also carries the connection's user, service name and session id, and whether it ran inside a transaction. [Database traffic](../../../concepts/database-traffic.md) lists every fact and how to filter on it.
 
-Connection pool pings, such as `SELECT 1 FROM DUAL` and the driver's own ping calls, are recorded but hidden from Live SQL, as they are for the other databases.
+Connection pool pings written as SQL, such as `SELECT 1 FROM DUAL`, are left out of the recording, as they are for the other databases. The driver's own ping calls are recorded.
 
 Recordings never contain passwords. The login's encrypted password, its session keys, salts and the server's proof are dropped when the call is decoded; the recording only notes that they were sent.
 
@@ -156,6 +156,81 @@ Requests a driver or pool sends for its own housekeeping are answered even when 
 
 To read or rewrite one bound value, for example to store the id a lookup asks for in a variable, use the [`oracle_param`](/guides/transformation/extractors/oracle_param) extractor. It does not change what the mock matches on.
 
+## Replay against a database {#replay}
+
+The recorded Oracle calls can be replayed against a real Oracle database, to regression test a migration or an upgrade, or to load test the database with many sessions. It works the same way as for SQL Server, Postgres, MySQL, Redis and MongoDB: a tests filter makes the recorded calls the tests, and the database is the system under test. proxymock replays and replays in a Kubernetes cluster both support it. [Load and Regression Test a Database](../load-and-regression-testing.md) walks through both kinds of test.
+
+Replay changes the database's data, so point it at a disposable database, never production.
+
+```bash
+proxymock replay --in ./proxymock \
+  --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
+  --test-against oracle://localhost:1521/FREEPDB1 \
+  --test-config my-config
+```
+
+### The address {#replay-address}
+
+The address is `oracle://host:port/SERVICE`. The port defaults to 1521, and the path is the service name. With no path, the replay uses the service the recording connected to. The address never holds credentials, and a replay with a user or password in it is refused.
+
+| Address | What it does |
+|---|---|
+| `oracle://db:1521/FREEPDB1` | Connects over plain TCP |
+| `oracle://db:2484/FREEPDB1?ssl=true` | Connects over TCPS and verifies the server's certificate and host name |
+| `oracle://db:2484/FREEPDB1?ssl=true&ssl_verify=false` | Connects over TCPS without verifying the certificate. go-ora's spelling, `SSL Verify=false`, works too |
+| `?sslmode=disable`, `require`, `verify-ca` or `verify-full` | The libpq-style modes, as in the test config |
+
+### Credentials {#replay-credentials}
+
+Put the user and password in the `generator.oracle` section of the test config, with the password as a secret reference such as `${{secret:oracle-credentials/password}}` rather than a literal. A literal password is stored with the test config and every report that uses it, and proxymock logs a warning when it finds one. See [Secrets](../../guides/secrets.md).
+
+```json
+{
+  "id": "my-config",
+  "generator": {
+    "oracle": {
+      "username": "app",
+      "password": "${{secret:oracle-credentials/password}}",
+      "database": "FREEPDB1"
+    }
+  }
+}
+```
+
+| Field | What it sets |
+|---|---|
+| `username` and `password` | The database user the replay logs in as |
+| `database` | The service name |
+| `tlsMode` | TCPS: unset or `PROTOCOL_TLS_MODE_DISABLE` for plain TCP, `PROTOCOL_TLS_MODE_REQUIRE` for TCPS without verifying the certificate, and `PROTOCOL_TLS_MODE_VERIFY_CA` or `PROTOCOL_TLS_MODE_VERIFY_FULL` to verify it. See [TLS](../load-and-regression-testing.md#tls) |
+| `caCertificate` | The PEM certificates the verifying modes trust, instead of the system's |
+| `clientCertificate` | A PEM certificate followed by its private key, for a server that asks for one. Keep it in a secret |
+| `connectTimeout` | How long to wait for each connection |
+
+A field left empty falls back to the environment variables `ORACLE_USER`, `ORACLE_PASSWORD` and `ORACLE_SERVICE`. The service and TLS settings in the address win over the test config.
+
+In Kubernetes, add the same `generator.oracle` section to the test config the replay runs with. Speedscale mounts every secret it references into the replay, so the Kubernetes secret `oracle-credentials`, with a `password` key, has to exist in the namespace of the workload you replay.
+
+### How the replay connects {#replay-connect}
+
+The replay connects to the database the way the recorded driver connected. It replays each driver's own handshake from the recording and opens one session per driver, so the database answers the replay as it answered your app. A recording that holds no login connects the way go-ora does.
+
+### What the replay sends {#replay-sent}
+
+Every recorded call is sent as it was recorded: statements, array binds, PL/SQL calls with OUT binds, REF CURSORs, implicit results and LOB reads. Recorded cursor ids and LOB locators are mapped to the ones the replay's own session gets back.
+
+A call on a cursor or LOB that was opened before recording started is skipped, because the replay has nothing to map it to. An execute that names its SQL is the exception: the replay parses that SQL again and runs it.
+
+Each replayed call's status is compared with its recording: success or the `ORA-` error it returned. A call whose status differs, such as one that succeeded when it was recorded and now fails with an `ORA-` error, fails the replay. The rows a statement returns and its row count are not compared, and the [`sqlOutput`](/reference/configuration/assertions/sqloutput.md) assertion does not cover Oracle.
+
+### Tested
+
+These drivers were recorded against Oracle AI Database 26ai Free and replayed against it with identical results, over TCP and over TCPS: JDBC thin, python-oracledb in thin mode, node-oracledb in thin mode, go-ora and the ODP.NET managed driver. A load test with 4 virtual users for 30 seconds ran with 0 failed requests.
+
+### Not supported {#replay-limits}
+
+- Native Network Encryption and checksumming. The replay reports a clear error when the database requires them; connect over TCPS instead.
+- Password verifiers older than 12c. The replay user needs a 12c or later password verifier.
+
 ## Limits
 
 - Native Network Encryption cannot be recorded, and a client that requires it cannot be mocked; see [Native Network Encryption](#nne).
@@ -165,7 +240,8 @@ To read or rewrite one bound value, for example to store the id a lookup asks fo
 - A connection that was already open when recording started cannot be decoded, because the recording missed its negotiation. Start recording before the app opens its connections.
 - The mock needs the database user's password in the test config; see [The mock needs the password](#mock-password).
 - Over TCPS, python-oracledb and node-oracledb need their server name check turned off for the mock; see [TCPS and Native Network Encryption](#mock-tcps).
-- Replaying Oracle statements against a database is not available yet.
+- A replay against a database cannot use Native Network Encryption or checksumming, or log in with a password verifier older than 12c; see [Replay against a database](#replay).
+- A replay skips calls on a cursor or LOB that was opened before recording started, except an execute that names its SQL; see [What the replay sends](#replay-sent).
 
 ## Benchmark results {#benchmarks}
 
@@ -173,4 +249,4 @@ Oracle's license terms, for the free OTN license and the commercial licenses ali
 
 ## In Kubernetes {#kubernetes}
 
-When your app runs in Kubernetes with the Speedscale operator, the [eBPF collector](/reference/ebpf-traffic-collection) or the sidecar records Oracle calls with the rest of the workload's traffic, with no `--map`. The collector treats ports 1521 and 2484 as Oracle listener ports when it works out which side of a connection is the server. The calls appear on the dashboard's **Traffic** page with the database columns and filters; see [Watch live SQL](../../../guides/databases/watch-live-sql.md). A replay that mocks Oracle needs `responder.oracle` in its test config; see [The mock needs the password](#mock-password).
+When your app runs in Kubernetes with the Speedscale operator, the [eBPF collector](/reference/ebpf-traffic-collection) or the sidecar records Oracle calls with the rest of the workload's traffic, with no `--map`. The collector treats ports 1521 and 2484 as Oracle listener ports when it works out which side of a connection is the server. The calls appear on the dashboard's **Traffic** page with the database columns and filters; see [Watch live SQL](../../../guides/databases/watch-live-sql.md). A replay that mocks Oracle needs `responder.oracle` in its test config; see [The mock needs the password](#mock-password). A replay against an Oracle database needs `generator.oracle`; see [Credentials](#replay-credentials).

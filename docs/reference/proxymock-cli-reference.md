@@ -209,6 +209,10 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS MySQL)' \
 # regression test a SQL Server database with the statements your app sent (user and password from MSSQL_USER / MSSQL_PASSWORD)
 proxymock replay --tests-filter '(direction IS OUT) AND (tech IS "SQL Server")' \
   --test-against 'sqlserver://localhost:1433?database=app&encrypt=true&trustservercertificate=true'
+
+# regression test an Oracle database (user and password from ORACLE_USER / ORACLE_PASSWORD or generator.oracle in the test config; ?ssl=true for TCPS)
+proxymock replay --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
+  --test-against oracle://localhost:1521/FREEPDB1
 ```
 
 **Flags**
