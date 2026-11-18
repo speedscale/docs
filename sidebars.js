@@ -260,6 +260,7 @@ const sidebars = {
             "guides/local-capture",
             "guides/manual_snapshot",
             "guides/identify-session",
+            "guides/linked-sessions",
             "guides/extract-replace",
             "guides/creating-a-snapshot",
             "guides/creating-filters",

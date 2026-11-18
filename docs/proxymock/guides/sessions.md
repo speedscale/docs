@@ -86,6 +86,10 @@ The Sessions tab opens on the **Actors** view. Two KPIs sit at the top:
 Below them, each row is one actor: its session id, request volume, distinct
 endpoints, latency percentiles, error rate, and its share of total traffic.
 
+:::tip Linked actors
+When one person's traffic carries several session IDs, such as a user ID on inbound requests and a forwarded JWT on outbound calls, proxymock links them into one row with a **LINKED** badge and says what linked them. Selecting that row shows every member key's requests as one journey. See [Linked sessions](/guides/linked-sessions.md).
+:::
+
 :::note "— unattributed —" rows
 Traffic proxymock could not tie to an actor lands in an **unattributed** row.
 That is expected for pure read traffic with no credential. The login-and-order
