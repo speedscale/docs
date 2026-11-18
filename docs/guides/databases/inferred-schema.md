@@ -1,6 +1,6 @@
 ---
 title: Inferred database schema
-description: "See the PostgreSQL, MySQL and SQL Server tables and columns a service actually uses, with types, keys and how often each is read and written, inferred from a snapshot's recorded traffic with no access to the database."
+description: "See the PostgreSQL, MySQL, SQL Server and Oracle tables and columns a service actually uses, with types, keys and how often each is read and written, inferred from a snapshot's recorded traffic with no access to the database."
 ---
 
 # Inferred database schema
@@ -35,7 +35,7 @@ Below the columns, the statements that touch the table are listed busiest first 
 
 ## How it is inferred
 
-Speedscale reads each recorded Postgres, MySQL and SQL Server statement and its response when the snapshot is analyzed:
+Speedscale reads each recorded Postgres, MySQL, SQL Server and Oracle statement and its response when the snapshot is analyzed:
 
 - the tables and columns each statement names, and whether it reads or writes them;
 - the column names and types of the result sets queries returned;

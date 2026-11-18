@@ -1,12 +1,12 @@
 ---
 title: Link queries to the request that ran them
-description: "Tag your SQL with the request's W3C trace context (sqlcommenter, Rails query log tags, Datadog DBM) so proxymock links every recorded Postgres, MySQL and SQL Server statement to the exact request that ran it, even when requests overlap."
+description: "Tag your SQL with the request's W3C trace context (sqlcommenter, Rails query log tags, Datadog DBM) so proxymock links every recorded Postgres, MySQL, SQL Server and Oracle statement to the exact request that ran it, even when requests overlap."
 sidebar_position: 10.5
 ---
 
 # Link queries to the request that ran them
 
-When proxymock records a service, it captures the inbound requests and the SQL the service sends to Postgres, MySQL or SQL Server. To answer "which request ran this query?", it has to link the two.
+When proxymock records a service, it captures the inbound requests and the SQL the service sends to Postgres, MySQL, SQL Server or Oracle. To answer "which request ran this query?", it has to link the two.
 
 Without help, proxymock links by time: a statement belongs to the request that was in flight when it ran. That is exact when requests arrive one at a time and a guess when they overlap, which is exactly when you most want to know.
 
@@ -14,7 +14,7 @@ If your application writes the request's trace context into a comment on each SQ
 
 ## What you see
 
-Open any Postgres, MySQL or SQL Server pair in proxymock web. The Database section of its **Info** tab says which request **caused** it, marked **by trace id** when the comment named that request and **by time** when proxymock inferred it. The route and trace id read from the comment appear alongside it.
+Open any Postgres, MySQL, SQL Server or Oracle pair in proxymock web. The Database section of its **Info** tab says which request **caused** it, marked **by trace id** when the comment named that request and **by time** when proxymock inferred it. The route and trace id read from the comment appear alongside it.
 
 ![A Postgres Execute pair selected in proxymock web, its Database section showing caused by GET /reports/sales, by trace id, with the route and trace id from the SQL comment; the Requests list above is filtered by Trace ID to that request and its five database calls](./link-queries-to-requests/01-caused-by.png)
 
@@ -194,7 +194,7 @@ Datadog downgrades some prepared statements to `service` mode, which drops the `
 
 ## Prepared statements {#prepared-statements}
 
-A prepared statement keeps the SQL text it was prepared with, comment included. On SQL Server, an `sp_execute` call reuses the handle of an earlier `sp_prepexec` and carries the comment it was prepared with, under the same rule. When a driver or ORM prepares a statement once and reuses it across requests, every reuse carries the trace of the request that prepared it.
+A prepared statement keeps the SQL text it was prepared with, comment included. On SQL Server, an `sp_execute` call reuses the handle of an earlier `sp_prepexec` and carries the comment it was prepared with, under the same rule. On Oracle, a re-execute that names only a cursor carries the comment of the SQL the cursor was opened with. When a driver or ORM prepares a statement once and reuses it across requests, every reuse carries the trace of the request that prepared it.
 
 proxymock guards against this: a statement links by trace id only when the request with that trace id also contains it in time. A reuse by a later request names a request that has already finished, so it falls back to timing instead of linking to the wrong request.
 

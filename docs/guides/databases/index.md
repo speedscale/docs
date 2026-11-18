@@ -1,6 +1,6 @@
 ---
 title: Databases
-description: "See every statement your services send to PostgreSQL, MySQL and SQL Server, who ran it and how it ended, without database access: filter and inspect database calls in the Speedscale dashboard, then mock the database or replay its traffic against one."
+description: "See every statement your services send to PostgreSQL, MySQL, SQL Server and Oracle, who ran it and how it ended, without database access: filter and inspect database calls in the Speedscale dashboard, then mock the database or replay its traffic against one."
 sidebar_label: Overview
 ---
 
@@ -15,7 +15,7 @@ That turns database traffic into something you can use:
 - **Understand a single call.** The SQL with its values filled in, the error with its name, and what else ran on the same connection.
 - **Test without the database, or test the database.** Mock the database so a service runs with no database at all, or replay the recorded statements against a database to regression test a migration or load test it.
 
-Postgres, MySQL and SQL Server calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Postgres, MySQL and SQL Server can be mocked and replayed against a database. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Postgres, MySQL, SQL Server and Oracle calls can all be watched, found, inspected, linked to requests, exported as SQL and read as a schema. Postgres, MySQL and SQL Server can be mocked and replayed against a database; mocking and replaying Oracle are coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Watch database traffic
 
@@ -43,7 +43,7 @@ The value pickers offer the values in your traffic, and errors show with their n
 Open any database call to see:
 
 - The statement with its bound values filled in, so you can copy it into `psql`, `mysql` or `sqlcmd`.
-- How it ended: rows and command tags, or an error card with the SQLSTATE or the MySQL or SQL Server error number, its name and the position in the SQL.
+- How it ended: rows and command tags, or an error card with the SQLSTATE, the MySQL or SQL Server error number or the Oracle `ORA-` code, its name and the position in the SQL.
 - Why it needs attention: a cancel, a timeout, a deadlock, a lock timeout or a terminated session. For a deadlock, a lock timeout, a timeout or a cancel, the drawer also lists the statements that were running at the same time, which is usually where the cause is.
 - The login that opened the connection, and whether the statement ran inside a transaction.
 - The **Connection** tab: every call on the same database connection in order, grouped into transactions with how each one ended.

@@ -1,6 +1,6 @@
 ---
 title: Databases
-description: "Record your app's PostgreSQL, MySQL and SQL Server traffic with proxymock, then watch it live, inspect each statement with its bound values, link queries to the request that ran them, compare two runs, export runnable SQL, mock the database, and replay the traffic against a database."
+description: "Record your app's PostgreSQL, MySQL, SQL Server and Oracle traffic with proxymock, then watch it live, inspect each statement with its bound values, link queries to the request that ran them, compare two runs, export runnable SQL, mock the database, and replay the traffic against a database."
 sidebar_label: Overview
 ---
 
@@ -16,7 +16,7 @@ What that gives you:
 - **Run without the database.** Mock it from the recording so tests and coding agents run offline and deterministically.
 - **Test the database with real traffic.** Replay the recorded statements against a new schema or version, or with many sessions as a load test.
 
-Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Postgres, MySQL and SQL Server recordings can all be watched, inspected, linked to requests, inventoried and exported as SQL. Mocking the database and replaying against one cover Postgres, MySQL and SQL Server. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
+Every step works from the proxymock CLI, from proxymock web, and from an AI coding assistant through the [proxymock MCP server](../how-it-works/mcp-tools.md). Postgres, MySQL, SQL Server and Oracle recordings can all be watched, inspected, linked to requests, inventoried and exported as SQL. Mocking the database and replaying against one cover Postgres, MySQL and SQL Server; Oracle mocking and replay are coming. [Database traffic](../../concepts/database-traffic.md) explains what is recorded for each call and which databases are supported.
 
 ## Record your database
 
@@ -26,7 +26,7 @@ Start the recorder with a port mapped to your database and point your app at tha
 proxymock record --map 15432=postgres://localhost:5432 --app-port 8080
 ```
 
-The setup pages cover each database: [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md), [SQL Server](./record/sqlserver.md), [MongoDB](./record/mongodb.md), [Redis](./record/redis.md) and [DynamoDB](../aws/dynamodb.md).
+The setup pages cover each database: [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md), [SQL Server](./record/sqlserver.md), [Oracle](./record/oracle.md), [MongoDB](./record/mongodb.md), [Redis](./record/redis.md) and [DynamoDB](../aws/dynamodb.md).
 
 ## Watch and inspect statements
 

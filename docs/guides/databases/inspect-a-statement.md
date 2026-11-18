@@ -1,17 +1,17 @@
 ---
 title: Inspect a statement
-description: "Open a recorded PostgreSQL, MySQL or SQL Server call in the Speedscale dashboard to see the statement with its bound values, why it failed or needed attention, who logged in, and every other call on the same database connection."
+description: "Open a recorded PostgreSQL, MySQL, SQL Server or Oracle call in the Speedscale dashboard to see the statement with its bound values, why it failed or needed attention, who logged in, and every other call on the same database connection."
 ---
 
 # Inspect a statement
 
-Open any Postgres, MySQL or SQL Server call on the **Traffic** page to see what you would otherwise have to reconstruct from logs and code: the exact SQL with its values, how it ended, who ran it, and what else that connection was doing. Everything comes from the recorded traffic, so you can inspect a production call without access to the production database.
+Open any Postgres, MySQL, SQL Server or Oracle call on the **Traffic** page to see what you would otherwise have to reconstruct from logs and code: the exact SQL with its values, how it ended, who ran it, and what else that connection was doing. Everything comes from the recorded traffic, so you can inspect a production call without access to the production database.
 
 ## The SQL with its values
 
 The **Request** tab shows the statement. A prepared statement arrives with placeholders and its values separately, so the panel shows both:
 
-- **SQL** is the statement as the app sent it, with `$1`, `?` or `@p1` placeholders.
+- **SQL** is the statement as the app sent it, with `$1`, `?`, `@p1` or `:1` placeholders.
 - **With values** fills the bound values in as literals, so you can copy the statement and run it. SQL Server values are written as T-SQL, such as `N'text'` for a string and `0x0A1B` for binary.
 - **Parameters** lists each placeholder with its type and value.
 
@@ -27,12 +27,21 @@ A SQL Server call is one SQL batch, one RPC or one transaction request:
 - Informational messages, such as `PRINT` output and `RAISERROR` at severity 10 or below, appear with the response.
 - `BEGIN`, `COMMIT` and `ROLLBACK`, whether sent as T-SQL or as the driver's transaction requests, mark the transaction on the Connection tab.
 
+## Oracle calls
+
+An Oracle call is one round trip from the driver and the server's whole reply to it:
+
+- An execute shows its full SQL text, or a PL/SQL block, with its bind values. A re-execute that names only a cursor shows the SQL the cursor was opened with.
+- A fetch shows the rows it returned, with every column decoded to its type, such as `NUMBER`, `DATE`, `TIMESTAMP`, a LOB, `JSON` or `VECTOR`.
+- A commit or rollback, whether sent as SQL or as the driver's own call, marks the transaction on the Connection tab.
+- A cancel shows the break the driver sent and the reset that answered it.
+
 ## How it ended
 
 The top of the **Response** tab says how the call ended:
 
 - A successful call shows what it did: the command tag, such as `UPDATE 1`, and the rows it returned. Writes return no rows, so this is where an `UPDATE` or `DELETE` says how many rows it changed.
-- A failed call shows an error card with the message, the SQLSTATE or the MySQL or SQL Server error number and its name, and the line of SQL the server pointed at with a caret under the position.
+- A failed call shows an error card with the message, the SQLSTATE, the MySQL or SQL Server error number or the Oracle `ORA-` code, and its name, and the line of SQL the server pointed at with a caret under the position.
 - A call that was cancelled, timed out, deadlocked, waited too long for a lock or was terminated shows why. For a deadlock, a lock timeout, a timeout or a cancel, the card also lists the statements that were running at the same time on other connections, which is usually where the cause is.
 - A chip says when the statement ran inside a transaction, or inside one that had already failed.
 
