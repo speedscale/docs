@@ -96,14 +96,57 @@ LLM quality: 4 scored · tool calls 1/3 matched (33.3%) · divergence 75.0% · f
 
 `replay-verdict.json` holds the detail:
 
-- `summary.llm` has the counts behind each rate, the rates, the scorer version and the thresholds in force.
+- `summary.llm` has the counts behind each rate, the rates, how the run was scored (scorer version, thresholds, text scorer and judge), and the run's LLM speed metrics under `speed`.
 - Each LLM pair has an `llm` object with its band (`match`, `divergent` or `fail`), the reason, and the tool-call comparison.
+- Each LLM pair has an `llmPrompt`: up to 120 characters of the last user message, so you can tell one request from another.
 
 A warning is printed when fewer than 30 pairs were scored, because each pair then moves a rate by several points.
 
+## Compare two checkpoints
+
+Replay the same recording at each model into its own directory, then score the candidate's run against the baseline's:
+
+```shell
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8000 \
+  --llm-model checkpoint-a \
+  --out ./proxymock/results/checkpoint-a
+
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8001 \
+  --llm-model checkpoint-b \
+  --out ./proxymock/results/checkpoint-b
+
+proxymock replay score ./proxymock/results/checkpoint-b \
+  --baseline ./proxymock/results/checkpoint-a \
+  --html llm-comparison.html
+```
+
+Use the same `--tests-filter` on both replays when the LLM calls were recorded as outbound.
+
+Both runs are scored against the recorded answers, and every change is the candidate minus the baseline:
+
+```text
+LLM quality: 4 scored · tool calls 1/3 matched (33.3%) [-66.7 pts] · divergence 75.0% [+75.0 pts] · failures 50.0% [+50.0 pts]
+             vs baseline: 4 request(s) compared, 3 got worse, 0 got better
+             match -> fail  get_order: order_id 42 -> 43  ("Where is order 42?")
+             match -> divergent  answer text similarity 0.92  ("Has my package shipped yet?")
+             llm.ttft-p95 212.00 -> 240.00 (+13.2%)
+```
+
+- The three rates show their change in percentage points.
+- The requests whose verdict got worse are listed worst first, each with the reason and the start of its prompt.
+- The headline speed metrics show their change. [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md) defines them.
+
+`-o json` puts the full comparison under `deltas.llm`, including `regressed`, `improved` and every speed metric. `--html` writes the same comparison as one self-contained HTML page with no scripts and no external requests, so it opens from disk on a machine with no network.
+
+proxymock refuses to compare two runs that were scored differently, and names the setting that differs, for example a different `--semantic-pass` threshold, text scorer or judge. It also refuses two runs that share no recorded request. A difference between such runs would describe the scoring or the recordings, not the models. Rerun one replay with the other's settings.
+
 ## Measure the noise first
 
-Requests are replayed with their recorded sampling settings, so a model can answer the same prompt differently on two runs. Before you compare a candidate, replay the recording at the model that produced it and note the divergence rate. That is the noise floor. Set your conditions above it, and gate on the rates across many prompts instead of on any single prompt.
+Requests are replayed with their recorded sampling settings, so a model can answer the same prompt differently on two runs. Before you compare a candidate, replay the recording at the model that produced it and note the divergence rate. That is the noise floor. Scoring a second replay of the same model against the first shows which requests change from run to run. Set your conditions above it, and gate on the rates across many prompts instead of on any single prompt.
 
 The tool-call match rate is the most stable of the three, because it does not depend on wording.
 
