@@ -10,7 +10,7 @@ Before you move an application to another model, a new checkpoint, or a new quan
 
 This works for OpenAI-compatible chat and completions APIs, the format that OpenAI, Azure OpenAI, vLLM, NIM and TGI serve. Streamed and non-streamed responses are both scored, and a streamed replay of a non-streamed recording compares correctly. The candidate must serve the same API format that was recorded.
 
-Scoring runs in process and makes no network call.
+By default, scoring runs in process and makes no network call. Two optional settings send response text to an endpoint you choose: an external embedding backend, and a judge for divergent pairs. [Compare Response Meaning](./semantic-comparison.md#choose-where-text-scoring-runs) explains both.
 
 ## Replay the recorded prompts at the candidate
 
