@@ -49,7 +49,7 @@ The sink supports three catalog types:
 | Catalog | `iceberg.catalog.type` | Table maintenance |
 | --- | --- | --- |
 | AWS S3 Tables | `s3tables` | S3 Tables compacts and expires snapshots. The sink's own maintenance stays off. |
-| AWS Glue Data Catalog | `glue` | Glue table optimizers compact and expire snapshots. The sink's own maintenance stays off. |
+| AWS Glue Data Catalog | `glue` | Glue table optimizers compact and expire snapshots once you enable them; both are off for new tables. The sink's own maintenance stays off. |
 | Iceberg REST catalog, such as Polaris, Lakekeeper, Nessie, Unity, or Snowflake Open Catalog | `rest` | The sink expires snapshots and old metadata. Schedule compaction yourself or with the chart's optional CronJob. |
 
 Data can live in Amazon S3, Google Cloud Storage, or Azure Storage. The sink uses each cloud SDK's default credential chain, so workload identity (EKS IRSA or Pod Identity, GKE Workload Identity, Azure Workload Identity) works without a key. The [chart README](https://github.com/speedscale/speedscale-byoc/tree/main/charts/iceberg) lists every value, the IAM permissions for each catalog, and Secret-based credentials.
@@ -78,7 +78,7 @@ serviceAccount:
     eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
 ```
 
-For AWS Glue, set the warehouse to an S3 location:
+For AWS Glue, set the warehouse to an S3 location. After the sink creates the table, [enable compaction](https://docs.aws.amazon.com/glue/latest/dg/enable-compaction.html) and [snapshot retention](https://docs.aws.amazon.com/glue/latest/dg/enable-snapshot-retention.html) on it with an optimizer IAM role. Glue turns both off for new tables, and without them small files and snapshots accumulate:
 
 ```yaml
 iceberg:
@@ -150,7 +150,7 @@ Engines without `QUALIFY` can wrap the same `row_number()` in a subquery.
 
 The default sink requests 256 MiB and is limited to 512 MiB of memory, with `GOMEMLIMIT` set to 80% of the limit. A 2,000 RRPair per second stream with the default 8 MiB batch needs about 60 MiB of heap. One replica is the default; several replicas can write the same table safely.
 
-Each commit writes about one data file per active partition, so the default 60 second interval produces about 1,440 small files per partition per day for each replica. S3 Tables and Glue compact these automatically. For a self-managed REST catalog, enable the chart's compaction CronJob with the image and command of your Iceberg `rewrite_data_files` engine, and give it at least 1 GiB of memory.
+Each commit writes about one data file per active partition, so the default 60 second interval produces about 1,440 small files per partition per day for each replica. S3 Tables compacts these automatically, and Glue does once its compaction optimizer is enabled. For a self-managed REST catalog, enable the chart's compaction CronJob with the image and command of your Iceberg `rewrite_data_files` engine, and give it at least 1 GiB of memory.
 
 ## Observability guides
 
