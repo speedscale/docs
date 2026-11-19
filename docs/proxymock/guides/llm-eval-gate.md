@@ -171,7 +171,7 @@ proxymock replay \
   --semantic-judge-model judge-model
 ```
 
-The judge is shown the recorded answer and the candidate's answer as plain text: the answer followed by any tool calls and their arguments. It is not shown the raw response body, so a streamed response is judged on what it says. Field redaction from your DLP rule is applied to that text first.
+The judge is shown the recorded answer and the candidate's answer as plain text: the answer followed by any tool calls and their arguments. It is not shown the raw response body, so a streamed response is judged on what it says.
 
 A judge that rates the two the same clears the pair, and one that finds a material difference fails it. The three rates count each pair in the band the judge left it in. A tool-call mismatch is already a failure and is never sent to the judge.
 
