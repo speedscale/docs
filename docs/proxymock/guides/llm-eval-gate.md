@@ -155,3 +155,26 @@ The tool-call match rate is the most stable of the three, because it does not de
 The three rates are computed whether or not `--semantic` is set. Without `--semantic`, they are reported and every other verdict stays as it was.
 
 With `--semantic`, an LLM pair's body verdict is its LLM result. A changed tool call fails the pair, a reworded answer is reported as divergent, and the optional judge can rule on the divergent pairs.
+
+## Let a judge rule on reworded answers
+
+A reworded answer lands in the divergent band, where the score alone cannot say whether the meaning changed. With `--semantic`, a judge model can rule on those pairs:
+
+```shell
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8000 \
+  --llm-model checkpoint-b \
+  --semantic \
+  --semantic-judge openai \
+  --semantic-judge-endpoint http://localhost:11434/v1 \
+  --semantic-judge-model judge-model
+```
+
+The judge is shown the recorded answer and the candidate's answer as plain text: the answer followed by any tool calls and their arguments. It is not shown the raw response body, so a streamed response is judged on what it says. Field redaction from your DLP rule is applied to that text first.
+
+A judge that rates the two the same clears the pair, and one that finds a material difference fails it. The three rates count each pair in the band the judge left it in. A tool-call mismatch is already a failure and is never sent to the judge.
+
+Use a judge that is not the model you are evaluating. proxymock warns when the judge is served from the address under test with the same model name, because a model grading its own answers is lenient.
+
+A judged run and an unjudged run are scored differently, so [comparing them](#compare-two-checkpoints) is refused. Judge both runs or neither. [Compare Response Meaning](./semantic-comparison.md#optional-judging-of-divergent-pairs) covers the judge backends, the call cap and where the text is sent.

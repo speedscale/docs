@@ -46,6 +46,8 @@ Judging is off by default. `--semantic-judge` can ask a model to adjudicate pair
 - `openai`: uses `OPENAI_API_KEY`, or an OpenAI-compatible endpoint supplied with `--semantic-judge-endpoint`. Specify `--semantic-judge-model`.
 - `anthropic`: uses `ANTHROPIC_API_KEY`.
 
+For a response that is a model's completion, the judge is shown the answer text and its tool calls, not the raw response body, so a streamed response is judged on what it says. A pair that failed on its tool calls is never sent to the judge.
+
 `--semantic-judge-cap` limits model calls per run and defaults to `25`. Pairs beyond the cap keep their score and are reported as skipped. A judge failure leaves the original score intact. Review which endpoint receives the response text and the cost of those calls before enabling judging.
 
 ## LLM responses
