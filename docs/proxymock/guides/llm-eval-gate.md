@@ -16,11 +16,14 @@ Scoring runs in process and makes no network call.
 
 Start from a recording of your application's LLM traffic, made with `proxymock record` or the Speedscale sidecar. The same replay also reports how fast the candidate answers: see [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md).
 
+In a recording of an application that calls a model, the LLM requests are outbound traffic. A replay sends inbound traffic by default and serves outbound calls as mocks, so select the LLM calls as tests with `--tests-filter`:
+
 ```shell
 export CANDIDATE_API_KEY=your-candidate-key
 
 proxymock replay \
   --in ./proxymock/recorded-example \
+  --tests-filter '(networkaddr IS "api.openai.com:443")' \
   --test-against http://localhost:8000 \
   --llm-model checkpoint-b \
   --llm-api-key-env CANDIDATE_API_KEY \
@@ -28,8 +31,13 @@ proxymock replay \
   --fail-if 'llm.failure-pct > 5'
 ```
 
+Use the address of the model API your application called. `(direction IS OUT)` selects every outbound call instead, which is enough when the model is the only dependency in the recording. Without a filter, a recording that holds only outbound calls has nothing to replay and the replay stops with an error. [Choose What a Replay Tests](./choose-replay-tests.md) has the filter syntax.
+
+Leave out `--tests-filter` when you recorded in front of the model server itself, where the LLM requests are inbound.
+
 | Flag | Effect |
 | --- | --- |
+| `--tests-filter` | Which recorded requests are sent to the candidate |
 | `--test-against` | Address of the candidate model server |
 | `--llm-model` | Model name sent in each recorded LLM request, in place of the recorded one |
 | `--llm-api-key-env` | Name of the environment variable holding the candidate's API key, sent as a Bearer token in place of the recorded `Authorization` header |
