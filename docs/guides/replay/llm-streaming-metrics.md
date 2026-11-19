@@ -110,7 +110,7 @@ Watch how to compare recorded and replayed stream timing, inspect an individual 
   <a href={useBaseUrl('/videos/replay/speedscale-llm-streaming-metrics.mp4')}>Download the video</a>
 </video>
 
-A report from a replay that sent LLM streams has an **LLM** tab. It shows TTFT, request latency, ITL and tokens per second per user at p50, p95 and max, with the number of streams, output tokens, output tokens per second and the share of approximate token counts. Alerts above the table explain cut-off streams and approximate counts when there are any.
+A report from a replay that sent LLM requests has an **LLM** tab. Its **Answer quality** section says whether the answers are still right: see [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md#read-a-report-in-the-dashboard). When the replay sent LLM streams, the streaming metrics follow. It shows TTFT, request latency, ITL and tokens per second per user at p50, p95 and max, with the number of streams, output tokens, output tokens per second and the share of approximate token counts. Alerts above the table explain cut-off streams and approximate counts when there are any.
 
 When the recording had frame timing, each value has the recorded value under it with the change from it. A change of 10% or more in the wrong direction is highlighted, such as a slower TTFT or a lower token rate. Smaller changes are usually run-to-run variation.
 

@@ -231,3 +231,35 @@ A judge or embedding backend on a server the test config names is not called fro
 A judge that cannot be reached, or settings that cannot be applied, do not fail the report. The answers keep the verdict their score gave them and the report shows a warning.
 
 Reports made before this feature gain these results when they are reanalyzed. A replay in generator low data mode is not scored, because it keeps no response bodies. A cluster replay that does not report to Speedscale cloud does not score LLM answers.
+
+## Read a report in the dashboard
+
+A report whose replay sent LLM requests has an **LLM** tab. Its **Answer quality** section shows the three rates with the counts behind them, and says whether a goal on each rate was met.
+
+![The Answer quality section of a report, with a comparison against another report under it](./llm-quality-report.jpg)
+
+Below the rates:
+
+- How many scored requests matched, diverged and failed, and how many were left out and why.
+- A note when fewer than 30 requests were scored.
+- What a judge did, when the test config named one: how many answers it ruled on and how many it could not.
+- The requests that did not match, worst first, each with its verdict and the reason.
+
+Select a request's prompt to read the recorded answer beside the replayed one. Both are shown as the answer itself, with any tool calls and their arguments, so a streamed response and a whole one read the same. The difference that decided the verdict is called out above them.
+
+### Compare two reports
+
+Under **Compare with another report**, choose another report of the same snapshot, such as the report from the previous checkpoint. The section then shows:
+
+- The change in each of the three rates, in percentage points, with a change for the worse highlighted.
+- The change in the LLM speed metrics, with a change of 10% or more for the worse highlighted.
+- The requests whose verdict got worse, worst first, and the ones that got better.
+
+Select a request in either list to read the recorded answer beside what each report's model answered.
+
+![A request that got worse, with the recorded answer and both reports' answers](./llm-quality-answers.jpg)
+
+This is the same comparison as [`proxymock replay score --baseline`](#compare-two-checkpoints). When the two reports were scored with different settings, the section says which setting differs and shows no change, because the difference would describe the scoring and not the models.
+
+A report analyzed before answers were scored shows a prompt to reanalyze it. The lists hold up to 200 requests, and a report keeps both answers for up to 1,000 requests that did not match.
+
