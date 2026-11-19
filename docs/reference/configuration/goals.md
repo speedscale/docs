@@ -33,3 +33,7 @@ true when the replay completes.
 ## LLM streaming goals
 
 A replay that sends streamed LLM requests reports time to first token, inter-token latency, request latency and token rates, so goals can hold a model server to them, for example `llmTtftP95` too high at `800`. See [LLM Streaming Metrics](../../guides/replay/llm-streaming-metrics.md) for every metric name and its definition.
+
+## LLM answer quality goals
+
+A replay of LLM traffic also reports whether the answers are still right: `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. Use **too low** on the tool-call match rate and **too high** on the other two, for example `llmToolCallMatchPct` too low at `100`. See [Regression Test a Model Swap](../../proxymock/guides/llm-eval-gate.md#score-a-cloud-or-cluster-replay).

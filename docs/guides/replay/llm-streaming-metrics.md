@@ -94,7 +94,7 @@ These are the LLM names `--fail-if` accepts, with the matching goal name for a t
 
 A replay that sent no LLM stream reports none of these metrics, and a percentile with no samples is left out rather than reported as zero.
 
-These metrics say how fast a model answers. To gate on whether its answers are still right, `--fail-if` also accepts `llm.tool-call-match-pct`, `llm.divergence-pct` and `llm.failure-pct`. See [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md).
+These metrics say how fast a model answers. To gate on whether its answers are still right, `--fail-if` also accepts `llm.tool-call-match-pct`, `llm.divergence-pct` and `llm.failure-pct`, and a cloud or cluster report carries the same rates as `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. See [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md).
 
 ## Goals in a test config
 

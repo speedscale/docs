@@ -83,7 +83,7 @@ A condition on a rate that has nothing to measure is an error, not a pass. For e
 
 The rates are not reported with `--no-out`, `--load-test` or `--ignore-body-changes`, because those options do not keep or score response bodies.
 
-Use `--fail-if` for these rates. A test config goal on one of them is not evaluated in a local replay.
+Use `--fail-if` for these rates in a local replay. A test config goal on one of them is evaluated on a [cloud or cluster report](#score-a-cloud-or-cluster-replay) and is not evaluated in a local replay.
 
 ## Read the result
 
@@ -178,3 +178,57 @@ A judge that rates the two the same clears the pair, and one that finds a materi
 Use a judge that is not the model you are evaluating. proxymock warns when the judge is served from the address under test with the same model name, because a model grading its own answers is lenient.
 
 A judged run and an unjudged run are scored differently, so [comparing them](#compare-two-checkpoints) is refused. Judge both runs or neither. [Compare Response Meaning](./semantic-comparison.md#optional-judging-of-divergent-pairs) covers the judge backends, the call cap and where the text is sent.
+
+## Keep the scoring settings in the test config
+
+The thresholds, the embedding backend and the judge can live in the test config, so everyone who replays with it scores answers the same way. Add an `llmEval` section to a workspace test config such as `proxymock/testconfigs/model-swap.json`:
+
+```json
+{
+  "llmEval": {
+    "passThreshold": 0.92,
+    "failThreshold": 0.7,
+    "judge": {
+      "backend": "openai",
+      "endpoint": "http://judge.internal:8000/v1",
+      "model": "judge-model",
+      "maxCalls": 25
+    }
+  }
+}
+```
+
+| Setting | Meaning |
+| --- | --- |
+| `passThreshold`, `failThreshold` | Answer text similarity at or above which a pair matches, and below which it fails. Leave out for the defaults of the embedding backend. |
+| `embedder` | `backend` is `builtin` (the default, in process), `local` (an Ollama-compatible server) or `openai`, with `endpoint`, `model` and `apiKeyEnv`. |
+| `judge` | `backend` is `managed`, `openai` or `anthropic`, with `endpoint`, `model`, `apiKeyEnv` and `maxCalls`. Leave out for no judge. |
+
+`apiKeyEnv` names the environment variable that holds a key. The key itself never goes in a test config.
+
+Pass the test config with `--test-config model-swap`. With `--semantic`, the `--semantic-*` flags override these settings, and the settings override your preferences. Without `--semantic`, only LLM answers are scored, with these settings, and a judge named here still rules on the reworded ones.
+
+## Score a cloud or cluster replay
+
+A replay that Speedscale runs in a cluster scores LLM answers the same way when its report is analyzed. It runs the same scoring code as `proxymock replay` and reads the same `llmEval` settings from the test config, so a report and a local run of the same recording and settings carry the same results.
+
+The three rates are report metrics, and a goal in the test config can fail the report on them:
+
+| Report metric | `--fail-if` name |
+| --- | --- |
+| `llmToolCallMatchPct` | `llm.tool-call-match-pct` |
+| `llmDivergencePct` | `llm.divergence-pct` |
+| `llmFailurePct` | `llm.failure-pct` |
+
+For example, a goal of `llmToolCallMatchPct` too low at `100` marks the report as missed goals when any tool call changed. A rate with nothing to measure is not reported, and a goal on a metric the report does not have is not evaluated.
+
+Each replayed LLM request is tagged with how it scored: `llmBand` is `match`, `divergent`, `fail` or `unscorable`, and `llmToolCalls` is `match` or `mismatch` when either side called a tool. The tags hold the score before any judge ruled. The report also stores every scored request's result, with the judge's rating when one ruled, in its `llm-eval.json` artifact.
+
+Judge backends on a cloud report:
+
+- `managed` uses the model Speedscale provides. The redacted answer text is sent to that model, outside your network.
+- `openai` with an `endpoint` uses your own OpenAI-compatible server. Speedscale cloud must be able to reach it.
+
+A judge that cannot be reached, or settings that cannot be applied, do not fail the report. The answers keep the verdict their score gave them and the report shows a warning.
+
+Reports made before this feature gain these results when they are reanalyzed. A replay in generator low data mode is not scored, because it keeps no response bodies. A cluster replay that does not report to Speedscale cloud does not score LLM answers.
