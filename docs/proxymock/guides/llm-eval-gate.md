@@ -77,7 +77,7 @@ A tool-call mismatch fails the pair whatever its text says. That includes a tool
 | `llm.divergence-pct` | Percentage of scored pairs that did not match, failures included |
 | `llm.failure-pct` | Percentage of scored pairs that failed |
 
-No gate applies by default. A replay that scores LLM responses with no condition on these rates exits `0` and prints `scored but not gated`.
+No gate on these rates applies by default. Scoring LLM responses does not fail a replay by itself: with no condition on these rates the replay prints `scored but not gated`, and its exit code comes from whatever other gates are in force, such as the goals of a test config.
 
 A condition on a rate that has nothing to measure is an error, not a pass. For example, `llm.tool-call-match-pct` is not reported when no scored pair called a tool.
 
@@ -224,10 +224,9 @@ For example, a goal of `llmToolCallMatchPct` too low at `100` marks the report a
 
 Each replayed LLM request is tagged with how it scored: `llmBand` is `match`, `divergent`, `fail` or `unscorable`, and `llmToolCalls` is `match` or `mismatch` when either side called a tool. The tags hold the score before any judge ruled. The report also stores every scored request's result, with the judge's rating when one ruled, in its `llm-eval.json` artifact.
 
-Judge backends on a cloud report:
+On a report in Speedscale cloud, scoring uses the builtin scorer and, when the test config asks for one, the `managed` judge. That judge is the model Speedscale provides, and the redacted answer text is sent to it, outside your network.
 
-- `managed` uses the model Speedscale provides. The redacted answer text is sent to that model, outside your network.
-- `openai` with an `endpoint` uses your own OpenAI-compatible server. Speedscale cloud must be able to reach it.
+A judge or embedding backend on a server the test config names is not called from Speedscale cloud, and `apiKeyEnv` is never read there. The report drops that setting, scores without it and shows a warning. Where Speedscale's analyzer runs in your own network, its operator can allow these servers with the `llm_eval_allow_endpoints` setting.
 
 A judge that cannot be reached, or settings that cannot be applied, do not fail the report. The answers keep the verdict their score gave them and the report shows a warning.
 
