@@ -1,6 +1,6 @@
 ---
 title: Chat with Your Traffic
-description: "Ask questions about recorded traffic and drive replays, blueprints and snapshots in plain language from the assistant built into proxymock web, using Speedscale's managed model or your own OpenAI or Anthropic key."
+description: "Ask questions about recorded traffic and drive replays, blueprints and snapshots in plain language from the assistant built into proxymock web, using Speedscale's managed model, your own OpenAI or Anthropic key, or a model server you run such as Ollama or vLLM."
 sidebar_position: 16
 ---
 
@@ -63,7 +63,15 @@ proxymock web --chat-provider anthropic --chat-api-key "$ANTHROPIC_API_KEY" --ch
 proxymock web --chat-provider openai --chat-api-key "$OPENAI_KEY" --chat-model <model-id>
 ```
 
-`--chat-model` is required, since there is no default model for your own provider. When `--chat-api-key` is left out, proxymock reads `SPEEDSCALE_CHAT_API_KEY`, and for Anthropic then `ANTHROPIC_API_KEY`. An Anthropic key that starts with `sk-ant-oat`, such as one from `claude setup-token`, is sent as an OAuth token. Requests go to the provider's public API; a custom endpoint, such as a local model server, cannot be configured.
+`--chat-model` is required, since there is no default model for your own provider. When `--chat-api-key` is left out, proxymock reads `SPEEDSCALE_CHAT_API_KEY`, and for Anthropic then `ANTHROPIC_API_KEY`. An Anthropic key that starts with `sk-ant-oat`, such as one from `claude setup-token`, is sent as an OAuth token.
+
+To use a model server you run, such as Ollama, vLLM, LM Studio or a gateway that speaks the OpenAI chat API, pass `openai-compatible` with the server's API root and a model it serves:
+
+```shell
+proxymock web --chat-provider openai-compatible --chat-base-url http://localhost:11434/v1 --chat-model <model-id>
+```
+
+`--chat-base-url` is required with `openai-compatible` and rejected with any other provider. A key is optional, because local servers usually need none. Pass `--chat-api-key` if your server or gateway asks for one; with `openai-compatible`, proxymock never reads a key from the environment, so a key you set for a vendor is not sent to the server by accident. The assistant calls tools while it works, so choose a model your server runs with tool calling.
 
 ## Where your data goes
 
@@ -71,9 +79,9 @@ To answer, the assistant reads RRPairs, including headers and bodies, and sends 
 
 | | Managed model | Your own provider |
 |---|---|---|
-| Model requests go to | Speedscale, which passes them to its model provider | Your OpenAI or Anthropic account, directly |
+| Model requests go to | Speedscale, which passes them to its model provider | Your OpenAI or Anthropic account, or the server at `--chat-base-url`, directly |
 | Conversation stored by Speedscale | Yes | No |
-| Key | Your Speedscale login | Yours, sent only to the provider |
+| Key | Your Speedscale login | Yours, sent only to the provider or server |
 
 With your own provider, the panel shows a **Private** badge. Questions about your cloud data still call the Speedscale API with your login in both modes.
 
