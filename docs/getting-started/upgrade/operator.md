@@ -151,6 +151,6 @@ tool.
 
 ## Frequency of Upgrades
 
-Speedscale typically releases new customer-side components weekly or more. By default, the Speedscale [helm](https://github.com/speedscale/operator-helm/blob/main/README.md) chart uses a pinned patch version that will not automatically upgrade. However, if you would like to always use the latest version you can instead pin to the minor version and set your image pull policy to pull more frequently. This will ensure you have the latest non-breaking version installed.
+Speedscale typically releases new customer-side components weekly or more. By default, the Speedscale [helm](https://github.com/speedscale/operator-helm/blob/main/README.md) chart uses a pinned patch version that will not automatically upgrade. However, if you would like to always use the latest version you can instead pin to the minor version and set `image.pullPolicy` to `Always`, because a tag other than `latest` is otherwise pulled only when a node does not have it. This will ensure you have the latest non-breaking version installed.
 
 If you plan to manually upgrade, we recommend doing so at least monthly.
