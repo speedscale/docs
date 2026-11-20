@@ -178,6 +178,8 @@ proxymock replay score ./proxymock/results/noise-2 \
   --baseline ./proxymock/results/noise-1
 ```
 
+Use the same `--tests-filter` on both replays when the LLM calls were recorded as outbound, as in [the first replay](#replay-the-recorded-prompts-at-the-candidate). Without it, neither replay sends the LLM requests.
+
 The three rates of either run are the noise floor: what the gate reports when nothing changed. The comparison lists the requests whose verdict differs between the two runs. Those prompts are unstable for this model, so a change on one of them says little about a candidate.
 
 The tool-call match rate is the most stable of the three, because it does not depend on wording.
