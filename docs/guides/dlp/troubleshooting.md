@@ -40,7 +40,7 @@ The forwarder did not apply any rule to it.
 ## Recommendations Do Not Appear
 
 - **Analysis has not finished.** Recommendations appear in the snapshot's **Prepare** tab after analysis completes.
-- **The traffic has no recognized patterns.** Discovery recognizes formats such as emails, card numbers and tokens. Names, addresses and application-specific identifiers often produce no recommendation and need a rule you write. See [Discover Sensitive Data](./discovering-pii.md).
+- **The traffic has no recognized patterns.** Discovery recognizes formats such as emails, card numbers and tokens, and names, addresses and similar fields by their JSON key names. Sensitive fields under other keys, and application-specific identifiers, often produce no recommendation and need a rule you write. See [Discover Sensitive Data](./discovering-pii.md).
 - **The suggestion was ignored.** Check **Ignored** in Prepare.
 
 ## Test Data Is Not Generated
