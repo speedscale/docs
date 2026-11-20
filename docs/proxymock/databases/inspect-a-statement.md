@@ -1,11 +1,11 @@
 ---
 title: Inspect a statement
-description: "Open a recorded PostgreSQL, MySQL or SQL Server call in proxymock web to see the statement with its bound values, who ran it, how it ended or why it failed, the request that caused it, and every other call on the same database connection."
+description: "Open a recorded PostgreSQL, MySQL, SQL Server or Oracle call in proxymock web to see the statement with its bound values, who ran it, how it ended or why it failed, the request that caused it, and every other call on the same database connection."
 ---
 
 # Inspect a statement
 
-Every database call proxymock records opens in a detail view that answers the questions you would otherwise ask the database: what exactly ran, with which values, for whom, how it ended, and what else that connection was doing. Select any Postgres, MySQL or SQL Server call in the Requests grid or the [Live SQL](./watch-live-sql.md) lens to open it.
+Every database call proxymock records opens in a detail view that answers the questions you would otherwise ask the database: what exactly ran, with which values, for whom, how it ended, and what else that connection was doing. Select any Postgres, MySQL, SQL Server or Oracle call in the Requests grid or the [Live SQL](./watch-live-sql.md) lens to open it.
 
 ## Info: who ran it and where it came from
 
@@ -25,7 +25,7 @@ Each fact has a filter and an exclude button, which add it to the Requests filte
 
 The **Statement** view of the Request tab shows the SQL the call ran. A prepared statement arrives with placeholders and its values separately, so proxymock shows both:
 
-- **SQL** shows the statement as the app sent it, with `$1`, `?` or `@p1` placeholders.
+- **SQL** shows the statement as the app sent it, with `$1`, `?`, `@p1` or `:1` placeholders.
 - **With values** fills the bound values in as literals, so you can copy the statement into `psql`, `mysql` or `sqlcmd` and run it. SQL Server values are written as T-SQL, such as `N'text'` for a string and `0x0A1B` for binary.
 - **Parameters** lists each placeholder with its type and value.
 
@@ -43,12 +43,21 @@ A SQL Server call is one SQL batch, one RPC or one transaction request:
 - Informational messages, such as `PRINT` output and `RAISERROR` at severity 10 or below, appear with the response.
 - `BEGIN`, `COMMIT` and `ROLLBACK`, whether sent as T-SQL or as the driver's transaction requests, mark the transaction on the Connection tab.
 
+## Oracle calls
+
+An Oracle call is one round trip from the driver and the server's whole reply to it:
+
+- An execute shows its full SQL text, or a PL/SQL block, with its bind values. A re-execute that names only a cursor shows the SQL the cursor was opened with.
+- A fetch shows the rows it returned, with every column decoded to its type, such as `NUMBER`, `DATE`, `TIMESTAMP`, a LOB, `JSON` or `VECTOR`.
+- A commit or rollback, whether sent as SQL or as the driver's own call, marks the transaction on the Connection tab.
+- A cancel shows the break the driver sent and the reset that answered it.
+
 ## Response: how it ended
 
 The top of the Response tab says how the call ended:
 
 - A successful call shows what it did, such as `INSERT 0 1` or the rows it returned. Writes return no rows, so this is where an `UPDATE` or `DELETE` says how many rows it changed.
-- A failed call shows an error card with the message, the SQLSTATE or the MySQL or SQL Server error number and its name, the objects the server named, and the line of SQL the server pointed at with a caret under the position.
+- A failed call shows an error card with the message, the SQLSTATE, the MySQL or SQL Server error number or the Oracle `ORA-` code, and its name, the objects the server named, and the line of SQL the server pointed at with a caret under the position.
 - A call that was cancelled, timed out, deadlocked, waited too long for a lock or was terminated shows why, and lists what other sessions were running at the same time, which is usually where the cause is.
 - A login shows who connected to which database, the client application, the authentication method and the server version. For a SQL Server connection recorded without TLS interception whose driver encrypted the login packet, the user and application are not known; see [Record SQL Server](./record/sqlserver.md#encryption).
 

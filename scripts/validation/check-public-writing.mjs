@@ -1,16 +1,22 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 
+// SHA-256 of each case-sensitive prohibited customer name, so this public
+// repository never spells them out.
+const CONFIDENTIAL_TERM_HASHES = new Set([
+  "94cbedc10bf32c2ec7759a9003223b56d3b48cc95ab0235c1b484610807a2911",
+  "93046104fbbde0866d21ca7b3dcb389143183031a25f5fcfa39576e03cbd0d56",
+  "b91a3192922a23052e7b7010a272412fe212433d7f62225ed8997344b97ea239",
+]);
+const CONFIDENTIAL_MAX_WORDS = 3;
+const REDACTED = "[redacted]";
+
 const HARD_RULES = [
-  {
-    name: "confidential customer",
-    pattern: /\b(?:Home Depot|Chick-fil-A|CFA)\b/g,
-    message: "replace the prohibited customer reference",
-  },
   {
     name: "product capitalization",
     pattern:
@@ -74,6 +80,49 @@ function isPublicWritingFile(file) {
     file === ".github/pull_request_template.md" ||
     /^\.github\/PULL_REQUEST_TEMPLATE\/.+\.md$/.test(file)
   );
+}
+
+export function hashTerm(term) {
+  return createHash("sha256").update(term).digest("hex");
+}
+
+// Candidates are runs of up to CONFIDENTIAL_MAX_WORDS words joined by a
+// single space or hyphen, so a name still matches inside a compound.
+function confidentialSpans(text, hashes) {
+  const words = [...text.matchAll(/[A-Za-z0-9]+/g)].map((match) => ({
+    start: match.index,
+    end: match.index + match[0].length,
+  }));
+  const candidates = [];
+  for (let first = 0; first < words.length; first += 1) {
+    for (
+      let last = first;
+      last < words.length && last < first + CONFIDENTIAL_MAX_WORDS;
+      last += 1
+    ) {
+      const separator =
+        last > first && text.slice(words[last - 1].end, words[last].start);
+      if (separator !== false && separator !== " " && separator !== "-") break;
+      candidates.push({ start: words[first].start, end: words[last].end });
+    }
+  }
+  return candidates.filter((span) =>
+    hashes.has(hashTerm(text.slice(span.start, span.end))),
+  );
+}
+
+function redactConfidential(text, hashes) {
+  const spans = confidentialSpans(text, hashes).sort(
+    (a, b) => b.start - a.start || b.end - a.end,
+  );
+  let redacted = text;
+  let limit = Infinity;
+  for (const span of spans) {
+    if (span.end > limit) continue;
+    redacted = `${redacted.slice(0, span.start)}${REDACTED}${redacted.slice(span.end)}`;
+    limit = span.start;
+  }
+  return redacted;
 }
 
 function addFinding(findings, file, line, severity, rule, match, message) {
@@ -290,7 +339,12 @@ function isMarkdownProseLine(line, visibleLine = line) {
   return /[A-Za-z]/.test(visibleLine.trim());
 }
 
-export function analyzeFile(file, content, selectedLines) {
+export function analyzeFile(
+  file,
+  content,
+  selectedLines,
+  { confidentialHashes = CONFIDENTIAL_TERM_HASHES } = {},
+) {
   if (!isPublicWritingFile(file)) return [];
 
   const lines = content.split(/\r?\n/);
@@ -301,6 +355,18 @@ export function analyzeFile(file, content, selectedLines) {
     const lineNumber = index + 1;
     if (!selectedLines.has(lineNumber) || !visible[index].trim()) continue;
 
+    const confidential = confidentialSpans(visible[index], confidentialHashes);
+    for (let count = 0; count < confidential.length; count += 1) {
+      addFinding(
+        findings,
+        file,
+        lineNumber,
+        "error",
+        "confidential customer",
+        REDACTED,
+        "replace the prohibited customer reference",
+      );
+    }
     for (const rule of HARD_RULES) {
       for (const match of matches(rule.pattern, visible[index])) {
         addFinding(
@@ -369,7 +435,10 @@ export function analyzeFile(file, content, selectedLines) {
     }
   }
 
-  return findings;
+  return findings.map((finding) => ({
+    ...finding,
+    match: redactConfidential(finding.match, confidentialHashes),
+  }));
 }
 
 export function parseAddedLines(diff) {

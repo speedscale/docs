@@ -1,17 +1,17 @@
 ---
 title: Watch live SQL
-description: "Watch your app's PostgreSQL, MySQL and SQL Server statements arrive as proxymock records them, like a database profiler: filter them with templates, pause and clear, save what you caught as a recording, and copy it as runnable SQL."
+description: "Watch your app's PostgreSQL, MySQL, SQL Server and Oracle statements arrive as proxymock records them, like a database profiler: filter them with templates, pause and clear, save what you caught as a recording, and copy it as runnable SQL."
 ---
 
 # Watch live SQL
 
-The **Live SQL** lens in proxymock web streams your app's database calls as they are recorded, the way SQL Server Profiler streams a trace. It follows Postgres, MySQL and SQL Server calls. Run a request in your app and its statements appear a moment later, with who ran them, how long they took and how they ended. It works on a local `proxymock record` in progress and on a live tap of a Kubernetes workload, and it needs proxymock 2.5.1149 or later.
+The **Live SQL** lens in proxymock web streams your app's database calls as they are recorded, the way SQL Server Profiler streams a trace. It follows Postgres, MySQL, SQL Server and Oracle calls. Run a request in your app and its statements appear a moment later, with who ran them, how long they took and how they ended. It works on a local `proxymock record` in progress and on a live tap of a Kubernetes workload, and it needs proxymock 2.5.1149 or later.
 
 Use it when you want to see what a change does to the database while you click through the app: which statements a page runs, whether a loop fires one query per row, which call is slow, or which one fails.
 
 ## Open the lens
 
-1. Start recording your app with its database mapped, as described for [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md) or [SQL Server](./record/sqlserver.md).
+1. Start recording your app with its database mapped, as described for [PostgreSQL](./record/postgresql.md), [MySQL](./record/mysql.md), [SQL Server](./record/sqlserver.md) or [Oracle](./record/oracle.md).
 2. Run `proxymock web` and open **Requests**.
 3. Pick the run that is recording from the **Run** list and choose **Live SQL** next to **Grid**, **Report** and **Trace**.
 

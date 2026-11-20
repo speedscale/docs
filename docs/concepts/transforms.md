@@ -122,6 +122,8 @@ Test variables are scoped to the [vUser](/reference/glossary.md#vuser). For exam
 
 How can the request and response both use the same transforms? Because each transform chain starts with an extractor that specifically targets the request or the response. In the generator, that means if the extractor references the HTTP Request Body, then the request will be modified before it is sent to the SUT. If an HTTP Request Body is extracted in a responder chain, then the request is modified before signature matching (response lookup) is run.
 
+Use `req_body` and `res_body` for body extraction. For form-encoded HTTP requests, `req_body` exposes form fields as JSON, so select a field with `json_path`. Changes are serialized back to form encoding.
+
 In Speedscale Cloud, a reusable transform configuration is stored as a Traffic Transform Template (TTT). You can view these in [Traffic Transforms](https://app.speedscale.com/trafficTransforms). The following example is a bare transform configuration. In a proxymock blueprint, this configuration lives under `tokenizeConfig`:
 
 ```json
@@ -130,7 +132,7 @@ In Speedscale Cloud, a reusable transform configuration is stored as a Traffic T
   "generator": [
     {
       "extractor": {
-        "type": "http_req_body"
+        "type": "req_body"
       },
       "transforms": [
         {

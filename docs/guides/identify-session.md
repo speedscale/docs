@@ -8,6 +8,8 @@ description: "Identify and tag unique session IDs in Speedscale to enhance traff
 
 Speedscale utilizes the concept of *sessions* to identify individual users or client connections. A *session* represents a stream of requests run in sequence. You can think of it like a conversation between a single client and the service. Typically, sessions are automatically discovered by Speedscale for common patterns like JWT Bearer tokens. However, this guide covers what to do when you need to do some off roading and identify a unique identifier in an usual location. Once Speedscale is aware of an ID a variety of features are enabled, including AI powered replacement so taking a minute to tag IDs is worth the effort.
 
+When one person's traffic carries several session IDs, for example a user ID on inbound requests and the JWT forwarded for that user on outbound calls, the Sessions views link those IDs into one actor. See [Linked sessions](./linked-sessions.md). Linking only changes how the Sessions views group traffic. To give a person one session ID everywhere, including filters and replay, tag a value that all of their requests carry, as this guide describes.
+
 ## Identify a Unique ID
 
 Let's use an example HTTP request where the client's email address is embedded as a query parameter. Let's not make any judgments about whether this is best practice - it definitely happens in the real world.

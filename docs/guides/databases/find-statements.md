@@ -1,6 +1,6 @@
 ---
 title: Find statements with filters
-description: "Narrow your services' recorded PostgreSQL, MySQL and SQL Server calls in the Speedscale dashboard to the ones that matter: by user, session, transaction, table, statement, error code, deadlock or timeout, row count, route or trace id."
+description: "Narrow your services' recorded PostgreSQL, MySQL, SQL Server and Oracle calls in the Speedscale dashboard to the ones that matter: by user, session, transaction, table, statement, error code, deadlock or timeout, row count, route or trace id."
 ---
 
 # Find statements with filters
@@ -18,13 +18,13 @@ Open **Filters**, add a filter and pick a field from the **Database** group at t
 | Application | The client's application name | Every call from one service's connection pool |
 | DB user | The database user that logged in | Everything a service account or a person ran |
 | Database | The database it connected to | One schema in a shared server |
-| Session | The server's id for the connection: the Postgres backend pid, the MySQL connection id or the SQL Server session id (SPID) | Everything one connection did |
+| Session | The server's id for the connection: the Postgres backend pid, the MySQL connection id, the SQL Server session id (SPID) or the Oracle session id (SID) | Everything one connection did |
 | Transaction | `idle`, `active` or `failed` when the statement started | Statements that ran inside a transaction that had already failed |
 | Event | `login`, `logout` or `statement` | Every login, to see who connects and how often |
 | SQL operation | The leading command, such as `SELECT` or `DELETE` | Every `DELETE` |
 | Table | A table the statement names | Every call that touches `orders` |
 | Statement shape | The statement with its values masked | Every execution of one query |
-| Error | The SQLSTATE for Postgres, or the error number for MySQL and SQL Server | Every `23505` unique violation or `40P01` deadlock, or SQL Server's `2627` and `1205` |
+| Error | The SQLSTATE for Postgres, the error number for MySQL and SQL Server, or the `ORA-` code for Oracle | Every `23505` unique violation or `40P01` deadlock, SQL Server's `2627` and `1205`, or Oracle's `ORA-00001` and `ORA-00060` |
 | Attention | `cancelled`, `timeout`, `deadlock`, `lock_timeout`, `terminated`, `cancel_request` or `aborted` | Every call that timed out |
 | Rows | Rows returned or changed, compared with is, greater than or less than | Queries that returned more than 1,000 rows |
 | Route | The route the app wrote into the statement's SQL comment | Every statement `orders#show` ran |
@@ -46,7 +46,7 @@ In the request drawer, every database fact of a call carries a filter and an exc
 | To find | Filter on |
 |---|---|
 | Deadlocks and lock timeouts | Attention is `deadlock`, or Attention is `lock_timeout` |
-| Duplicate-key failures | Error is `23505` (Postgres), `1062` (MySQL), or `2627` or `2601` (SQL Server) |
+| Duplicate-key failures | Error is `23505` (Postgres), `1062` (MySQL), `2627` or `2601` (SQL Server), or `ORA-00001` (Oracle) |
 | Slow writes | SQL operation is `UPDATE` and Duration greater than 100 ms |
 | Unbounded queries | Rows greater than 1000 |
 | Work done inside failed transactions | Transaction is `failed` |
@@ -56,7 +56,7 @@ In the request drawer, every database fact of a call carries a filter and an exc
 ## Limits
 
 - The connection facts (user, database, application, session) need a capture from Speedscale 2.5.1103 or later, and the route and trace id need 2.5.1153 or later. Traffic indexed before an upgrade keeps the facts it was indexed with, so filter on a recent time range.
-- Database filters match PostgreSQL, MySQL and SQL Server calls. Other databases are found with the usual filters, such as Host or L7 Protocol.
+- Database filters match PostgreSQL, MySQL, SQL Server and Oracle calls. Other databases are found with the usual filters, such as Host or L7 Protocol.
 - On a SQL Server connection recorded without TLS interception whose driver encrypted the login packet, DB user and Application are empty, so filter those calls by Database or Session instead. See [Record SQL Server](../../proxymock/databases/record/sqlserver.md#encryption).
 
 ## Related
