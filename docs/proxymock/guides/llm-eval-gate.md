@@ -161,9 +161,50 @@ proxymock refuses to compare two runs that were scored differently, and names th
 
 ## Measure the noise first
 
-Requests are replayed with their recorded sampling settings, so a model can answer the same prompt differently on two runs. Before you compare a candidate, replay the recording at the model that produced it and note the divergence rate. That is the noise floor. Scoring a second replay of the same model against the first shows which requests change from run to run. Set your conditions above it, and gate on the rates across many prompts instead of on any single prompt.
+Requests are replayed with their recorded sampling settings, so a model can answer the same prompt differently on two runs. Before you judge a candidate, measure how much the current model disagrees with itself. Replay the recording twice at the model that produced it, then score the second run against the first:
+
+```shell
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8000 \
+  --out ./proxymock/results/noise-1
+
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8000 \
+  --out ./proxymock/results/noise-2
+
+proxymock replay score ./proxymock/results/noise-2 \
+  --baseline ./proxymock/results/noise-1
+```
+
+Use the same `--tests-filter` on both replays when the LLM calls were recorded as outbound, as in [the first replay](#replay-the-recorded-prompts-at-the-candidate). Without it, neither replay sends the LLM requests.
+
+The three rates of either run are the noise floor: what the gate reports when nothing changed. The comparison lists the requests whose verdict differs between the two runs. Those prompts are unstable for this model, so a change on one of them says little about a candidate.
 
 The tool-call match rate is the most stable of the three, because it does not depend on wording.
+
+## Choose starting conditions
+
+No condition applies by default, so a replay gates on answers only when you add one. Start from the noise floor and tighten as you learn how the rates move:
+
+| Condition | Starting point | Reason |
+| --- | --- | --- |
+| `llm.tool-call-match-pct` | Fail below the noise floor's rate, which is `100` when the noise runs matched every tool call | A changed tool call is a changed action, and this rate does not move with wording |
+| `llm.failure-pct` | Fail above the noise floor's rate plus the weight of two requests | A failure is a wrong tool call, an error, a refusal or an answer that means something else |
+| `llm.divergence-pct` | Fail above the noise floor's rate plus 10 points, or leave it out at first | It counts reworded answers too, which a new model produces even when it is right |
+
+The weight of one request is 100 divided by the number of scored pairs. With 50 scored pairs each request moves a rate by 2 points, so the failure condition above starts 4 points over the noise floor. A margin smaller than one request cannot hold.
+
+For a model that matched every tool call and failed nothing in the noise runs, that gives:
+
+```shell
+--fail-if 'llm.tool-call-match-pct < 100' \
+--fail-if 'llm.failure-pct > 4' \
+--fail-if 'llm.divergence-pct > 10'
+```
+
+Gate on the rates across many prompts, not on any single prompt. Before you trust the divergence condition, read the divergent requests of a few runs, or let a [judge](#let-a-judge-rule-on-reworded-answers) rule on them.
 
 ## Use it with semantic comparison
 
@@ -191,6 +232,17 @@ The judge is shown the recorded answer and the candidate's answer as plain text:
 A judge that rates the two the same clears the pair, and one that finds a material difference fails it. The three rates count each pair in the band the judge left it in. A tool-call mismatch is already a failure and is never sent to the judge.
 
 Use a judge that is not the model you are evaluating. proxymock warns when the judge is served from the address under test with the same model name, because a model grading its own answers is lenient.
+
+The judge receives the recorded answer and the candidate's answer of every pair it rules on, so choose the backend by where that text may go:
+
+| `--semantic-judge` | Where the answers are sent |
+| --- | --- |
+| `openai` with `--semantic-judge-endpoint` | The server at that address, such as a model you host in your own network |
+| `openai` with no endpoint | The OpenAI API |
+| `anthropic` | The Anthropic API |
+| `managed` | The model Speedscale provides, outside your network |
+
+Only the first keeps the answers inside your network. With no judge and the built-in scorer, scoring sends the answers nowhere.
 
 A judged run and an unjudged run are scored differently, so [comparing them](#compare-two-checkpoints) is refused. Judge both runs or neither. [Compare Response Meaning](./semantic-comparison.md#optional-judging-of-divergent-pairs) covers the judge backends, the call cap and where the text is sent.
 
@@ -278,3 +330,6 @@ This is the same comparison as [`proxymock replay score --baseline`](#compare-tw
 
 A report analyzed before answers were scored shows a prompt to reanalyze it. The lists hold up to 200 requests, and a report keeps both answers for up to 1,000 requests that did not match.
 
+## Try it in a lab
+
+The [LLM streaming lab](https://github.com/speedscale/mock-lab/tree/main/labs/llm-streaming) in the mock-lab repository runs this guide end to end with no model API key and no model to host. Its `make eval-gate` target replays a recorded assistant at a model that answers as recorded and at one that regressed. The gate passes the first and fails the second on a changed tool-call argument, and the comparison lists the two requests that got worse.
