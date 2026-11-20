@@ -291,7 +291,7 @@ Expected platform-specific differences should be documented in the wrapper repos
 |-----------|------|---------|-------------|
 | `image.registry` | string | `"gcr.io/speedscale"` | Container registry for Speedscale components. |
 | `image.tag` | string | `"v2.3.709"` | Image tag for Speedscale components. |
-| `image.pullPolicy` | string | `"Always"` | Image pull policy. Valid values: `Always`, `IfNotPresent`, `Never`. |
+| `image.pullPolicy` | string | `""` | Image pull policy: `Always`, `IfNotPresent` or `Never`. Empty follows each image's tag, as Kubernetes does: a version tag is pulled only when the node does not have it, and `latest` is pulled every time. |
 
 #### Bring your own Redis and Java runtime images
 
