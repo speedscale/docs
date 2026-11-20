@@ -330,6 +330,18 @@ This is the same comparison as [`proxymock replay score --baseline`](#compare-tw
 
 A report analyzed before answers were scored shows a prompt to reanalyze it. The lists hold up to 200 requests, and a report keeps both answers for up to 1,000 requests that did not match.
 
+### Compare two reports from the command line
+
+The same comparison is available without the dashboard. Pull both reports into a workspace, then score one against the other by report ID:
+
+```bash
+proxymock cloud pull report <baseline-report-id>
+proxymock cloud pull report <candidate-report-id>
+proxymock replay score <candidate-report-id> --baseline <baseline-report-id>
+```
+
+The output has the same `llm` section and the same deltas as a comparison of two local replays, because the report's results were computed by the same scoring. A report and a local replay of the same snapshot can be compared with each other too: name the report ID on one side and the replay's output directory on the other.
+
 ## Try it in a lab
 
 The [LLM streaming lab](https://github.com/speedscale/mock-lab/tree/main/labs/llm-streaming) in the mock-lab repository runs this guide end to end with no model API key and no model to host. Its `make eval-gate` target replays a recorded assistant at a model that answers as recorded and at one that regressed. The gate passes the first and fails the second on a changed tool-call argument, and the comparison lists the two requests that got worse.
