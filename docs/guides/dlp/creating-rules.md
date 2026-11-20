@@ -116,7 +116,8 @@ Keep these points in mind when writing chains:
 - **Start the JSON Path at a field inside the body.** The body extractor already selects the body, so the path never starts with `http.req.body`, `http.res.body` or `$`. The editor rejects those prefixes.
 - **Use `#` to select every element of an array**, as in `Payments.#.ClientId`. Every element then receives the same replacement value, computed from the whole array. Mask the field by name instead when distinct values must stay distinct.
 - **A header chain masks one value.** The **HTTP Request Header** and **HTTP Response Header** extractors read the first value unless you set **index**, so a second `Set-Cookie` is left unmasked. Mask headers by name to cover every value.
-- **Choose the replacement.** **DLP Redact Field** keeps distinct values distinct. **Constant** replaces every value with the same text, which can break replays and mocks that match on IDs.
+- **Choose the replacement.** On a string field, **DLP Redact Field** keeps distinct values distinct. **Constant** replaces every value with the same text, which can break replays and mocks that match on IDs.
+- **Mask numeric fields by name.** **JSON Path** keeps a numeric field a number and writes `0` when the new value is not a number. A `REDACTED-` token is not a number, so every numeric ID in the chain becomes `0`. A name in the list replaces the number with a distinct `REDACTED-<hash>` string instead.
 - **Add filters to limit which RRPairs a chain runs on**, such as one host or endpoint. See [Filters](../../concepts/filter.md).
 
 Chains run in order. To use a value from one chain in another, store it in a variable and reference it by name.
@@ -125,7 +126,7 @@ Chains run in order. To use a value from one chain in another, store it in a var
 
 | Use | When |
 |-----|------|
-| Field names to mask | The field name is distinctive and appears in many places, the field holds several values (arrays, repeated headers), or distinct values must stay distinct for replay and mock matching. |
+| Field names to mask | The field name is distinctive and appears in many places, the field holds several values (arrays, repeated headers) or numbers, or distinct values must stay distinct for replay and mock matching. |
 | Transform chains | You need one exact location, the field name is too common to mask everywhere (such as `id` or `name`), you want a replacement other than a hash, or the traffic is not HTTP. |
 
 A common rule lists the distinctive names (`Authorization`, `CardNumber`, `BirthDate`) and adds chains only for the few locations a name cannot express safely.

@@ -16,7 +16,7 @@ description: Practical guidance for writing DLP rules that mask what they should
 
 - **Mask distinctive field names by name.** `Authorization`, `CardNumber` or `BirthDate` in the **Mask fields by name** list covers every place the field appears, every array element and every value of a repeated header. See [Masking Fields by Name](./creating-rules.md#masking-fields-by-name).
 - **Use transform chains for the exceptions**: a common name such as `id` that is sensitive in one place only, a replacement other than a hash, or non-HTTP traffic.
-- **Keep distinct values distinct.** Prefer field names or **DLP Redact Field** over **Constant**, so masked IDs still differ and replays and mocks can match on them.
+- **Keep distinct values distinct.** Prefer field names or **DLP Redact Field** over **Constant**, so masked IDs still differ and replays and mocks can match on them. Mask numeric IDs by name: a chain writes `0` for every one of them.
 - **Clear Create if missing** on every JSON Path step used for masking, so bodies without the field are left alone.
 - **Mask the whole credential header**, not a part of it. A name in the list keeps the `Bearer` scheme and masks the token.
 

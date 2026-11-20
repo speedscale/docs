@@ -33,7 +33,8 @@ The forwarder did not apply any rule to it.
 ## Masking Changed Traffic It Should Not
 
 - **New fields appear in bodies.** A **JSON Path** transform with **Create if missing** on adds its path to every body that lacks it. A path such as `http.res.body` then inserts `{"http":{"res":{"body":...}}}` into each JSON body. Clear **Create if missing** for masking.
-- **Different IDs became the same value.** **Constant** writes the same text for every value, and a `#` array path gives every element one shared replacement. Replays and mocks that match on those IDs then fail. Mask the field by name, or use **DLP Redact Field** on a path without `#`, to keep distinct values distinct.
+- **Different IDs became the same value.** **Constant** writes the same text for every value, and a `#` array path gives every element one shared replacement. Replays and mocks that match on those IDs then fail. Mask the field by name, or use **DLP Redact Field** on a string field with a path without `#`, to keep distinct values distinct.
+- **Numeric IDs became `0`.** A **JSON Path** step keeps a numeric field a number, so a `REDACTED-` replacement, which is not a number, is written as `0`. Mask numeric fields by name: the list replaces the number with a distinct `REDACTED-<hash>` string.
 - **A common field name masked too much.** A name in the list masks that key everywhere, including unrelated APIs. For names like `id` or `name`, use a transform chain limited to one location.
 
 ## Recommendations Do Not Appear
