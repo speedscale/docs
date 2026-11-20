@@ -14,7 +14,7 @@ A DLP rule is a named configuration that contains:
 
 - **Transform Chains**: Sequences of filters, extractors, and transforms
 - **Pattern Discovery Settings**: Configuration for discovering data patterns
-- **RedactList**: Key-based redaction rules
+- **Field names to mask** (`redactlist`): Names masked wherever they appear
 - **Metadata**: Name, ID, and protection status
 
 ### DLP Rule Components
@@ -42,18 +42,9 @@ The `discover_patterns` setting:
 - **Use Case**: Useful for generating test data recommendations
 - **Performance**: Slight performance impact when enabled
 
-#### RedactList Configuration
+#### Field Names to Mask
 
-:::caution Deprecated
-RedactList is retained for backwards compatibility and is not recommended for new installations. Use transform chains instead for better flexibility and control.
-:::
-
-Key-based redaction rules:
-
-- **Purpose**: Redact entire keys/fields rather than values
-- **Protocol-Specific**: Can be configured per protocol (HTTP, gRPC, etc.)
-- **Key Matching**: Matches keys by name
-- **Use Case**: Quick redaction of known sensitive fields
+A list of field and header names (`redactlist` in the rule JSON). Each name is masked wherever it appears in HTTP traffic, at any depth, without writing a path for it. Use it for fields that show up in many places, and use transform chains for one specific location or for a replacement other than a hash. A rule can use both. See [Masking Fields by Name](#masking-fields-by-name).
 
 #### Protected Status
 
@@ -164,42 +155,54 @@ When enabled:
 - **Recommendation Quality**: Improve test data recommendations
 - **Data Relationships**: Maintain data relationships
 
-### RedactList Configuration
+### Masking Fields by Name
 
-:::caution Deprecated
-RedactList is retained for backwards compatibility and is not recommended for new installations. Use transform chains instead for better flexibility and control.
-:::
+A DLP rule can list field and header names to mask wherever they appear. In the rule JSON this is the `redactlist`. Use it when a sensitive field shows up in many places: a card number that sits in a dozen request and response shapes needs one name here, where it would need one transform chain per path.
 
-#### RedactList Purpose and Structure
+#### What a Name Matches
 
-RedactLists provide key-based redaction:
+Each name is matched against HTTP traffic in these places:
 
-- **Key Matching**: Matches keys/field names
-- **Protocol Support**: Works across protocols
-- **Simple Configuration**: Easy to configure
-- **Performance**: Efficient key-based matching
+- **JSON bodies**: any key at any depth or array index, in request and response bodies whose `Content-Type` is JSON.
+- **Form bodies**: any field in a request body sent as `application/x-www-form-urlencoded`.
+- **Query parameters**: any parameter in the request URL.
+- **Headers**: every value of a matching request or response header, including repeated headers such as a second `Set-Cookie`.
 
-#### Configuring Key-Based Redaction
+Names match without regard to case, so `cardnumber` also masks `CardNumber`. A name is matched whole and is never read as a path: enter `CardNumber`, not `Payments.CreditCard.CardNumber`. When a name holds an object or an array, everything inside it is masked.
 
-Example configuration:
+#### What Replaces Each Value
+
+Each matched value is replaced with `REDACTED-<hash>`, where the hash is computed from the original value. The same value always gets the same hash, so two different customer IDs stay different after masking, and replays and mocks can still tell them apart. When [pattern discovery](#pattern-discovery-settings-discover_patterns) is on, the detected pattern is added before the hash. An `Authorization` header keeps its scheme and masks only the credential, for example `Bearer REDACTED-<hash>`. The RRPair is marked as redacted.
+
+#### Editing the List in the Dashboard
+
+Open the DLP rule and select the **Mask fields by name** tab. Type a name and click **Add**, or paste several names separated by commas or line breaks. Click the **x** on a name to remove it. If a name contains a dot, the tab warns that it looks like a path. Click **Save** when you are done.
+
+The **Transformations**, **Mask fields by name**, **Scope** and **Advanced** tabs all edit the same rule, so a change on one tab is kept when you switch to another. The **Advanced** tab shows the list as JSON.
+
+#### Rule JSON
+
+The list lives under `redactlist.entries.http`:
 
 ```json
 {
+  "id": "payments-pii",
   "redactlist": {
     "entries": {
-      "http.req.body": ["password", "ssn", "creditCard"],
-      "http.res.body": ["apiKey", "token"]
+      "http": ["Authorization", "Set-Cookie", "CardNumber", "CcvCode", "BirthDate", "ClientId"]
     }
   }
 }
 ```
 
-#### Protocol-Specific Redaction
+The entry key names the protocol, not a location in the RRPair. `all` is accepted as another name for the HTTP list. When a rule has both, the `all` list is used and the `http` list is ignored, and the dashboard tab edits the `all` list.
 
-- **HTTP**: Redact HTTP request/response bodies
-- **gRPC**: Redact Protocol Buffer messages
-- **Database**: Redact SQL query parameters
-- **All Protocols**: Use "all" key for all protocols
+#### Choosing Between Names and Transform Chains
+
+| Use | When |
+|-----|------|
+| Field names to mask | The field name is distinctive and appears in many places, or you need distinct values to stay distinct for replay and mock matching. |
+| Transform chains | You need one exact location, a field whose name is too common to mask everywhere (such as `id` or `name`), a replacement other than a hash, or traffic other than HTTP. |
 
 ### Protected Rules
 

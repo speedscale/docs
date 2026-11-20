@@ -36,7 +36,7 @@ A group rule that is switched off says so in its summary line:
 3. Fill in **Owner** with your group's name: a team, product, business unit or compliance domain.
 4. Name the workloads the rule covers in **Clusters**, **Namespaces** and **Services**. A field you leave empty
    matches anything, but at least one must name something.
-5. Add the fields to redact on the **Transformations** tab, or edit `redactlist` on the **Advanced** tab.
+5. List the field and header names to mask on the **Mask fields by name** tab, add transform chains on the **Transformations** tab, or both. See [Masking Fields by Name](./creating-rules.md#masking-fields-by-name).
 6. Turn on **Enabled** when you are ready, and click **Save**.
 
 ## The Scope tab

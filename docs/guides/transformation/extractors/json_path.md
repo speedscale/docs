@@ -8,21 +8,25 @@ sidebar_position: 12
 
 ### Purpose
 
-**json_path** flattens the current RRPair down to its JSON representation and then extracts data using a JSONPath locator and regular expression filter. This extractor is very uncommon and is mostly used by automation. If you just want to extract a JSON key you are most likely looking for the [json_path](../transforms/json_path.md). You can see examples of RRPairs in JSON format by looking inside of your snapshot raw, action or reaction files. These files are what `speedctl pull snapshot` downloads to your local machine in the directory `~/.speedscale/data/snapshots`.
+**json_path** flattens the current RRPair down to its JSON representation and then extracts data using a JSONPath locator and regular expression filter. This extractor is very uncommon and is mostly used by automation. If you just want to extract a JSON key from a request or response body, you are most likely looking for a Request Body or Response Body extractor followed by the [json_path transform](../transforms/json_path.md), which takes a path inside the selected body. You can see examples of RRPairs in JSON format by looking inside of your snapshot raw, action or reaction files. These files are what `speedctl pull snapshot` downloads to your local machine in the directory `~/.speedscale/data/snapshots`.
 
 Certain special cases are supported that allow deep inspection inside of certain data types. For example, you can append `.jwt.claims.<name>` to your JSONPath to look "inside" a JWT. See full example below.
+
+In the RRPair JSON, the captured HTTP body is stored base64 encoded under `http.req.bodyBase64` and `http.res.bodyBase64`. A path that enters a body starts there, and the extractor decodes the body and continues into its JSON, for example `http.req.bodyBase64.user.email`. The `http.req.body` and `http.res.body` fields are always empty, so a path that starts with them matches nothing, and the dashboard rejects it.
 
 ### Usage
 
 ```json
-"type": "json_path",
-"config": {
+{
+  "type": "json_path",
+  "config": {
     "path": "<JSON path to data>",
-    "regex": "<regular expression to use as a submatch filter>
+    "regex": "<regular expression to use as a submatch filter>"
+  }
 }
 ```
 
-- **path** - A properly formatted JSON Path expression with a few extra features.
+- **path** - (required) A dot-separated path into the RRPair JSON. Array elements are selected by index, as `items.0` or `items[0]`. Wildcards such as `[*]` and filter expressions such as `[?(@.name=='admin')]` are not supported.
 - **regex** - (optional) a regular expression to be used as a submatch filter on the extracted value
 
 ## Examples
@@ -34,7 +38,7 @@ Certain special cases are supported that allow deep inspection inside of certain
 {
    "type": "json_path",
    "config": {
-       "path": "http.req.body.user.email"
+       "path": "http.req.bodyBase64.user.email"
    }
 }
 ```
@@ -44,7 +48,7 @@ Certain special cases are supported that allow deep inspection inside of certain
 {
   "http": {
     "req": {
-      "body": "{\"user\": {\"email\": \"john.doe@example.com\", \"id\": 123}}"
+      "bodyBase64": "eyJ1c2VyIjogeyJlbWFpbCI6ICJqb2huLmRvZUBleGFtcGxlLmNvbSIsICJpZCI6IDEyM319"
     }
   }
 }
@@ -62,7 +66,7 @@ john.doe@example.com
 {
    "type": "json_path",
    "config": {
-       "path": "http.res.body.data.items[0].id"
+       "path": "http.res.bodyBase64.data.items[0].id"
    }
 }
 ```
@@ -72,7 +76,7 @@ john.doe@example.com
 {
   "http": {
     "res": {
-      "body": "{\"data\": {\"items\": [{\"id\": \"item-001\", \"name\": \"Product A\"}, {\"id\": \"item-002\", \"name\": \"Product B\"}]}}"
+      "bodyBase64": "eyJkYXRhIjogeyJpdGVtcyI6IFt7ImlkIjogIml0ZW0tMDAxIiwgIm5hbWUiOiAiUHJvZHVjdCBBIn0sIHsiaWQiOiAiaXRlbS0wMDIiLCAibmFtZSI6ICJQcm9kdWN0IEIifV19fQ=="
     }
   }
 }
@@ -174,14 +178,14 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 john.doe@example.com
 ```
 
-### Example 6: Nested JSON with Filtering
+### Example 6: Nested Arrays with a Regex Filter
 
 #### Configuration
 ```json
 {
    "type": "json_path",
    "config": {
-       "path": "http.res.body.users[*].roles[?(@.name=='admin')].permissions",
+       "path": "http.res.bodyBase64.users.0.roles.0.permissions",
        "regex": "write|delete"
    }
 }
@@ -192,7 +196,7 @@ john.doe@example.com
 {
   "http": {
     "res": {
-      "body": "{\"users\": [{\"id\": 1, \"roles\": [{\"name\": \"admin\", \"permissions\": \"read,write,delete\"}]}]}"
+      "bodyBase64": "eyJ1c2VycyI6IFt7ImlkIjogMSwgInJvbGVzIjogW3sibmFtZSI6ICJhZG1pbiIsICJwZXJtaXNzaW9ucyI6ICJyZWFkLHdyaXRlLGRlbGV0ZSJ9XX1dfQ=="
     }
   }
 }
