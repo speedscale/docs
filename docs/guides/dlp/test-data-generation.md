@@ -54,8 +54,8 @@ If automatic recommendations don't meet your needs, or you want to create test d
 
 3. **Create Transform Chain**: Recommendations will automatically create transform chains that can be modified. For manual creation, create a transform chain that:
    - **Filters**: Identifies the RRPairs containing the tokens (using filters like path, method, service, etc.)
-   - **Extracts**: Extracts the token locations using JSONPath extractors
-   - **Transforms**: Applies a transform to generate test data (e.g., `GenerateEmail`, `GenerateSSN`, `GenerateCreditCard`)
+   - **Extracts**: Selects the body with a **Request Body** or **Response Body** extractor, then the token's field with a **JSON Path** transform
+   - **Transforms**: Generates the replacement, for example with [`dlp_field`](../transformation/transforms/dlp_field.md) and `reverse=true`, which turns a `REDACTED-` token back into a value of the same kind, or with `rand_string` and a pattern
 
 4. **Apply Transform Chain**: Apply the transform chain to the snapshot to generate test data.
 
@@ -70,24 +70,9 @@ This example:
 - Extracts the `email` field using JSONPath with `json_path(path="email")`
 - Generates realistic email addresses matching the email pattern using `rand_string()` to replace `REDACTED-` tokens
 
-For more information on creating transform chains, see [Creating DLP Rules](./creating-rules.md).
-
-## Test Data Characteristics
-
-Generated test data maintains:
-
-- **Format Compliance**: Matches the original data format (e.g., email format, phone number format)
-- **Realistic Patterns**: Uses realistic patterns and value ranges
-- **Data Relationships**: Preserves relationships between related tokens when possible
-- **Uniqueness**: Ensures uniqueness where needed (e.g., unique email addresses)
+For more information on writing transform chains, see [Creating DLP Rules](./creating-rules.md#writing-a-chain).
 
 ## Next Steps
 
-After generating test data:
-
-- [Best Practices](./best-practices.md) - Learn test data best practices
-
-## Related Documentation
-
-- [DLP Recommendations](./recommendations.md) - Understanding recommendations
-- [Creating DLP Rules](./creating-rules.md) - How to create rules for redaction
+- [Troubleshooting](./troubleshooting.md#test-data-is-not-generated): when tokens are not replaced.
+- [Creating DLP Rules](./creating-rules.md#pattern-discovery): turn on pattern discovery so tokens record the kind of value they replaced.

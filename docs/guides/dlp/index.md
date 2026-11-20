@@ -2,89 +2,54 @@
 slug: /guides/dlp
 sidebar_position: 1
 title: Data Loss Prevention (DLP)
-description: Comprehensive guide to Speedscale's Data Loss Prevention feature for protecting sensitive data in API traffic.
+description: How Speedscale finds sensitive data in API traffic and masks it in your cluster before it reaches Speedscale cloud.
 ---
 
 # Data Loss Prevention (DLP)
 
-Welcome to the Data Loss Prevention (DLP) documentation. This guide will help you understand how to use Speedscale's DLP feature to automatically discover, mask, and manage Personally Identifiable Information (PII) and sensitive data in your API traffic.
+Speedscale DLP masks sensitive data in captured API traffic before it leaves your infrastructure. The forwarder in your cluster applies a DLP rule to every request and response it captures, so names, card numbers, tokens and other sensitive values reach Speedscale cloud only as `REDACTED-` tokens. No application changes are needed.
 
-## What You'll Learn
+DLP helps you keep personal and payment data out of Speedscale storage for regulations such as GDPR, HIPAA and PCI DSS. See [Data Protection](../../security/data_protection.md) for how Speedscale handles the data it does receive.
 
-This documentation covers:
+:::note Enterprise Data Deletion
+If sensitive data reaches Speedscale cloud by mistake, Enterprise customers can request its deletion. The deletion SLA depends on your support level. Contact your Speedscale account representative or support team.
+:::
 
-- **Setting up DLP** in your environment
-- **Discovering PII** in test environments
-- **Creating DLP rules** to protect production data
-- **Applying rules** to production forwarders
-- **Generating test data** from redacted snapshots
-- **Best practices** and troubleshooting
-- **Troubleshooting** common issues
+## How a Rule Masks Data
 
-## Quick Start
+A DLP rule masks data in two ways, and one rule can use both:
 
-If you're new to DLP, follow these steps:
+- **Field names to mask.** A list of field and header names. Each name is masked wherever it appears in HTTP traffic: any depth of a JSON body, form fields, query parameters and headers. One name covers every place the field appears.
+- **Transform chains.** A chain selects one location, such as a field in the body of one endpoint, and replaces its value. Use a chain for a field whose name is too common to mask everywhere, for a replacement other than a hash, or for traffic other than HTTP.
 
-1. **[Introduction](./introduction.md)** - Understand what DLP is and why you need it
-2. **[Discovering PII](./discovering-pii.md)** - Start discovering sensitive data in test environments
+Field names, and the `dlp_field` transform at the end of a chain, replace each value with `REDACTED-<hash>`. The same input always produces the same hash, so distinct values stay distinct and replays and mocks can still match on them. See [Creating DLP Rules](./creating-rules.md) for both methods.
 
-### DLP Workflow
-
-<div style={{textAlign: 'center'}}>
+## Workflow
 
 ```mermaid
 flowchart TD
-    A[Collect data in QA environment] --> B[Discover PII]
-    B --> C[Create DLP Rule]
-    C --> D[Apply to forwarder in QA<br/>to verify data is properly redacted]
-    D --> E[Apply DLP Rule to<br/>production forwarder]
-    E --> F[Verify DLP data is removed<br/>by creating production snapshot]
-    
-    style A fill:#e1f5ff
-    style B fill:#e1f5ff
-    style C fill:#e1f5ff
-    style D fill:#fff4e1
-    style E fill:#ffe1e1
-    style F fill:#e1ffe1
+    A[Capture traffic in a test environment] --> B[Review sensitive data findings]
+    B --> C[Create a DLP rule]
+    C --> D[Apply the rule to the test forwarder<br/>and check a snapshot]
+    D --> E[Apply the rule to the production forwarder]
+    E --> F[Check a production snapshot]
+    F --> G[Optional: replace REDACTED tokens<br/>with generated test data]
 ```
 
-</div>
+1. [Discover sensitive data](./discovering-pii.md) in a snapshot from a test environment, and review the [DLP recommendations](./recommendations.md) Speedscale proposes.
+2. [Create a DLP rule](./creating-rules.md) from those recommendations, from field names you list, or both.
+3. [Apply the rule](./applying-rules.md) to a test forwarder, check a snapshot, then apply it to production.
+4. If several teams share one forwarder, give each its own [group rule](./group-rules.md).
+5. [Generate test data](./test-data-generation.md) to replace `REDACTED-` tokens before replaying production traffic.
 
-## Documentation Structure
+When something does not mask as expected, see [Troubleshooting](./troubleshooting.md). To manage rules from the command line, see the [speedctl DLP CLI reference](./cli-reference.md). To author and test rules against local recordings, see [proxymock local DLP rules](/proxymock/guides/local-rules/).
 
-### Getting Started
-- [Introduction to DLP](./introduction.md)
+## Terms
 
-### Core Workflows
-- [Discovering PII in Test Environment](./discovering-pii.md)
-- [Understanding DLP Recommendations](./recommendations.md)
-- [Creating DLP Rules](./creating-rules.md)
-- [Applying Rules to Production](./applying-rules.md)
-- [DLP Rules for Multiple Groups](./group-rules.md)
-  - [Managing Group Rules in proxymock web](./group-rules-proxymock.md)
-  - [Managing Group Rules in the Dashboard](./group-rules-dashboard.md)
-- [Generating Test Data](./test-data-generation.md)
-
-### Advanced Topics
-- [Best Practices](./best-practices.md)
-- [Troubleshooting](./troubleshooting.md)
-
-### Reference
-- [speedctl DLP CLI reference](./cli-reference.md)
-
-## Key Concepts
-
-Before diving in, familiarize yourself with these key concepts:
-
-- **DLP Rule**: A configuration that defines how data should be redacted and transformed
-- **PII**: Personally Identifiable Information (email, SSN, credit card, etc.)
-- **REDACTED Token**: A placeholder value that replaces PII in production traffic
-- **Transform Chain**: A sequence of filters, extractors, and transforms that process data
-- **Forwarder**: A component that forwards traffic to Speedscale cloud
-- **Baseline Rule**: The install-wide rule named by the `SPEEDSCALE_DLP_CONFIG` forwarder setting, applied to all captured traffic ([details](./group-rules.md#the-baseline-rule-and-speedscale_dlp_config))
-- **Group Rule**: A rule scoped to the namespaces and services one group owns, applied on top of the baseline
-- **Snapshot**: A captured set of API traffic at a point in time
-
-## Need Help?
-
-- Check the [Troubleshooting](./troubleshooting.md) section for common issues
+- **DLP rule**: A named document (`DLPConfig`) holding the field names to mask, transform chains and settings. Rules are listed under **DLP Rules** in the dashboard.
+- **Forwarder**: The Speedscale component in your cluster that applies DLP and sends captured traffic to Speedscale cloud.
+- **Baseline rule**: The rule a forwarder applies to all captured traffic, named by its `SPEEDSCALE_DLP_CONFIG` setting. See [The baseline rule](./group-rules.md#the-baseline-rule-and-speedscale_dlp_config).
+- **Group rule**: A rule scoped to the namespaces and services one group owns, applied on top of the baseline.
+- **RRPair**: One captured request and its response, the unit DLP masks.
+- **`REDACTED-` token**: The value that replaces masked data.
+- **Snapshot**: A captured set of RRPairs, used to review findings and check that masking works.

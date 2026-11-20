@@ -1,182 +1,30 @@
 ---
 sidebar_position: 10
 title: Best Practices
-description: Learn best practices for DLP implementation, rule management, and production deployment.
+description: Practical guidance for writing DLP rules that mask what they should, keep replays working, and stay correct as services change.
 ---
 
 # Best Practices
 
-This section provides best practices for implementing and managing DLP in your organization. Following these practices will help you achieve effective data protection while maintaining performance and usability.
+## Find What to Mask
 
-## Test Environment Setup
+- **Discover in a test environment** whose traffic has the same shape as production. Discovery finds formats such as emails and card numbers, so also read representative payloads for names, addresses and internal identifiers that no pattern recognizes. See [Discover Sensitive Data](./discovering-pii.md).
+- **Capture every endpoint that carries sensitive data**, including error responses, which often echo the request.
+- **Treat a missing recommendation as unknown, not safe.** Decide for each field whether it is sensitive in your application.
 
-### Isolating Test Environments
+## Write the Rule
 
-#### Environment Isolation
+- **Mask distinctive field names by name.** `Authorization`, `CardNumber` or `BirthDate` in the **Mask fields by name** list covers every place the field appears, every array element and every value of a repeated header. See [Masking Fields by Name](./creating-rules.md#masking-fields-by-name).
+- **Use transform chains for the exceptions**: a common name such as `id` that is sensitive in one place only, a replacement other than a hash, or non-HTTP traffic.
+- **Keep distinct values distinct.** Prefer field names or **DLP Redact Field** over **Constant**, so masked IDs still differ and replays and mocks can match on them.
+- **Clear Create if missing** on every JSON Path step used for masking, so bodies without the field are left alone.
+- **Mask the whole credential header**, not a part of it. A name in the list keeps the `Bearer` scheme and masks the token.
 
-Best practices:
+## Roll Out
 
-- **Separate Infrastructure**: Use separate infrastructure for test environments
-- **Network Isolation**: Isolate test networks from production
-- **Access Controls**: Implement strict access controls
-- **Data Classification**: Classify test data appropriately
-
-#### Representative Data
-
-Ensure test data represents production:
-
-- **Data Patterns**: Match production data patterns
-- **Data Volume**: Use representative data volumes
-- **Data Diversity**: Include diverse data scenarios
-- **Data Relationships**: Maintain data relationships
-
-### Capturing Representative Traffic
-
-#### Traffic Capture Strategy
-
-Strategies:
-
-- **Time-Based**: Capture over representative time periods
-- **Event-Based**: Capture during specific events
-- **Volume-Based**: Capture sufficient volume
-- **Diversity-Based**: Capture diverse scenarios
-
-#### Traffic Quality
-
-Ensure quality:
-
-- **Realistic Scenarios**: Include realistic scenarios
-- **Edge Cases**: Include edge cases
-- **Error Cases**: Include error scenarios
-- **Peak Loads**: Include peak load scenarios
-
-## Recommendation Management
-
-### Reviewing Before Accepting
-
-#### Review Process
-
-Process:
-
-1. **Understand Recommendations**: Understand what each recommendation does
-2. **Review Impact**: Review impact on traffic and performance
-3. **Validate Patterns**: Validate discovered patterns
-4. **Check Conflicts**: Check for conflicts with existing rules
-5. **Test First**: Test in staging before production
-
-#### Recommendation Validation
-
-Validate:
-
-- **Pattern Accuracy**: Verify pattern accuracy
-- **Location Precision**: Verify location precision
-- **Impact Assessment**: Assess impact on traffic
-- **Performance Impact**: Assess performance impact
-
-### Selective Acceptance Strategy
-
-#### Acceptance Strategy
-
-Strategy:
-
-- **Critical Data First**: Protect critical data first
-- **Gradual Rollout**: Roll out gradually
-- **Monitor and Adjust**: Monitor and adjust as needed
-
-#### Selective Acceptance
-
-Be selective:
-
-- **Review Each**: Review each recommendation individually
-- **Accept Relevant**: Accept only relevant recommendations
-- **Ignore False Positives**: Ignore false positives
-- **Customize**: Customize as needed
-
-### Regular Recommendation Reviews
-
-#### Review Schedule
-
-Schedule:
-
-- **Initial Review**: Comprehensive initial review
-- **Periodic Reviews**: Regular periodic reviews
-- **Change Reviews**: Review after changes
-- **Incident Reviews**: Review after incidents
-
-#### Review Process
-
-Process:
-
-- **Check New Recommendations**: Review new recommendations
-- **Re-evaluate Ignored**: Re-evaluate ignored recommendations
-- **Update Rules**: Update rules as needed
-- **Document Changes**: Document changes
-
-## Rule Organization
-
-### Naming Conventions
-
-#### Naming Best Practices
-
-Best practices:
-
-- **Descriptive Names**: Use descriptive names
-- **Consistent Format**: Use consistent format
-- **Environment Prefix**: Include environment prefix
-- **Service Name**: Include service name when applicable
-- **Version Suffix**: Include version when needed
-
-#### Naming Examples
-
-Examples:
-
-```
-prod-payment-data-redaction
-ecommerce-customer-pii-v2
-api-keys-redaction-staging
-test-ssn-redaction
-```
-
-### Rule Grouping Strategies
-
-#### Grouping Strategies
-
-Strategies:
-
-- **By Environment**: Group by environment
-- **By Service**: Group by service
-- **By Data Type**: Group by data type
-- **By Purpose**: Group by purpose
-
-#### Organization Benefits
-
-Benefits:
-
-- **Easy Management**: Easier to manage
-- **Clear Structure**: Clear organizational structure
-- **Quick Location**: Quick to locate rules
-- **Better Understanding**: Better understanding of rules
-
-### Rule Documentation
-
-#### Documentation Requirements
-
-Document:
-
-- **Purpose**: Rule purpose
-- **Scope**: Rule scope
-- **Configuration**: Rule configuration
-- **Dependencies**: Rule dependencies
-- **Usage**: Rule usage
-
-#### Documentation Best Practices
-
-Best practices:
-
-- **Clear Descriptions**: Clear, concise descriptions
-- **Examples**: Include examples
-- **Change History**: Document change history
-- **Maintenance**: Keep documentation updated
+- **Test the rule against recorded traffic first** with `proxymock dlp test` or a test cluster, and compare the masked RRPairs with the originals. See [Applying Rules to Production](./applying-rules.md).
+- **Check a snapshot after every change**: the fields you meant to mask show `REDACTED-` tokens, and nothing else changed.
+- **Turn on pattern discovery only when you need it.** It makes [test data generation](./test-data-generation.md) possible but costs forwarder CPU.
 
 ## Managing DLP Across Groups
 
@@ -198,83 +46,11 @@ When one forwarder captures traffic for several groups (teams, products, busines
 
 ### Keeping Coverage Honest
 
-- **Review scopes when workloads are renamed**: a scope names namespaces and services exactly, so a rename
-  takes the rule out of service silently
+- **Review scopes when workloads are renamed**: a scope names namespaces and services exactly, so a rename takes the rule out of service silently
 - **Check new services**: a service in a namespace nobody scoped receives only the baseline
-- **Verify with a snapshot after every change**, confirming both that your fields are redacted and that other
-  groups' traffic is unchanged
-- **Remember that unattributed traffic gets the baseline only**, which is what makes a well-maintained baseline
-  worth the effort
+- **Verify with a snapshot after every change**, confirming both that your fields are redacted and that other groups' traffic is unchanged
+- **Remember that unattributed traffic gets the baseline only**, which is what makes a well-maintained baseline worth the effort
 
-## Production Deployment
+## Name Rules Clearly
 
-### Gradual Rollout
-
-#### Rollout Strategy
-
-Strategy:
-
-- **Start Small**: Start with small scope
-- **Monitor Closely**: Monitor closely
-- **Expand Gradually**: Expand gradually
-- **Validate Continuously**: Validate continuously
-
-#### Rollout Phases
-
-Phases:
-
-1. **Pilot**: Pilot with limited traffic
-2. **Expansion**: Expand to more traffic
-3. **Full Deployment**: Deploy to all traffic
-4. **Optimization**: Optimize based on results
-
-### Monitoring and Validation
-
-#### Monitoring Strategy
-
-Strategy:
-
-- **Performance Monitoring**: Monitor performance
-- **Redaction Monitoring**: Monitor redaction effectiveness
-- **Error Monitoring**: Monitor errors
-- **Compliance Monitoring**: Monitor compliance
-
-#### Validation Process
-
-Process:
-
-- **Verify Redaction**: Verify PII is redacted
-- **Check Performance**: Check performance impact
-- **Validate Compliance**: Validate compliance
-- **Review Logs**: Review logs regularly
-
-### Performance Considerations
-
-#### Performance Optimization
-
-Optimize:
-
-- **Narrow Filters**: Use narrow filters
-- **Efficient Extractors**: Use efficient extractors
-- **Optimized Transforms**: Optimize transforms
-- **Resource Management**: Manage resources effectively
-
-#### Performance Monitoring
-
-Monitor:
-
-- **Latency**: Monitor latency impact
-- **Throughput**: Monitor throughput
-- **Resource Usage**: Monitor resource usage
-- **Error Rates**: Monitor error rates
-
-## Next Steps
-
-After implementing best practices:
-
-- [Troubleshooting](./troubleshooting.md) - Troubleshoot issues
-
-## Related Documentation
-
-- [Creating DLP Rules](./creating-rules.md) - Rule creation
-- [Applying Rules to Production](./applying-rules.md) - Production deployment
+Use ids that say whose data and what kind, such as `payments-pii` or `baseline-credentials`. The id appears in forwarder settings and on every masked RRPair, so a clear id tells a reader which rule to open.

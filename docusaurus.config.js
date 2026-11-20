@@ -906,7 +906,9 @@ const config = {
           // Still 404ing in Google Search Console.
           // The /dlp/* tree moved under /guides/dlp/; only the section-level
           // paths were redirected, not the individual pages Google indexed.
-          { from: "/dlp/introduction/", to: "/guides/dlp/introduction/" },
+          { from: "/dlp/introduction/", to: "/guides/dlp/" },
+          // The DLP introduction was merged into the section overview (S-14459).
+          { from: "/guides/dlp/introduction/", to: "/guides/dlp/" },
           { from: "/dlp/applying-rules/", to: "/guides/dlp/applying-rules/" },
           { from: "/dlp/best-practices/", to: "/guides/dlp/best-practices/" },
           { from: "/dlp/cli-reference/", to: "/guides/dlp/cli-reference/" },
