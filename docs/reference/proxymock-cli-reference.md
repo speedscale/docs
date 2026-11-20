@@ -247,8 +247,8 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
 - `--performance` - Deprecated alias for `--load-test`
 - `--rewrite-host` - Rewrite the HTTP `Host` header to match the target host and port
-- `--llm-model string` - Model name to send in recorded LLM requests in place of the recorded one, to [evaluate another model or checkpoint](/proxymock/guides/llm-eval-gate.md)
-- `--llm-api-key-env string` - Name of the environment variable holding the API key for the model under evaluation; sent as a Bearer token in place of the recorded `Authorization` header on LLM requests
+- `--llm-model string` - Model name to send in recorded LLM requests in place of the recorded one, to [evaluate another model or checkpoint](/proxymock/guides/llm-eval-gate.md). Applies to OpenAI-compatible, Anthropic Messages and Ollama requests
+- `--llm-api-key-env string` - Name of the environment variable holding the API key for the model under evaluation; sent in place of the recorded credential on LLM requests, as a Bearer token or as the `x-api-key` header of an Anthropic Messages request that has one
 - `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
 - `--tests-filter string` - Filter that chooses which recorded RRPairs to replay as tests. Everything else is mocked. By default proxymock replays inbound traffic. Use `'(direction IS OUT) AND (tech IS Postgres)'` to send an app's recorded database calls to the database instead. An RRPair tagged `replayRole=test` or `replayRole=mock` keeps that role.
 - `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
