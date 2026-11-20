@@ -21,7 +21,7 @@ The editor has four tabs. All four edit the same rule, so a change on one tab is
 
 | Tab | What it edits |
 |-----|---------------|
-| **Transformations** | The rule's transform chains. |
+| **Transformations** | The rule's transform chains: a list on the left and the selected chain on the right. |
 | **Mask fields by name** | The list of field and header names to mask. |
 | **Scope** | Whether the rule is a baseline or a group rule, and for a group rule its owner, workloads and on switch. See [Group Rules in the Dashboard](./group-rules-dashboard.md). |
 | **Advanced** | The whole rule as JSON. |
@@ -83,11 +83,13 @@ Accepting a suggestion changes only the snapshot. The chain masks captured traff
 
 ### Writing a Chain
 
-On the **Transformations** tab, add a chain and pick its steps. To mask one field in a JSON body:
+The **Transformations** tab lists the rule's chains on the left. Select one to edit it on the right, in the same chain editor as a snapshot's **Prepare** tab. Click **New** to add a chain. To mask one field in a JSON body:
 
-1. Extractor: **Request Body** or **Response Body**.
-2. Transform: **JSON Path**, with a path inside the body such as `CreditCardOnFile.CardNumber`. Clear **Create if missing**, so bodies without the field stay unchanged.
-3. Transform: **DLP Redact Field** (`dlp_field`), which replaces the value with `REDACTED-<hash>`.
+1. Click **Pull from** and choose **Request Body** or **Response Body**.
+2. Click **Add step** and choose **JSON Path**, with a path inside the body such as `CreditCardOnFile.CardNumber`. Clear **Create if missing**, so bodies without the field stay unchanged.
+3. Click **Add step** again and choose **DLP Redact Field** (`dlp_field`), which replaces the value with `REDACTED-<hash>`.
+
+The switch above a chain turns it off without deleting it; the forwarder skips a chain that is off. The **...** menu moves, duplicates or deletes the chain. **Save** stays disabled while any chain has no **Pull from** source, because the forwarder cannot run a chain without one.
 
 In the rule JSON:
 
