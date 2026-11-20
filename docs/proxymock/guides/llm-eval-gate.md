@@ -8,7 +8,16 @@ sidebar_position: 11.5
 
 Before you move an application to another model, a new checkpoint, or a new quantization, replay the prompts production already sent and check that the answers are still right. proxymock sends each recorded LLM request to the candidate model, compares its answer with the recorded one, and reports three rates that a CI job can gate on.
 
-This works for OpenAI-compatible chat and completions APIs, the format that OpenAI, Azure OpenAI, vLLM, NIM and TGI serve. Streamed and non-streamed responses are both scored, and a streamed replay of a non-streamed recording compares correctly. The candidate must serve the same API format that was recorded.
+Answers are read from four API formats:
+
+| Format | Requests scored | Served by |
+| --- | --- | --- |
+| OpenAI-compatible | Chat completions and text completions | OpenAI, Azure OpenAI, vLLM, NIM, TGI, and the `/v1` endpoints of Ollama and other servers |
+| Anthropic Messages | `/v1/messages` | The Anthropic API and servers compatible with it |
+| Ollama native | `/api/chat` and `/api/generate` | Ollama |
+| Amazon Bedrock | `Converse` and `ConverseStream` for any model, `InvokeModel` and `InvokeModelWithResponseStream` for Anthropic models | Amazon Bedrock |
+
+Streamed and non-streamed responses are both scored in every format, and a streamed replay of a non-streamed recording compares correctly. The candidate must serve the same API format that was recorded. proxymock does not translate a request from one format to another.
 
 By default, scoring runs in process and makes no network call. Two optional settings send response text to an endpoint you choose: an external embedding backend, and a judge for divergent pairs. [Compare Response Meaning](./semantic-comparison.md#choose-where-text-scoring-runs) explains both.
 
@@ -40,13 +49,17 @@ Leave out `--tests-filter` when you recorded in front of the model server itself
 | `--tests-filter` | Which recorded requests are sent to the candidate |
 | `--test-against` | Address of the candidate model server |
 | `--llm-model` | Model name sent in each recorded LLM request, in place of the recorded one |
-| `--llm-api-key-env` | Name of the environment variable holding the candidate's API key, sent as a Bearer token in place of the recorded `Authorization` header |
+| `--llm-api-key-env` | Name of the environment variable holding the candidate's API key, sent in place of the recorded credential |
 
-Both overrides apply only to `POST` requests to a chat completions or completions endpoint. Everything else in each request is sent as recorded, including the sampling settings and the conversation history.
+Both overrides apply to `POST` requests in the OpenAI-compatible, Anthropic Messages and Ollama native formats, which name the model in the request body. An Anthropic Messages request is recognized by its `anthropic-version` header. Everything else in each request is sent as recorded, including the sampling settings and the conversation history.
+
+The key replaces the credential the recorded request carried. On an Anthropic Messages request that has an `x-api-key` header, the key goes there. On every other request it is sent as a Bearer token in the `Authorization` header.
+
+A Bedrock request names its model in the URL and is signed, so neither flag changes it. Bedrock answers are still scored. To send recorded Bedrock requests to another model, change the model id in the URL with a [transform](/guides/transformation/overview.md) and sign the request again with [`aws_auth`](/guides/transformation/transforms/aws_auth.md).
 
 Pass the name of the variable to `--llm-api-key-env`, never the key. proxymock stores the variable name in the run's snapshot and reads the key when it sends a request. The replay output records each request as it was sent, as a recording does.
 
-Leave out `--llm-api-key-env` to send the recorded `Authorization` header. Leave out `--llm-model` to send the recorded model name, for example when the candidate is a different server that serves the same model name.
+Leave out `--llm-api-key-env` to send the recorded credential. Leave out `--llm-model` to send the recorded model name, for example when the candidate is a different server that serves the same model name.
 
 ## What is compared
 
@@ -61,6 +74,8 @@ Each recorded response and its replay are reduced to the answer itself: the text
 A tool-call mismatch fails the pair whatever its text says. That includes a tool call on one side and prose on the other, and arguments that are not valid JSON.
 
 **Answer text is compared for meaning**, using the same scorer and thresholds as [semantic comparison](./semantic-comparison.md). Reasoning text is not scored. When a response offers several choices, only the first is scored.
+
+Some self-hosted servers leave a model's thinking in the answer text, wrapped in tags such as `<think>`. Thinking differs between runs of a model that reaches the same answer, so a thinking block at the start of an answer is treated as reasoning and not scored. This covers `<think>`, `<thinking>`, `<reasoning>` and `[THINK]` blocks, and an answer that starts inside a block the chat template opened. You can also have the server separate the thinking itself, with vLLM's `--reasoning-parser` option or the `think` field of an Ollama request, which keeps it out of your application as well.
 
 | Situation | How it is counted |
 | --- | --- |
@@ -142,7 +157,7 @@ LLM quality: 4 scored · tool calls 1/3 matched (33.3%) [-66.7 pts] · divergenc
 
 `-o json` puts the full comparison under `deltas.llm`, including `regressed`, `improved` and every speed metric. `--html` writes the same comparison as one self-contained HTML page with no scripts and no external requests, so it opens from disk on a machine with no network.
 
-proxymock refuses to compare two runs that were scored differently, and names the setting that differs, for example a different `--semantic-pass` threshold, text scorer or judge. It also refuses two runs that share no recorded request. A difference between such runs would describe the scoring or the recordings, not the models. Rerun one replay with the other's settings.
+proxymock refuses to compare two runs that were scored differently, and names the setting that differs, for example a different `--semantic-pass` threshold, text scorer or judge. A run scored by an older proxymock release can differ in scorer version alone, so score both runs with the same release. It also refuses two runs that share no recorded request. A difference between such runs would describe the scoring or the recordings, not the models. Rerun one replay with the other's settings.
 
 ## Measure the noise first
 
