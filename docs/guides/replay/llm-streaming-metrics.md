@@ -94,6 +94,8 @@ These are the LLM names `--fail-if` accepts, with the matching goal name for a t
 
 A replay that sent no LLM stream reports none of these metrics, and a percentile with no samples is left out rather than reported as zero.
 
+These metrics say how fast a model answers. To gate on whether its answers are still right, `--fail-if` also accepts `llm.tool-call-match-pct`, `llm.divergence-pct` and `llm.failure-pct`. See [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md).
+
 ## Goals in a test config
 
 In a [test config](../../reference/configuration/goals.md), add a goal on any goal metric in the table above. Use **too high** for durations and counts such as `llmTtftP95` or `llmIncompleteCount`, and **too low** for rates such as `llmUserTokensPerSecP50`. LLM goals apply to the whole run, so leave the location empty; they cannot be scoped to an endpoint or a load stage. The replay launcher shows them with labels such as **LLM TTFT p95**.

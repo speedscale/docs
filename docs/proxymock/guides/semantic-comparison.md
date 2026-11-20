@@ -48,6 +48,10 @@ Judging is off by default. `--semantic-judge` can ask a model to adjudicate pair
 
 `--semantic-judge-cap` limits model calls per run and defaults to `25`. Pairs beyond the cap keep their score and are reported as skipped. A judge failure leaves the original score intact. Review which endpoint receives the response text and the cost of those calls before enabling judging.
 
+## LLM responses
+
+A response that is a model's completion is scored on the answer, not on the raw body: its tool calls are compared structurally and its text for meaning, whether or not it was streamed. With `--semantic`, that result is the pair's body verdict. See [Regression Test a Model Swap](./llm-eval-gate.md) for the rules and the rates you can gate on.
+
 ## Limits
 
 - Similarity is a configurable acceptance policy. It can accept field changes that strict comparison would flag. Keep contract validation and explicit checks for critical values.
