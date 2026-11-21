@@ -26,16 +26,16 @@ Some personal data has no format a value check can recognize: "Ada", "SW1Y 4JH" 
 
 | Label | Example keys |
 | --- | --- |
-| Person Name | `firstName`, `lastName`, `surname`, `fullName`, `cardholderName`; `name` inside a customer, user, contact, billing or shipping object |
-| Street Address | `street`, `addressLine1`, `address1`, `billingAddress`; `line1` and `line2` inside an address object; `address` inside a customer or contact object |
+| Person Name | `firstName`, `lastName`, `surname`, `fullName`, `cardholderName`, `holderName`, `ownerName`, `guardianName`, `emergencyContact`; `name` inside a customer, user, contact, billing or shipping object, or an object named for a person's role such as a doctor, examiner or creditor |
+| Street Address | `street`, `addressLine1`, `address1`, `addr1`, `billingAddress`; `line1` and `line2` inside an address, billing or shipping object; `address` inside a customer or contact object |
 | Postal Code | `postalCode`, `postcode`, `zip`, `zipCode` |
 | Date of Birth | `dateOfBirth`, `birthDate`, `dob` |
 | Card Security Code | `cvv`, `cvc`, `securityCode` |
-| Secret | `password`, `pin`, `clientSecret`, `accessToken`, `refreshToken` |
+| Secret | `password`, `pin`, `clientSecret`, `accessToken`, `refreshToken`, `securityAnswer`; any key ending in `password` or `secret`, such as `newPassword` or `webhookSecret` |
 | Phone Number | `phone`, `mobile`, `telephone`, including bare digits such as `4045551001` |
 | National ID | `ssn`, `sin`, `nino`, `aadhaar`, `passportNumber`, `driversLicenseNumber` |
 
-Keys match regardless of case and separators, so `first_name`, `firstName` and `FIRST-NAME` are the same key. A key-name finding needs a plausible value: a name with no digits, a postal code with a digit, a date for a date of birth, three or four digits for a security code. `name` on a product and `address` on a server are not personal data, so those keys count only inside an object that describes a person. Addresses and postal codes inside a store, vendor, office or other business object are not recommended. For names, addresses, postal codes, dates of birth, security codes and secrets, a field whose values mostly do not fit the class its key names is suppressed, like a weak pattern.
+Keys match regardless of case and separators, so `first_name`, `firstName` and `FIRST-NAME` are the same key. A key-name finding needs a plausible value: a name with no digits, a postal code with a digit, a date for a date of birth, three or four digits for a security code. `name` on a product and `address` on a server are not personal data, so those keys count only inside an object that describes a person. Addresses and postal codes inside a store, vendor, office, clinic, hotel, warehouse or other business object are not recommended. Roles that also name software or organizations, such as provider, agent, account or manager, do not make their `name` a person's name, so write a rule for those fields when they hold people. For names, addresses, postal codes, dates of birth, security codes and secrets, a field whose values mostly do not fit the class its key names is suppressed, like a weak pattern.
 
 A value format is more specific than a key, so an email under a `contactName` key is still reported as an email. A key name does take precedence over a non-sensitive format: a date under `dateOfBirth` is a date of birth, not a timestamp.
 
