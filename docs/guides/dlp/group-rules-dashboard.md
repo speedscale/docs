@@ -63,8 +63,8 @@ The service page's **DLP rules** section lists, for each cluster and namespace t
 
 The preview exists because of how a scope matches. A scope covers every combination of the clusters, namespaces and services it lists, so adding a service from a namespace the rule does not name also adds that namespace, and the namespace pairs with every service the rule already lists. When the dialog finds other running workloads in those combinations, it offers two choices:
 
-- **Create a copy that covers only *service*** is selected by default. It saves a new rule with the same masking and owner, scoped to just this service. Later edits to one rule do not reach the other.
-- **Add to *rule* anyway** widens the original rule, and the preview lists what it starts masking.
+- **Add to *rule*** is selected by default. It widens the original rule, and the preview lists what it starts masking.
+- **Create a copy that covers only *service*** saves a new rule with the same masking and owner, scoped to just this service. Later edits to one rule do not reach the other.
 
 If a cluster does not answer, the preview says it could not check that cluster and treats the change as one that may widen the rule. A rule that already covers the service says so and saves nothing. **New group rule** creates a rule that is off, with the scope filled in and nothing to mask yet, and opens it on the **Mask fields by name** tab. Adding a service to a rule that is off saves the scope but does not turn the rule on.
 
