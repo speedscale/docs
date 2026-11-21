@@ -401,7 +401,7 @@ Below the rates:
 
 Select a request's prompt to read the recorded answer beside the replayed one. Both are shown as the answer itself, with any tool calls and their arguments, so a streamed response and a whole one read the same. The difference that decided the verdict is called out above them.
 
-The answer dialog links to the full requests, and each link opens in a new tab. **Open the recorded request** opens that request in the snapshot's traffic. **Open the replayed request** opens the report's **Accuracy** tab filtered to the request the report sent for it.
+The answer dialog links to the full requests, and each link opens in a new tab. **Open the recorded request** opens that request in the snapshot's traffic. **Open the replayed request** opens the report's **Accuracy** tab with the exact request the answer was scored from open in the detail pane. For a report analyzed before this was available, or a request that got no response, it opens the list of requests that replayed the recorded one instead; reanalyze the report to get the direct link.
 
 ### Compare two reports
 
