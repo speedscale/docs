@@ -36,7 +36,10 @@ Available test data patterns include:
 - **UUIDs**: Various UUID formats
 - **IP Addresses**: IPv4 and IPv6 addresses
 - **Dates/Timestamps**: Realistic dates and timestamps
+- **Names, street addresses, postal codes, dates of birth, card security codes and secrets**: for values redacted from fields whose key names them, such as `firstName` or `cvv`
 - **All supported PII patterns**: Any pattern type supported by DLP
+
+Each `REDACTED-` token always becomes the same test value. A customer's redacted name regenerates to one synthetic name everywhere it appears: across requests, in the replay and in its mocks, and on every run. Different original values stay different. Related fields, such as a name and the email that contains it, are regenerated separately, so the synthetic email does not spell the synthetic name.
 
 ### Applying Recommendations
 

@@ -133,7 +133,7 @@ A common rule lists the distinctive names (`Authorization`, `CardNumber`, `Birth
 
 ## Pattern Discovery
 
-With `discover_patterns` set to `true`, the forwarder detects what kind of value it masked, such as an email or a card number, and adds that pattern to the `REDACTED-` token. [Test data generation](./test-data-generation.md) uses the pattern to produce realistic replacements. Detection costs some forwarder CPU, so leave it off when you do not generate test data from production snapshots.
+With `discover_patterns` set to `true`, the forwarder detects what kind of value it masked, such as an email or a card number, and adds that pattern to the `REDACTED-` token. A value masked by a chain that selects a field with a JSON Path transform is also labeled by the field's key when the value has no format of its own, so a masked `firstName` becomes `REDACTED-PERSON_NAME-<hash>`. [Test data generation](./test-data-generation.md) uses the pattern to produce realistic replacements. Detection costs some forwarder CPU, so leave it off when you do not generate test data from production snapshots.
 
 ```json
 {
