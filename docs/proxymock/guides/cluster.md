@@ -89,6 +89,8 @@ proxymock cluster replay start --target http://banking-frontend.banking-app:80 -
 
 A workload replay mocks every recorded outbound dependency by default: the responder answers them from the recording instead of letting the workload reach the real thing, which is what makes a replay repeatable. `--mock` narrows that to the outbound dependency keys you name from `prepare`; repeat it to mock more than one. `--no-mocks` turns mocking off so the workload reaches its real dependencies. `--route SLICE=WORKLOAD` splits the recording so one inbound slice goes to its own workload; every slice goes to exactly one destination. To replay a snapshot that is already in Speedscale cloud, pass `--snapshot-id` instead; nothing is staged or pushed.
 
+A `local` replay is scored in the cluster. `status` and `start --wait` print its result with the test config's goals, and `--wait` exits nonzero when a goal is missed. When the replay sent LLM requests, the result includes the tool-call match, divergence and failure rates of the replayed answers, and goals on those rates gate the replay. See [Regression Test a Model Swap](./llm-eval-gate.md#a-cluster-replay-with-no-speedscale-cloud).
+
 Watch and tear down a running replay with the remaining verbs:
 
 ```shell

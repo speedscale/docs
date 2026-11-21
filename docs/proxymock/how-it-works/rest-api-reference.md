@@ -139,8 +139,13 @@ Replays recorded traffic against the application under test and scores the resul
 | `outDirectory` | string |  | Directory to write the observed traffic and replay-verdict.json to. Required unless noOut is true. |
 | `noOut` | boolean |  | Write nothing to disk. The result then has no score. |
 | `testConfig` | string |  | Test config ID from the workspace: load shape, goals and assertions. |
+| `mocksOut` | string |  | The mock server's outDirectory while it served this replay: evaluates the outbound HTTP assertion and the Mock fidelity and Data layer readiness families. Requires testConfig. |
 | `failIf` | array of string |  | Fail conditions such as "requests.failed &gt; 0". |
 | `rewriteHost` | boolean |  | Rewrite the Host header to the testAgainst host. |
+| `llmModel` | string |  | Model name to send in recorded LLM requests in place of the recorded one, to evaluate another model on the prompts production sent. Applies to OpenAI-compatible, Anthropic Messages and Ollama requests; a Bedrock request is not changed. Point testAgainst at the model server. |
+| `llmApiKeyEnv` | string |  | Name of the environment variable, in the server's environment, that holds the API key for the model under evaluation. It replaces the recorded credential on LLM requests. Send the variable's name, never the key. |
+| `llmTemperature` | number |  | Temperature to set on every recorded LLM request, to cut run-to-run noise; 0 is the usual choice. Omit it to send each request's sampling settings as recorded. Use the same value on every run you compare. |
+| `llmSeed` | number |  | Whole-number seed to set on every recorded LLM request. Anthropic Messages has no seed, so those requests are sent without one. Omit it to send each request as recorded. Use the same value on every run you compare. |
 | `testsFilter` | string |  | Filter query selecting which recorded requests to replay. |
 | `vus` | number |  | Virtual users replaying in parallel. |
 | `sessions` | number |  | Sessions to replay in parallel. |
@@ -217,6 +222,87 @@ Every error answers with a JSON body that has an `error` message and, except for
 
 The results of the operations above and the types they use. New fields can appear in a minor version, so ignore fields you do not know.
 
+### GoalverdictReadiness
+
+| Field | Type | Description |
+|---|---|---|
+| `confidence` | number |  |
+| `families` | array of [GoalverdictReadinessFamily](#goalverdictreadinessfamily) |  |
+| `gates` | boolean | True when the test config's readiness section marks a family as blocking; a local replay's verdict then sets its exit code. |
+| `notes` (optional) | array of string |  |
+| `pathToReady` (optional) | array of string |  |
+| `score` | number | Weighted mean of the graded letters, A=4 to F=0; n/a families stay out. |
+| `summary` (optional) | string |  |
+| `verdict` | string | ready or not-ready, from the families that block. |
+
+### GoalverdictReadinessFamily
+
+| Field | Type | Description |
+|---|---|---|
+| `blocks` (optional) | boolean |  |
+| `detail` (optional) | string |  |
+| `family` | string |  |
+| `floor` (optional) | string |  |
+| `letter` | string | A to F, or n/a when the run gave the family no input. |
+| `measured` (optional) | string |  |
+| `role` | string |  |
+
+### LlmevalComparison
+
+| Field | Type | Description |
+|---|---|---|
+| `compared` | integer |  |
+| `divergencePct` (optional) | [LlmevalRateDelta](#llmevalratedelta) |  |
+| `failurePct` (optional) | [LlmevalRateDelta](#llmevalratedelta) |  |
+| `improved` (optional) | array of [LlmevalPairChange](#llmevalpairchange) |  |
+| `onlyInBaseline` (optional) | integer |  |
+| `onlyInCandidate` (optional) | integer |  |
+| `regressed` (optional) | array of [LlmevalPairChange](#llmevalpairchange) |  |
+| `speed` (optional) | array of [LlmevalSpeedDelta](#llmevalspeeddelta) |  |
+| `toolCallMatchPct` (optional) | [LlmevalRateDelta](#llmevalratedelta) |  |
+
+### LlmevalPairChange
+
+| Field | Type | Description |
+|---|---|---|
+| `baseline` | string |  |
+| `candidate` | string |  |
+| `id` | string |  |
+| `prompt` (optional) | string |  |
+| `reason` (optional) | string |  |
+
+### LlmevalRateDelta
+
+| Field | Type | Description |
+|---|---|---|
+| `baseline` | number |  |
+| `candidate` | number |  |
+| `delta` | number |  |
+
+### LlmevalSettings
+
+| Field | Type | Description |
+|---|---|---|
+| `embedder` (optional) | string |  |
+| `embedderModel` (optional) | string |  |
+| `failThreshold` | number |  |
+| `judgeModel` (optional) | string |  |
+| `judgePromptVersion` (optional) | string |  |
+| `passThreshold` | number |  |
+| `pinnedSeed` (optional) | integer |  |
+| `pinnedTemperature` (optional) | number |  |
+| `scorerVersion` | integer |  |
+
+### LlmevalSpeedDelta
+
+| Field | Type | Description |
+|---|---|---|
+| `baseline` | number |  |
+| `candidate` | number |  |
+| `changePct` (optional) | number |  |
+| `delta` | number |  |
+| `metric` | string |  |
+
 ### MockServerResult
 
 | Field | Type | Description |
@@ -284,8 +370,10 @@ The results of the operations above and the types they use. New fields can appea
 | `goals` | [ScoreGoals](#scoregoals) |  |
 | `httpOutput` (optional) | [ScoreHttpOutput](#scorehttpoutput) |  |
 | `input` | [ScoreInput](#scoreinput) |  |
+| `llm` (optional) | [ScoreLLM](#scorellm) |  |
 | `matchRate` | [ScoreMatchRate](#scorematchrate) |  |
 | `notes` (optional) | array of string |  |
+| `readiness` (optional) | [GoalverdictReadiness](#goalverdictreadiness) |  |
 | `sources` | map of string |  |
 
 ### ScoreAccuracy
@@ -319,6 +407,7 @@ The results of the operations above and the types they use. New fields can appea
 |---|---|---|
 | `accuracy` (optional) | [ScoreAccuracyDeltas](#scoreaccuracydeltas) |  |
 | `goals` (optional) | [ScoreGoalDeltas](#scoregoaldeltas) |  |
+| `llm` (optional) | [LlmevalComparison](#llmevalcomparison) |  |
 | `matchRate` (optional) | [ScoreMatchRateDeltas](#scorematchratedeltas) |  |
 
 ### ScoreEndpointFailures
@@ -384,6 +473,28 @@ The results of the operations above and the types they use. New fields can appea
 | `reportId` (optional) | string |  |
 | `status` (optional) | string |  |
 | `workspace` (optional) | string |  |
+
+### ScoreLLM
+
+| Field | Type | Description |
+|---|---|---|
+| `divergencePct` (optional) | number |  |
+| `divergent` | integer |  |
+| `fail` | integer |  |
+| `failurePct` (optional) | number |  |
+| `match` | integer |  |
+| `multiChoice` (optional) | integer |  |
+| `noCompletion` (optional) | integer |  |
+| `pairs` | integer |  |
+| `scored` | integer |  |
+| `settings` | [LlmevalSettings](#llmevalsettings) |  |
+| `speed` (optional) | map of number |  |
+| `toolCallMatchPct` (optional) | number |  |
+| `toolCallMatches` | integer |  |
+| `toolCallPairs` | integer |  |
+| `toolCallReordered` (optional) | integer |  |
+| `truncated` (optional) | integer |  |
+| `unscorableBaseline` (optional) | integer |  |
 
 ### ScoreMatchRate
 

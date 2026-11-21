@@ -99,6 +99,8 @@ curl -s -X POST "$PROXYMOCK_API/replays/run?wait=600" \
 
 A job's `status` says whether the operation ran. Whether the replay passed is in the result: `passed` is false when `proxymock replay` exits nonzero, which happens when a [test config](./test-configs.md) goal is missed, a `failIf` condition triggers, or a [replay verdict](./replay-verdicts.md) check such as `failOnNewMismatch` fails. Cancel a running job with `POST /v1/jobs/{id}/cancel`, which stops the replay's process.
 
+To [evaluate another model](./llm-eval-gate.md) on recorded LLM requests, `replays/run` takes `llmModel`, `llmApiKeyEnv`, `llmTemperature` and `llmSeed`, which match the `--llm-model`, `--llm-api-key-env`, `--llm-temperature` and `--llm-seed` flags of `proxymock replay`. `llmApiKeyEnv` names a variable in the server's environment, and the key itself is never sent.
+
 Jobs live in the server process and end with it. One mock server and one replay run at a time; starting a second answers `409`.
 
 ## Errors

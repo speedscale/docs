@@ -18,10 +18,12 @@ Speedscale reads four response formats. It recognizes the format from the stream
 
 | Format | Content type | Examples |
 |---|---|---|
-| OpenAI-compatible | `text/event-stream` | OpenAI, Azure OpenAI, NVIDIA NIM, vLLM, TGI, and the OpenAI-compatible endpoints of Ollama and other servers. Chat completions and text completions. |
+| OpenAI-compatible | `text/event-stream` | OpenAI, Azure OpenAI, NVIDIA NIM, vLLM, TGI, and the OpenAI-compatible endpoints of Ollama and other servers. Chat completions, text completions and the Responses API (`/v1/responses`). |
 | Anthropic Messages | `text/event-stream` | The Anthropic API `/v1/messages` with `stream: true`. |
 | Ollama native | `application/x-ndjson` | Ollama `/api/chat` and `/api/generate`. |
-| Amazon Bedrock | `application/vnd.amazon.eventstream` | `ConverseStream` for any model, and `InvokeModelWithResponseStream` for Anthropic models. |
+| Amazon Bedrock | `application/vnd.amazon.eventstream` | `ConverseStream` for any model, and `InvokeModelWithResponseStream` for Anthropic, Amazon Titan text, Meta Llama, Mistral, and Cohere Command and Command R models. |
+
+A replayed stream's `llmFormat` tag names its format: `openai`, `anthropic`, `ollama` or `bedrock`. A Responses API stream is reported as `openai`, and every Bedrock stream as `bedrock`.
 
 Other streams in these framings, such as a server-sent event feed of notifications, are timed frame by frame and produce no LLM metrics. A response with a `Content-Encoding` other than `identity` is not split into frames, so it is not measured either.
 
@@ -41,13 +43,13 @@ Every duration is in milliseconds and runs from the moment the request was sent.
 | Incomplete streams | Streams that ended before their own end marker. |
 | Approximate token counts | The share of finished streams whose token count is an estimate. |
 
-A stream is **finished** when the connection ended cleanly and the format's own end marker arrived: `[DONE]` for OpenAI-compatible streams, `message_stop` for Anthropic, `done: true` for Ollama and `messageStop` or the final chunk for Bedrock. TTFT counts every stream that produced output. Request latency, ITL and the token rates count only finished streams, because a stream cut off part way would make the server look faster than it was.
+A stream is **finished** when the connection ended cleanly and the format's own end marker arrived: `[DONE]` for OpenAI-compatible streams, `response.completed` or `response.incomplete` for a Responses API stream, `message_stop` for Anthropic, `done: true` for Ollama and `messageStop` or the final chunk for Bedrock. TTFT counts every stream that produced output. Request latency, ITL and the token rates count only finished streams, because a stream cut off part way would make the server look faster than it was.
 
 A stream longer than 8,192 frames is stored up to that limit and counts as incomplete.
 
 ### Token counts
 
-The output token count comes from the server's usage report when the stream has one: `usage.completion_tokens` for OpenAI-compatible servers, `usage.output_tokens` for Anthropic, `eval_count` for Ollama and `outputTokens` or `outputTokenCount` for Bedrock. OpenAI-compatible servers send usage in a stream only when the request sets `stream_options.include_usage`, and vLLM can send it on every chunk with `continuous_usage_stats`.
+The output token count comes from the server's usage report when the stream has one: `usage.completion_tokens` for OpenAI-compatible servers, `response.usage.output_tokens` in the last event of a Responses API stream, `usage.output_tokens` for Anthropic, `eval_count` for Ollama and `outputTokens` or `outputTokenCount` for Bedrock. OpenAI-compatible servers send usage in a stream only when the request sets `stream_options.include_usage`, and vLLM can send it on every chunk with `continuous_usage_stats`.
 
 When a stream has no usage report, each output frame counts as one token and the stream is marked approximate. Servers that send several tokens per frame then show fewer tokens, a longer ITL and a lower token rate than they really had. The **Approximate token counts** metric tells you how many finished streams this applies to.
 
@@ -94,7 +96,7 @@ These are the LLM names `--fail-if` accepts, with the matching goal name for a t
 
 A replay that sent no LLM stream reports none of these metrics, and a percentile with no samples is left out rather than reported as zero.
 
-These metrics say how fast a model answers. To gate on whether its answers are still right, `--fail-if` also accepts `llm.tool-call-match-pct`, `llm.divergence-pct` and `llm.failure-pct`, and a cloud or cluster report carries the same rates as `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. See [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md).
+These metrics say how fast a model answers. To gate on whether its answers are still right, `--fail-if` also accepts `llm.tool-call-match-pct`, `llm.divergence-pct` and `llm.failure-pct`, and a test config goal can gate a local replay, a cluster replay or a cloud report on the same rates as `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. See [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md).
 
 ## Goals in a test config
 

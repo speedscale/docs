@@ -73,6 +73,8 @@ Re-insertion tries to keep the JSON type of the original value. The downstream c
 
 The fallback to `0` for unparseable numbers is intentional — it keeps the document's shape valid even if a downstream chain emitted nonsense for a numeric field.
 
+To fix the type instead, set `type` to `number`, `boolean` or `string`. Every write then uses that JSON type, whatever the original value was. A downstream value that is not of that type, such as text for a `number`, is an error and is not written as text.
+
 ### Root-Array Wildcards
 
 `gjson` and `sjson` disagree on how to write back into a root-level JSON array using the leading `#` wildcard. `json_path` expands a path like `#.travelers.#.name` against a root-level array by writing the downstream value into every concrete index. Without this expansion the body would be corrupted.
@@ -95,6 +97,8 @@ What happens when the path doesn't exist depends on `create`:
 | `true` (default) | Returns an empty token so downstream transforms don't see `nil`. | Treats the downstream output as the new value and inserts it at the path, creating the necessary structure. |
 | `false` | Returns the original token with a "path value not found" error; the chain stops working on this token. | Returns the original document unchanged. |
 
+A key that `create` adds has no original type, so it is written as a JSON string unless `type` says otherwise. Set `type` when the receiving API expects a number or a boolean in a field the recorded request left out.
+
 Use `create=false` when you want to *only* operate on documents that already have the field — useful when the same chain runs on heterogeneous traffic.
 
 ## Configuration
@@ -103,7 +107,8 @@ Use `create=false` when you want to *only* operate on documents that already hav
 "type": "json_path",
 "config": {
     "path": "<gjson path>",
-    "create": "<boolean>"
+    "create": "<boolean>",
+    "type": "<number | boolean | string>"
 }
 ```
 
@@ -111,6 +116,7 @@ Use `create=false` when you want to *only* operate on documents that already hav
 |---|---|---|---|
 | `path` | **Yes** | — | The gjson path to the value. Missing config fails chain initialization. |
 | `create` | No | `true` | If the path is missing, create it at insert time. Set to `false` to skip transformation when the field is not present. |
+| `type` | No | The original value's type | Fixes the JSON type of the value written: `number`, `boolean` or `string`. Without it, a key missing from the body is written as a string. Any other value fails chain initialization. |
 
 `path` supports `${{...}}` variable substitution, resolved at runtime against the variable cache. This lets one chain target a dynamically chosen field.
 
@@ -142,6 +148,15 @@ req_body() → json_path(path="foo.bar") → constant(value="bam")
 
 - Input: `{}`
 - Output: `{"foo":{"bar":"bam"}}` — `create=true` (the default) builds the nesting.
+
+### Example 3a: Create a missing field as a number
+
+```
+req_body() → json_path(path="temperature", type="number") → constant(new="0")
+```
+
+- Input: `{"model":"example"}`
+- Output: `{"model":"example","temperature":0}`. Without `type`, the new key would be written as the string `"0"`.
 
 ### Example 4 — Top-level array wildcard
 
@@ -198,6 +213,7 @@ The inner `json_path` operates on the string yielded by the outer one; both re-i
 | Chain init: `missing parameter path` | `path` not set | Add `"path": "..."` |
 | Token unchanged, "path value not found" error | The path doesn't exist in the input document and `create=false` | Either set `create=true` or fix the path |
 | Numeric field becomes `0` | Downstream produced non-numeric text for a number field | Make the upstream transform produce numeric text, or restructure the chain |
+| A field the chain added is a string where the API expects a number or boolean | The key was missing from the body, so there was no original type to keep | Set `type` to `number` or `boolean` |
 | Output JSON has the new value but different formatting (whitespace, key order) | `sjson` rewrites the document on insert | This is expected; downstream consumers should parse JSON, not match byte-for-byte |
 | Top-level array path doesn't work with `#` | Targeting a root-level array | Use the `#.field...` form — the transform expands it across all indices |
 | Path with advanced gjson features doesn't round-trip | `sjson` doesn't support all `gjson` features for writes | Use a simpler path, or switch to [`json_selector`](./json_selector.md) for recursive matching |
