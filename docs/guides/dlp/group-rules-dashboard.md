@@ -52,7 +52,7 @@ You do not have to open the rule editor to put a service in a group rule's scope
 
 ### See which rules mask a service
 
-The service page's **DLP rules** section lists, for each cluster and namespace the service runs in, the cluster's baseline and every group rule whose scope matches the service, on or off. When a cluster has redaction turned off, the section says so: no rule masks the service's traffic there, group rules included. The **Capture** tab of a workload says the same thing in one sentence.
+The service page's **DLP rules** section lists, for each cluster and namespace the service runs in, the cluster's baseline and every group rule whose scope matches the service, on or off. The section also says when a cluster's redaction settings leave a gap. With no baseline named and **Redact sensitive data** (`WITH_DLP`) off, no rule masks the service's traffic there, group rules included. With a baseline named but **Redact sensitive data** off, the forwarder still runs the rules' transform chains but masks none of the fields listed under **Mask fields by name**. The **Capture** tab of a workload says the same thing in one sentence.
 
 ### Pick a rule and check the change
 
