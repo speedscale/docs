@@ -23,8 +23,6 @@ In a Responses API answer, function calls are compared as tool calls and reasoni
 
 By default, scoring runs in process and makes no network call. Two optional settings send response text to an endpoint you choose: an external embedding backend, and a judge for divergent pairs. [Compare Response Meaning](./semantic-comparison.md#choose-where-text-scoring-runs) explains both.
 
-`proxymock replay` and `proxymock replay score` also run when Speedscale cannot be reached, for example inside a private network. They print one warning and continue. See [Run without a connection to Speedscale](../how-it-works/data_and_privacy.md#run-without-a-connection-to-speedscale) for what still needs the connection.
-
 ## Replay the recorded prompts at the candidate
 
 Start from a recording of your application's LLM traffic, made with `proxymock record` or the Speedscale sidecar. The same replay also reports how fast the candidate answers: see [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md).

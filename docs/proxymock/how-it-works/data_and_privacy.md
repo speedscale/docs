@@ -26,17 +26,3 @@ The digest shows counts only, such as how many developers ran **proxymock** last
 It never shows names, and it never shows what was run.
 
 Runs made while not signed in to a tenant are not counted.
-
-## Run without a connection to Speedscale
-
-`proxymock record`, `mock`, `replay` and `replay score` do their work on your machine, so they run without a connection to Speedscale. When the Speedscale API cannot be reached, the command prints one warning and continues. Its sign-in waits at most three seconds, and CLI logs are not uploaded for that run.
-
-Anything a local run reads from Speedscale cloud still needs the connection. Each of these fails with an error that says the cloud could not be reached:
-
-- A user data file or snapshot artifact that is not on disk.
-- A DLP config that the test config references by id.
-- The `managed` judge of [semantic comparison](../guides/semantic-comparison.md#optional-judging-of-divergent-pairs).
-
-An API key that Speedscale rejects still stops these commands. Commands that work with the cloud, such as `proxymock cloud`, pulls, pushes and cloud replays, still require the connection.
-
-A run started from the MCP server or the proxymock web UI signs in when it starts, and fails when it cannot.
