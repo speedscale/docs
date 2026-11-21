@@ -252,7 +252,8 @@ proxymock replay \
 | OpenAI-compatible chat completions and text completions | `temperature` | `seed` |
 | Ollama native | `options.temperature` | `options.seed` |
 | Anthropic Messages | `temperature` | Not set, because the API has no seed |
-| Responses API and Amazon Bedrock | Not changed | Not changed |
+| OpenAI Responses API | `temperature` | Not set, because the API has no seed |
+| Amazon Bedrock | Not changed | Not changed |
 
 A seed repeats sampling only as far as the model server honours it, so measure the noise floor again with the pin in place.
 
