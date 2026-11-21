@@ -38,6 +38,8 @@ The defaults apply when configuration and flags do not override them. Review `re
 
 Selecting an external embedding service sends the text being scored to that service. Use the built-in option or a locally hosted endpoint when traffic must remain local.
 
+The built-in scorer compares wording, not meaning, so it can band a reworded answer divergent or failed. When that happens to an LLM answer and no judge ran, the replay summary says so. A `local` or `openai` embedding backend, or a judge, compares meaning.
+
 ## Optional judging of divergent pairs
 
 Judging is off by default. `--semantic-judge` can ask a model to adjudicate pairs in the divergent band:

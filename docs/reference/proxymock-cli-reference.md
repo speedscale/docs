@@ -247,8 +247,10 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
 - `--performance` - Deprecated alias for `--load-test`
 - `--rewrite-host` - Rewrite the HTTP `Host` header to match the target host and port
-- `--llm-model string` - Model name to send in recorded LLM requests in place of the recorded one, to [evaluate another model or checkpoint](/proxymock/guides/llm-eval-gate.md). Applies to OpenAI-compatible, Anthropic Messages and Ollama requests
-- `--llm-api-key-env string` - Name of the environment variable holding the API key for the model under evaluation; sent in place of the recorded credential on LLM requests, as a Bearer token or as the `x-api-key` header of an Anthropic Messages request that has one
+- `--llm-model string` - Model name to send in recorded LLM requests in place of the recorded one, to [evaluate another model or checkpoint](/proxymock/guides/llm-eval-gate.md). Applies to OpenAI-compatible (chat completions, text completions and Responses API), Anthropic Messages, Ollama and Amazon Bedrock requests. On a Bedrock request it replaces the model id or inference profile ARN in the URL, and a request signed with SigV4 is changed only together with `--llm-api-key-env`
+- `--llm-api-key-env string` - Name of the environment variable holding the API key for the model under evaluation; sent in place of the recorded credential on LLM requests, as a Bearer token or as the `x-api-key` header of an Anthropic Messages request that has one. On a Bedrock request it is an Amazon Bedrock API key, sent as a Bearer token in place of the recorded SigV4 signature
+- `--llm-temperature float` - Temperature to set on every recorded LLM request, replacing the recorded value or adding one, to [cut run-to-run noise](/proxymock/guides/llm-eval-gate.md#pin-the-sampling-settings) when comparing models; `0` is the usual choice. Applies to OpenAI-compatible chat, completions and Responses API requests, Anthropic Messages and Ollama requests. Without it each request keeps its recorded sampling settings
+- `--llm-seed int` - Whole-number seed to set on every recorded LLM request, replacing the recorded value or adding one. Applies to OpenAI-compatible chat and completions requests and Ollama requests
 - `--test-against strings` - Target address to replay against. You can pass this flag multiple times and scope specific targets by service name.
 - `--tests-filter string` - Filter that chooses which recorded RRPairs to replay as tests. Everything else is mocked. By default proxymock replays inbound traffic. Use `'(direction IS OUT) AND (tech IS Postgres)'` to send an app's recorded database calls to the database instead. An RRPair tagged `replayRole=test` or `replayRole=mock` keeps that role.
 - `--test-config string` - Workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to use as the base for this replay; flags on this command still override it (default `regression`)
@@ -295,8 +297,9 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
 - `llm.requests`
 - `llm.incomplete`
 - `llm.token-count-approx-pct`
+- `llm.tool-call-match-pct`, `llm.divergence-pct`, `llm.failure-pct`
 
-The `llm.*` metrics measure streamed LLM responses; see [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md) for their definitions.
+The `llm.*` speed metrics measure streamed LLM responses; see [LLM Streaming Metrics](/guides/replay/llm-streaming-metrics.md) for their definitions. The last three score replayed LLM answers against the recorded ones; see [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md#gate-on-the-three-rates).
 
 `requests.result-match-pct` is the share of requests whose status code matched the recording, the same figure a cloud report shows as its expected status code percentage. A changed response body does not lower it. `requests.response-match-pct` is the share of replayed pairs whose response matched as `replay-verdict.json` scores them, body included, or status only with `--ignore-body-changes`. Gate on it to fail a replay when a body changes. It needs the replayed responses, so it is not reported with `--no-out` or `--load-test`.
 
@@ -1052,7 +1055,7 @@ proxymock cluster replay [command]
 - `--no-mocks` - start: mock nothing, so the workload reaches its real dependencies
 - `--snapshot-id string` - start: replay a snapshot already in Speedscale Cloud instead of pushing these recordings
 - `--test-config string` - start: workspace [test config](/proxymock/guides/test-configs.md) (or path to a config JSON) to stage in the cluster and run this replay with (default `regression`)
-- `--wait` - start: block until the replay reaches a terminal state, reporting each stage
+- `--wait` - start: block until the replay reaches a terminal state, reporting each stage; a replay with no Speedscale cloud then prints its result, including the [LLM answer quality rates](/proxymock/guides/llm-eval-gate.md#a-cluster-replay-with-no-speedscale-cloud) when it sent LLM requests, and exits nonzero if it missed its goals
 - `--all` - status: include replays that are no longer running but still in the cluster
 - `--source strings` - logs: only stream this component: generator, responder or collector
 - `-f, --follow` - logs: keep streaming until interrupted, ignoring `--timeout`
