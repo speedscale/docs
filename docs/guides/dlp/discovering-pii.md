@@ -45,16 +45,16 @@ The expanded patterns and field-level scoring are included in the September 2026
 
 Discovery also recognizes structural formats such as UUIDs, JWTs, IP addresses, dates, and hashes. Recognizing a format and recommending sensitive-data redaction are separate decisions. Decide which fields are sensitive for your application, including fields that receive no recommendation.
 
-## Classify fields with a local model
+## Classify fields with a language model
 
-proxymock can ask a language model you run about the fields that patterns and key names leave undecided. The model only proposes: each sensitive verdict becomes an ordinary `dlp_field` recommendation that you review, accept or reject like any other.
+proxymock can ask a language model about the fields that patterns and key names leave undecided. The model only proposes: each sensitive verdict becomes an ordinary `dlp_field` recommendation that you review, accept or reject like any other.
 
 The model is asked about two kinds of field:
 
 - fields that no pattern or key name recommends, such as a person's name under a vague key
 - credit-card, routing-number and IMEI fields whose evidence sits close to the suppression threshold, where the model's verdict replaces the count heuristic
 
-Any server that speaks the OpenAI chat API works, such as Ollama, vLLM or llama.cpp. Only the `openai-compatible` provider is accepted.
+The model can be one you run on any server that speaks the OpenAI chat API, such as Ollama, vLLM or llama.cpp, with the `openai-compatible` provider. It can also be your own OpenAI or Anthropic account, with the `openai` or `anthropic` provider; see [Use your OpenAI or Anthropic account](#use-your-openai-or-anthropic-account).
 
 ```bash
 proxymock recommendations list --in ./proxymock \
@@ -67,12 +67,13 @@ The same flags work on `proxymock web` and on `proxymock recommendations accept`
 
 | Flag | Environment variable | Meaning |
 | --- | --- | --- |
-| `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`; setting it enables the classifier |
-| `--dlp-model-base-url` | `SPEEDSCALE_DLP_MODEL_BASE_URL` | API root of the model server, for example `http://localhost:11434/v1` |
-| `--dlp-model` | `SPEEDSCALE_DLP_MODEL` | model id on that server |
-| `--dlp-model-api-key` | `SPEEDSCALE_DLP_MODEL_API_KEY` | optional key sent to the model server |
-| `--dlp-model-exposure` | `SPEEDSCALE_DLP_MODEL_EXPOSURE` | `samples` (default) or `metadata` |
-| none | `SPEEDSCALE_DLP_MODEL_REASONING_EFFORT` | passed to the server; `none` turns off a reasoning model's thinking where the server supports it |
+| `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`, `openai` or `anthropic`; setting it enables the classifier |
+| `--dlp-model-base-url` | `SPEEDSCALE_DLP_MODEL_BASE_URL` | API root of the model server, for example `http://localhost:11434/v1`; `openai-compatible` only |
+| `--dlp-model` | `SPEEDSCALE_DLP_MODEL` | model id on that server or account |
+| `--dlp-model-api-key` | `SPEEDSCALE_DLP_MODEL_API_KEY` | key for the provider; required for `openai` and `anthropic`, optional for `openai-compatible` |
+| `--dlp-model-exposure` | `SPEEDSCALE_DLP_MODEL_EXPOSURE` | `samples` or `metadata`; the default is `samples` for `openai-compatible` and `metadata` for `openai` and `anthropic` |
+| `--dlp-adjudicator-model` | `SPEEDSCALE_DLP_ADJUDICATOR_MODEL` | optional second model on the same provider that decides grey-zone card, routing-number and IMEI fields |
+| none | `SPEEDSCALE_DLP_MODEL_REASONING_EFFORT` | passed to the server; `none` turns off a reasoning model's thinking where the server supports it. Leave it unset for `anthropic`, which has no `none` value |
 
 ### Recommended model
 
@@ -120,9 +121,39 @@ proxymock recommendations list --in ./proxymock \
 
 The AWQ build is a different 4-bit quantization from the Ollama build, and Speedscale has not measured it on the corpus, so its verdicts carry `dlpModelCertified: false`.
 
+### Use your OpenAI or Anthropic account
+
+If your organization already has an agreement with OpenAI or Anthropic, proxymock can call that account instead of a model you run:
+
+```bash
+SPEEDSCALE_DLP_MODEL_API_KEY=<your key> proxymock recommendations list --in ./proxymock \
+  --dlp-model-provider anthropic \
+  --dlp-model <model id>
+```
+
+Use `--dlp-model-provider openai` the same way for an OpenAI account. A vendor provider needs an API key and takes no base URL.
+
+A vendor provider runs in `metadata` exposure unless you ask for more: the model receives each field's location, counts and pattern hits, and no recorded value leaves proxymock. To send sample values as well, pass `--dlp-model-exposure samples`; proxymock then prints a notice that values are going to the vendor, and each recommendation's `dlpModelExposure` tag records what the model saw. The [free-text check](#free-text-fields) reads values, so it runs with a vendor provider only in `samples` exposure.
+
+The data you send is governed by your own agreement with the vendor. Speedscale makes no claim about how a vendor stores or uses it.
+
+You choose the model, and Speedscale makes no accuracy commitment for it: its verdicts carry `dlpModelCertified: false`. The model must follow instructions to answer in JSON, and each request holds up to 16 fields, a few thousand tokens. As a guide, open models of 14B parameters or more scored F1 0.886 to 0.891 on the corpus in `metadata` exposure and an 8B model scored 0.823, so pick a model at least as capable as a 14B open model.
+
+With patterns, key names and the rules in [Results and the cache](#results-and-the-cache) in front of it, each of these models scored as follows on the same corpus in `metadata` exposure:
+
+| Provider | Model | Precision | Recall | F1 |
+| --- | --- | --- | --- | --- |
+| `anthropic` | `claude-haiku-5-5` | 0.980 | 0.986 | 0.983 |
+| `openai` | `gpt-5-mini` | 0.983 | 0.986 | 0.984 |
+| `openai-compatible` | `qwen3:14b` | 0.987 | 0.972 | 0.979 |
+
+Without sample values the model judges a field by its location alone, so a bare `name` key or a city, state or country field is more often misjudged than in `samples` exposure. These are results on one synthetic corpus, not a commitment for your traffic.
+
+A second model can decide the grey-zone card, routing-number and IMEI fields while a cheaper one classifies the rest. Name it with `--dlp-adjudicator-model`; it runs on the same provider and key. Published results favour a stronger second model over asking the same model again.
+
 ### What the model receives
 
-The classifier sends one request per endpoint, with up to 16 fields in it.
+The classifier sends one request per endpoint, with up to 16 fields in it. Exposure is `samples` by default for a model you run and `metadata` by default for a vendor provider.
 
 | Sent | `samples` exposure | `metadata` exposure |
 | --- | --- | --- |
@@ -150,7 +181,7 @@ The check runs in `samples` exposure only; in `metadata` exposure proxymock send
 
 ### Results and the cache
 
-A recommendation the model proposed carries the tags `dlpClass`, `dlpReason`, `dlpModel` and `dlpModelCertified`. The `dlpClassification` tag says how the model took part: `classified` when it proposed the field, `adjudicated` when it decided a grey-zone card, routing-number or IMEI field, and `not classified` when it was asked and gave no usable answer.
+A recommendation the model proposed carries the tags `dlpClass`, `dlpReason`, `dlpModel`, `dlpModelCertified` and `dlpModelExposure`. The `dlpClassification` tag says how the model took part: `classified` when it proposed the field, `adjudicated` when it decided a grey-zone card, routing-number or IMEI field, and `not classified` when it was asked and gave no usable answer. With `--dlp-adjudicator-model`, `dlpModel` on an adjudicated field names the adjudicator.
 
 A field the model could not classify keeps the result discovery gives without a model.
 
@@ -160,7 +191,7 @@ A verdict that contradicts the rules discovery already applies gets no recommend
 - a date of birth whose key names another event, such as `createdAt`, `orderDate`, `shipDate` or `founded`
 - a card number, IBAN, routing number, SSN, email, MAC address, IMEI or VIN in a field where no value matches that class's pattern, such as a masked card number
 
-Verdicts are saved in `.proxymock/dlp-classifications.json` in the workspace, so each field is asked about once and a second analysis of unchanged traffic makes no model call. Changing the model or the exposure starts a new cache. Delete the file to classify every field again.
+Verdicts are saved in `.proxymock/dlp-classifications.json` in the workspace, so each field is asked about once and a second analysis of unchanged traffic makes no model call. An adjudicator model's verdicts are saved beside it, in `.proxymock/dlp-classifications-adjudicator.json`. Changing the model or the exposure starts a new cache. Delete the files to classify every field again.
 
 Verdicts from the [recommended model](#recommended-model) carry `dlpModelCertified: true`, and verdicts from any other model carry `dlpModelCertified: false`. A model can call ordinary data sensitive, such as an order date or a product description, so review its proposals before you accept them, whichever model made them.
 
