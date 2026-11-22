@@ -45,6 +45,125 @@ The expanded patterns and field-level scoring are included in the September 2026
 
 Discovery also recognizes structural formats such as UUIDs, JWTs, IP addresses, dates, and hashes. Recognizing a format and recommending sensitive-data redaction are separate decisions. Decide which fields are sensitive for your application, including fields that receive no recommendation.
 
+## Classify fields with a local model
+
+proxymock can ask a language model you run about the fields that patterns and key names leave undecided. The model only proposes: each sensitive verdict becomes an ordinary `dlp_field` recommendation that you review, accept or reject like any other.
+
+The model is asked about two kinds of field:
+
+- fields that no pattern or key name recommends, such as a person's name under a vague key
+- credit-card, routing-number and IMEI fields whose evidence sits close to the suppression threshold, where the model's verdict replaces the count heuristic
+
+Any server that speaks the OpenAI chat API works, such as Ollama, vLLM or llama.cpp. Only the `openai-compatible` provider is accepted.
+
+```bash
+proxymock recommendations list --in ./proxymock \
+  --dlp-model-provider openai-compatible \
+  --dlp-model-base-url http://localhost:11434/v1 \
+  --dlp-model qwen3:14b
+```
+
+The same flags work on `proxymock web` and on `proxymock recommendations accept` and `reject`. Each flag falls back to an environment variable, so a CI job or an MCP client can enable the classifier without changing its command line.
+
+| Flag | Environment variable | Meaning |
+| --- | --- | --- |
+| `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`; setting it enables the classifier |
+| `--dlp-model-base-url` | `SPEEDSCALE_DLP_MODEL_BASE_URL` | API root of the model server, for example `http://localhost:11434/v1` |
+| `--dlp-model` | `SPEEDSCALE_DLP_MODEL` | model id on that server |
+| `--dlp-model-api-key` | `SPEEDSCALE_DLP_MODEL_API_KEY` | optional key sent to the model server |
+| `--dlp-model-exposure` | `SPEEDSCALE_DLP_MODEL_EXPOSURE` | `samples` (default) or `metadata` |
+| none | `SPEEDSCALE_DLP_MODEL_REASONING_EFFORT` | passed to the server; `none` turns off a reasoning model's thinking where the server supports it |
+
+### Recommended model
+
+Speedscale certifies `qwen3:14b` from the Ollama library, the Q4_K_M build with ID `bdbd181c33f2`, run with thinking turned off. Verdicts from it carry `dlpModelCertified: true`. Any other model still works, and its verdicts carry `dlpModelCertified: false`.
+
+Speedscale picked it on a labeled corpus of 2,269 recorded fields, 886 of them sensitive, with five sample values per field. The scores below are the model's own, before patterns, key names and the rules in [Results and the cache](#results-and-the-cache) take part:
+
+| Model | Precision | Recall | F1 | Correct verdicts flipped by an instruction planted in a value | Fields per minute |
+| --- | --- | --- | --- | --- | --- |
+| `qwen3:8b` | 0.703 | 0.994 | 0.824 | 24.5% | 274 |
+| `qwen3:14b` | 0.855 | 0.990 | 0.918 | 5.8% | 155 |
+| `qwen3:32b` | 0.875 | 0.999 | 0.933 | 21.5% | 86 |
+
+`qwen3:32b` scores slightly higher but runs at half the speed and was talked out of a correct verdict almost four times as often. With patterns, key names and those rules in front of it, `qwen3:14b` scores precision 0.992 and recall 0.990 on the same corpus.
+
+The speeds in the table were measured on an Apple M5 Max GPU with four requests in flight. Ollama loads `qwen3:14b` at about 16 GB with its default 40,960-token context, so the minimum is 16 GB of free GPU memory, or of unified memory on Apple silicon. The model also runs on CPU alone in 16 GB of free RAM: on the same machine's 18-core CPU it classified 24 fields per minute, about a sixth of the GPU speed, so a first analysis of a large workspace takes noticeably longer. Each field is asked about only once, so later analyses of the same traffic are fast on either.
+
+Run it with Ollama:
+
+```bash
+ollama pull qwen3:14b
+ollama list
+SPEEDSCALE_DLP_MODEL_REASONING_EFFORT=none proxymock recommendations list --in ./proxymock \
+  --dlp-model-provider openai-compatible \
+  --dlp-model-base-url http://localhost:11434/v1 \
+  --dlp-model qwen3:14b
+```
+
+`ollama list` shows the ID of the build you pulled; the certified build is `bdbd181c33f2`.
+
+Run it with vLLM, which serves an AWQ build of the same model on an NVIDIA GPU:
+
+```bash
+vllm serve Qwen/Qwen3-14B-AWQ \
+  --reasoning-parser qwen3 \
+  --default-chat-template-kwargs '{"enable_thinking": false}'
+```
+
+```bash
+proxymock recommendations list --in ./proxymock \
+  --dlp-model-provider openai-compatible \
+  --dlp-model-base-url http://localhost:8000/v1 \
+  --dlp-model Qwen/Qwen3-14B-AWQ
+```
+
+The AWQ build is a different 4-bit quantization from the Ollama build, and Speedscale has not measured it on the corpus, so its verdicts carry `dlpModelCertified: false`.
+
+### What the model receives
+
+The classifier sends one request per endpoint, with up to 16 fields in it.
+
+| Sent | `samples` exposure | `metadata` exposure |
+| --- | --- | --- |
+| host and HTTP method | yes | yes |
+| field location, for example `http.res.bodyBase64.customer.name` | yes | yes |
+| how many values the field had and how many were distinct | yes | yes |
+| how many values matched each sensitive pattern | yes | yes |
+| up to five distinct values of the field, each cut at 200 characters | yes | no |
+
+Headers, query strings, URL paths and whole bodies are never sent. In `metadata` exposure no recorded value leaves proxymock.
+
+Sample values are recorded traffic, and a value written to steer the model can change its answer. The model is told to ignore instructions inside values, but use `metadata` exposure for traffic that may carry hostile input.
+
+### Free-text fields
+
+A note, a support message or a recorded prompt can carry personal data inside a sentence, where no pattern sees it. When the model calls a field free text, or the field's values read like prose, proxymock runs a second check on it.
+
+The check sends up to ten distinct values of the field, each cut at 1,000 characters, in one request, and asks which of them mention personal data and of what kinds. The field carries personal data when any sampled value does.
+
+A field that carries personal data gets a recommendation to redact the whole field. A sample can miss personal data in a field whose text varies a lot, so a rule that redacted only the spans found would leave the rest of the field unchecked. The recommendation's `dlpFreeTextKinds`, `dlpFreeTextSampled` and `dlpFreeTextWithPII` tags show what the sample found.
+
+A field the check finds clean gets no recommendation, even when the model first called it free text. At most 200 fields are checked per analysis. A field over that limit keeps the model's first verdict, tagged `dlpFreeTextCheck: not yet checked`, and is checked by a later analysis.
+
+The check runs in `samples` exposure only; in `metadata` exposure proxymock sends no values, so free-text fields are judged by their location alone.
+
+### Results and the cache
+
+A recommendation the model proposed carries the tags `dlpClass`, `dlpReason`, `dlpModel` and `dlpModelCertified`. The `dlpClassification` tag says how the model took part: `classified` when it proposed the field, `adjudicated` when it decided a grey-zone card, routing-number or IMEI field, and `not classified` when it was asked and gave no usable answer.
+
+A field the model could not classify keeps the result discovery gives without a model.
+
+A verdict that contradicts the rules discovery already applies gets no recommendation:
+
+- a street address or postal code inside a business object such as `store`, `office`, `clinic` or `warehouse`, the same objects key-name discovery skips
+- a date of birth whose key names another event, such as `createdAt`, `orderDate`, `shipDate` or `founded`
+- a card number, IBAN, routing number, SSN, email, MAC address, IMEI or VIN in a field where no value matches that class's pattern, such as a masked card number
+
+Verdicts are saved in `.proxymock/dlp-classifications.json` in the workspace, so each field is asked about once and a second analysis of unchanged traffic makes no model call. Changing the model or the exposure starts a new cache. Delete the file to classify every field again.
+
+Verdicts from the [recommended model](#recommended-model) carry `dlpModelCertified: true`, and verdicts from any other model carry `dlpModelCertified: false`. A model can call ordinary data sensitive, such as an order date or a product description, so review its proposals before you accept them, whichever model made them.
+
 ## Why a value may not produce a recommendation
 
 The analyzer examines evidence across values at a JSON field location. It considers how often the field appears, how many distinct values it contains, how often a sensitive pattern matches, and whether values resemble other known formats.
