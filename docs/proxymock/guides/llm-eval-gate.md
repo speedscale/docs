@@ -388,7 +388,7 @@ A [cluster replay started from your kubeconfig](./cluster.md#replay) with no Spe
 
 A report whose replay sent LLM requests has an **LLM** tab. Its **Answer quality** section shows the three rates with the counts behind them, and says whether a goal on each rate was met.
 
-![The Answer quality section of a report, with a comparison against another report under it](./llm-quality-report.jpg)
+![The Answer quality section of a report, with a comparison against an older report of the same snapshot under it](./llm-quality-report.jpg)
 
 Below the rates:
 
@@ -400,6 +400,8 @@ Below the rates:
 Select a request's prompt to read the recorded answer beside the replayed one. Both are shown as the answer itself, with any tool calls and their arguments, so a streamed response and a whole one read the same. The difference that decided the verdict is called out above them.
 
 The answer dialog links to the full requests, and each link opens in a new tab. **Open the recorded request** opens that request in the snapshot's traffic. **Open the replayed request** opens the report's **Accuracy** tab with the exact request the answer was scored from open in the detail pane. For a report analyzed before this was available, or a request that got no response, it opens the list of requests that replayed the recorded one instead; reanalyze the report to get the direct link.
+
+![The answer dialog for one request, with links to the recorded request and to the replayed request](./llm-quality-answer-links.jpg)
 
 ### Compare two reports
 
@@ -417,7 +419,7 @@ Clear the field to stop comparing. With a baseline chosen, the section shows:
 
 Select a request in either list to read the recorded answer beside what each report's model answered. Each report's column has its own **Open the replayed request** link.
 
-![A request that got worse, with the recorded answer and both reports' answers](./llm-quality-answers.jpg)
+![A request that got worse, with the recorded answer, both reports' answers and a link to each request](./llm-quality-answers.jpg)
 
 This is the same comparison as [`proxymock replay score --baseline`](#compare-two-checkpoints). When the two reports were scored with different settings, the section says which setting differs and shows no change, because the difference would describe the scoring and not the models.
 
