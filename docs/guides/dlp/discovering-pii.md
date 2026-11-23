@@ -170,7 +170,9 @@ proxymock signs requests with the AWS default credential chain: environment vari
 
 The model id is a Bedrock model id or an inference profile id, such as one starting with `us.` or `eu.`. Some models can only be called through an inference profile; Bedrock then rejects the base model id with a message that on-demand throughput is not supported. The prefix of a cross-region profile decides which regions may serve the request, so pick it with your data residency rules in mind.
 
-The credentials need `bedrock:InvokeModelWithResponseStream` on the model or inference profile, since proxymock streams answers through the Converse API, and the model must be enabled for your account in that region. An `AccessDeniedException` usually means one of these is missing, or a service control policy blocks the region. proxymock caps each answer at 4,096 tokens, so a request does not reserve the model's full output quota.
+proxymock streams answers through the Converse API. For a direct model call, grant `bedrock:InvokeModelWithResponseStream` on the foundation model ARN in your Region. For an inference profile, grant the same action on the profile ARN and on the underlying foundation model ARN in every Region the profile can route to. See the [Bedrock inference profile prerequisites](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-prereq.html).
+
+Confirm your account has access to the model. If you get `AccessDeniedException`, check the IAM resource grants and any service control policies for the destination Regions. proxymock caps each answer at 4,096 tokens, so a request does not reserve the model's full output quota.
 
 #### Azure OpenAI
 
