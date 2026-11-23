@@ -65,6 +65,16 @@ proxymock recommendations list --in ./proxymock \
 
 The same flags work on `proxymock web` and on `proxymock recommendations accept` and `reject`. Each flag falls back to an environment variable, so a CI job or an MCP client can enable the classifier without changing its command line.
 
+### When the model runs
+
+Asking the model can take several minutes, longer the first time or when the model server has to start, so ordinary analysis never calls it. Analysis still applies the verdicts the model gave before, so its recommendations stay after a reanalysis.
+
+- `proxymock recommendations list` with the `--dlp-model-*` flags asks the model, since the flags are the request.
+- In `proxymock web`, started with the `--dlp-model-*` flags, the Recommendations view shows **Classify with the DLP model**. It warns that the run can take several minutes, then reanalyzes the selected recording with the model.
+- In the Speedscale dashboard, a snapshot's Prepare tab shows **Classify with the DLP model** for tenants with a DLP model. It warns the same way, then reanalyzes the snapshot with the model; the snapshot shows as in progress until it finishes.
+
+Each run asks only about fields the model has not classified before.
+
 | Flag | Environment variable | Meaning |
 | --- | --- | --- |
 | `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`, `openai`, `anthropic`, `bedrock` or `azure-openai`; setting it enables the classifier |
