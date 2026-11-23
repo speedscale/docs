@@ -37,7 +37,7 @@ The digest is on by default. The footer of every email says why you got it and l
 
 This is a busy week for a fictional tenant:
 
-![A weekly digest with five items that need an admin, the week in numbers, services that moved, one suggestion, setup and usage, and access changes](./weekly-digest/sample-busy.png)
+![A weekly digest with two items that need an admin, the week in numbers, readiness changes, one suggestion, setup and usage, and access changes](./weekly-digest/sample-busy.png)
 
 ## The four kinds of email
 
@@ -89,12 +89,14 @@ Items are ranked with blocking items first, then items with a deadline:
 
 1. A service went from Ready to Not ready.
 2. A schedule failed 3 or more runs in a row.
-3. A cluster has not reported for more than 24 hours.
+3. A cluster has not reported for more than 24 hours. Several silent clusters share one item.
 4. Accepted findings end in the next 7 days.
 5. Traffic is on pace to pass your tenant's threshold this month.
 6. Your trial ends in the next 14 days.
 
-The digest shows up to 5 items, then says how many more there are.
+The digest shows up to 5 items, and the headline counts only those. When there are more, it says the rest are in the dashboard.
+
+A cluster that reported for less than 2 days in total and then stopped is treated as a short-lived test environment, such as one created for each CI pipeline run. It never appears under Needs an admin, and it is left out of the cluster count under Setup and usage.
 
 ### The week in numbers
 
@@ -108,19 +110,21 @@ With fewer than 5 replays in the week, the digest shows counts instead of percen
 
 If none of the week's reports are graded, the digest leaves out Services ready.
 
-### Services that moved
+### Readiness changes
 
 This lists graded services whose verdict or a family letter changed during the week, worst first.
 
-It shows up to 5 services, then says how many others held their letters.
+Each service says what happened to its verdict, such as **Still ready**, **Now ready** or **No longer ready**, then which letters changed, such as "Performance improved from D to A".
+
+It shows up to 5 services, then says how many more changed and how many kept their grades.
 
 The digest reads each report's [readiness](../guides/readiness/index.md) verdict and letters as they were recorded. It never grades a report itself, so it always agrees with the Readiness tab.
 
 Each service is compared with its own [trend](../guides/readiness/service-trend.md). When a test config or chaos rule change moved a letter, the digest says so, so it does not read as a code regression.
 
-### Worth doing next
+### Suggestions
 
-This shows up to 2 suggestions, or 1 when 3 or more items block a release. See [Suggestions](#suggestions). In a quiet week this section comes first, right under the headline.
+This shows up to 2 suggestions, or 1 when 3 or more items block a release. See [How suggestions are chosen](#how-suggestions-are-chosen). In a quiet week this section comes first, right under the headline.
 
 ### Setup and usage
 
@@ -146,7 +150,7 @@ It is never based on your data, and it never appears in setup or silent emails.
 
 To keep the digest and drop this line, use **Stop product news** in the footer or turn off **Product news in the digest** in your profile.
 
-## Suggestions
+## How suggestions are chosen
 
 Each suggestion comes from something Speedscale measured in your tenant.
 
