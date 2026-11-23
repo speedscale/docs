@@ -39,6 +39,20 @@ This is a busy week for a fictional tenant:
 
 ![A weekly digest with two items that need an admin, the week in numbers, readiness changes, one suggestion, setup and usage, and access changes](./weekly-digest/sample-busy.png)
 
+## Past digests
+
+Admins can read past digests in **Settings > Weekly digest**, under **Past digests**.
+
+Each week shows its subject, and the selected week appears as the email looked. Links open in a new tab.
+
+The page keeps one year of digests.
+
+A week marked **Not emailed** was built for your tenant but not sent by email.
+
+The copy in the dashboard has no unsubscribe or **Not useful** links. To change those settings, use the switches above it or your profile.
+
+Only admins can see past digests, because the digest lists access changes such as new API keys.
+
 ## The four kinds of email
 
 Speedscale picks one kind of email for each tenant each week.
@@ -184,7 +198,7 @@ Only admins receive the digest. Other users see these settings turned off with t
 
 ### For your whole tenant
 
-Admins can go to **Tenant settings > Weekly digest**:
+Admins can go to **Settings > Weekly digest**:
 
 - **Send the weekly digest to admins** turns it off for every admin in the tenant.
 - **Counts only** replaces service, schedule and cluster names with counts.
