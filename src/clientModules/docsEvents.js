@@ -3,13 +3,15 @@
 // which start a reader chose or whether they got as far as running a replay.
 import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 
-// A step counts as reached when the reader copies from the section under
-// `anchor` on `path`: the copy button or a manual copy of selected text.
+// A step counts as reached when the reader copies a code block in the section
+// under `anchor` on `path`: the copy button or a manual copy of selected text.
+// `match` narrows it to the replay command where the section has setup
+// commands too.
 const STEPS = [
-  { path: '/proxymock/getting-started/quickstart/quickstart-cli', anchor: 'run-mocks', step: 'first_replay', start: 'local' },
+  { path: '/proxymock/getting-started/quickstart/quickstart-cli', anchor: 'run-mocks', match: /proxymock replay/, step: 'first_replay', start: 'local' },
   { path: '/proxymock/agent-tutorial/regression-test', anchor: 'prompt', step: 'first_replay', start: 'local_agent' },
   { path: '/proxymock/agent-tutorial-cluster/replay-the-tests', anchor: 'prompt', step: 'first_report', start: 'cluster_agent' },
-  { path: '/getting-started/tutorial', anchor: 'replay', step: 'first_report', start: 'dashboard' },
+  { path: '/getting-started/tutorial', anchor: 'replay', match: /docker-replay\.yaml up|proxymock replay/, step: 'first_report', start: 'dashboard' },
 ];
 
 const sent = new Set();
@@ -40,10 +42,16 @@ function sectionAnchor(node) {
   return null;
 }
 
+// The step for a copy that started at `node`, or undefined.
 function stepFor(node) {
+  const el = node && node.nodeType === 1 ? node : node && node.parentElement;
+  const block = el && el.closest('.theme-code-block');
+  if (!block) return undefined;
   const path = trimSlash(window.location.pathname);
-  const anchor = sectionAnchor(node);
-  return STEPS.find((s) => s.path === path && s.anchor === anchor);
+  const anchor = sectionAnchor(block);
+  const pre = block.querySelector('pre');
+  const code = pre ? pre.textContent : '';
+  return STEPS.find((s) => s.path === path && s.anchor === anchor && (!s.match || s.match.test(code)));
 }
 
 if (ExecutionEnvironment.canUseDOM) {
