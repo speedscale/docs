@@ -16,7 +16,9 @@ For more information about Google Pub/Sub, see the [Google Cloud Pub/Sub documen
 
 | Call | Capture | Mock | Replay |
 |---|---|---|---|
-| `Publish`, `Acknowledge`, `ModifyAckDeadline` and other unary calls | Yes, as gRPC | Yes, as gRPC | Yes, as gRPC |
+| `Publish` | Yes, as gRPC | Yes, by topic with new message IDs ([mock a publisher](#mock-a-pubsub-publisher)) | Yes, as gRPC |
+| `Acknowledge` and `ModifyAckDeadline` | Yes, as gRPC | Yes, without matching ([mock a subscriber](#mock-a-pubsub-subscriber)) | Yes, as gRPC |
+| Other unary calls, such as `GetSubscription` | Yes, as gRPC | Yes, as gRPC | Yes, as gRPC |
 | `Pull` | Yes, as gRPC | Yes, from the recorded messages ([mock a subscriber](#mock-a-pubsub-subscriber)) | Its messages can be republished to drive a subscriber |
 | `StreamingPull` | Yes, as a streamed gRPC call, kept in parts when it runs long | Yes, from the recorded messages ([mock a subscriber](#mock-a-pubsub-subscriber)) | Its messages can be republished to drive a subscriber |
 
@@ -32,22 +34,89 @@ Record the subscriber with proxymock, which records `StreamingPull` streams, inc
 |---|---|
 | `StreamingPull` | Matches the stream by the subscription in its first request only. Pushes the messages recorded for that subscription, with their data, attributes, ordering key and message ID, at the pace they arrived in the recording. Then keeps the stream open until the client cancels it. |
 | `Pull` | Answers from the same recorded messages, up to `max_messages`, and returns an empty response once none are left. |
-| `Acknowledge` and `ModifyAckDeadline` | Answers success whatever the ack IDs. |
-| Publisher calls such as `Publish`, and other subscriber calls such as `GetSubscription` | Matched by signature, like any other gRPC call. |
+| `Acknowledge` | Ends the delivery of each ack ID the mock handed out, and answers success whatever the ack IDs. |
+| `ModifyAckDeadline` | Extends the ack deadline of each delivery, or redelivers it when the deadline is 0 seconds (a nack), and answers success whatever the ack IDs. |
+| `Publish` | Answered by topic, see [mock a publisher](#mock-a-pubsub-publisher). |
+| Other subscriber calls such as `GetSubscription` | Matched by signature, like any other gRPC call. |
 
-The mock answers these four calls this way for a Pub/Sub host once the recording holds at least one of them for that host.
+The mock answers the four subscriber calls this way for a Pub/Sub host once the recording holds at least one of them for that host.
 
-The mock uses the messages of every recorded `StreamingPull` and `Pull` call for the subscription, in the order they were recorded, including streams recorded as several parts and streams the client cancelled. A message recorded twice with the same ack ID is sent once, and a redelivery recorded with a new ack ID is sent again as recorded. Use `proxymock mock --grpc-streaming-immediate` to send the messages without the recorded gaps.
+The mock uses the messages of every recorded `StreamingPull` and `Pull` call for the subscription, in the order they were recorded, including streams recorded as several parts and streams the client cancelled. Each message is sent once at its first recorded delivery, however many times it was delivered in the recording, because the mock redelivers what your subscriber nacks or lets expire. Use `proxymock mock --grpc-streaming-immediate` to send the messages without the recorded gaps.
 
 The mock honors the `max_outstanding_messages` and `max_outstanding_bytes` that the client sends in its first `StreamingPull` request. It stops sending while the messages it sent and the client has not acknowledged reach either limit, and splits a recorded response when only part of it fits. An acknowledgement frees room whether it arrives on the stream or as an `Acknowledge` call, and so does a nack, which is a `ModifyAckDeadline` of 0 seconds. A lease extension frees nothing, and keepalives are ignored.
 
-Each recorded message is sent once per mock instance and subscription. Two subscribers on the same subscription share the recorded messages, as they share a real subscription, instead of both receiving all of them. A `Pull` takes from the same messages, so it gets only what the streams have not taken. Restart or reload the mock to send the messages again.
+Each recorded message is sent once per mock instance and subscription, unless you [serve more than the recorded volume](#serve-more-than-the-recorded-volume). Two subscribers on the same subscription share the recorded messages, as they share a real subscription, instead of both receiving all of them. A `Pull` takes from the same messages, so it gets only what the streams have not taken. Restart or reload the mock to send the messages again.
 
 A `StreamingPull` for a subscription with no recorded `StreamingPull` or `Pull` call returns `NOT_FOUND`. A `Pull` for such a subscription goes to the normal gRPC match instead, which can answer it from a `Pull` recorded by an older release. A subscription whose recordings hold no messages keeps its stream open and answers `Pull` with an empty response.
 
 Every call is saved to the mock's observed output as a match or a miss. A `StreamingPull` is saved when the stream ends, with the requests the client sent and the messages the mock sent.
 
-The mock does not redeliver a message that is nacked, never acknowledged, or left outstanding on a stream the client cancelled, as Pub/Sub would after the ack deadline. It does not simulate exactly-once delivery or ordering-key delivery rules.
+The mock does not simulate exactly-once delivery or ordering-key delivery rules.
+
+### Redelivery
+
+The mock redelivers a message the way Pub/Sub does when no retry policy is set:
+
+- A nack, which is a `ModifyAckDeadline` of 0 seconds on the stream or as a unary call, redelivers the message at once.
+- A message left unacknowledged past its ack deadline is redelivered. That includes a message outstanding on a stream the client cancelled or the mock dropped.
+- A redelivery has a new ack ID and the next `delivery_attempt`, counting the first delivery as 1. The message itself, its message ID included, is unchanged.
+- An ack with the old ack ID no longer ends the redelivered message.
+
+The ack deadline of a `StreamingPull` delivery is the `stream_ack_deadline_seconds` of the stream. A `ModifyAckDeadline` with more than 0 seconds extends it from the time it arrives. A `Pull` delivery has the Pub/Sub default deadline of 10 seconds, because the subscription's own deadline is not in the recording.
+
+Redelivery lets a recording test your subscriber's retry path, a poison message it keeps nacking, and the dead-letter handling it does itself. The mock has no dead-letter topic of its own.
+
+### Faults and chaos
+
+The test config's [chaos rules](../../concepts/chaos.md) and the [`proxymock mock --fault`](../../reference/proxymock-cli-reference.md#mock) rules apply to `StreamingPull`, `Pull`, `Acknowledge`, `ModifyAckDeadline` and `Publish`. A rule sees each unary call once, and each `StreamingPull` once when the stream opens:
+
+| Effect | Unary call | `StreamingPull` |
+|---|---|---|
+| Latency | Delays the response. | Delays every message the stream sends. |
+| Status code | Fails the call with the gRPC code a client reads from that HTTP status: 429, 502, 503 and 504 are `UNAVAILABLE`, 401 is `UNAUTHENTICATED`, 403 is `PERMISSION_DENIED`, 404 is `UNIMPLEMENTED`, 400 is `INTERNAL`, and others are `UNKNOWN`. | Ends the stream with that code before it sends anything. |
+| No response | Leaves the call unanswered until the client gives up. | Keeps the stream open without sending anything. |
+| Connection refuse, reset or stall | Faults the connection before anything is answered. | Faults the connection before anything is sent. |
+| Connection drop | Sends part of the response, then cuts the connection. | Sends the first message, then cuts the connection. |
+
+A call a fault stops changes nothing: a failed `Acknowledge` leaves its messages outstanding, and a failed `Pull` or `StreamingPull` hands nothing out. A message the mock sent before it dropped the connection stays outstanding until its ack deadline passes, and is then redelivered. Body, header and payload effects do not apply to Pub/Sub calls. Each perturbed call is marked in the observed output, as any other chaos is.
+
+For example, this fails one `Acknowledge` in four with `UNAVAILABLE`, so your subscriber has to retry its acks:
+
+```bash
+proxymock mock --in proxymock/recorded-<timestamp> --fault 'Acknowledge:rate=1/4'
+```
+
+### Serve more than the recorded volume
+
+By default the mock sends each recorded message once. To load test a subscriber offline, with no Google Cloud project and no emulator, serve the recorded messages several times or without end:
+
+```bash
+proxymock mock --in proxymock/recorded-<timestamp> --pubsub-passes 10
+```
+
+`--pubsub-passes` takes a whole number, or `loop` to start again each time the messages run out. In a test config, set `responder.pubsub`:
+
+```json
+{
+  "responder": {
+    "pubsub": {
+      "passes": 10
+    }
+  }
+}
+```
+
+Set `"loop": true` instead of `passes` to serve without end. A `--pubsub-passes` flag wins over the test config.
+
+The first pass sends the messages as recorded. Every later pass sends them with new ack IDs and new message IDs, so a subscriber that deduplicates on the message ID processes them again. Each pass keeps the recorded gaps between messages unless you also use `--grpc-streaming-immediate`. A subscriber that deduplicates on a field inside the message data still sees the recorded data on every pass.
+
+## Mock a Pub/Sub publisher
+
+When the service under test publishes to Pub/Sub, the mock answers its `Publish` calls by topic instead of by signature. A client library batches messages by count, size and delay, and messages often carry timestamps or IDs, so a signature match of the whole request would miss.
+
+The mock answers a `Publish` to any topic that the recording holds a `Publish` to on the same host. It returns a new message ID for each message, whatever the messages hold and however they are batched. A `Publish` to a topic the recording never published to is matched by signature, like any other gRPC call.
+
+Each published message is saved to the observed output as its own `Publish` call, with that one message and its message ID, so a comparison with the recording sees messages instead of batches. The call is tagged with `pubsubTopic`, `pubsubMessageId`, and `pubsubPublishCall`, which the messages of one batch share.
 
 ## Drive a subscriber by republishing
 
