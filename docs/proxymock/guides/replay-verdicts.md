@@ -139,7 +139,9 @@ The cause is read from the evidence, not proven. A gate that fails beside failin
 
 A fix prompt is self-contained. It previews the recorded and replayed request and response with header names only, never header values, and with bodies cut to 1,024 bytes, so it can be handed to a model without carrying a credential or a whole payload. It names both pairs by path for an agent that needs the rest.
 
-It ends with the command that confirms the fix: the same replay again with the failing run as `--baseline` and `--fail-on-new-mismatch`.
+It ends with how to confirm the fix. The same replay runs again with the failing run as `--baseline` and `--fail-on-new-mismatch`, so anything else the fix broke fails the run with exit `3`.
+
+That exit code does not say the failure itself is gone. A request that still fails the way it failed in the baseline is a known mismatch, which the baseline exempts, so the run can exit `0` with the bug still there. The prompt gives the `jq` command that reads the failed request's own row in the new `replay-verdict.json`: it is fixed when `match` is `pass` and `bodyMatch` is not `fail`.
 
 A run writes at most 50 bundles. Past that, `index.json` counts the rest in `omitted`. A run with no failures writes no `replay-failures` directory, and removes one an earlier run left in the same output directory.
 
