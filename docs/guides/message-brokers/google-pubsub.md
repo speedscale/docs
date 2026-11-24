@@ -121,11 +121,15 @@ speedctl create snapshot --name orders-worker --service orders-worker --tests-fi
 
 In the dashboard, open the snapshot's **Traffic** tab and use **Choose replay tests** instead. [Choose What a Replay Tests](../../proxymock/guides/choose-replay-tests.md) covers the filter syntax.
 
-**2. Replay the snapshot** with a test config that turns on republish. Leave Pub/Sub unmocked, so your subscriber reads the republished messages from Pub/Sub:
+**2. Replay the snapshot** with a test config that turns on republish. Leave Pub/Sub unmocked with `--mock-except`, so your subscriber reads the republished messages from Pub/Sub, while its other dependencies, such as its database and the HTTP services it calls, stay mocked:
 
 ```bash
-speedctl infra replay orders-worker --snapshot-id <snapshot-id> --test-config-id <test-config-id> --no-mocks
+speedctl infra replay orders-worker --snapshot-id <snapshot-id> --test-config-id <test-config-id> --mock-except 'host:pubsub.googleapis.com'
 ```
+
+Use the host your subscriber recorded, such as `us-east1-pubsub.googleapis.com` for a regional endpoint. Add `--dry-run-mocks` to print which services the replay will mock before you run it. [Controlling Outbound Mocks](../replay/via-speedctl.md#controlling-outbound-mocks) covers the selector syntax.
+
+Keep the other dependencies mocked to catch regressions. A republished message passes when Pub/Sub accepts it, whatever your subscriber then does with it, so what your subscriber does is visible only in the calls it makes downstream. The [`httpOutput` assertion](../../reference/configuration/assertions/httpoutput.md) compares those calls with the recording, and it needs the responder that `--no-mocks` turns off.
 
 ### Replay locally with proxymock
 
