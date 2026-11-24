@@ -53,7 +53,7 @@ A variation is judged on being refused, not on matching its recorded status, bec
 | Refused | The service answered with a `4xx` | Yes |
 | Accepted | The service answered with a `2xx` or `3xx` | No |
 | Failed | The service answered with a `5xx`, so the bad input reached code that did not expect it | No |
-| Refused after writing | The service answered with a `4xx`, but called a dependency with `POST`, `PUT`, `PATCH` or `DELETE` while handling the request | No |
+| Refused after writing | The service answered with a `4xx`, but called a dependency with `POST`, `PUT`, `PATCH` or `DELETE` while handling the request. A `POST` that only asks a question, such as an authorization check (OPA, OpenFGA, Keto), token introspection or a search, does not count | No |
 | No response | Nothing came back | No |
 
 The write check reads the calls the mock server recorded while the request was in flight. Without `proxymock mock` running, a variation is judged on its status alone. Name the mock server's output with `--mocks-out` when it is outside the workspace.
@@ -61,3 +61,18 @@ The write check reads the calls the mock server recorded while the request was i
 The replay summary counts the variations by outcome, and each failed one gets a [failure bundle](./replay-verdicts.md#failure-bundles) with the likely cause and a next step, such as checking that the resource belongs to the caller.
 
 Do not pass `--test-config` when you replay variations. A test config's status assertions compare with the recorded status exactly, so a service that answers `422` where the variation recorded `400` would fail them.
+
+## Replay variations from Speedscale cloud
+
+Push the variations as a snapshot of their own, then replay it from the dashboard or with `proxymock cloud replay`:
+
+```bash
+proxymock cloud push snapshot --in proxymock/variations --name orders-variations
+```
+
+The report judges each variation the same way: on being refused, including the check for a write before the refusal, read from the calls the responder answered while the request was in flight. A test config's status and body assertions do not apply to a variation, so the snapshot can be replayed with any test config.
+
+On the report's **Accuracy** tab each variation is one status check that expects a `4xx` refusal and names how it fared, such as `rejected with 404` or `accepted with 200, expected a 4xx`. A variation that was not refused counts against the success rate and gets a **Likely cause** that names the bad input, such as a request with another recorded user's credential.
+
+A push of the whole workspace leaves `proxymock/variations` out, because `proxymock variations` marks it as generated, so a regression snapshot of real traffic never carries them by accident. Name the folder in `--in` to push them.
+
