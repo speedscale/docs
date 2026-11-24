@@ -223,6 +223,8 @@ const sidebars = {
             "proxymock/guides/recommendations",
             "proxymock/guides/blueprints",
             "proxymock/guides/choose-replay-tests",
+            "proxymock/guides/test-plans",
+            "proxymock/guides/request-variations",
             "proxymock/guides/replay-tuning",
             "proxymock/guides/replay-debugger",
             "proxymock/guides/semantic-comparison",
