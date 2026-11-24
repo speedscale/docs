@@ -28,7 +28,7 @@ Speedscale replays involve three distinct steps that are supported separately: *
 
 | Technology        | Type     | Support      | Notes                                                                              |
 | ----------------- | -------- | ------------ | ---------------------------------------------------------------------------------- |
-| AMQP              | Protocol | Full         | 0.9.1: captured by the sidecar, eBPF and proxymock, mocked, and replayed by publishing recorded deliveries. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) and [Apache ActiveMQ](../guides/message-brokers/apache-activemq.md) |
+| AMQP              | Protocol | Full         | 0.9.1: captured by the sidecar, eBPF and proxymock, mocked, and replayed by publishing recorded deliveries. AMQP 1.0 is not supported yet. See [RabbitMQ](../guides/message-brokers/rabbitmq.md) |
 | Form URL Encoded  | Protocol | Full         |                                                                                    |
 | Google PubSub     | Protocol | Partial      | gRPC calls such as `Publish` and `Acknowledge` are captured, mocked and replayed as gRPC. `StreamingPull` and `Pull` subscribers can be mocked from the messages they received, and a subscriber under test can be driven by republishing them. See [details](../guides/message-brokers/google-pubsub.md) |
 | GraphQL           | Protocol | Full         | See [GraphQL guide](/guides/graphql/) and [GraphQL in proxymock](/proxymock/graphql/). See [details](/guides/capture/bodies#graphql) |
@@ -105,8 +105,8 @@ Oracle is decoded on TCPS connections when the [eBPF collector](/reference/ebpf-
 | --------------------------- | ---- | ------- | -------------------------------------- |
 | Agent 2 Agent (A2A)         | API  | Full    | Labeled A2A from JSON-RPC methods (0.2, 0.3 and 1.0 names), the `A2A-Version` header, the agent card and HTTP+JSON routes such as `/message:send` |
 | Amazon MQ                  | API  | Partial | RabbitMQ brokers are supported as AMQP 0.9.1 over TLS on 5671: recorded, mocked and replayed. See [RabbitMQ](../guides/message-brokers/rabbitmq.md). ActiveMQ brokers are not supported yet. See [details](../guides/message-brokers/amazon-mq.md) |
-| Apache ActiveMQ             | API  | Full    | See [details](../guides/message-brokers/apache-activemq.md)      |
-| Apache Pulsar               | API  | Full    | See [details](../guides/message-brokers/apache-pulsar.md)      |
+| Apache ActiveMQ             | API  | Not supported yet | OpenWire, AMQP 1.0, STOMP and MQTT are not supported yet. HTTP calls to a broker are handled as ordinary HTTP. See [details](../guides/message-brokers/apache-activemq.md) |
+| Apache Pulsar               | API  | Partial | Supported through a Kafka-compatible endpoint, such as Kafka-on-Pulsar, as Kafka traffic. The native Pulsar binary protocol is not supported yet. See [details](../guides/message-brokers/apache-pulsar.md) |
 | Auth0                       | API  | Full    |                                        |
 | AWS Data Firehose           | API  | Full    | See [details](../guides/message-brokers/aws-kinesis-data-firehose.md)      |
 | AWS Kinesis                 | API  | Full    | See [details](../guides/message-brokers/aws-kinesis.md)      |
@@ -118,7 +118,7 @@ Oracle is decoded on TCPS connections when the [eBPF collector](/reference/ebpf-
 | Google Pub/Sub               | API  | Partial | gRPC calls such as `Publish` and `Acknowledge` are captured, mocked and replayed as gRPC. `StreamingPull` and `Pull` subscribers can be mocked from the messages they received, and a subscriber under test can be driven by republishing them. See [details](../guides/message-brokers/google-pubsub.md) |
 | MCP                         | API  | Full    | Labeled MCP from the `Mcp-Session-Id` and `MCP-Protocol-Version` headers, MCP JSON-RPC methods, and the HTTP+SSE `endpoint` event |
 | Microsoft Outlook 365       | API  | Full    |                                        |
-| Microsoft Azure Service Bus | API  | Full    | See [details](../guides/message-brokers/azure-service-bus.md)      |
+| Microsoft Azure Service Bus | API  | Partial | The HTTPS REST API is captured, mocked and replayed as HTTP. AMQP 1.0, which the Azure SDK messaging clients use, is not supported yet. See [details](../guides/message-brokers/azure-service-bus.md) |
 | Salesforce                  | API  | Full    | Both the legacy SOAP and new REST APIs |
 | Stripe                      | API  | Full    |                                        |
 | Twilio                      | API  | Full    |                                        |

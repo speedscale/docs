@@ -1,16 +1,16 @@
 ---
-title: Legacy sidecar capture fallback
-description: "Configure proxy sidecar capture for existing installations and environments that cannot use the standard eBPF capture path."
+title: Sidecar capture
+description: "Configure proxy sidecar capture, the supported capture method for namespace-scoped installs. eBPF is the standard default for the cluster-wide operator."
 sidebar_position: 1
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Legacy sidecar capture fallback
+# Sidecar capture
 
-:::warning Environment-specific fallback
-For standard Kubernetes capture, follow [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). Use this proxy sidecar workflow for existing sidecar deployments or environments that cannot meet the eBPF requirements. For a strict namespace-scoped installation without admission webhooks, use [namespaced sidecar capture](/guides/capture/sidecar-namespaced) instead of the annotation workflow below. Sidecar capture redirects application traffic and has its own permissions and TLS configuration.
+:::info When to use sidecar capture
+The proxy sidecar is the supported capture method for namespace-scoped installs. A namespace-scoped installation has no admission webhook, so use [namespaced sidecar capture](/guides/capture/sidecar-namespaced) there instead of the annotation workflow below. eBPF is the standard default for the cluster-wide operator. See [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes). The annotation workflow on this page needs the cluster-wide operator, and also covers workloads that do not meet the eBPF requirements. Sidecar capture redirects application traffic and has its own permissions and TLS configuration.
 :::
 
 In Kubernetes, Speedscale employs a sidecar (also known as `goproxy`) to capture network level traffic for individual services. The sidecar uses two server sockets to capture traffic:
@@ -25,7 +25,7 @@ The sidecar or init container uses these ports "intercept" traffic transparently
 ```mermaid
 flowchart LR
     client["Client<br/>destination :443"]
-    subgraph workload["Existing sidecar deployment"]
+    subgraph workload["Workload with sidecar"]
         inbound["Inbound proxy<br/>:4143"]
         app["Application<br/>:443"]
         outbound["Outbound proxy<br/>:4140"]
@@ -53,7 +53,7 @@ application will need to be routed through the proxy.
 The [envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/listeners/listeners#tcp) proxy (aka Istio) uses the same architecture to redirect traffic. Your platform or security team may already be familiar with this approach.
 :::
 
-## Installation (fallback)
+## Installation {#installation-fallback}
 
 There are several ways to install the sidecar in your cluster.  See the [proxy
 configuration reference](../../../reference/proxy_config.mdx) for proxy configuration
