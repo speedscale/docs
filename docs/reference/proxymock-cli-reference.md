@@ -31,6 +31,7 @@ proxymock [command]
 
 - `admin` - Administrative and maintenance commands (certs, clean)
 - `automation` - Run a proxymock web automation headlessly
+- `ci` - Run replays in a CI pipeline and report them on the pull request
 - `cloud` - Manage your Speedscale Cloud resources
 - `cluster` - Inspect and drive a Kubernetes cluster from the command line
 - `completion` - Generate the autocompletion script for the specified shell
@@ -221,6 +222,7 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
 - `--fail-if strings` - Fail with exit code `1` when a validation condition is true
 - `--baseline string` - Prior replay output directory for comparison against known failures
 - `--fail-on-new-mismatch` - Exit `3` for a new mismatch; requires `--baseline`
+- `--junit string` - Write a JUnit XML report of the replay to this file, with a test case for every replayed request, journey and gate. See [Report the result on the pull request](../proxymock/guides/cicd.md#report-the-result-on-the-pull-request)
 - `--verify-fix` - Interpret recorded errors becoming successful responses as fixes, and check collateral regressions
 - `--expect string` - Regular expression selecting recorded-error endpoints; requires `--verify-fix`
 - `--ignore-body-changes` - Restrict verdict scoring to response status codes
@@ -1142,6 +1144,76 @@ the pod's containers, including init containers, so you can pick the right one
 with `--container`.
 
 ## System commands
+
+### `ci`
+
+Run replays in a CI pipeline and report them on the pull request. See [CI/CD](../proxymock/guides/cicd.md).
+
+**Usage**
+
+```bash
+proxymock ci [command]
+```
+
+**Available subcommands**
+
+- `init` - Write a pipeline that replays recorded traffic on every pull request
+- `comment` - Post a replay's result as a pull request comment
+
+### `ci init`
+
+Write the pipeline file that installs proxymock, replays the recorded traffic against your application, and reports the result on the pull request. `github` writes `.github/workflows/proxymock.yml`. `gitlab` writes `.gitlab/proxymock.gitlab-ci.yml`, and a `.gitlab-ci.yml` that includes it when the project has no pipeline yet.
+
+**Usage**
+
+```bash
+proxymock ci init github|gitlab [flags]
+```
+
+**Examples**
+
+```bash
+# write a GitHub Actions workflow for an app started with 'npm start' on port 3000
+proxymock ci init github --app-command "npm start" --app-port 3000
+
+# see the GitLab job without writing it
+proxymock ci init gitlab --dry-run
+```
+
+**Flags**
+
+- `--app-command string` - Command that starts your application in the pipeline
+- `--app-port int` - Port your application listens on (default `8080`)
+- `--dry-run` - Print the files instead of writing them
+- `--force` - Replace an existing pipeline file
+- `--in string` - Directory of recorded traffic to replay, relative to the repository root (default `proxymock`)
+- `--no-mock` - Do not start `proxymock mock`; the application calls its real dependencies
+
+### `ci comment`
+
+Post the summary of a finished replay on the pull request or merge request the pipeline is running for. A later run replaces the comment instead of adding another. The argument is the replay's output directory, the one given to `proxymock replay --out`.
+
+**Usage**
+
+```bash
+proxymock ci comment <replay-dir> [flags]
+```
+
+**Examples**
+
+```bash
+proxymock ci comment proxymock/results/ci
+
+# print the comment without posting it
+proxymock ci comment proxymock/results/ci --dry-run
+```
+
+**Flags**
+
+- `--dry-run` - Print the comment instead of posting it
+- `--provider string` - `github` or `gitlab`; detected from the job's environment by default
+
+GitHub Actions needs `GITHUB_TOKEN` and `permissions: pull-requests: write`. GitLab CI needs a project access token with the `api` scope in `PROXYMOCK_GITLAB_TOKEN`.
 
 ### `admin`
 

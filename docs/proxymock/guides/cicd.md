@@ -36,6 +36,51 @@ In order to integrate **proxymock** into your CI/CD you will need:
 - A paid **proxymock** account (see [proxymock.io](https://proxymock.io/pricing) for pricing details)
 - Pre-recorded traffic files (see [recording](/proxymock/getting-started/quickstart/quickstart-cli.md#recording) to record from your app)
 
+## Let proxymock write the pipeline
+
+For GitHub Actions and GitLab CI, `proxymock ci init` writes the pipeline for you. Run it from the repository root with the command that starts your application and the port it listens on:
+
+<Tabs>
+
+<TabItem value="github" label="GitHub">
+
+```bash
+proxymock ci init github --app-command "npm start" --app-port 3000
+```
+
+This writes `.github/workflows/proxymock.yml`.
+
+</TabItem>
+
+<TabItem value="gitlab" label="GitLab">
+
+```bash
+proxymock ci init gitlab --app-command "npm start" --app-port 3000
+```
+
+This writes `.gitlab/proxymock.gitlab-ci.yml`. A project with no pipeline yet also gets a `.gitlab-ci.yml` with the line that includes it. A project that has one is given the `include:` line to add.
+
+</TabItem>
+
+</Tabs>
+
+The pipeline runs on every pull request or merge request. It installs proxymock, starts `proxymock mock` to answer the application's dependencies from the recording, replays the recorded requests against the application, and [reports the result](#report-the-result-on-the-pull-request) on the request.
+
+The command prints what is left to do by hand: adding your API key as the secret `SPEEDSCALE_API_KEY`, and adding the steps that build your application.
+
+| Flag | Use it to |
+| --- | --- |
+| `--in <dir>` | Name the directory of recorded traffic. The default is `proxymock`. |
+| `--app-command <command>` | Say how the application starts. Without it the pipeline holds a placeholder to replace. |
+| `--app-port <port>` | Say which port the application listens on. The default is `8080`. |
+| `--no-mock` | Leave out the mock server, so the application calls its real dependencies. |
+| `--dry-run` | Print the files instead of writing them. |
+| `--force` | Replace a pipeline file that already exists. |
+
+The replay in the pipeline names the built-in test config with `--test-config regression`. A replay holds a test config's goals as gates only when the config is named, so this is what makes a changed response fail the job. See [Test configs](./test-configs.md) to hold the run to your own goals instead.
+
+For any other CI system, or to build the pipeline yourself, follow the three steps below.
+
 ## 1. The Pipeline
 
 These pipeline examples contain the minimal configuration needed to run
@@ -408,7 +453,64 @@ To script the steps with HTTP and JSON instead of CLI flags, run `proxymock mcp 
 
 Use [replay verdicts](./replay-verdicts.md) to distinguish request completion from correct application behavior. Save a baseline replay, then use `--baseline <directory> --fail-on-new-mismatch` to fail on new per-request regressions. For incident recordings, `--verify-fix` checks that recorded failures are fixed without collateral regressions.
 
-Preserve the replay output directory as a CI artifact, including `replay-verdict.json`. These modes need response output and cannot be combined with `--no-out` or `--load-test`. Require essential [blueprints](./blueprints.md) with `--require-blueprint <name>`.
+Preserve the replay output directory as a CI artifact. It holds `replay-verdict.json`, `replay-summary.md` and, when something failed, the [failure bundles](./replay-verdicts.md#failure-bundles) under `replay-failures/`. These modes need response output and cannot be combined with `--no-out` or `--load-test`. Require essential [blueprints](./blueprints.md) with `--require-blueprint <name>`.
+
+## Report the result on the pull request
+
+A replay in a pipeline reports itself three ways. The pipeline that `proxymock ci init` writes uses all three.
+
+### JUnit report
+
+Add `--junit <file>` to write the replay as a JUnit XML report:
+
+```bash
+proxymock replay \
+  --in proxymock \
+  --test-against localhost:8080 \
+  --test-config regression \
+  --out proxymock/results/ci \
+  --junit proxymock-junit.xml \
+  -- ./my-app
+```
+
+The report has a test case for every replayed request, every [browser journey](../../guides/browser-journeys/index.md), and every gate: test config goals, report assertions, the readiness verdict and `--fail-if` conditions. GitHub, GitLab, Jenkins, Azure DevOps and CircleCI all read JUnit into their own test views. In GitLab, name the file under `artifacts: reports: junit` and the merge request shows the results.
+
+| Replay result | JUnit test case |
+| --- | --- |
+| A response that matched its recording, or a journey that passed | Passed |
+| A response that did not match, or a journey that failed | Failed, with the changed fields, the likely cause and the path of the [fix prompt](./replay-verdicts.md#failure-bundles) |
+| A mismatch that fails the same way in `--baseline` | Skipped, as a known mismatch |
+| A request whose recording has no response to compare with | Skipped |
+| A goal that was not evaluated locally | Skipped, with the reason |
+
+A request the recording holds more than once keeps its test case name unique by carrying the first characters of its id.
+
+### Summary
+
+Every replay that scored a request or a journey writes `replay-summary.md` in its output directory. It holds the result, the counts behind it, and a table of the failures with the likely cause and the next step for each.
+
+Inside GitHub Actions the replay also adds the summary to the run's summary page. It appends to the file named by `GITHUB_STEP_SUMMARY`, so what earlier steps wrote there stays.
+
+### Pull request comment
+
+`proxymock ci comment` posts the summary on the pull request or merge request the pipeline is running for:
+
+```bash
+proxymock ci comment proxymock/results/ci
+```
+
+The argument is the replay's output directory, the one given to `--out`. A later run replaces the comment instead of adding another, so the request shows the latest result once.
+
+The request and the credentials come from the job's environment:
+
+| CI system | What the job needs |
+| --- | --- |
+| GitHub Actions | `GITHUB_TOKEN` passed to the step, and `permissions: pull-requests: write` on the job |
+| GitLab CI | A project access token with the `api` scope in the masked variable `PROXYMOCK_GITLAB_TOKEN`. `GITLAB_TOKEN` is read when that is not set. GitLab's own job token cannot write comments. |
+
+The command exits `0` only when the comment was posted. Run it as a step that may fail without failing the job: a pull request from a fork gets a read-only token and cannot be commented on. In GitHub Actions that is `continue-on-error: true` with `if: always()`, so a failed replay is still commented on.
+
+Add `--dry-run` to print the comment without posting it. Add `--provider github` or `--provider gitlab` when the job runs somewhere that does not set `GITHUB_ACTIONS` or `GITLAB_CI`.
 
 ## Gate on a cloud replay
 
