@@ -101,9 +101,11 @@ When a request, a browser journey or a gate fails, the replay writes a `replay-f
 
 | File | Holds |
 | --- | --- |
-| `replay-failures/index.json` | The list to read first: every failure with its id, kind, title and likely cause, and the count per cause |
+| `replay-failures/index.json` | The list to read first: every failure with its id, key, kind, title and likely cause, and the count per cause |
 | `replay-failures/<id>.json` | One failure's evidence |
 | `replay-failures/<id>.md` | A fix prompt: the same evidence as Markdown, with what to do and how to confirm the fix |
+
+The `id`, such as `request-01`, numbers a failure within one run. The `key` names it across runs: the same request failing again on a later run has the same key, whatever it answered, which is how [`ci tickets`](./cicd.md#file-tickets-for-regressions) finds a failure's ticket.
 
 Requests that fail the same way are one failure. The same endpoint, statuses and set of changed fields make one bundle, and `occurrences` counts the requests behind it. A known mismatch, one that fails the same way in `--baseline`, gets no bundle.
 

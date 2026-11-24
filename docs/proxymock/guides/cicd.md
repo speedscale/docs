@@ -489,6 +489,8 @@ A request the recording holds more than once keeps its test case name unique by 
 
 Every replay that scored a request or a journey writes `replay-summary.md` in its output directory. It holds the result, the counts behind it, and a table of the failures with the likely cause and the next step for each.
 
+Beside it, `replay-summary.json` holds the same result for programs: `result` (`passed`, `passed-with-failures` or `failed`), the exit code, the counts, and each failure with its likely cause, request and the paths of its bundle and fix prompt. Each failure has a `key` that stays the same on later runs when the same request fails again, whatever it answered, and `checked` lists the keys of everything the run judged. [`ci notify`](#post-to-slack-or-a-webhook) and [`ci tickets`](#file-tickets-for-regressions) read this file.
+
 Inside GitHub Actions the replay also adds the summary to the run's summary page. It appends to the file named by `GITHUB_STEP_SUMMARY`, so what earlier steps wrote there stays.
 
 ### Pull request comment
@@ -511,6 +513,54 @@ The request and the credentials come from the job's environment:
 The command exits `0` only when the comment was posted. Run it as a step that may fail without failing the job: a pull request from a fork gets a read-only token and cannot be commented on. In GitHub Actions that is `continue-on-error: true` with `if: always()`, so a failed replay is still commented on.
 
 Add `--dry-run` to print the comment without posting it. Add `--provider github` or `--provider gitlab` when the job runs somewhere that does not set `GITHUB_ACTIONS` or `GITLAB_CI`.
+
+## Post to Slack or a webhook
+
+`proxymock ci notify` posts a replay's result to a webhook:
+
+```bash
+proxymock ci notify proxymock/results/ci
+```
+
+The webhook URL comes from `--webhook` or, better in a pipeline where the URL is a secret, from `PROXYMOCK_WEBHOOK_URL`. The format follows the URL:
+
+| `--format` | Sends | Default for |
+| --- | --- | --- |
+| `slack` | A message for a Slack incoming webhook: the result, its counts, and the first five failures with their likely cause, linked to the pipeline run | `hooks.slack.com` URLs |
+| `json` | `replay-summary.json` with `event` (`proxymock.replay.finished`), `runUrl` and `ref`, for a receiver of your own such as Teams, PagerDuty or a script | Every other URL |
+
+Set `PROXYMOCK_WEBHOOK_SECRET` to sign a `json` body. The `X-Proxymock-Signature-256` header then carries `sha256=` and the HMAC-SHA256 of the body, the way GitHub signs its webhooks.
+
+By default only a run with failures is posted. Add `--on always` to post every run. `--dry-run` prints the body instead of posting it. An error names only the webhook's host, since the URL of most chat webhooks is the credential.
+
+## File tickets for regressions
+
+`proxymock ci tickets` files a Linear or Jira ticket for each new regression a replay found:
+
+```bash
+proxymock ci tickets proxymock/results/ci --tracker linear --team ENG
+proxymock ci tickets proxymock/results/ci --tracker jira --project SHOP
+```
+
+Each ticket carries the failure's likely cause, next step, request and pipeline run, and the [fix prompt](./replay-verdicts.md#failure-bundles) for a coding agent. The prompt quotes the recorded and replayed requests and responses; add `--no-prompt` to leave it out. Paths in the prompt are made relative to the directory the job runs in, so they point into the repository.
+
+A failure with an open ticket never gets a second one, because tickets are matched by the failure's `key`. On later runs proxymock comments on the ticket when its failure passes, and again if it fails after that. It never closes a ticket: whoever fixes it decides it is done. A ticket whose failure the run did not exercise gets no comment.
+
+| Flag | Default | What it does |
+| --- | --- | --- |
+| `--bucket` | `sut-regression` | The likely causes that get tickets. A mock gap, volatile data or test configuration is the test's to fix, not the code's. |
+| `--max` | `5` | The most new tickets filed in one run. A broken deploy fails everything at once, and that is one incident. |
+| `--dry-run` | | Lists what would be filed and commented without changing anything. |
+| `--issue-type` | `Bug` | The Jira issue type. |
+
+The credentials come from the job's environment:
+
+| Tracker | What the job needs |
+| --- | --- |
+| Linear | A personal API key in `LINEAR_API_KEY`, and `--team` with the team key. Tickets carry `proxymock-failure:<key>` in the description. |
+| Jira Cloud | `JIRA_BASE_URL` (`https://<site>.atlassian.net`), `JIRA_EMAIL` and an API token in `JIRA_API_TOKEN`, and `--project` with the project key. Tickets are labelled `proxymock` and `proxymock-<key>`. |
+
+Run it on the default branch, after a merge or nightly, not on every pull request. A pull request's failures belong on the pull request, in its [comment](#pull-request-comment).
 
 ## Gate on a cloud replay
 

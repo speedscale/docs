@@ -1222,6 +1222,8 @@ proxymock ci [command]
 
 - `init` - Write a pipeline that replays recorded traffic on every pull request
 - `comment` - Post a replay's result as a pull request comment
+- `notify` - Post a replay's result to a webhook, such as a Slack channel
+- `tickets` - File Linear or Jira tickets for a replay's regressions
 
 ### `ci init`
 
@@ -1277,6 +1279,64 @@ proxymock ci comment proxymock/results/ci --dry-run
 - `--provider string` - `github` or `gitlab`; detected from the job's environment by default
 
 GitHub Actions needs `GITHUB_TOKEN` and `permissions: pull-requests: write`. GitLab CI needs a project access token with the `api` scope in `PROXYMOCK_GITLAB_TOKEN`.
+
+### `ci notify`
+
+Post the result of a finished replay to a webhook, from `replay-summary.json` in its output directory. The URL comes from `--webhook` or `PROXYMOCK_WEBHOOK_URL`. Set `PROXYMOCK_WEBHOOK_SECRET` to sign a `json` body in the `X-Proxymock-Signature-256` header. See [Post to Slack or a webhook](../proxymock/guides/cicd.md#post-to-slack-or-a-webhook).
+
+**Usage**
+
+```bash
+proxymock ci notify <replay-dir> [flags]
+```
+
+**Examples**
+
+```bash
+PROXYMOCK_WEBHOOK_URL=https://hooks.slack.com/services/... proxymock ci notify proxymock/results/ci
+
+# print the body without posting it
+proxymock ci notify proxymock/results/ci --format json --dry-run
+```
+
+**Flags**
+
+- `--dry-run` - Print the body instead of posting it
+- `--format string` - `slack` or `json`; `slack` for a `hooks.slack.com` URL, `json` otherwise
+- `--on string` - `failure` posts only a run with failures; `always` posts every run (default `failure`)
+- `--webhook string` - Webhook URL; `PROXYMOCK_WEBHOOK_URL` by default
+
+### `ci tickets`
+
+File a ticket for each new failure of a finished replay in Linear or Jira Cloud, and comment on open tickets when their failure passes or fails again. A failure with an open ticket gets no second one. See [File tickets for regressions](../proxymock/guides/cicd.md#file-tickets-for-regressions).
+
+**Usage**
+
+```bash
+proxymock ci tickets <replay-dir> --tracker linear|jira [flags]
+```
+
+**Examples**
+
+```bash
+proxymock ci tickets proxymock/results/ci --tracker linear --team ENG
+
+# see what it would file and comment, without changing anything
+proxymock ci tickets proxymock/results/ci --tracker jira --project SHOP --dry-run
+```
+
+**Flags**
+
+- `--bucket strings` - Likely causes to file tickets for: `sut-regression`, `mock-gap`, `volatile-data`, `environment`, `test-config` (default `sut-regression`)
+- `--dry-run` - List what would be filed and commented without changing anything
+- `--issue-type string` - Jira issue type (default `Bug`)
+- `--max int` - Most new tickets to file in one run (default `5`)
+- `--no-prompt` - Leave the fix prompt, which quotes the recorded and replayed requests and responses, out of the ticket
+- `--project string` - Jira project key, such as `SHOP`
+- `--team string` - Linear team key, such as `ENG`
+- `--tracker string` - `linear` or `jira`
+
+Linear needs a personal API key in `LINEAR_API_KEY`. Jira needs `JIRA_BASE_URL`, `JIRA_EMAIL` and `JIRA_API_TOKEN`.
 
 ### `admin`
 
