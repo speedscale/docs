@@ -8,8 +8,8 @@ sidebar_position: 1
 
 Speedscale captures [traffic](/reference/glossary.md#traffic) flowing through your application, including inbound and outbound traffic. For Kubernetes, start with [Kubernetes capture with eBPF and Java Agent](/guides/capture/kubernetes) to configure and verify capture.
 
-:::warning Sidecar capture is deprecated
-For new Kubernetes installations, use the eBPF collector. The [proxy sidecar](/reference/glossary.md#proxy) remains available for existing deployments and workloads that do not meet the eBPF requirements.
+:::info Capture methods on Kubernetes
+The eBPF collector is the standard default for the cluster-wide operator. The [proxy sidecar](/reference/glossary.md#proxy) is the supported capture method for [namespace-scoped installs](/getting-started/installation/install/kubernetes-namespaced). See [sidecar capture for namespaced installs](/guides/capture/sidecar-namespaced). The sidecar also works with the cluster-wide operator, for workloads that do not meet the eBPF requirements.
 :::
 
 ## Why capture traffic?

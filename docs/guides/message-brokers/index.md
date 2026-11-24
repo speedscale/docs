@@ -134,7 +134,7 @@ Full support for AWS SNS. Since SNS uses HTTP-based APIs, you can capture and re
 
 ### Microsoft Azure Service Bus
 
-Full support for Azure Service Bus. Since Service Bus uses HTTP REST APIs and supports AMQP 1.0, you can capture and replay Service Bus traffic using standard Speedscale replay capabilities or AMQP client libraries. Message extraction and custom load driver approaches can also be applied.
+Partial support. Calls to the Service Bus HTTPS REST API are captured, mocked and replayed as HTTP. AMQP 1.0, which the Azure SDK messaging clients use, is not supported yet.
 
 [Learn how to replay Azure Service Bus traffic](./azure-service-bus.md)
 
@@ -146,15 +146,15 @@ Full support for Azure Event Hubs. Event Hubs provides a Kafka-compatible API, a
 
 ### Apache Pulsar
 
-Full support for Apache Pulsar. Pulsar supports multiple protocols including Kafka-compatible API, HTTP REST, and gRPC. You can use Kafka client libraries with Pulsar's Kafka-compatible API, or use standard Speedscale replay for HTTP/gRPC traffic.
+Partial support. Applications that reach Pulsar through a Kafka-compatible endpoint, such as Kafka-on-Pulsar, are handled as Kafka traffic. The native Pulsar binary protocol is not supported yet.
 
 [Learn how to replay Apache Pulsar traffic](./apache-pulsar.md)
 
 ### Apache ActiveMQ
 
-Full support for Apache ActiveMQ. ActiveMQ supports AMQP 1.0 protocol, allowing you to use AMQP client libraries to extract and replay traffic. Speedscale can capture ActiveMQ AMQP traffic and help you create custom load drivers.
+Not supported yet. The ActiveMQ messaging protocols (OpenWire, AMQP 1.0, STOMP and MQTT) are not decoded. HTTP calls to a broker are handled as ordinary HTTP.
 
-[Learn how to replay Apache ActiveMQ traffic](./apache-activemq.md)
+[See what works with Apache ActiveMQ](./apache-activemq.md)
 
 ### Amazon MQ
 
@@ -191,8 +191,8 @@ To begin load testing your message broker integrations:
 1. Install [speedctl](/reference/glossary.md#speedctl)
 2. [Create a snapshot](/guides/creating-a-snapshot.md) of your application traffic
 3. Follow the broker-specific guide for your message broker:
-   - **Kafka Protocol**: [Kafka](./kafka.md), [AWS Kinesis](./aws-kinesis.md), [Azure Event Hubs](./azure-event-hubs.md), [Apache Pulsar](./apache-pulsar.md)
-   - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1), [Azure Service Bus](./azure-service-bus.md), [Apache ActiveMQ](./apache-activemq.md), [Amazon MQ](./amazon-mq.md)
+   - **Kafka Protocol**: [Kafka](./kafka.md), [AWS Kinesis](./aws-kinesis.md), [Azure Event Hubs](./azure-event-hubs.md), [Apache Pulsar](./apache-pulsar.md) (Kafka-compatible endpoint)
+   - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1), [Amazon MQ](./amazon-mq.md) (RabbitMQ brokers)
    - **gRPC**: [Google Pub/Sub](./google-pubsub.md)
    - **HTTP-based**: [AWS SQS](./aws-sqs.md), [AWS SNS](./aws-sns.md), [Azure Service Bus](./azure-service-bus.md)
 4. Build and run your load driver (if using custom approach) or start a standard replay

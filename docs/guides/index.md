@@ -1,64 +1,112 @@
 ---
 title: How-to Guides
-description: "Explore practical how-to guides for Speedscale's API testing platform, covering traffic capture, replay execution, and advanced feature configuration."
+description: "How-to guides for Speedscale and proxymock, grouped by job: capture, observe, snapshot, mock, replay, load test, handle auth, transform, protect data, automate and work with AI agents."
 sidebar_position: 1
 ---
 
-import {
-  SnapshotCard,
-  ReplayGuideCard,
-  LocalCaptureCard,
-  BrowserCaptureCard,
-  DlpCard,
-  SessionCard,
-  TlsCard,
-  TroubleshootingCard
-} from '@site/src/components/Cards';
-
 # How-to Guides
 
-This section contains practical, step-by-step guides for using Speedscale's API testing platform. Whether you're capturing traffic, running replays, or configuring advanced features, these guides will help you accomplish specific tasks.
+Each guide covers one job. The sections follow the order most teams work in: capture traffic, look at it, cut a snapshot, mock the dependencies, then replay. Guides that use the proxymock CLI and guides that use the dashboard sit side by side under the same job.
 
-## Getting Started
+New to Speedscale? Start with a [tutorial](/tutorials/) instead. To judge a replay result, see [Readiness and reports](./readiness/index.md).
 
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
-  <SnapshotCard />
-  <LocalCaptureCard />
-  <BrowserCaptureCard />
-</div>
+## Capture
 
-## Testing & Replay
+Get traffic out of a running service.
 
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
-  <ReplayGuideCard />
-  <SessionCard />
-</div>
+- [Set up Kubernetes capture](./capture/kubernetes.md)
+- [Capture TLS traffic](./tls.md)
+- [Capture cluster ingress traffic](./ingress.md)
+- [Work a cluster with the proxymock CLI](/proxymock/guides/cluster.md)
 
-## Security & Configuration
+## Observe traffic
 
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
-  <DlpCard />
-  <TlsCard />
-  <TroubleshootingCard />
-</div>
+Read what was captured before you build anything on it.
 
-## Analysis & Reports
+- [Traffic overview](./capture/traffic.md)
+- [Filter the traffic view](./capture/filter.md)
+- [Compare two RRPairs](./compare-rrpairs.md)
+- [Trace a request without traces](/proxymock/guides/trace-without-traces.md)
 
-- **[Reports](./reports/)** - Understanding test results and performance metrics
-- **[Readiness](./readiness/)** - The replay readiness scorecard: one verdict per report, a letter per metric family and acceptances
-- **[Traffic Recommendations](./recommendations)** - Automated insights from replay reports
-- **[Resend RRPair](./resend-rrpair)** - Resend and modify captured requests from the traffic viewer
+## Snapshots and filters
 
-## Additional Resources
+Pick the slice of traffic a replay will use.
 
-- **[Advanced Filters](./advanced-filters)** - Create sophisticated traffic filters for precise capture
-- **[Command-line tools](../getting-started/command-line-tools.md)** - Choose proxymock or speedctl and find installation, quickstarts, and references
-- **[speedctl capture and replay](./cli.md)** - Existing platform workflows using speedctl
-- **[Ingress Traffic](./ingress)** - Capture cluster ingress traffic
-- **[GraphQL Support](./graphql/index.md)** - Working with GraphQL APIs: operations, semantic paths, transforms and recipes
-- **[JSON Payloads](./json-payloads)** - Handling complex JSON data structures
-- **[Load Patterns](./load-patterns)** - Configure realistic load testing scenarios
-- **[Argo Integration](./argo)** - Using Speedscale with Argo Rollouts
-- **[OTEL Integration](./otel)** - OpenTelemetry integration guide
-- **[Prometheus Metrics](./prometheus)** - Monitoring with Prometheus
-- **[CMEK](./cmek)** - Customer-managed encryption keys
+- [Create a snapshot](./creating-a-snapshot.md)
+- [Create traffic filters](./creating-filters.md)
+- [Create a snapshot with the API](./manual_snapshot.md)
+
+## Mock
+
+Stand in for databases and downstream APIs with recorded responses.
+
+- [Mock backends in a replay](./replay/mocks/README.md)
+- [Improve the mock match rate](/proxymock/guides/mock-match-rate.md)
+- [Generate mocks from OpenAPI](/proxymock/guides/openapi.md)
+- [Refine signatures](./signature-refinement-guide.md)
+
+## Replay and regression
+
+Run recorded traffic against a build and check the responses.
+
+- [Replay from the dashboard](./replay/README.md)
+- [Replay with Kubernetes manifests](./replay/kube.md)
+- [Replay a Cloud snapshot locally](/proxymock/guides/cloud-snapshot-local.md)
+- [Tune a replay locally](/proxymock/guides/replay-tuning.md)
+- [Bootstrap a regression test with no recording](/proxymock/guides/bootstrap-regression-test.md)
+- [Act on traffic recommendations](./recommendations.md)
+
+## Load test
+
+Multiply recorded traffic to find the limit of a service.
+
+- [Run a load test](./replay/load-test.md)
+- [Shape the load pattern](./load-patterns.md)
+- [Test one endpoint while stressing another](./replay/endpoint-load-how-to.md)
+
+## Auth and sessions
+
+Keep logins, tokens and session IDs valid during a replay.
+
+- [Replace credentials](./replay/replace-credentials.md)
+- [Re-sign JWTs](./replay/resign-jwt.md)
+- [Identify a session or ID](./identify-session.md)
+- [Link sessions](./linked-sessions.md)
+
+## Transform data
+
+Change requests and responses before they are replayed or mocked.
+
+- [How transforms work](./transformation/overview.md)
+- [Smart replace](./transformation/smart-replace.md)
+- [Variables](./transformation/variables.md)
+
+## Protect data (DLP)
+
+Redact sensitive fields before traffic leaves your environment.
+
+- [Data Loss Prevention](./dlp/index.md)
+- [Author DLP and filter rules locally](/proxymock/guides/local-rules.md)
+
+## CI/CD and automation
+
+Run replays from a pipeline and gate on the result.
+
+- [CI/CD with cluster replay](./integrations/cicd/cicd.md)
+- [Gate CI on replay results](/proxymock/guides/replay-verdicts.md)
+- [REST API for CI and scripts](/proxymock/guides/rest-api.md)
+
+## AI agents
+
+Let a coding agent or the dashboard assistant do the work.
+
+- [AI chat assistant](./ai-assistant.md)
+- [Agent skills](/proxymock/agent-skills.md)
+- [Model Context Protocol (MCP)](/proxymock/how-it-works/mcp.md)
+- [Integration testing with Kiro](/proxymock/guides/kiro.md)
+
+## More
+
+- [Technologies](/technologies/): databases, Kafka and other message brokers, gRPC, GraphQL, LLM apps, AWS services, browsers and languages
+- [Import](./integrations/import/README.md) and [export](./integrations/export/README.md): move traffic to and from other tools
+- [Reference](/reference/): commands, transforms, extractors and test config fields

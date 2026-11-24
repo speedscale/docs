@@ -15,6 +15,17 @@ Evaluate Speedscale with one service to assess replay accuracy and performance i
 - **Test environment:** provide a non-production deployment, test credentials, seed data and capacity for the agreed load. Identify which dependencies will be mocked or remain live.
 - **Owners:** name an application owner and a platform contact for installation and network access.
 - **Data handling:** agree on fields to redact, storage location, access and retention before capture. See [Data Loss Prevention](/guides/dlp/).
+
+## Decide where traffic is stored
+
+Make this choice before installation, because it changes which installation you follow.
+
+| Option | Captured traffic and reports live in | Next step |
+| --- | --- | --- |
+| Speedscale Cloud | Speedscale-managed storage, viewed in the dashboard. | Continue with the installation requirements below. |
+| Bring Your Own Cloud (BYOC) | Your own S3, S3-compatible, GCS or Azure Blob storage, or a destination reached through your OpenTelemetry Collector. | [Review BYOC setup and data boundaries](../byoc/index.md) |
+
+BYOC requires Enterprise enablement and still needs Speedscale API connectivity for registration, configuration and operational telemetry.
 - **Access:** arrange Speedscale access, installation permissions and the required binaries or container images.
 
 ## Installation requirements
@@ -26,7 +37,7 @@ Evaluate Speedscale with one service to assess replay accuracy and performance i
 | Local service | Install [proxymock](../proxymock/getting-started/installation.md) and activate through browser sign-in. Use an API key for headless runs. Confirm proxy routing and TLS trust; Kubernetes is optional. |
 | VM or Docker | Configure an API key and review the [VM](./installation/install/vm.md) or [Docker](./installation/install/docker.md) guide. |
 
-Confirm [network access](../reference/networking.md) for your deployment, including outbound cloud connections and TCP 9443 webhook access for the classic operator. If captured traffic must stay in customer-controlled storage, review [BYOC](../byoc/index.md). It requires Enterprise enablement and still needs Speedscale API connectivity.
+Confirm [network access](../reference/networking.md) for your deployment, including outbound cloud connections and TCP 9443 webhook access for the classic operator. If captured traffic must stay in customer-controlled storage, see [Decide where traffic is stored](#decide-where-traffic-is-stored).
 
 ## Success criteria
 

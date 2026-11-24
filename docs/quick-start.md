@@ -20,7 +20,7 @@ For local development and testing without a cloud cluster, use **proxymock** to 
 - **Sensitive data controls:** enable [DLP](/guides/dlp/) so sensitive fields are redacted before data leaves your network.
 :::
 
-This guide walks through installing Speedscale into a new environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./tutorial.md) to record, replay and view results for a demo application.
+This guide walks through installing Speedscale into a new environment. After completing these steps the Speedscale Operator will be installed in your cluster and you should continue on to the [tutorial](./getting-started/tutorial.md) to record, replay and view results for a demo application.
 
 :::warning Sidecar capture is deprecated
 For Kubernetes traffic collection, use the [eBPF collector](/reference/ebpf-traffic-collection). Use goproxy sidecars only for an existing deployment or when your environment does not meet the eBPF requirements.
@@ -56,7 +56,7 @@ Copy the service account API key and use it as `apiKey` in the Helm commands bel
 
 ## Install Speedscale Operator (optional)
 
-If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./tutorial.md). The rest of this document is focused on installing a Kubernetes-based demo.
+If you are running Speedscale on your local desktop, you should continue directly to the [tutorial](./getting-started/tutorial.md). The rest of this document is focused on installing a Kubernetes-based demo.
 
 If you are using a common Kubernetes distribution (EKS, GKE, minikube, etc) then you can install using these instructions. If you are not running in Kubernetes, or are running with a more specialized enterprise distribution please select environment-specific [instructions](./getting-started/installation/install/README.md) in this section.
 
@@ -198,6 +198,6 @@ If you have any issues installing, check out the [troubleshooting guide](./getti
 
 For the proxymock CLI path, continue with [cluster capture and replay commands](/proxymock/guides/cluster/). If proxymock is not installed yet, [install it first](/proxymock/getting-started/installation/); the platform agent install already installs it.
 
-At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./tutorial.md) for a full walkthrough.
+At this point Speedscale is present in your cluster and you are now ready to target workloads for record and playback. If this is your first installation please continue using our multi-platform [tutorial](./getting-started/tutorial.md) for a full walkthrough.
 
 If you're already an expert you can click the `Add Service` button in the UI to target workloads for capture. Prefer enabling the [eBPF collector](/reference/ebpf-traffic-collection); if not possible, add sidecars [manually](./getting-started/installation/sidecar/install.md).

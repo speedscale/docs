@@ -1,12 +1,16 @@
 ---
 title: Replaying Azure Service Bus
-description: "Replay Azure Service Bus traffic using Speedscale's standard replay capabilities to capture, snapshot, and replay your application's interactions efficiently"
+description: "Replay Azure Service Bus REST API traffic with Speedscale. Service Bus AMQP 1.0 traffic, which the Azure SDK messaging clients send, is not supported yet."
 sidebar_position: 10
 ---
 
 ## Background
 
-Azure Service Bus supports multiple protocols: HTTP REST API (primary) and AMQP 1.0. Since Service Bus uses HTTP-based APIs as its primary interface, you can use Speedscale's standard replay capabilities to capture and replay Service Bus traffic. For applications using AMQP 1.0, you can also use a custom load driver approach similar to RabbitMQ.
+Azure Service Bus supports two protocols: AMQP 1.0, which the Azure SDK clients use to send and receive messages, and an HTTPS REST API.
+
+Speedscale does not decode AMQP 1.0 today. Messages that an application sends or receives over AMQP 1.0 cannot be inspected, mocked or replayed as messages. AMQP 1.0 is a different wire protocol from the AMQP 0.9.1 that Speedscale reads for RabbitMQ.
+
+Calls to the Service Bus REST API are ordinary HTTPS. Speedscale captures, mocks and replays them like any other HTTP traffic once TLS is decrypted. See [TLS capture](/guides/tls/). The rest of this page applies to REST API traffic.
 
 For more information about Azure Service Bus, see the [Azure Service Bus documentation](https://azure.microsoft.com/en-us/products/service-bus).
 
@@ -17,7 +21,7 @@ For more information about Azure Service Bus, see the [Azure Service Bus documen
 
 ## Standard Replay Approach
 
-Since Azure Service Bus uses HTTP-based APIs, you can use Speedscale's standard replay capabilities:
+For applications that call the Service Bus REST API, you can use Speedscale's standard replay capabilities:
 
 1. **Capture Production Traffic**: Use Speedscale to capture your application's interactions with Azure Service Bus
 2. **Create a Snapshot**: [Create a snapshot](/guides/creating-a-snapshot.md) from the captured traffic
@@ -27,9 +31,9 @@ For detailed instructions on using Speedscale's standard replay capabilities, se
 
 ## Alternative: Custom Load Driver Approach
 
-If you need more control over message replay patterns or want to extract and replay messages independently, you can use a custom load driver approach. Service Bus supports two methods:
+If you need more control over message replay patterns or want to extract and replay messages independently, you can use a custom load driver approach. The messages must come from captured REST API traffic.
 
-### Method 1: Using HTTP REST API
+### Extract the data
 
 Extract message payloads from Service Bus HTTP REST API traffic:
 
@@ -37,22 +41,12 @@ Extract message payloads from Service Bus HTTP REST API traffic:
 speedctl extract data <snapshot-id> --path .http.request.body --path .ts
 ```
 
-### Method 2: Using AMQP 1.0 Protocol
-
-If you're using Service Bus with AMQP 1.0, you can extract data similar to RabbitMQ:
-
-```bash
-speedctl extract data <snapshot-id> --path .AmqpV10.server.transfer.body --path .ts
-```
-
-For more details on extracting AMQP traffic, see the [RabbitMQ guide](./rabbitmq.md).
-
 ### Create your producer
 
-Create a custom load producer using the Azure Service Bus SDK (HTTP) or AMQP client libraries. The steps are:
+Create a custom load producer using the Azure Service Bus SDK. The producer sends directly to Service Bus, so it does not depend on Speedscale decoding AMQP 1.0. The steps are:
 
 1. Read the CSV from the previous step
-2. Create a Service Bus client (Azure SDK) or AMQP connection (for AMQP protocol)
+2. Create a Service Bus client (Azure SDK)
 3. Iterate over the CSV
 4. For each row, extract the message body and optionally the timestamp
 5. If timing mode is enabled, wait between messages to match the original recording timing
@@ -494,17 +488,9 @@ python main.py --csv your_file.csv --connection "Endpoint=sb://..." --topic demo
 </TabItem>
 </Tabs>
 
-### Using AMQP 1.0 Protocol
-
-If you're using Service Bus with AMQP 1.0, you can use AMQP client libraries similar to RabbitMQ. Note that Service Bus uses AMQP 1.0 (not AMQP 0.9.1 like RabbitMQ), so you'll need an AMQP 1.0-compatible client library.
-
-For more details on using AMQP clients, see the [RabbitMQ guide](./rabbitmq.md) for general AMQP concepts, but use AMQP 1.0 client libraries for Service Bus.
-
 :::note
 
 Make sure to update the connection string, queue/topic name, and ensure you have proper Azure credentials configured. Service Bus connection strings can be obtained from the Azure Portal. Use the `--respect-timing` flag to preserve the original message timing patterns from your production traffic, or omit it to send messages as fast as possible for maximum throughput testing.
-
-Note: Azure Service Bus uses AMQP 1.0, which differs from RabbitMQ's AMQP 0.9.1. Ensure you use AMQP 1.0-compatible client libraries when using the AMQP protocol.
 
 :::
 

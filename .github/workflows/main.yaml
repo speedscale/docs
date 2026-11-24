@@ -58,6 +58,9 @@ jobs:
         BASE_SHA: ${{ github.event.before }}
       run: node scripts/check-redirects.mjs "$BASE_SHA"
 
+    - name: check sidebar coverage
+      run: node scripts/check-sidebar-coverage.mjs
+
     - name: build
       run: yarn build
 
