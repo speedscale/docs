@@ -43,7 +43,7 @@ This is the current public .NET demo used for local proxymock examples.
 ## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
-  intro="Use this path for the fastest .NET first success on a developer workstation."
+  intro="Run the .NET demo from a macOS or Linux shell. For native Windows, see Windows TLS trust below."
   steps={[
     {
       title: 'Install and initialize proxymock',
@@ -56,7 +56,7 @@ proxymock init`,
       command: `git clone https://github.com/speedscale/mock-lab
 cd mock-lab/languages/dotnet
 proxymock record -- dotnet run`,
-      note: 'proxymock records the app while it starts the .NET service as a child process and injects the proxy and TLS settings automatically — HttpClient picks them up with no manual HTTP_PROXY/HTTPS_PROXY exports.',
+      note: 'proxymock starts the .NET service as a child process and sets its proxy and TLS environment variables. On macOS, proxymock adds its CA to the keychain by default. On Linux and native Windows, configure certificate trust as described below.',
     },
     {
       title: 'Generate one real workflow',
@@ -80,4 +80,16 @@ proxymock replay --test-against http://localhost:8080`,
 
 ## TLS Trust {#tls-trust}
 
-On macOS and Linux, modern .NET usually respects `SSL_CERT_FILE`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and any platform-specific caveats.
+On Linux, modern .NET uses OpenSSL and respects `SSL_CERT_FILE`. On macOS, .NET validates certificates with the system keychain and ignores `SSL_CERT_FILE`. proxymock adds its CA to the keychain unless you pass `--no-cert-install`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and any platform-specific caveats.
+
+### Windows TLS trust {#windows-tls-trust}
+
+.NET on Windows validates certificates with the Windows certificate store and ignores `SSL_CERT_FILE`. Follow the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) steps to trust the proxymock CA and verify the mock, then route the client through proxymock.
+
+For `HttpClient` on .NET Core 3.0 or later using its default proxy settings, set `HTTPS_PROXY` in the PowerShell session that launches the HTTPS client. Use the configured proxy address if you changed the default listener.
+
+```powershell
+$env:HTTPS_PROXY = "http://127.0.0.1:4140"
+```
+
+.NET Framework ignores proxy environment variables, so point it at proxymock through the Windows system proxy or a `defaultProxy` entry in its app.config.

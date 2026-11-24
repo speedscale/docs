@@ -275,6 +275,43 @@ reqwest = { version = "your_version_here", features = ["socks"] }
 
 **proxymock** attempts to automatically configure TLS on the desktop so manual configuration is only necessary in special environments like CI/CD or when TLS decryption does not work out of the box.
 
-Commands and flags should be run in the environment where your application is running.
+Configure TLS trust in the environment that runs your HTTPS client. Clients that use the Windows certificate store need the [Windows certificate store](#windows-tls-trust) steps below.
 
 <LanguageSpecificTLSConfiguration />
+
+#### Windows certificate store {#windows-tls-trust}
+
+Native Windows clients that validate certificates with the Windows certificate store ignore `SSL_CERT_FILE`. These include .NET, SQL Server drivers, Go before 1.27, Rust with `native-tls`, and the `curl.exe` that ships with Windows. Trust the proxymock CA in the Windows certificate store instead. Node.js, Python `requests`, and Java keep their own trust settings, described in the tabs above.
+
+Apply trust to the runtime that opens the HTTPS connection. If the test calls your app and your app calls the dependency, configure trust for your app's account or Windows environment.
+
+1. Locate the public CA, `tls.crt`, from the proxymock instance serving the mock. The default Windows path is `%USERPROFILE%\.speedscale\certs\tls.crt`. Run `proxymock admin certs` if you need to generate the CA. Share only the public certificate with your endpoint administrator and keep `tls.key` on the mock host.
+2. Choose the trust store approved by your endpoint administrator. For machine-level trust, have them deploy the CA to **Local Computer > Trusted Root Certification Authorities**. For an approved manual install, run the following from elevated PowerShell with the actual path to the public certificate.
+
+   ```powershell
+   certutil.exe -addstore Root "C:\path\to\tls.crt"
+   ```
+
+   If per-user trust is approved, open `certmgr.msc` in an interactive session as the user running the HTTPS client. Import the CA into **Trusted Root Certification Authorities > Certificates** and review the Windows confirmation prompt. Per-user imports can require a UI and fail in headless sessions. For unattended jobs, have your administrator provision trust for the account or environment where the client runs.
+
+3. To verify mocking, start proxymock with your recording and disable passthrough. The example assumes proxymock and the client are running on the same Windows host.
+
+   ```powershell
+   proxymock mock --in .\proxymock\recorded-<timestamp> --out .\proxymock\mock-results --no-passthrough
+   ```
+
+   Replace `recorded-<timestamp>` with the directory `proxymock record` created. Route the client through proxymock in the session that launches it. For clients that read proxy environment variables, set `HTTPS_PROXY`, using the configured proxy address if you changed the default listener. The language pages cover clients that need other proxy settings, such as [.NET Framework](/reference/languages/dotnet#windows-tls-trust).
+
+   ```powershell
+   $env:HTTPS_PROXY = "http://127.0.0.1:4140"
+   ```
+
+   Run a request that exercises the mocked dependency with TLS validation enabled. Confirm the expected response and check the mock output for `match=HIT` and zero passthrough. An unmatched request returns HTTP 404.
+
+4. When the trust is no longer needed, have the certificate owner remove the CA from the trust store by its exact thumbprint. `certutil.exe -dump "C:\path\to\tls.crt"` prints the thumbprint as `Cert Hash(sha1)`. For the machine store, run this from elevated PowerShell:
+
+   ```powershell
+   certutil.exe -delstore Root <thumbprint>
+   ```
+
+See [Microsoft's Windows certificate store guide](https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/inspect-certificates-manage-certificate-stores) and [certutil reference](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/certutil#-addstore).
