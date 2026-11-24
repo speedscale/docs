@@ -94,6 +94,37 @@ The replay requests a new token from the issuer, caches it, and sends `Authoriza
 - **Header**: the request header that carries the credential, `Authorization` by default.
 - **Reuse a token for**: how long to reuse a token when the response has no `expires_in`, as a duration such as `10m`. The default is 5 minutes.
 
+#### Token requests for common identity providers
+
+Each of these goes into the **curl command** source. Store the long-lived value as a Kubernetes Secret and keep only its reference in the command.
+
+**OAuth refresh token.** For a token issued to a user, trade a refresh token for a new access token at the provider's token endpoint. Add `&client_secret=${{secret:orders-client/client_secret}}` for a confidential client. The token field is `access_token`.
+
+```bash
+curl -X POST https://auth.example.com/oauth/token \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=refresh_token&refresh_token=${{secret:orders-user/refresh_token}}&client_id=web-app'
+```
+
+**Amazon Cognito.** A user pool refreshes a user's tokens with `InitiateAuth` and `REFRESH_TOKEN_AUTH`. Set **Token field in the response** to `AuthenticationResult.IdToken`, or `AuthenticationResult.AccessToken` when your API checks access tokens, and set **Reuse a token for** below the pool's token lifetime, such as `50m` for the default hour. App clients with a client secret are not supported: they need a `SECRET_HASH` computed for each user.
+
+```bash
+curl -X POST https://cognito-idp.us-east-1.amazonaws.com/ \
+  -H 'Content-Type: application/x-amz-json-1.1' \
+  -H 'X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth' \
+  -d '{"AuthFlow":"REFRESH_TOKEN_AUTH","ClientId":"<app client id>","AuthParameters":{"REFRESH_TOKEN":"${{secret:cognito-user/refresh_token}}"}}'
+```
+
+**Username and password login.** For a login endpoint the replay can reach, post a replay user's credentials and read the token from the answer.
+
+```bash
+curl -X POST https://orders.example.com/api/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"svc-replay","password":"${{secret:orders-login/password}}"}'
+```
+
+proxymock web has these three as sources of their own, with a form for each. See [In proxymock web](#in-proxymock-web).
+
 The client credentials, curl and Postman sources all build a [`token_fetch`](/guides/transformation/transforms/token_fetch.md) transform. Only values that already start with `Bearer ` are replaced, so a Basic auth header on the same host is left alone, and a request recorded without the header goes out without it. If a curl command or Postman request carries a password or key in plain text, the Save step warns you to replace it with a secret reference.
 
 ### Paste a replacement
@@ -205,6 +236,7 @@ proxymock web has the same Replace credentials wizard for a local workspace. On 
 The kinds and methods are the same as in the dashboard: **Swap credentials** for Basic auth, **Fetch a fresh token** and **Paste a replacement** for bearer tokens, and **Resign the recorded token** for JWTs. A few things work differently:
 
 - **Secrets stay in your workspace.** When you type a client secret or paste a token, proxymock web writes it to `proxymock/secrets/<name>/<key>` and the blueprint keeps only the `${{secret:name/key}}` reference. There is no Constant option. In a curl command or Postman request, write `${{secret:name/key}}` yourself, as in the dashboard. See [proxymock Secrets](/proxymock/guides/secrets.md).
+- **Three more sources.** **OAuth refresh token**, **Amazon Cognito** and **Username and password login** build the token requests in [Token requests for common identity providers](#token-requests-for-common-identity-providers) from a form, and save the refresh token or password to `proxymock/secrets`. For a recorded Cognito user token, the wizard picks **Amazon Cognito** and fills in the region, app client and whether to send the ID or access token. A Cognito answer carries the token's lifetime, so no reuse time is needed.
 - **Test token request** sends the token request once from your machine and reports whether a token came back and how long it is valid. The token itself is never shown. It is not available for the auth call in the recording.
 - **Basic auth** swaps each recorded user for a replay user from a dataframe you edit. See [Basic auth credentials swap](/proxymock/guides/credentials-swap.md).
 - **Scope** is a host and a path prefix. Leave both empty and the blueprint applies to every request in the workspace.

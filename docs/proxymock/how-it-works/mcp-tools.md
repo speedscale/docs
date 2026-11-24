@@ -41,6 +41,28 @@ Returns the ranked table, the recommended base and filler, and the same data as 
 | `offline` | boolean | no | Skip the Speedscale cloud service lookup. Defaults to false. |
 | `root` | string | no | Directory to inventory, relative to the working directory. Usually the service's directory; default '.'. |
 
+#### `test_plan`
+
+_Read-only._
+
+Check a test plan against the recorded traffic. A test plan (proxymock/plans/&lt;name&gt;.yaml) lists the requirements a change must meet, from a PRD, a ticket or the code, and the requests that test each one: a case is a request such as "GET /orders/&#123;id&#125;" and the status it must get. You write the plan; this tool never decides what a requirement means.
+
+Each case comes back as one of:
+
+- covered: the recording has the request, answered with the expected status
+- contradicted: the recording has this exact request (no &#123;name&#125; in it), but never with that status (a new requirement, or one the service does not meet today)
+- spec-only: the OpenAPI spec documents it; write the request with the generate tool
+- uncovered: nothing in the workspace sends this request, or a templated request was only recorded with other statuses; send one through record_traffic_start
+
+with what closes each gap. Once the gaps are closed, pass the plan to replay_traffic as 'plan' to get a result per requirement. Read-only. The plan format: name, source, then requirements, each with id, text, source and cases; each case has id, category (functional, contract, negative, auth, journey, load), request and expect.status (such as 201 or 4xx). 'proxymock plan init &lt;name&gt;' writes a template.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `plan` | string | **yes** | A plan file, or the name of a plan in proxymock/plans/. |
+| `in-directory` | array | no | Recording directories to look for the cases in. Default: the proxymock workspace in the working directory. |
+| `spec` | string | no | OpenAPI spec; defaults to proxymock/applications/&lt;workload&gt;.openapi.yaml when there is one. |
+| `workload` | string | no | The recorded workload, when the recording holds several. |
+
 ### Record
 
 #### `record_traffic_start`
@@ -107,7 +129,7 @@ Regression checks for a code change: pass 'baseline' with an earlier replay's ou
 
 The replay is held to a test config's goals, as a cloud replay is: the built-in regression config by default (assertions must all pass, and no virtual user may fail), or the workspace config named by 'test_config'. Goals with a local source (match rate, response rate, request counts, throughput, latency, failed virtual users, and assertion percentages, computed by running the config's assertion groups) are evaluated; goals on mock match statistics or container CPU and memory are reported by name as not evaluated locally. A missed goal fails the replay with exit code 1, the same code a triggered 'fail-if' condition uses; either one fails the run.
 
-The replay runs in the background: use the list_running tool to see when it finishes and the read_process_logs tool to inspect results, which include the exit code, a TEST CONFIG GOALS section naming each goal as PASS, FAIL or NOT EVALUATED, a READINESS section grading the run A to F per family on the same scale as a Speedscale cloud report with a Ready or Not ready verdict, and whether any 'fail-if' condition triggered. The verdict, including the goal verdict under "goals" and the readiness grade under "goals.readiness", is written to replay-verdict.json in the output directory. The readiness verdict sets the exit code only when the test config's readiness section marks a family as blocking. After completion, run the generate_report tool on the output directory for latency percentiles and quality scores.
+The replay runs in the background: use the list_running tool to see when it finishes and the read_process_logs tool to inspect results, which include the exit code, a TEST CONFIG GOALS section naming each goal as PASS, FAIL or NOT EVALUATED, a READINESS section grading the run A to F per family on the same scale as a Speedscale cloud report with a Ready or Not ready verdict, and whether any 'fail-if' condition triggered. The verdict, including the goal verdict under "goals" and the readiness grade under "goals.readiness", is written to replay-verdict.json in the output directory. The readiness verdict sets the exit code only when the test config's readiness section marks a family as blocking. When a request, journey or gate fails, the output directory also holds replay-failures/index.json: one entry per distinct failure with its likely cause (sut-regression, mock-gap, volatile-data, environment or test-config), a JSON bundle of the evidence (recorded and replayed pair, changed fields, and the calls the application made to its mocked dependencies meanwhile) and a fix prompt in Markdown. Read it before the individual RRPairs: it is the short way from a failed replay to the change that fixes it. After completion, run the generate_report tool on the output directory for latency percentiles and quality scores.
 
 Set 'test_config' to run a test config authored in this workspace as the base config for the replay (author one with the test_config tool); the parameters above still override its load settings, and its goals still apply.
 
@@ -130,6 +152,7 @@ Set 'test_config' to run a test config authored in this workspace as the base co
 | `mocks_out` | string | no | The directory the mock server (mocks or 'proxymock mock --out') wrote while it served this replay's dependencies. Requires 'test_config'. It evaluates the config's httpOutput assertion and grades the Mock fidelity and Data layer readiness families; without it they are not evaluated. |
 | `no-out` | boolean | no | Do not write observed requests/responses to disk. Mutually exclusive with 'out-directory'. Verdict checks ('baseline', 'verify-fix', 'semantic', 'fail-on-new-mismatch') and 'load-plan' need the output, so they are refused with it. |
 | `out-directory` | array | no | The one directory to write observed replay request/response files to, as a single-element array (a replay writes to exactly one output directory; more than one is refused). Required unless 'no-out' is set. Unless otherwise instructed use 'proxymock/results/replayed-&lt;date&gt;' where &lt;date&gt; is the output from the command 'date +%Y-%m-%d_%H-%M-%S', or something similar. Keep it under 'results/': output written next to the recordings is read back as input on the next run. |
+| `plan` | string | no | A test plan (a file, or the name of a plan in proxymock/plans/; check it first with the test_plan tool). The replay then reports, for each requirement, whether it was met, failed or not exercised: in replay-summary.md, plan-result.json, the JUnit report and the failure bundles, which name the requirement each failed request breaks. It does not change the exit code. |
 | `require-blueprint` | array | no | Fail if a named blueprint is not loaded, or if none of its transform chains run during the replay. Cannot be combined with 'load-test'. |
 | `rewrite-host` | boolean | no | Rewrite the HTTP Host header to match the target hostname:port. Set this when the target server routes requests by Host header (e.g. virtual hosts, ingress controllers). |
 | `semantic` | boolean | no | Score response-body similarity (0..1) instead of failing on any stable-field change: at or above 'semantic-pass' a pair matches, below 'semantic-fail' it fails, and between the two it is reported as divergent without failing the run. Uses the built-in offline scorer unless the user's proxymock config chooses another. |
@@ -245,6 +268,30 @@ Run:
 | `wait` | boolean | no | action=status: poll the report every 5s until it reaches a terminal status (Passed, Missed Goals, Error, Canceled) or 'timeout_seconds' runs out, and list the status changes and new replay events seen along the way. Only reads the report; running out of time never stops the replay. |
 | `workload` | string | no | action=start: replay every inbound slice against this workload (the system under test). Mutually exclusive with 'target'. List the options with action='workloads'. |
 | `workload_type` | string | no | action=start: kind of 'workload' and of every 'routes' workload: deployment (default), statefulset, daemonset, replicaset, rollout or service. There is no job: the cloud resolves a system under test to a long-running workload or a Service (the cluster tool, which references the object itself, takes job and not service). An unknown kind is refused rather than treated as a deployment, and so is a kind with only a 'target', which has no workload. |
+
+### Browser journeys
+
+#### `browser_journeys`
+
+Write and repair Playwright browser journeys with the frontend's API calls answered from a recording by proxymock mock, so nothing clicked writes to a real system. Needs Node.js, @playwright/test (from the journeys directory or SPEEDSCALE_PLAYWRIGHT_DIR) and its Chromium.
+
+- action=sessions lists the recording's users, longest first.
+- action=explore follows one recorded user's API calls in order and finds the link, button or form fill that makes each, filling forms with the values the call was recorded with. It writes a spec whose steps wait for those calls and says which calls no action made. Secret fields are read from JOURNEY_&lt;FIELD&gt; environment variables. Takes a minute or two.
+- action=heal runs the journeys and, for each that failed because an action's locator lost its element, tries the elements that most resemble it. A replacement is accepted only when the journey passes and makes the same API calls as the newest replay where it passed. It returns a patch and never writes the journeys: show the user the diff and let them apply it. It never changes an assertion.
+
+Replay the journeys with replay_traffic (browser) through mock_server_start.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | string | **yes** |  |
+| `api-host` | string | no | The host the frontend calls, when the recording names another (host or host:port). |
+| `baseline` | array | no | heal: replay output to find the newest run where each journey passed. Default: the workspace's results. |
+| `in-directory` | array | no | Recording of the browser or of the backend. Default: the proxymock workspace in the working directory. |
+| `journey` | string | no | heal: only journeys whose title contains this. |
+| `journeys-directory` | string | no | explore: where to write the spec (default proxymock/journeys). heal: the journeys to heal (required). |
+| `session` | string | no | explore: the recorded session to follow, or a prefix of it. Default: the longest. |
+| `start` | string | no | explore: the page the user starts on, relative to the URL. Default: /. |
+| `url` | string | no | The running frontend, such as http://localhost:5173. Required for explore and heal. |
 
 ### Analyze
 
@@ -611,6 +658,19 @@ Returns the number of RRPair files generated and the output directory, plus any 
 | `port` | number | no | Override the port recorded on generated requests. Defaults to the port from the spec, or 80/443. |
 | `proto-path` | array | no | Import roots for a .proto spec, relative to the working directory, like protoc -I. The spec's own directory is always searched. |
 | `tag-filter` | string | no | Only generate endpoints carrying one of these OpenAPI tags (comma-separated). Rejected for a .proto spec or GraphQL schema, which have no tags. |
+
+#### `variations`
+
+Write bad-input copies of recorded inbound requests, which the service must refuse, as a new recording. Each changes one thing: no-auth (credential removed), other-user (another recorded user's credential on a resource with an id in the path, a broken object-level authorization check), type (a body field's JSON type flipped), and with an OpenAPI spec missing-field, boundary and enum. One recorded request per endpoint is the base, so the rest of each request stays real.
+
+Replay the output with replay_traffic, the dependencies mocked with mock_server_start, and fail-if ["requests.response-match-pct &lt; 100"]. A variation passes when the service answers any 4xx; it fails when accepted, answered with a 5xx, or refused only after the service called a dependency to write. Failures land in replay-failures/ with a next step. Do not pass a test config: its status assertions compare with the recorded status exactly. Variations close the negative and auth cases of a test_plan plan.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `in-directory` | array | no | Recordings to make the variations from. Default: the proxymock workspace in the working directory. |
+| `kinds` | array | no | Kinds to write: no-auth, other-user, type, missing-field, boundary, enum. Default: all. |
+| `out-directory` | string | no | Where to write them. Default: proxymock/variations. |
+| `spec` | string | no | For missing-field, boundary and enum. Defaults to the workload's spec in proxymock/applications/ when there is one. |
 
 #### `import_traffic`
 

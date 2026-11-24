@@ -110,6 +110,33 @@ Each check links to the report view that explains it. Completion alone does not 
 
 When goals fail, the Overview shows their metric, expected value, and actual value. Use this evidence to distinguish a missed latency or throughput target from a replay setup problem. See [Report Status](./status.md) and [Performance Details](./performance-details.md).
 
+## Likely cause of a failed request
+
+The **Accuracy** tab names the likely cause of every replayed request that did not answer the way its recording did. A count of failed requests by cause sits above the list, and each failed row has a **Likely cause** column.
+
+![The Accuracy tab with two failed requests: a Mock gap on /price and an App regression on /orders/2, counted under Likely causes](./accuracy-likely-causes.png)
+
+| Cause | Evidence | What to do |
+| --- | --- | --- |
+| App regression | The status changed, or a response field that was stable in the recording changed | Fix the code that handles the request, or record again if the change is intended |
+| Mock gap | A call the service made to a dependency while the request was in flight was not matched by a mock, or passed through to the real service | Record the missing calls, or [improve the mock match rate](/proxymock/guides/mock-match-rate.md) |
+| Changing value | The service refused the recorded credential with `401` or `403`, or every changed field holds an id, a timestamp or a token | Apply a [recommendation](../recommendations.md) that keeps the value current |
+| Environment | No response came back | Check that the workload is running and reachable |
+
+Open a failed request to see its cause above the checks: the evidence, what to do, and the calls the service made to its mocked dependencies while the request was in flight, each marked as answered from the recording, with no recorded answer, or sent to the real dependency.
+
+![A failed request opened on its likely cause, Mock gap, with the tax lookup that went to the real service](./accuracy-likely-cause-panel.png)
+
+A cause is read from the evidence, not proven. Requests on one endpoint that failed with the same statuses and the same changed fields share a cause.
+
+**Copy prompt for your agent** copies a prompt for a coding agent that names the request, the report and the cause. The agent pulls the report with the [analyze-replay-report skill](/proxymock/agent-skills.md), confirms the cause against the recorded and replayed requests, and fixes the code when the cause is in it.
+
+A call is tied to a request by its trace id when the service propagates one, and otherwise by the request in flight when the call was made. With many virtual users and no trace ids, a call can be tied to a neighbouring request.
+
+The causes are also in the report artifact `failure-causes.json`, which `proxymock cloud pull report` downloads. `proxymock replay` names causes the same way for a local replay. See [Failure bundles](/proxymock/guides/replay-verdicts.md#failure-bundles).
+
+The list and the counts appear for reports analyzed after causes were added. A report in [low data mode](#low-data-mode) counts only the failures it kept, and a report whose responder kept no calls cannot show a mock gap.
+
 ## Outbound HTTP calls
 
 When the test config has an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion, the **Accuracy** tab shows **Outbound HTTP calls** next to the Kafka output and [SQL output](/reference/configuration/assertions/sqloutput.md) results.

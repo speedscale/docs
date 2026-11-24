@@ -223,6 +223,8 @@ const sidebars = {
             "proxymock/guides/recommendations",
             "proxymock/guides/blueprints",
             "proxymock/guides/choose-replay-tests",
+            "proxymock/guides/test-plans",
+            "proxymock/guides/request-variations",
             "proxymock/guides/replay-tuning",
             "proxymock/guides/replay-debugger",
             "proxymock/guides/semantic-comparison",
@@ -557,6 +559,7 @@ const sidebars = {
               },
               "items": [
                 "guides/browser-journeys/write-journeys",
+                "guides/browser-journeys/explore-and-heal",
                 "guides/browser-journeys/run-locally",
                 "guides/browser-journeys/run-in-cluster",
                 "guides/browser-journeys/read-results",

@@ -31,6 +31,7 @@ proxymock [command]
 
 - `admin` - Administrative and maintenance commands (certs, clean)
 - `automation` - Run a proxymock web automation headlessly
+- `ci` - Run replays in a CI pipeline and report them on the pull request
 - `cloud` - Manage your Speedscale Cloud resources
 - `cluster` - Inspect and drive a Kubernetes cluster from the command line
 - `completion` - Generate the autocompletion script for the specified shell
@@ -46,6 +47,7 @@ proxymock [command]
 - `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
+- `plan` - Check a test plan's requirements against the recorded traffic
 - `protos` - Manage the protobuf schemas that name the fields of recorded protobuf and gRPC bodies
 - `recommendations` - Work the replay-tuning recommendations the analyzer finds
 - `record` - Record traffic from your app, turning it into RRPair files
@@ -55,6 +57,7 @@ proxymock [command]
 - `test-config` - Author the generator/responder configuration a replay runs with
 - `transform` - Author and validate traffic transforms against local RRPair files
 - `validate` - Validate recorded HTTP responses against an OpenAPI spec
+- `variations` - Write bad-input copies of recorded requests that the service must refuse
 - `version` - Prints current version of client and cloud
 - `web` - Start the embedded web interface
 
@@ -221,6 +224,8 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
 - `--fail-if strings` - Fail with exit code `1` when a validation condition is true
 - `--baseline string` - Prior replay output directory for comparison against known failures
 - `--fail-on-new-mismatch` - Exit `3` for a new mismatch; requires `--baseline`
+- `--plan string` - A test plan, as a file or a name in `proxymock/plans/`: report whether the replay met each of its requirements. See [Test Plans](../proxymock/guides/test-plans.md)
+- `--junit string` - Write a JUnit XML report of the replay to this file, with a test case for every replayed request, journey and gate. See [Report the result on the pull request](../proxymock/guides/cicd.md#report-the-result-on-the-pull-request)
 - `--verify-fix` - Interpret recorded errors becoming successful responses as fixes, and check collateral regressions
 - `--expect string` - Regular expression selecting recorded-error endpoints; requires `--verify-fix`
 - `--ignore-body-changes` - Restrict verdict scoring to response status codes
@@ -1142,6 +1147,268 @@ the pod's containers, including init containers, so you can pick the right one
 with `--container`.
 
 ## System commands
+
+### `plan`
+
+Check a test plan's requirements against the recorded traffic. See [Test Plans](../proxymock/guides/test-plans.md).
+
+**Usage**
+
+```bash
+proxymock plan [command]
+```
+
+**Available subcommands**
+
+- `init <name>` - Write a plan to start from, at `proxymock/plans/<name>.yaml`
+- `check` - Say which of a plan's cases the recording and the spec already cover
+
+### `plan check`
+
+Match every case of a test plan against the recorded inbound requests and the OpenAPI spec. Each case is `covered`, `contradicted`, `spec-only` or `uncovered`, with what closes the gap.
+
+**Usage**
+
+```bash
+proxymock plan check --plan <plan> [flags]
+```
+
+**Flags**
+
+- `--fail-on-gaps` - Exit `1` unless the recording covers every case
+- `--in strings` - Recordings to look for the cases in
+- `--json` - Write the result as JSON
+- `--plan string` - Plan file, or the name of a plan in `proxymock/plans/` (required)
+- `--spec string` - OpenAPI spec; defaults to the workload's spec in `proxymock/applications/`
+- `--workload string` - Recorded workload, when the recording holds several
+
+### `variations`
+
+Write bad-input copies of recorded requests, each changing one thing the service must refuse, as a new recording. See [Request Variations](../proxymock/guides/request-variations.md).
+
+**Usage**
+
+```bash
+proxymock variations [flags]
+```
+
+**Examples**
+
+```bash
+proxymock variations --in proxymock/recorded
+proxymock variations --in proxymock/recorded --spec openapi.yaml --kinds no-auth,other-user
+```
+
+**Flags**
+
+- `--in strings` - Recordings to make the variations from
+- `--json` - Write the result as JSON
+- `--kinds strings` - Kinds of variation to write (default all): `no-auth`, `other-user`, `type`, `missing-field`, `boundary`, `enum`
+- `--out string` - Directory to write the variations to (default `proxymock/variations`)
+- `--spec string` - OpenAPI spec, for the variations that need one
+- `--workload string` - Recorded workload, when the recording holds several
+
+### `journeys`
+
+Write and repair Playwright browser journeys with the frontend's API calls answered from a recording. See [Explore and heal journeys](../guides/browser-journeys/explore-and-heal.md).
+
+**Available subcommands**
+
+- `explore` - Write a Playwright journey that makes a recorded user's API calls
+- `heal` - Propose a new locator for a journey step whose element moved
+
+### `journeys explore`
+
+Follow one recorded user's API calls in order, find the link, button or form fill that makes each with the API answered from the recording, and write them as a spec whose steps wait for those calls.
+
+**Usage**
+
+```bash
+proxymock journeys explore [flags]
+```
+
+**Examples**
+
+```bash
+proxymock journeys explore --in proxymock/recorded --url http://localhost:5173
+proxymock journeys explore --in proxymock/recorded --list
+proxymock journeys explore --in recorded-api --url http://localhost:5173 --api-host localhost:8080 --session 9f2c
+```
+
+**Flags**
+
+- `--action-timeout duration` - How long an action gets to make its call (default 2.5s)
+- `--api-host string` - Host the frontend calls, when the recording names another (host or host:port)
+- `--headed` - Show the browser while exploring
+- `--in strings` - Recording to take the user session from and answer the frontend with
+- `--json` - Write the result as JSON
+- `--list` - List the recording's sessions and exit
+- `--max-steps int` - Most steps to explore (default 25)
+- `--name string` - Spec file name without .spec.ts (default `explored-<session>`)
+- `--out string` - Directory to write the spec to (default `proxymock/journeys`)
+- `--session string` - Recorded session to follow, or a prefix of it (default the longest)
+- `--start string` - Page the user starts on, relative to `--url` (default `/`)
+- `--url string` - Frontend to explore, such as `http://localhost:5173`
+
+### `journeys heal`
+
+Run the journeys with the API answered from the recording and, for each that fails because an action's locator lost its element, propose a replacement that lets the journey pass with the same API calls as the newest replay where it passed. The heals are written to `journey-heal.diff` beside the journeys folder.
+
+**Usage**
+
+```bash
+proxymock journeys heal [flags]
+```
+
+**Examples**
+
+```bash
+proxymock journeys heal --in proxymock/recorded --browser journeys --url http://localhost:5173
+proxymock journeys heal --in proxymock/recorded --browser journeys --url http://localhost:5173 --baseline proxymock/results/replay-passing --write
+```
+
+**Flags**
+
+- `--api-host string` - Host the frontend calls, when the recording names another (host or host:port)
+- `--baseline strings` - Replay output to find the newest run where each journey passed (default the workspace's results)
+- `--browser string` - Directory of Playwright journeys to heal
+- `--candidates int` - Replacement locators to try per step (default 6)
+- `--in strings` - Recording to answer the frontend's API calls with
+- `--journey string` - Heal only journeys whose title contains this
+- `--journey-timeout duration` - Time limit for each journey run (default 30s)
+- `--json` - Write the result as JSON
+- `--url string` - Frontend the journeys run against, such as `http://localhost:5173`
+- `--write` - Apply each accepted heal to its journey file
+
+### `ci`
+
+Run replays in a CI pipeline and report them on the pull request. See [CI/CD](../proxymock/guides/cicd.md).
+
+**Usage**
+
+```bash
+proxymock ci [command]
+```
+
+**Available subcommands**
+
+- `init` - Write a pipeline that replays recorded traffic on every pull request
+- `comment` - Post a replay's result as a pull request comment
+- `notify` - Post a replay's result to a webhook, such as a Slack channel
+- `tickets` - File Linear or Jira tickets for a replay's regressions
+
+### `ci init`
+
+Write the pipeline file that installs proxymock, replays the recorded traffic against your application, and reports the result on the pull request. `github` writes `.github/workflows/proxymock.yml`. `gitlab` writes `.gitlab/proxymock.gitlab-ci.yml`, and a `.gitlab-ci.yml` that includes it when the project has no pipeline yet.
+
+**Usage**
+
+```bash
+proxymock ci init github|gitlab [flags]
+```
+
+**Examples**
+
+```bash
+# write a GitHub Actions workflow for an app started with 'npm start' on port 3000
+proxymock ci init github --app-command "npm start" --app-port 3000
+
+# see the GitLab job without writing it
+proxymock ci init gitlab --dry-run
+```
+
+**Flags**
+
+- `--app-command string` - Command that starts your application in the pipeline
+- `--app-port int` - Port your application listens on (default `8080`)
+- `--dry-run` - Print the files instead of writing them
+- `--force` - Replace an existing pipeline file
+- `--in string` - Directory of recorded traffic to replay, relative to the repository root (default `proxymock`)
+- `--no-mock` - Do not start `proxymock mock`; the application calls its real dependencies
+
+### `ci comment`
+
+Post the summary of a finished replay on the pull request or merge request the pipeline is running for. A later run replaces the comment instead of adding another. The argument is the replay's output directory, the one given to `proxymock replay --out`.
+
+**Usage**
+
+```bash
+proxymock ci comment <replay-dir> [flags]
+```
+
+**Examples**
+
+```bash
+proxymock ci comment proxymock/results/ci
+
+# print the comment without posting it
+proxymock ci comment proxymock/results/ci --dry-run
+```
+
+**Flags**
+
+- `--dry-run` - Print the comment instead of posting it
+- `--provider string` - `github` or `gitlab`; detected from the job's environment by default
+
+GitHub Actions needs `GITHUB_TOKEN` and `permissions: pull-requests: write`. GitLab CI needs a project access token with the `api` scope in `PROXYMOCK_GITLAB_TOKEN`.
+
+### `ci notify`
+
+Post the result of a finished replay to a webhook, from `replay-summary.json` in its output directory. The URL comes from `--webhook` or `PROXYMOCK_WEBHOOK_URL`. Set `PROXYMOCK_WEBHOOK_SECRET` to sign a `json` body in the `X-Proxymock-Signature-256` header. See [Post to Slack or a webhook](../proxymock/guides/cicd.md#post-to-slack-or-a-webhook).
+
+**Usage**
+
+```bash
+proxymock ci notify <replay-dir> [flags]
+```
+
+**Examples**
+
+```bash
+PROXYMOCK_WEBHOOK_URL=https://hooks.slack.com/services/... proxymock ci notify proxymock/results/ci
+
+# print the body without posting it
+proxymock ci notify proxymock/results/ci --format json --dry-run
+```
+
+**Flags**
+
+- `--dry-run` - Print the body instead of posting it
+- `--format string` - `slack` or `json`; `slack` for a `hooks.slack.com` URL, `json` otherwise
+- `--on string` - `failure` posts only a run with failures; `always` posts every run (default `failure`)
+- `--webhook string` - Webhook URL; `PROXYMOCK_WEBHOOK_URL` by default
+
+### `ci tickets`
+
+File a ticket for each new failure of a finished replay in Linear or Jira Cloud, and comment on open tickets when their failure passes or fails again. A failure with an open ticket gets no second one. See [File tickets for regressions](../proxymock/guides/cicd.md#file-tickets-for-regressions).
+
+**Usage**
+
+```bash
+proxymock ci tickets <replay-dir> --tracker linear|jira [flags]
+```
+
+**Examples**
+
+```bash
+proxymock ci tickets proxymock/results/ci --tracker linear --team ENG
+
+# see what it would file and comment, without changing anything
+proxymock ci tickets proxymock/results/ci --tracker jira --project SHOP --dry-run
+```
+
+**Flags**
+
+- `--bucket strings` - Likely causes to file tickets for: `sut-regression`, `mock-gap`, `volatile-data`, `environment`, `test-config` (default `sut-regression`)
+- `--dry-run` - List what would be filed and commented without changing anything
+- `--issue-type string` - Jira issue type (default `Bug`)
+- `--max int` - Most new tickets to file in one run (default `5`)
+- `--no-prompt` - Leave the fix prompt, which quotes the recorded and replayed requests and responses, out of the ticket
+- `--project string` - Jira project key, such as `SHOP`
+- `--team string` - Linear team key, such as `ENG`
+- `--tracker string` - `linear` or `jira`
+
+Linear needs a personal API key in `LINEAR_API_KEY`. Jira needs `JIRA_BASE_URL`, `JIRA_EMAIL` and `JIRA_API_TOKEN`.
 
 ### `admin`
 
