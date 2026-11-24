@@ -163,6 +163,8 @@ The recorded `Acknowledge`, `ModifyAckDeadline` and other subscriber calls are n
 
 Each message is one request on the report, shown as `/google.pubsub.v1.Publisher/Publish` with the topic it went to. The latency is the time Pub/Sub took to accept the message, not the time your subscriber took to process it. A message Pub/Sub refuses fails the request.
 
+Whether your subscriber kept up is measured separately, from the subscription's Cloud Monitoring metrics and from your subscriber's own acks. See [Check that the subscriber kept up](#check-that-the-subscriber-kept-up).
+
 ### Turn on republish
 
 Add `generator.pubsub` to the test config:
@@ -235,7 +237,7 @@ speedctl infra replay orders-worker --snapshot-id <snapshot-id> --test-config-id
 
 Use the host your subscriber recorded, such as `us-east1-pubsub.googleapis.com` for a regional endpoint. Add `--dry-run-mocks` to print which services the replay will mock before you run it. [Controlling Outbound Mocks](../replay/via-speedctl.md#controlling-outbound-mocks) covers the selector syntax.
 
-Keep the other dependencies mocked to catch regressions. A republished message passes when Pub/Sub accepts it, whatever your subscriber then does with it, so what your subscriber does is visible only in the calls it makes downstream. The [`httpOutput` assertion](../../reference/configuration/assertions/httpoutput.md) compares those calls with the recording, and it needs the responder that `--no-mocks` turns off.
+Keep the other dependencies mocked to catch regressions. A republished message passes when Pub/Sub accepts it, whatever your subscriber then does with it. The report's Pub/Sub metrics show whether your subscriber acked the messages, but what it did with them is visible only in the calls it makes downstream. The [`httpOutput` assertion](../../reference/configuration/assertions/httpoutput.md) compares those calls with the recording, and it needs the responder that `--no-mocks` turns off.
 
 ### Replay locally with proxymock
 
@@ -247,9 +249,72 @@ PUBSUB_EMULATOR_HOST=localhost:8085 proxymock replay --in proxymock/recorded-<ti
 
 See [test configs](../../proxymock/guides/test-configs.md) for where `pubsub-republish` lives.
 
+### Check that the subscriber kept up
+
+After the last message is published, the replay waits for the subscription's backlog to drain before the report closes, so acks that arrive late still count. The wait ends as soon as Cloud Monitoring shows no undelivered messages in a sample taken after the last publish, or after `drainTimeout`. Cloud Monitoring publishes Pub/Sub samples a minute or more late, so expect the wait to take at least that long.
+
+The report then gets the subscription's Cloud Monitoring metrics for the replay. They are read with the replay's own credentials, which need `monitoring.timeSeries.list` (in `roles/monitoring.viewer`) on the subscription's project:
+
+| Metric | What it measures |
+|---|---|
+| `pubsubBacklogMax` | The most undelivered messages on the subscription during the replay |
+| `pubsubBacklogEnd` | Undelivered messages when the replay ended |
+| `pubsubOldestUnackedAgeMax` | The longest any message waited unacked, in seconds |
+| `pubsubAckRate` | Acks per second, over the minutes the subscription acked messages |
+| `pubsubExpiredAckDeadlineCount` | Ack deadlines that expired during the replay |
+| `pubsubSubscriptionAckLatencyP95` | The subscription's ack latency p95 in its worst minute, in milliseconds |
+
+These metrics count every message on the subscription, including any backlog from before the replay and messages from other publishers on the same topic.
+
+The emulator has no Cloud Monitoring metrics. When the replay publishes to the emulator, or its credentials cannot read Cloud Monitoring, the report says so in a replay event and the replay carries on without these metrics. Without them there is no backlog to watch, so the replay waits for the ack window after the last publish instead.
+
+Where your subscriber's own Pub/Sub calls are captured with the replay, each republished message is also checked. The message ID Pub/Sub gave it is followed through your subscriber's `StreamingPull` or `Pull` delivery to its ack, whether the ack went on the stream or as an `Acknowledge` call:
+
+| Metric | What it measures |
+|---|---|
+| `pubsubRepublishedCount` | Messages Pub/Sub accepted |
+| `pubsubAckedPct` | Republished messages acked within the ack window |
+| `pubsubUnackedCount` | Republished messages not acked within the ack window, late acks included |
+| `pubsubAckLatencyP50`, `pubsubAckLatencyP95`, `pubsubAckLatencyMax` | Time from delivery to ack, in milliseconds |
+| `pubsubRedeliveryCount` | Deliveries of a republished message after its first |
+
+With proxymock, pass `--mocks-out` with the directory `proxymock mock` wrote while your subscriber ran through it, and the replay reads your subscriber's calls from there. In your cluster, the report sees only the calls that went through the responder, so with Pub/Sub left out of mocking the messages are not checked one by one. The report says so in a notice, and the Cloud Monitoring metrics are the measure there.
+
+Set how long your subscriber has to ack each message, and how long the replay waits for the backlog to drain:
+
+```json
+{
+  "generator": {
+    "pubsub": {
+      "republish": true,
+      "ackWindow": "30s",
+      "drainTimeout": "2m"
+    }
+  }
+}
+```
+
+`ackWindow` defaults to one minute. `drainTimeout` defaults to five minutes, and `0s` turns the wait off.
+
+A message not acked within the ack window adds a warning to the report. When your subscriber's calls were not captured, the warning comes from the subscription's oldest unacked message instead: it fires when a message waited longer than the ack window. To fail the replay instead of warning, add a goal on the metric:
+
+```json
+{
+  "rules": [
+    { "metricName": "pubsubUnackedCount", "type": "TOO_HIGH", "value": 0, "action": "ALERT" },
+    { "metricName": "pubsubBacklogEnd", "type": "TOO_HIGH", "value": 0, "action": "ALERT" },
+    { "metricName": "pubsubAckLatencyP95", "type": "TOO_HIGH", "value": 500, "action": "ALERT" }
+  ]
+}
+```
+
+A goal on a metric the replay could not measure has nothing to evaluate, so it does not fail the replay. With proxymock, it is listed as not evaluated with the reason.
+
 ### Load test a subscriber
 
 Each message is published at the time it arrived in the recording, so the gaps between deliveries match production. To publish faster or slower, set the stage's request delay to a multiple of the recorded time: `0.5` halves every gap. To multiply the volume, raise the number of vUsers: each vUser publishes the whole recording again. With proxymock, `--vus` and `--times` do the same. See [load patterns](../load-patterns.md).
+
+To find the rate your subscriber can sustain, raise the load until the backlog stops draining. Goals on `pubsubBacklogEnd`, `pubsubOldestUnackedAgeMax` or `pubsubAckLatencyP95` fail the replay at the point your subscriber falls behind.
 
 Messages that share an ordering key are published in recorded order within one vUser. Pub/Sub delivers them in order only when the subscription has message ordering turned on.
 
