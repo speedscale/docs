@@ -438,7 +438,6 @@ Dynatrace injection exclusions are separate from `sidecar.ignore_*`, which filte
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `ebpf.enabled` | bool | `false` | Enable eBPF-based traffic capture via the nettap DaemonSet. When enabled, nettap is deployed to all nodes in the cluster. |
-| `ebpf.configuration.grpcStreaming` | bool | `false` | Record native gRPC streams as calls, including the long-lived `StreamingPull` streams a Google Pub/Sub subscriber keeps open and ends by cancelling. Without it, those streams are not recorded. See [Google Pub/Sub](/guides/message-brokers/google-pubsub#record-a-subscriber-in-your-cluster). |
 | `ebpf.configuration.capture.targets` | list | `[]` | List of capture targets. Each target specifies which workloads nettap should monitor using label selectors. |
 | `ebpf.configuration.capture.targets[].name` | string | `""` | A descriptive name for this capture target. |
 | `ebpf.configuration.capture.targets[].namespaceSelector.matchLabels` | object | `{}` | Label selector to match namespaces for this target. Example: `kubernetes.io/metadata.name: my-namespace`. |

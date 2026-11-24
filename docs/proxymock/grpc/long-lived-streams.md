@@ -74,4 +74,4 @@ Later parts are not replayed as calls of their own. Replay skips them with one l
 - A call that sent at most one message in each direction before the client cancelled it is not recorded, as before.
 - The mock keeps up to 1,024 recordings per method for message-by-message matching, and each part counts as one recording. A stream with more parts than that is served up to the last part kept.
 - After the opening requests, the mock does not match request content. A stream whose responses depend on later requests is served in its recorded order whatever the client sends.
-- Cloud capture writes stream parts only when stream capture is turned on, like every native stream: the `ebpf.configuration.grpcStreaming` Helm value for eBPF capture, or the `sidecar.speedscale.com/grpc-streaming` annotation for the legacy sidecar. The local proxymock binary always captures them.
+- Cloud capture and the local proxymock binary both write stream parts. Setting `GRPC_STREAMING_ENABLED=false` on goproxy selects the older writer, which does not.
