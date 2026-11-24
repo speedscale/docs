@@ -1208,6 +1208,78 @@ proxymock variations --in proxymock/recorded --spec openapi.yaml --kinds no-auth
 - `--spec string` - OpenAPI spec, for the variations that need one
 - `--workload string` - Recorded workload, when the recording holds several
 
+### `journeys`
+
+Write and repair Playwright browser journeys with the frontend's API calls answered from a recording. See [Explore and heal journeys](../guides/browser-journeys/explore-and-heal.md).
+
+**Available subcommands**
+
+- `explore` - Write a Playwright journey that makes a recorded user's API calls
+- `heal` - Propose a new locator for a journey step whose element moved
+
+### `journeys explore`
+
+Follow one recorded user's API calls in order, find the link, button or form fill that makes each with the API answered from the recording, and write them as a spec whose steps wait for those calls.
+
+**Usage**
+
+```bash
+proxymock journeys explore [flags]
+```
+
+**Examples**
+
+```bash
+proxymock journeys explore --in proxymock/recorded --url http://localhost:5173
+proxymock journeys explore --in proxymock/recorded --list
+proxymock journeys explore --in recorded-api --url http://localhost:5173 --api-host localhost:8080 --session 9f2c
+```
+
+**Flags**
+
+- `--action-timeout duration` - How long an action gets to make its call (default 2.5s)
+- `--api-host string` - Host the frontend calls, when the recording names another (host or host:port)
+- `--headed` - Show the browser while exploring
+- `--in strings` - Recording to take the user session from and answer the frontend with
+- `--json` - Write the result as JSON
+- `--list` - List the recording's sessions and exit
+- `--max-steps int` - Most steps to explore (default 25)
+- `--name string` - Spec file name without .spec.ts (default `explored-<session>`)
+- `--out string` - Directory to write the spec to (default `proxymock/journeys`)
+- `--session string` - Recorded session to follow, or a prefix of it (default the longest)
+- `--start string` - Page the user starts on, relative to `--url` (default `/`)
+- `--url string` - Frontend to explore, such as `http://localhost:5173`
+
+### `journeys heal`
+
+Run the journeys with the API answered from the recording and, for each that fails because an action's locator lost its element, propose a replacement that lets the journey pass with the same API calls as the newest replay where it passed. The heals are written to `journey-heal.diff` beside the journeys folder.
+
+**Usage**
+
+```bash
+proxymock journeys heal [flags]
+```
+
+**Examples**
+
+```bash
+proxymock journeys heal --in proxymock/recorded --browser journeys --url http://localhost:5173
+proxymock journeys heal --in proxymock/recorded --browser journeys --url http://localhost:5173 --baseline proxymock/results/replay-passing --write
+```
+
+**Flags**
+
+- `--api-host string` - Host the frontend calls, when the recording names another (host or host:port)
+- `--baseline strings` - Replay output to find the newest run where each journey passed (default the workspace's results)
+- `--browser string` - Directory of Playwright journeys to heal
+- `--candidates int` - Replacement locators to try per step (default 6)
+- `--in strings` - Recording to answer the frontend's API calls with
+- `--journey string` - Heal only journeys whose title contains this
+- `--journey-timeout duration` - Time limit for each journey run (default 30s)
+- `--json` - Write the result as JSON
+- `--url string` - Frontend the journeys run against, such as `http://localhost:5173`
+- `--write` - Apply each accepted heal to its journey file
+
 ### `ci`
 
 Run replays in a CI pipeline and report them on the pull request. See [CI/CD](../proxymock/guides/cicd.md).

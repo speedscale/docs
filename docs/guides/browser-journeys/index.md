@@ -65,6 +65,7 @@ proxymock replay --in <recording> --browser <recording>/journeys \
 ## Next steps
 
 - [Write journeys](./write-journeys.md): what a spec needs, how steps are named, and how to start a journey signed in.
+- [Explore and heal journeys](./explore-and-heal.md): write a journey from a recorded user session, and repair one whose element moved.
 - [Run journeys on your machine](./run-locally.md) and [in a cluster](./run-in-cluster.md).
 - [Read the results](./read-results.md): the Journeys tab, the calls behind each step, web vitals and goals.
 - [Mocks and real APIs](./mocks-and-real-apis.md): how each call the browser makes is answered and scored.
