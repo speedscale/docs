@@ -10,6 +10,8 @@ A journey's browser sends its traffic through a proxy that decides how each of t
 
 In a cluster, the responder handles the calls to hosts the recording has traffic for. Calls to any other host, such as a CDN or a third-party script, go straight to that host and are not scored. `proxymock mock` handles every call, so on your machine a call to a host the recording does not have is a passthrough.
 
+The frontend's own pages and scripts load straight from the frontend. Its API calls to its own origin, such as `/api` served by a dev server or by the same host, are sent to the proxy like any other API call, so a frontend that proxies its API through its own server is mocked too. Streams such as server-sent events are the exception: they go to the frontend directly.
+
 ## Mocks on
 
 With mocks on, the default, the proxy looks each call up in the recording the same way [service mocking](../mocking/mocks.md) does, and answers it one of three ways:
