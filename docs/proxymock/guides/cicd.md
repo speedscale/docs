@@ -66,6 +66,42 @@ This writes `.gitlab/proxymock.gitlab-ci.yml`. A project with no pipeline yet al
 
 The pipeline runs on every pull request or merge request. It installs proxymock, starts `proxymock mock` to answer the application's dependencies from the recording, replays the recorded requests against the application, and [reports the result](#report-the-result-on-the-pull-request) on the request.
 
+On GitHub the workflow runs the [`speedscale/proxymock-action`](https://github.com/speedscale/proxymock-action) action, and on GitLab it includes the [`proxymock/ci`](https://gitlab.com/proxymock/ci) CI/CD catalog component, which do those steps. Change the pipeline through their inputs, such as `fail-if` to fail on a changed response body too:
+
+<Tabs>
+
+<TabItem value="github" label="GitHub">
+
+```yaml
+      - uses: speedscale/proxymock-action@v1
+        with:
+          api-key: ${{ secrets.SPEEDSCALE_API_KEY }}
+          app-command: npm start
+          app-port: 3000
+          fail-if: |
+            requests.response-match-pct < 100
+```
+
+</TabItem>
+
+<TabItem value="gitlab" label="GitLab">
+
+```yaml
+include:
+  - component: gitlab.com/proxymock/ci/replay@1
+    inputs:
+      image: node:22
+      app-command: npm start
+      app-port: "3000"
+      fail-if: requests.response-match-pct < 100
+```
+
+</TabItem>
+
+</Tabs>
+
+Each README lists every input, such as the proxymock `version` to pin and, on GitHub, a `webhook-url` to post failures to Slack.
+
 The command prints what is left to do by hand: adding your API key as the secret `SPEEDSCALE_API_KEY`, and adding the steps that build your application.
 
 | Flag | Use it to |
