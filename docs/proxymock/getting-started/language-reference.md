@@ -275,6 +275,6 @@ reqwest = { version = "your_version_here", features = ["socks"] }
 
 **proxymock** attempts to automatically configure TLS on the desktop so manual configuration is only necessary in special environments like CI/CD or when TLS decryption does not work out of the box.
 
-Commands and flags should be run in the environment where your application is running.
+Configure TLS trust in the environment that runs your HTTPS client. For native Windows .NET clients, follow the [Windows TLS trust steps](/reference/languages/dotnet#windows-tls-trust).
 
 <LanguageSpecificTLSConfiguration />

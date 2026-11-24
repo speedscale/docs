@@ -43,7 +43,7 @@ This is the current public .NET demo used for local proxymock examples.
 ## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
-  intro="Use this path for the fastest .NET first success on a developer workstation."
+  intro="Run the .NET demo from a macOS shell. For native Windows, see the Windows TLS trust steps below."
   steps={[
     {
       title: 'Install and initialize proxymock',
@@ -56,7 +56,7 @@ proxymock init`,
       command: `git clone https://github.com/speedscale/mock-lab
 cd mock-lab/languages/dotnet
 proxymock record -- dotnet run`,
-      note: 'proxymock records the app while it starts the .NET service as a child process and injects the proxy and TLS settings automatically — HttpClient picks them up with no manual HTTP_PROXY/HTTPS_PROXY exports.',
+      note: 'proxymock starts the .NET service as a child process and sets its proxy and TLS environment variables. Configure certificate trust for the client as described below.',
     },
     {
       title: 'Generate one real workflow',
@@ -81,3 +81,32 @@ proxymock replay --test-against http://localhost:8080`,
 ## TLS Trust {#tls-trust}
 
 On macOS and Linux, modern .NET usually respects `SSL_CERT_FILE`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and any platform-specific caveats.
+
+### Windows TLS trust {#windows-tls-trust}
+
+For native Windows .NET clients using the default certificate validation, trust the proxymock CA in the Windows certificate store. Apply trust to the runtime that opens the HTTPS connection. If the test calls your app and your app calls the dependency, configure trust for your app's account or Windows environment.
+
+1. Locate the public CA, `tls.crt`, from the proxymock instance serving the mock. The default Windows path is `%USERPROFILE%\.speedscale\certs\tls.crt`. Run `proxymock admin certs` if you need to generate the CA. Share only the public certificate with your endpoint administrator and keep `tls.key` on the mock host.
+2. Choose the trust store approved by your endpoint administrator. For machine-level trust, have them deploy the CA to **Local Computer > Trusted Root Certification Authorities**. For an approved manual install, run the following from elevated PowerShell with the actual path to the public certificate.
+
+   ```powershell
+   certutil.exe -addstore Root "C:\path\to\tls.crt"
+   ```
+
+   If per-user trust is approved, open `certmgr.msc` in an interactive session as the user running the HTTPS client. Import the CA into **Trusted Root Certification Authorities > Certificates** and review the Windows confirmation prompt. Per-user imports can require a UI and fail in headless sessions. For unattended jobs, have your administrator provision trust for the account or environment where the client runs.
+
+3. To verify mocking, start proxymock with your recording and disable passthrough. The example assumes proxymock and the client are running on the same Windows host.
+
+   ```powershell
+   proxymock mock --in .\proxymock\recording --out .\proxymock\mock-results --no-passthrough
+   ```
+
+   For .NET `HttpClient` using its default proxy settings, set `HTTPS_PROXY` in the PowerShell session that launches the HTTPS client. Use the configured proxy address if you changed the default listener.
+
+   ```powershell
+   $env:HTTPS_PROXY = "http://127.0.0.1:4140"
+   ```
+
+   Run a request that exercises the mocked dependency with TLS validation enabled. Confirm the expected response and check the mock output for `match=HIT` and zero passthrough. An unmatched request returns HTTP 404. When the trust is no longer needed, have the certificate owner remove the CA from the trust store by its exact thumbprint.
+
+See [Microsoft's Windows certificate store guide](https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/inspect-certificates-manage-certificate-stores) and [certutil reference](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/certutil#-addstore).
