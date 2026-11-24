@@ -1,6 +1,6 @@
 ---
 title: proxymock overview
-sidebar_label: Overview
+sidebar_label: proxymock overview
 description: "Use proxymock CLI, web, or MCP to record traffic, mock dependencies, and replay tests locally, in Kubernetes, or through Speedscale Cloud."
 sidebar_position: 1
 ---

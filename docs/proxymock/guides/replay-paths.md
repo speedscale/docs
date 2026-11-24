@@ -40,7 +40,7 @@ The same run from the CLI:
 proxymock replay --in ./proxymock --test-against localhost:3000
 ```
 
-If your service calls dependencies you do not want to reach for real, run `proxymock mock` alongside it and point the service at the mock. See [Mock a dependency](./index.md).
+If your service calls dependencies you do not want to reach for real, run `proxymock mock` alongside it and point the service at the mock. See [Run mock server and tests](../getting-started/quickstart/quickstart-cli.md#run-mocks).
 
 A replay that cannot open a connection fails with `tcp probe against "HOST:PORT": unable to connect`. That means nothing was listening, so start the service first.
 

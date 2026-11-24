@@ -89,6 +89,10 @@ jobs:
         BASE_SHA: ${{ steps.preview.outputs.base_sha }}
       run: node scripts/check-redirects.mjs "$BASE_SHA"
 
+    - name: check sidebar coverage
+      if: steps.preview.outputs.run == 'true'
+      run: node scripts/check-sidebar-coverage.mjs
+
     - name: update url for preview
       if: steps.preview.outputs.run == 'true'
       env:

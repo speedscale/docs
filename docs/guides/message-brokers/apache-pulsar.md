@@ -1,12 +1,14 @@
 ---
 title: Replaying Apache Pulsar
-description: "Replay Apache Pulsar traffic using Speedscale's standard replay capabilities with Kafka client libraries and learn to capture, snapshot, and replay your data."
+description: "Replay Apache Pulsar traffic that uses a Kafka-compatible endpoint, such as Kafka-on-Pulsar, with Speedscale's Kafka support. The native Pulsar binary protocol is not supported yet."
 sidebar_position: 4
 ---
 
 ## Background
 
-Apache Pulsar supports multiple protocols: Kafka-compatible API (primary), HTTP REST API, and gRPC. Since Pulsar provides a Kafka-compatible API, you can use standard Kafka client libraries to interact with Pulsar, making it compatible with Speedscale's Kafka replay approach. Pulsar also supports HTTP REST and gRPC APIs for management and alternative messaging patterns.
+Pulsar clients normally connect with the Pulsar binary protocol, on port 6650 by default. Speedscale does not decode that protocol today. Messages sent or received by a native Pulsar client cannot be inspected, mocked or replayed as messages.
+
+The supported path is a Kafka-compatible endpoint on the Pulsar cluster, such as the Kafka-on-Pulsar (KoP) protocol handler. An application that connects to that endpoint with a Kafka client library sends Kafka protocol traffic, which Speedscale handles the same way as [Kafka](./kafka.md). Calls to Pulsar's HTTP REST API are ordinary HTTP and are captured like any other HTTP traffic.
 
 For more information about Apache Pulsar, see the [Apache Pulsar documentation](https://pulsar.apache.org/).
 
@@ -17,7 +19,7 @@ For more information about Apache Pulsar, see the [Apache Pulsar documentation](
 
 ## Standard Replay Approach
 
-Since Apache Pulsar uses Kafka-compatible APIs, you can use Speedscale's standard replay capabilities with Kafka client libraries:
+When your application reaches Pulsar through a Kafka-compatible endpoint, you can use Speedscale's standard replay capabilities with Kafka client libraries:
 
 1. **Capture Production Traffic**: Use Speedscale to capture your application's interactions with Apache Pulsar
 2. **Create a Snapshot**: [Create a snapshot](/guides/creating-a-snapshot.md) from the captured traffic
@@ -27,11 +29,11 @@ For detailed instructions on using Speedscale's standard replay capabilities, se
 
 ## Alternative: Custom Load Driver Approach
 
-Apache Pulsar supports multiple protocols. The most common approach is using the Kafka-compatible API, which allows you to extract and replay traffic using the same approach as Kafka. For detailed information on extracting Kafka traffic, see the [Kafka guide](./kafka.md).
+The supported approach is the Kafka-compatible endpoint, which allows you to extract and replay traffic using the same approach as Kafka. Traffic from the native Pulsar binary protocol cannot be extracted. For detailed information on extracting Kafka traffic, see the [Kafka guide](./kafka.md).
 
 ### Method 1: Using Kafka-Compatible API
 
-Pulsar's Kafka-compatible API allows you to use standard Kafka client libraries. Extract message data and timestamps from Pulsar Kafka traffic:
+A Kafka-compatible endpoint on Pulsar accepts standard Kafka client libraries. Extract message data and timestamps from Pulsar Kafka traffic:
 
 ```bash
 speedctl extract data <snapshot-id> --path kafka.response.FetchResponse.topics.0.partitions.0.records.records.0.valueString --path .ts --filter='(command IS  "Fetch")'
@@ -88,7 +90,7 @@ var (
 	respectTiming = flag.Bool("respect-timing", false, "Respect original message timing from recording")
 	csvFile       = flag.String("csv", "out.csv", "Path to CSV file")
 	topic         = flag.String("topic", "persistent://public/default/demo-topic", "Pulsar topic name")
-	brokers       = flag.String("brokers", "localhost:6650", "Pulsar broker addresses")
+	brokers       = flag.String("brokers", "localhost:9092", "Pulsar broker addresses")
 )
 
 func main() {
@@ -270,7 +272,7 @@ public class PulsarReplay {
     public static void main(String[] args) throws Exception {
         String csvFile = System.getProperty("csv", "out.csv");
         String topic = System.getProperty("topic", "persistent://public/default/demo-topic");
-        String brokers = System.getProperty("brokers", "localhost:6650");
+        String brokers = System.getProperty("brokers", "localhost:9092");
         boolean respectTiming = Boolean.parseBoolean(System.getProperty("respect-timing", "false"));
 
         PulsarReplay replay = new PulsarReplay(csvFile, topic, brokers, respectTiming);
@@ -359,7 +361,7 @@ async function replay(config: Config): Promise<void> {
 const config: Config = {
   csvFile: process.env.CSV || 'out.csv',
   topic: process.env.TOPIC || 'persistent://public/default/demo-topic',
-  brokers: (process.env.BROKERS || 'localhost:6650').split(','),
+  brokers: (process.env.BROKERS || 'localhost:9092').split(','),
   respectTiming: process.env.RESPECT_TIMING === 'true',
 };
 
@@ -423,7 +425,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Replay Pulsar messages from CSV')
     parser.add_argument('--csv', default='out.csv', help='Path to CSV file')
     parser.add_argument('--topic', default='persistent://public/default/demo-topic', help='Pulsar topic name')
-    parser.add_argument('--brokers', default='localhost:6650', help='Pulsar broker addresses')
+    parser.add_argument('--brokers', default='localhost:9092', help='Pulsar broker addresses')
     parser.add_argument('--respect-timing', action='store_true', help='Respect original message timing')
 
     args = parser.parse_args()
@@ -440,12 +442,12 @@ if __name__ == "__main__":
 
 Send messages as fast as possible (default):
 ```bash
-go run main.go --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:6650
+go run main.go --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:9092
 ```
 
 Respect original message timing from the recording:
 ```bash
-go run main.go --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:6650 --respect-timing
+go run main.go --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:9092 --respect-timing
 ```
 
 </TabItem>
@@ -454,12 +456,12 @@ go run main.go --csv out.csv --topic persistent://public/default/demo-topic --br
 Send messages as fast as possible (default):
 ```bash
 javac PulsarReplay.java
-java -Dcsv=out.csv -Dtopic=persistent://public/default/demo-topic -Dbrokers=localhost:6650 PulsarReplay
+java -Dcsv=out.csv -Dtopic=persistent://public/default/demo-topic -Dbrokers=localhost:9092 PulsarReplay
 ```
 
 Respect original message timing from the recording:
 ```bash
-java -Dcsv=out.csv -Dtopic=persistent://public/default/demo-topic -Dbrokers=localhost:6650 -Drespect-timing=true PulsarReplay
+java -Dcsv=out.csv -Dtopic=persistent://public/default/demo-topic -Dbrokers=localhost:9092 -Drespect-timing=true PulsarReplay
 ```
 
 </TabItem>
@@ -467,12 +469,12 @@ java -Dcsv=out.csv -Dtopic=persistent://public/default/demo-topic -Dbrokers=loca
 
 Send messages as fast as possible (default):
 ```bash
-CSV=out.csv TOPIC=persistent://public/default/demo-topic BROKERS=localhost:6650 npx ts-node main.ts
+CSV=out.csv TOPIC=persistent://public/default/demo-topic BROKERS=localhost:9092 npx ts-node main.ts
 ```
 
 Respect original message timing from the recording:
 ```bash
-CSV=out.csv TOPIC=persistent://public/default/demo-topic BROKERS=localhost:6650 RESPECT_TIMING=true npx ts-node main.ts
+CSV=out.csv TOPIC=persistent://public/default/demo-topic BROKERS=localhost:9092 RESPECT_TIMING=true npx ts-node main.ts
 ```
 
 </TabItem>
@@ -480,12 +482,12 @@ CSV=out.csv TOPIC=persistent://public/default/demo-topic BROKERS=localhost:6650 
 
 Send messages as fast as possible (default):
 ```bash
-python main.py --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:6650
+python main.py --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:9092
 ```
 
 Respect original message timing from the recording:
 ```bash
-python main.py --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:6650 --respect-timing
+python main.py --csv out.csv --topic persistent://public/default/demo-topic --brokers localhost:9092 --respect-timing
 ```
 
 </TabItem>
@@ -505,7 +507,7 @@ Configure these in your Kafka client's configuration map as needed.
 
 :::note
 
-Make sure to update the topic name (using Pulsar's hierarchical naming), broker addresses, and authentication settings. Pulsar's Kafka-compatible API allows you to use standard Kafka client libraries, making it easy to integrate with existing Kafka-based applications.
+Make sure to update the topic name (using Pulsar's hierarchical naming), broker addresses, and authentication settings. The broker addresses must point at the Kafka-compatible listener (port 9092 in these examples), not at the Pulsar binary protocol port 6650.
 
 For more details on extracting and working with Kafka traffic, see the [Kafka guide](./kafka.md). For HTTP REST API usage, see the [Getting Started Guide](/quick-start.md). Use the `--respect-timing` flag to preserve the original message timing patterns from your production traffic, or omit it to send messages as fast as possible for maximum throughput testing.
 
