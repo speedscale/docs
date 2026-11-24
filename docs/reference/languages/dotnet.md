@@ -43,7 +43,7 @@ This is the current public .NET demo used for local proxymock examples.
 ## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
-  intro="Run the .NET demo from a macOS shell. For native Windows, see the Windows TLS trust steps below."
+  intro="Run the .NET demo from a macOS or Linux shell. For native Windows, see the Windows TLS trust steps below."
   steps={[
     {
       title: 'Install and initialize proxymock',
@@ -56,7 +56,7 @@ proxymock init`,
       command: `git clone https://github.com/speedscale/mock-lab
 cd mock-lab/languages/dotnet
 proxymock record -- dotnet run`,
-      note: 'proxymock starts the .NET service as a child process and sets its proxy and TLS environment variables. Configure certificate trust for the client as described below.',
+      note: 'proxymock starts the .NET service as a child process and sets its proxy and TLS environment variables. On macOS, proxymock adds its CA to the keychain by default. On Linux and native Windows, configure certificate trust as described below.',
     },
     {
       title: 'Generate one real workflow',
@@ -80,7 +80,7 @@ proxymock replay --test-against http://localhost:8080`,
 
 ## TLS Trust {#tls-trust}
 
-On macOS and Linux, modern .NET usually respects `SSL_CERT_FILE`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and any platform-specific caveats.
+On Linux, modern .NET uses OpenSSL and respects `SSL_CERT_FILE`. On macOS, .NET validates certificates with the system keychain and ignores `SSL_CERT_FILE`. proxymock adds its CA to the keychain unless you pass `--no-cert-install`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and any platform-specific caveats.
 
 ### Windows TLS trust {#windows-tls-trust}
 
@@ -98,15 +98,23 @@ For native Windows .NET clients using the default certificate validation, trust 
 3. To verify mocking, start proxymock with your recording and disable passthrough. The example assumes proxymock and the client are running on the same Windows host.
 
    ```powershell
-   proxymock mock --in .\proxymock\recording --out .\proxymock\mock-results --no-passthrough
+   proxymock mock --in .\proxymock\recorded-<timestamp> --out .\proxymock\mock-results --no-passthrough
    ```
 
-   For .NET `HttpClient` using its default proxy settings, set `HTTPS_PROXY` in the PowerShell session that launches the HTTPS client. Use the configured proxy address if you changed the default listener.
+   Replace `recorded-<timestamp>` with the directory `proxymock record` created.
+
+   For `HttpClient` on .NET Core 3.0 or later using its default proxy settings, set `HTTPS_PROXY` in the PowerShell session that launches the HTTPS client. Use the configured proxy address if you changed the default listener. .NET Framework ignores proxy environment variables, so point it at proxymock through the Windows system proxy or a `defaultProxy` entry in its app.config.
 
    ```powershell
    $env:HTTPS_PROXY = "http://127.0.0.1:4140"
    ```
 
-   Run a request that exercises the mocked dependency with TLS validation enabled. Confirm the expected response and check the mock output for `match=HIT` and zero passthrough. An unmatched request returns HTTP 404. When the trust is no longer needed, have the certificate owner remove the CA from the trust store by its exact thumbprint.
+   Run a request that exercises the mocked dependency with TLS validation enabled. Confirm the expected response and check the mock output for `match=HIT` and zero passthrough. An unmatched request returns HTTP 404.
+
+4. When the trust is no longer needed, have the certificate owner remove the CA from the trust store by its exact thumbprint. `certutil.exe -dump "C:\path\to\tls.crt"` prints the thumbprint as `Cert Hash(sha1)`. For the machine store, run this from elevated PowerShell:
+
+   ```powershell
+   certutil.exe -delstore Root <thumbprint>
+   ```
 
 See [Microsoft's Windows certificate store guide](https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/inspect-certificates-manage-certificate-stores) and [certutil reference](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/certutil#-addstore).
