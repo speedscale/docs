@@ -47,6 +47,7 @@ proxymock [command]
 - `match-rate` - Tune the outbound mock match rate of a replay, offline
 - `mcp` - Model Context Protocol (MCP) server
 - `mock` - Run the mock server to respond to outbound requests from your app
+- `plan` - Check a test plan's requirements against the recorded traffic
 - `protos` - Manage the protobuf schemas that name the fields of recorded protobuf and gRPC bodies
 - `recommendations` - Work the replay-tuning recommendations the analyzer finds
 - `record` - Record traffic from your app, turning it into RRPair files
@@ -222,6 +223,7 @@ proxymock replay --tests-filter '(direction IS OUT) AND (tech IS Oracle)' \
 - `--fail-if strings` - Fail with exit code `1` when a validation condition is true
 - `--baseline string` - Prior replay output directory for comparison against known failures
 - `--fail-on-new-mismatch` - Exit `3` for a new mismatch; requires `--baseline`
+- `--plan string` - A test plan, as a file or a name in `proxymock/plans/`: report whether the replay met each of its requirements. See [Test Plans](../proxymock/guides/test-plans.md)
 - `--junit string` - Write a JUnit XML report of the replay to this file, with a test case for every replayed request, journey and gate. See [Report the result on the pull request](../proxymock/guides/cicd.md#report-the-result-on-the-pull-request)
 - `--verify-fix` - Interpret recorded errors becoming successful responses as fixes, and check collateral regressions
 - `--expect string` - Regular expression selecting recorded-error endpoints; requires `--verify-fix`
@@ -1144,6 +1146,40 @@ the pod's containers, including init containers, so you can pick the right one
 with `--container`.
 
 ## System commands
+
+### `plan`
+
+Check a test plan's requirements against the recorded traffic. See [Test Plans](../proxymock/guides/test-plans.md).
+
+**Usage**
+
+```bash
+proxymock plan [command]
+```
+
+**Available subcommands**
+
+- `init <name>` - Write a plan to start from, at `proxymock/plans/<name>.yaml`
+- `check` - Say which of a plan's cases the recording and the spec already cover
+
+### `plan check`
+
+Match every case of a test plan against the recorded inbound requests and the OpenAPI spec. Each case is `covered`, `contradicted`, `spec-only` or `uncovered`, with what closes the gap.
+
+**Usage**
+
+```bash
+proxymock plan check --plan <plan> [flags]
+```
+
+**Flags**
+
+- `--fail-on-gaps` - Exit `1` unless the recording covers every case
+- `--in strings` - Recordings to look for the cases in
+- `--json` - Write the result as JSON
+- `--plan string` - Plan file, or the name of a plan in `proxymock/plans/` (required)
+- `--spec string` - OpenAPI spec; defaults to the workload's spec in `proxymock/applications/`
+- `--workload string` - Recorded workload, when the recording holds several
 
 ### `ci`
 
