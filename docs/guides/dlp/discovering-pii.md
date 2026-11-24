@@ -67,11 +67,12 @@ The same flags work on `proxymock web` and on `proxymock recommendations accept`
 
 ### When the model runs
 
-Asking the model can take several minutes, longer the first time or when the model server has to start, so ordinary analysis never calls it. Analysis still applies the verdicts the model gave before, so its recommendations stay after a reanalysis.
+Asking the model adds time and model usage to an analysis, several minutes with a large model on your own server, so ordinary analysis never calls it. Analysis still applies the verdicts the model gave before, so its recommendations stay after a reanalysis.
 
 - `proxymock recommendations list` with the `--dlp-model-*` flags asks the model, since the flags are the request.
 - In `proxymock web`, started with the `--dlp-model-*` flags, the Recommendations view shows **Classify with the DLP model**. It warns that the run can take several minutes, then reanalyzes the selected recording with the model.
 - In the Speedscale dashboard, a snapshot's Prepare tab shows **Classify with the DLP model** for tenants with a DLP model. It warns the same way, then reanalyzes the snapshot with the model; the snapshot shows as in progress until it finishes.
+- From the command line, `speedctl analyze snapshot <snapshot-id> --classify-fields` starts the same Speedscale Cloud reanalysis. It fails with `no DLP model is configured for this tenant` when the tenant has none.
 
 Each run asks only about fields the model has not classified before.
 
