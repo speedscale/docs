@@ -6,9 +6,11 @@ sidebar_position: 11
 
 ## Background
 
-The Google Cloud client libraries talk to Pub/Sub over gRPC, on `pubsub.googleapis.com:443` or a regional endpoint, so Speedscale records Pub/Sub calls as gRPC calls. The PHP library falls back to the REST API when its gRPC extension is missing, and those calls are recorded as HTTP.
+The Google Cloud client libraries talk to Pub/Sub over gRPC, on `pubsub.googleapis.com:443` or a regional endpoint, so Speedscale records Pub/Sub calls as gRPC calls. The PHP library falls back to the REST API when its gRPC extension is missing, and some clients are configured to use REST. Those calls are recorded as HTTP, and the mock and republish handle them as they handle the gRPC calls. See [REST clients](#rest-clients).
 
 A publisher sends unary `Publish` calls. A subscriber built on a high-level client opens a bidirectional `StreamingPull` stream, receives messages on it, and acknowledges them with separate unary `Acknowledge` and `ModifyAckDeadline` calls. Some subscribers use unary `Pull` instead.
+
+A push subscription delivers messages to your service as inbound HTTP requests instead. See [push subscriptions](#push-subscriptions).
 
 For more information about Google Pub/Sub, see the [Google Cloud Pub/Sub documentation](https://cloud.google.com/pubsub).
 
@@ -21,6 +23,8 @@ For more information about Google Pub/Sub, see the [Google Cloud Pub/Sub documen
 | Other unary calls, such as `GetSubscription` | Yes, as gRPC | Yes, as gRPC | Yes, as gRPC |
 | `Pull` | Yes, as gRPC | Yes, from the recorded messages ([mock a subscriber](#mock-a-pubsub-subscriber)) | Its messages can be republished to drive a subscriber |
 | `StreamingPull` | Yes, as a streamed gRPC call, kept in parts when it runs long | Yes, from the recorded messages ([mock a subscriber](#mock-a-pubsub-subscriber)) | Its messages can be republished to drive a subscriber |
+| REST `:pull`, `:acknowledge`, `:modifyAckDeadline` and `:publish` | Yes, as HTTP | Yes, as their gRPC equivalents are ([REST clients](#rest-clients)) | `:pull` messages can be republished to drive a subscriber |
+| Push deliveries to your service | Yes, as inbound HTTP | Not needed | Yes, as inbound HTTP ([push subscriptions](#push-subscriptions)) |
 
 Capture needs TLS interception, as for any gRPC service. A subscriber keeps its `StreamingPull` stream open and ends it by cancelling it; capture keeps such a stream as one or more parts of a [long-lived stream](/proxymock/grpc/long-lived-streams/), which the mock serves as one stream. proxymock and cloud capture both record streamed calls.
 
@@ -327,3 +331,117 @@ Every vUser republishes the same data. A subscriber that deduplicates on a busin
 `pubsub_message` hands the message's data to `json_path`, which reaches the `orderId` field, and `rand_string` gives every published message a new value. To rewrite an attribute instead, set `name` to its key. The same extractor works on the `Publish` calls a publisher recorded.
 
 Republished messages get new message IDs and publish times. Exactly-once delivery is not simulated.
+
+## REST clients
+
+A client on the Pub/Sub REST API, such as the PHP library without its gRPC extension, calls custom methods over HTTP instead of gRPC. Capture records each call as HTTP with JSON bodies, in which message `data` is base64. The mock and republish read these calls as the gRPC calls they stand for:
+
+| REST call | Same as | What the mock does |
+|---|---|---|
+| `POST /v1/projects/*/subscriptions/*:pull` | `Pull` | Answers from the messages recorded for the subscription in the path, up to `maxMessages`. |
+| `POST /v1/projects/*/subscriptions/*:acknowledge` | `Acknowledge` | Ends the delivery of each ack ID, and answers `{}` whatever the ack IDs. |
+| `POST /v1/projects/*/subscriptions/*:modifyAckDeadline` | `ModifyAckDeadline` | Extends each delivery, or redelivers it when `ackDeadlineSeconds` is 0, and answers `{}`. |
+| `POST /v1/projects/*/topics/*:publish` | `Publish` | Answers a publish to a recorded topic with a new message ID for each message. |
+
+The mock answers these calls for a Pub/Sub host once the recording holds a subscriber call, REST or gRPC, for that host. REST and gRPC calls share the recorded messages. A subscription recorded over REST serves a gRPC subscriber, a subscription recorded over gRPC serves a REST one, and each message is handed out once across both, as described in [mock a subscriber](#mock-a-pubsub-subscriber). A topic recorded with either API answers a publish on the other.
+
+A pull that finds no message ready waits up to one second for a nacked or expired message to come back before it answers `{}`, as Pub/Sub holds an idle pull open. A pull with `returnImmediately` set answers at once.
+
+The mock refuses a request Pub/Sub would refuse with the REST error Pub/Sub sends. A pull with `maxMessages` of 0, for example, gets HTTP 400 with `"status": "INVALID_ARGUMENT"`. A pull of a subscription with no recorded `:pull`, `Pull` or `StreamingPull` call, and a publish to a topic never published to, are matched by signature like any other HTTP request.
+
+The mock answers these calls through the same path as any HTTP match, so response transforms and chaos rules apply to them. A fault that fails a pull leaves its messages outstanding until their ack deadline passes, 10 seconds for a pull, and then redelivers them.
+
+Each REST call is saved to the observed output as one call. A REST publish is tagged `pubsubTopic` and `pubsubMessageId`, which lists the message IDs the mock returned, separated by commas. Unlike a gRPC `Publish`, it is not split into one call per message, so [`httpOutput`](#catch-a-publisher-regression) compares the whole call with the recorded one.
+
+To drive a REST subscriber by republishing, choose its `:pull` calls as the replay's tests. Their messages are republished as gRPC `Publish` calls, like the messages of a recorded `Pull`, and its `:acknowledge` and `:modifyAckDeadline` calls are left to your subscriber:
+
+```bash
+speedctl create snapshot --name orders-worker --service orders-worker --tests-filter '(location CONTAINS ":pull")'
+```
+
+The ack metrics in [check that the subscriber kept up](#check-that-the-subscriber-kept-up) read a REST subscriber's own `:pull` and `:acknowledge` calls as they read the gRPC ones.
+
+## Push subscriptions
+
+A push subscription has Pub/Sub send each message to your service as an HTTP `POST` to the push endpoint, and your service acks it by answering with a 2xx status. The body is a JSON envelope:
+
+```json
+{
+  "message": {
+    "data": "eyJvcmRlciI6MX0=",
+    "attributes": { "type": "created" },
+    "messageId": "2070443601311540",
+    "publishTime": "2026-11-16T09:00:00.000Z"
+  },
+  "subscription": "projects/shop/subscriptions/orders-push"
+}
+```
+
+Capture records each push as an inbound HTTP request, so a replay sends the recorded pushes to your service like any other inbound traffic, at their recorded pace, and compares its responses with the recording. Republish and a Pub/Sub project are not needed. To multiply the load, raise the number of vUsers, as for any HTTP service.
+
+### Replace the push token
+
+When the subscription has authentication turned on, Pub/Sub sends each push with a Google-signed OIDC token in the `Authorization: Bearer` header. The token expires an hour after Google issued it, so a service that verifies it rejects the recorded token on replay, usually with 401 or 403.
+
+If your service does not verify the token itself, because Cloud Run or Identity-Aware Proxy checks it in front of your service and the replay sends straight to your service, there is nothing to do.
+
+Otherwise give each replayed push a fresh token that your service accepts. It must be signed by Google, carry the audience your service checks, which is often the push endpoint URL and not the replay's target, and carry the email of the service account your service expects. The [`token_fetch`](../transformation/transforms/token_fetch.md) transform requests one during the replay.
+
+In your cluster, when the generator [runs as the push service account](../replay/generator-service-account.md), ask the GKE metadata server for an ID token. `format=full` adds the `email` claim that most verifiers check. An ID token lasts an hour, so `ttl` reuses each one for 50 minutes:
+
+```json
+{
+  "filters": {
+    "filters": [{ "include": true, "detectedLocation": "/push/orders", "operator": "CONTAINS" }]
+  },
+  "extractor": { "type": "http_req_header", "config": { "name": "Authorization" } },
+  "transforms": [
+    {
+      "type": "token_fetch",
+      "config": {
+        "grant": "request",
+        "method": "GET",
+        "url": "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=https://orders.example.com/push/orders&format=full",
+        "headers": "{\"Metadata-Flavor\":\"Google\"}",
+        "tokenPath": "@body",
+        "ttl": "50m"
+      }
+    }
+  ]
+}
+```
+
+When the generator runs as another service account, have it mint a token for the push service account with the IAM Credentials API instead. The generator's service account needs the Service Account OpenID Connect Identity Token Creator role (`roles/iam.serviceAccountOpenIdTokenCreator`) on the push service account. The nested `google` fetch gets the generator's own access token from the metadata server, and the outer request exchanges it for an ID token:
+
+```json
+{
+  "type": "token_fetch",
+  "config": {
+    "grant": "request",
+    "method": "POST",
+    "url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/pubsub-push@shop.iam.gserviceaccount.com:generateIdToken",
+    "headers": "{\"Authorization\":\"Bearer ${{fetch:google}}\"}",
+    "body": "{\"audience\":\"https://orders.example.com/push/orders\",\"includeEmail\":true}",
+    "tokenPath": "token",
+    "ttl": "50m",
+    "fetches": "{\"google\":{\"grant\":\"request\",\"method\":\"GET\",\"url\":\"http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token\",\"headers\":{\"Metadata-Flavor\":\"Google\"}}}"
+  }
+}
+```
+
+With proxymock on your machine there is no metadata server. Mint a token with `gcloud` before the replay:
+
+```bash
+export PUSH_TOKEN=$(gcloud auth print-identity-token --impersonate-service-account=pubsub-push@shop.iam.gserviceaccount.com --audiences=https://orders.example.com/push/orders --include-email)
+```
+
+Then send it with the [`constant`](../transformation/transforms/constant.md) transform. The token lasts an hour, so this suits a replay that finishes within that time:
+
+```json
+{
+  "extractor": { "type": "http_req_header", "config": { "name": "Authorization" } },
+  "transforms": [
+    { "type": "constant", "config": { "new": "Bearer ${{env_var:PUSH_TOKEN}}" } }
+  ]
+}
+```
