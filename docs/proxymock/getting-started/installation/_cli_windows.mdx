@@ -45,4 +45,4 @@ echo $env:userprofile\.speedscale
 
 Click **OK** and restart PowerShell.
 
-For native Windows .NET clients, follow the [Windows TLS trust steps](/reference/languages/dotnet#windows-tls-trust) before recording or mocking HTTPS traffic.
+Clients that use the Windows certificate store, such as .NET, need the proxymock CA in that store before recording or mocking HTTPS traffic. Follow the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) steps.

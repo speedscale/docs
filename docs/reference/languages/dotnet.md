@@ -43,7 +43,7 @@ This is the current public .NET demo used for local proxymock examples.
 ## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
-  intro="Run the .NET demo from a macOS or Linux shell. For native Windows, see the Windows TLS trust steps below."
+  intro="Run the .NET demo from a macOS or Linux shell. For native Windows, see Windows TLS trust below."
   steps={[
     {
       title: 'Install and initialize proxymock',
@@ -84,37 +84,12 @@ On Linux, modern .NET uses OpenSSL and respects `SSL_CERT_FILE`. On macOS, .NET 
 
 ### Windows TLS trust {#windows-tls-trust}
 
-For native Windows .NET clients using the default certificate validation, trust the proxymock CA in the Windows certificate store. Apply trust to the runtime that opens the HTTPS connection. If the test calls your app and your app calls the dependency, configure trust for your app's account or Windows environment.
+.NET on Windows validates certificates with the Windows certificate store and ignores `SSL_CERT_FILE`. Follow the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) steps to trust the proxymock CA and verify the mock, then route the client through proxymock.
 
-1. Locate the public CA, `tls.crt`, from the proxymock instance serving the mock. The default Windows path is `%USERPROFILE%\.speedscale\certs\tls.crt`. Run `proxymock admin certs` if you need to generate the CA. Share only the public certificate with your endpoint administrator and keep `tls.key` on the mock host.
-2. Choose the trust store approved by your endpoint administrator. For machine-level trust, have them deploy the CA to **Local Computer > Trusted Root Certification Authorities**. For an approved manual install, run the following from elevated PowerShell with the actual path to the public certificate.
+For `HttpClient` on .NET Core 3.0 or later using its default proxy settings, set `HTTPS_PROXY` in the PowerShell session that launches the HTTPS client. Use the configured proxy address if you changed the default listener.
 
-   ```powershell
-   certutil.exe -addstore Root "C:\path\to\tls.crt"
-   ```
+```powershell
+$env:HTTPS_PROXY = "http://127.0.0.1:4140"
+```
 
-   If per-user trust is approved, open `certmgr.msc` in an interactive session as the user running the HTTPS client. Import the CA into **Trusted Root Certification Authorities > Certificates** and review the Windows confirmation prompt. Per-user imports can require a UI and fail in headless sessions. For unattended jobs, have your administrator provision trust for the account or environment where the client runs.
-
-3. To verify mocking, start proxymock with your recording and disable passthrough. The example assumes proxymock and the client are running on the same Windows host.
-
-   ```powershell
-   proxymock mock --in .\proxymock\recorded-<timestamp> --out .\proxymock\mock-results --no-passthrough
-   ```
-
-   Replace `recorded-<timestamp>` with the directory `proxymock record` created.
-
-   For `HttpClient` on .NET Core 3.0 or later using its default proxy settings, set `HTTPS_PROXY` in the PowerShell session that launches the HTTPS client. Use the configured proxy address if you changed the default listener. .NET Framework ignores proxy environment variables, so point it at proxymock through the Windows system proxy or a `defaultProxy` entry in its app.config.
-
-   ```powershell
-   $env:HTTPS_PROXY = "http://127.0.0.1:4140"
-   ```
-
-   Run a request that exercises the mocked dependency with TLS validation enabled. Confirm the expected response and check the mock output for `match=HIT` and zero passthrough. An unmatched request returns HTTP 404.
-
-4. When the trust is no longer needed, have the certificate owner remove the CA from the trust store by its exact thumbprint. `certutil.exe -dump "C:\path\to\tls.crt"` prints the thumbprint as `Cert Hash(sha1)`. For the machine store, run this from elevated PowerShell:
-
-   ```powershell
-   certutil.exe -delstore Root <thumbprint>
-   ```
-
-See [Microsoft's Windows certificate store guide](https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/inspect-certificates-manage-certificate-stores) and [certutil reference](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/certutil#-addstore).
+.NET Framework ignores proxy environment variables, so point it at proxymock through the Windows system proxy or a `defaultProxy` entry in its app.config.
