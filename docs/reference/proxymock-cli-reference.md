@@ -57,6 +57,7 @@ proxymock [command]
 - `test-config` - Author the generator/responder configuration a replay runs with
 - `transform` - Author and validate traffic transforms against local RRPair files
 - `validate` - Validate recorded HTTP responses against an OpenAPI spec
+- `variations` - Write bad-input copies of recorded requests that the service must refuse
 - `version` - Prints current version of client and cloud
 - `web` - Start the embedded web interface
 
@@ -1179,6 +1180,32 @@ proxymock plan check --plan <plan> [flags]
 - `--json` - Write the result as JSON
 - `--plan string` - Plan file, or the name of a plan in `proxymock/plans/` (required)
 - `--spec string` - OpenAPI spec; defaults to the workload's spec in `proxymock/applications/`
+- `--workload string` - Recorded workload, when the recording holds several
+
+### `variations`
+
+Write bad-input copies of recorded requests, each changing one thing the service must refuse, as a new recording. See [Request Variations](../proxymock/guides/request-variations.md).
+
+**Usage**
+
+```bash
+proxymock variations [flags]
+```
+
+**Examples**
+
+```bash
+proxymock variations --in proxymock/recorded
+proxymock variations --in proxymock/recorded --spec openapi.yaml --kinds no-auth,other-user
+```
+
+**Flags**
+
+- `--in strings` - Recordings to make the variations from
+- `--json` - Write the result as JSON
+- `--kinds strings` - Kinds of variation to write (default all): `no-auth`, `other-user`, `type`, `missing-field`, `boundary`, `enum`
+- `--out string` - Directory to write the variations to (default `proxymock/variations`)
+- `--spec string` - OpenAPI spec, for the variations that need one
 - `--workload string` - Recorded workload, when the recording holds several
 
 ### `ci`

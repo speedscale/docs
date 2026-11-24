@@ -73,6 +73,8 @@ Each case comes back in one of four states, with what closes the gap:
 | `spec-only` | The OpenAPI spec documents the operation | Write the request with [`proxymock generate`](./openapi.md), then send it through `proxymock record` |
 | `uncovered` | Nothing in the workspace sends the request, or a templated request was only recorded with other statuses | Send a request through [`proxymock record`](../getting-started/quickstart/quickstart-cli.md#recording) |
 
+For `negative` and `auth` cases, [request variations](./request-variations.md) write the requests from the recorded ones: a request with no credential, with another user's credential, or with bad input. Check the plan against both recordings with `--in proxymock/recorded,proxymock/variations`.
+
 Only a case that names one exact request can be contradicted. A templated case such as `GET /orders/{id}` expecting `404` is not contradicted by another order that answered `200`: that recording was sent other input.
 
 The spec is the workload's spec in `proxymock/applications/` when there is one, or the file `--spec` names.
