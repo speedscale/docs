@@ -161,9 +161,9 @@ For example, `--vus`, `--for`, `--times` or `--stage` on `proxymock replay` repl
 |---|---|---|---|
 | Chaos, most generator traffic settings, load stages and virtual users, responder low data mode and response delay | yes | yes | yes |
 | Responder replicas and resources, generator resources, image tags, `cluster.*`, responder passthrough mode, DLP config, mock mapping | no | yes | yes |
-| Goals (`rules`) and assertions (`assertionGroups`) | yes, for metrics available locally | no | yes |
+| Goals (`rules`) and assertions (`assertionGroups`) | yes, for metrics available locally | yes, for metrics measured in the cluster | yes |
 
-Local replay evaluates goals and assertion groups it can measure and writes the results to its replay verdict. Metrics that require Cloud are marked as not evaluated. Recording coverage goals use the OpenAPI contract in the workspace or `replay --spec`; a positive threshold fails when the contract is missing. A cloud-free in-cluster replay does not produce a verdict yet. See [replay verdicts](./replay-verdicts.md) for local exit codes.
+Local replay evaluates goals and assertion groups it can measure and writes the results to its replay verdict. Metrics that require Cloud are marked as not evaluated. Recording coverage goals use the OpenAPI contract in the workspace or `replay --spec`; a positive threshold fails when the contract is missing. Goals on the [LLM answer quality rates](./llm-eval-gate.md#gate-with-a-test-config-goal) are evaluated locally by `proxymock replay`, and a goal on a rate that nothing was scored for fails. A cloud-free in-cluster replay is scored in the cluster: `proxymock cluster replay status` and `start --wait` show its goals, and `--wait` exits nonzero when one is missed. See [replay verdicts](./replay-verdicts.md) for local exit codes.
 
 Report-level assertions judge the whole run and are listed under **Report-level assertions** in the verdict. A local replay evaluates [`httpOutput`](/reference/configuration/assertions/httpoutput.md) only when `--mocks-out` names the directory `proxymock mock` wrote while it served the replay. `kafkaOutput`, `sqlOutput` and [`chaosFired`](/reference/configuration/assertions/chaosfired.md) are evaluated in Speedscale cloud and are marked as not evaluated locally.
 

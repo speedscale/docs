@@ -36,4 +36,6 @@ A replay that sends streamed LLM requests reports time to first token, inter-tok
 
 ## LLM answer quality goals
 
-A replay of LLM traffic also reports whether the answers are still right: `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. Use **too low** on the tool-call match rate and **too high** on the other two, for example `llmToolCallMatchPct` too low at `100`. See [Regression Test a Model Swap](../../proxymock/guides/llm-eval-gate.md#score-a-cloud-or-cluster-replay).
+A replay of LLM traffic also reports whether the answers are still right: `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. Use **too low** on the tool-call match rate and **too high** on the other two, for example `llmToolCallMatchPct` too low at `100`.
+
+These goals are evaluated on a cloud report, on a cluster replay with no Speedscale cloud, and by `proxymock replay --test-config`. A goal on a rate that nothing was scored for fails and is shown as `not scored` with the reason, for example when the replay had no LLM traffic or no answer called a tool. The rates are measured for the whole run, so leave the goal's location and method empty. See [Regression Test a Model Swap](../../proxymock/guides/llm-eval-gate.md#gate-with-a-test-config-goal).

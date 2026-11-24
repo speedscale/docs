@@ -12,12 +12,14 @@ Answers are read from four API formats:
 
 | Format | Requests scored | Served by |
 | --- | --- | --- |
-| OpenAI-compatible | Chat completions and text completions | OpenAI, Azure OpenAI, vLLM, NIM, TGI, and the `/v1` endpoints of Ollama and other servers |
+| OpenAI-compatible | Chat completions, text completions and the Responses API (`/v1/responses`) | OpenAI, Azure OpenAI, vLLM, NIM, TGI, and the `/v1` endpoints of Ollama and other servers |
 | Anthropic Messages | `/v1/messages` | The Anthropic API and servers compatible with it |
 | Ollama native | `/api/chat` and `/api/generate` | Ollama |
-| Amazon Bedrock | `Converse` and `ConverseStream` for any model, `InvokeModel` and `InvokeModelWithResponseStream` for Anthropic models | Amazon Bedrock |
+| Amazon Bedrock | `Converse` and `ConverseStream` for any model. `InvokeModel` and `InvokeModelWithResponseStream` for Anthropic, Amazon Titan text, Meta Llama, Mistral, and Cohere Command and Command R models | Amazon Bedrock |
 
 Streamed and non-streamed responses are both scored in every format, and a streamed replay of a non-streamed recording compares correctly. The candidate must serve the same API format that was recorded. proxymock does not translate a request from one format to another.
+
+In a Responses API answer, function calls are compared as tool calls and reasoning items are kept out of the answer text. In an `InvokeModel` answer, tool calls are compared for Anthropic, Mistral chat and Cohere Command R models, and the other model families are scored on their text.
 
 By default, scoring runs in process and makes no network call. Two optional settings send response text to an endpoint you choose: an external embedding backend, and a judge for divergent pairs. [Compare Response Meaning](./semantic-comparison.md#choose-where-text-scoring-runs) explains both.
 
@@ -51,15 +53,43 @@ Leave out `--tests-filter` when you recorded in front of the model server itself
 | `--llm-model` | Model name sent in each recorded LLM request, in place of the recorded one |
 | `--llm-api-key-env` | Name of the environment variable holding the candidate's API key, sent in place of the recorded credential |
 
-Both overrides apply to `POST` requests in the OpenAI-compatible, Anthropic Messages and Ollama native formats, which name the model in the request body. An Anthropic Messages request is recognized by its `anthropic-version` header. Everything else in each request is sent as recorded, including the sampling settings and the conversation history.
+Both overrides apply to `POST` requests in these formats. Everything else in each request is sent as recorded, including the conversation history. The sampling settings are sent as recorded too, unless you [pin them](#pin-the-sampling-settings).
 
-The key replaces the credential the recorded request carried. On an Anthropic Messages request that has an `x-api-key` header, the key goes there. On every other request it is sent as a Bearer token in the `Authorization` header.
+| Requests | `--llm-model` replaces | `--llm-api-key-env` sends the key as |
+| --- | --- | --- |
+| OpenAI-compatible chat completions, text completions and Responses API (`/v1/responses`) | The model name in the request body | A Bearer token in the `Authorization` header |
+| Anthropic Messages, recognized by the `anthropic-version` header | The model name in the request body | The `x-api-key` header when the recorded request has one, otherwise a Bearer token |
+| Ollama native | The model name in the request body | A Bearer token in the `Authorization` header |
+| Amazon Bedrock `Converse`, `ConverseStream`, `InvokeModel` and `InvokeModelWithResponseStream` | The model id or inference profile ARN in the request URL | An Amazon Bedrock API key, as a Bearer token in place of the recorded SigV4 signature |
 
-A Bedrock request names its model in the URL and is signed, so neither flag changes it. Bedrock answers are still scored. To send recorded Bedrock requests to another model, change the model id in the URL with a [transform](/guides/transformation/overview.md) and sign the request again with [`aws_auth`](/guides/transformation/transforms/aws_auth.md).
+### Amazon Bedrock requests
 
-Pass the name of the variable to `--llm-api-key-env`, never the key. proxymock stores the variable name in the run's snapshot and reads the key when it sends a request. The replay output records each request as it was sent, as a recording does.
+A Bedrock request names its model in the URL, and a SigV4 signature covers that URL. A request recorded with a SigV4 signature is pointed at another model only when `--llm-api-key-env` is also given. For Bedrock, the variable holds an Amazon Bedrock API key. A request recorded with an API key in place of a signature is pointed at the candidate by `--llm-model` alone.
+
+```shell
+export BEDROCK_API_KEY=your-bedrock-api-key
+
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --tests-filter '(networkaddr IS "bedrock-runtime.us-east-1.amazonaws.com:443")' \
+  --test-against https://bedrock-runtime.us-east-1.amazonaws.com \
+  --llm-model <model-id-or-inference-profile-arn> \
+  --llm-api-key-env BEDROCK_API_KEY
+```
+
+With `--llm-model` and no `--llm-api-key-env`, a signed Bedrock request is replayed at its recorded model. The replay then prints a warning that says how many Bedrock requests kept their recorded model, and `replay-verdict.json` holds the count as `summary.bedrockKeptRecordedModel`. The results of those requests describe the recorded model, so add `--llm-api-key-env` before you read them as the candidate's.
+
+With `InvokeModel` and `InvokeModelWithResponseStream`, the request body belongs to the recorded model family. Choose a candidate of the same family, or record with `Converse`.
+
+To replay with SigV4 credentials in place of an API key, change the model id in the URL with a [transform](/guides/transformation/overview.md) and sign the request again with [`aws_auth`](/guides/transformation/transforms/aws_auth.md).
+
+### The candidate's key
+
+The key replaces the credential the recorded request carried. Pass the name of the variable to `--llm-api-key-env`, never the key. proxymock stores the variable name in the run's snapshot and reads the key when it sends a request. The replay output records each request as it was sent, as a recording does.
 
 Leave out `--llm-api-key-env` to send the recorded credential. Leave out `--llm-model` to send the recorded model name, for example when the candidate is a different server that serves the same model name.
+
+An agent or a script can set the same overrides. The MCP `replay_traffic` tool takes `llm-model` and `llm-api-key-env`, and `POST /v1/replays/run` of the [REST API](./rest-api.md) takes `llmModel` and `llmApiKeyEnv`. `llmApiKeyEnv` names a variable in the REST server's environment, and the key itself is never sent.
 
 ## What is compared
 
@@ -92,13 +122,24 @@ Some self-hosted servers leave a model's thinking in the answer text, wrapped in
 | `llm.divergence-pct` | Percentage of scored pairs that did not match, failures included |
 | `llm.failure-pct` | Percentage of scored pairs that failed |
 
-No gate on these rates applies by default. Scoring LLM responses does not fail a replay by itself: with no condition on these rates the replay prints `scored but not gated`, and its exit code comes from whatever other gates are in force, such as the goals of a test config.
+No gate on these rates applies by default. Scoring LLM responses does not fail a replay by itself: with no condition and no goal on these rates the replay prints `scored but not gated`, and its exit code comes from whatever other gates are in force.
 
 A condition on a rate that has nothing to measure is an error, not a pass. For example, `llm.tool-call-match-pct` is not reported when no scored pair called a tool.
 
 The rates are not reported with `--no-out`, `--load-test` or `--ignore-body-changes`, because those options do not keep or score response bodies.
 
-Use `--fail-if` for these rates in a local replay. A test config goal on one of them is evaluated on a [cloud or cluster report](#score-a-cloud-or-cluster-replay) and is not evaluated in a local replay.
+### Gate with a test config goal
+
+A goal in a [test config](./test-configs.md) gates on the same rates, under the metric names `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. `proxymock replay --test-config` evaluates such a goal from the same scoring `--fail-if` uses. A missed goal fails the run with exit code `1` and appears in the goals section of `replay-verdict.json`, as it does on a [cloud or cluster report](#score-a-cloud-or-cluster-replay).
+
+A goal on one of these rates fails when nothing was scored for it. The goal is shown as `not scored` with the reason, for example:
+
+- The replay had no LLM traffic.
+- No scored answer called a tool, for a goal on `llmToolCallMatchPct`.
+- The replay ran with `--load-test`, which keeps no responses to score.
+- The goal is scoped to one location or method. The rates are measured for the whole run, so leave the goal's location and method empty.
+
+The Replay tab of the proxymock web UI does not score LLM answers, so it reports these goals as not evaluated.
 
 ## Read the result
 
@@ -111,11 +152,13 @@ LLM quality: 4 scored · tool calls 1/3 matched (33.3%) · divergence 75.0% · f
 
 `replay-verdict.json` holds the detail:
 
-- `summary.llm` has the counts behind each rate, the rates, how the run was scored (scorer version, thresholds, text scorer and judge), and the run's LLM speed metrics under `speed`.
+- `summary.llm` has the counts behind each rate, the rates, how the run was scored (scorer version, thresholds, text scorer, judge and any [sampling pin](#pin-the-sampling-settings)), and the run's LLM speed metrics under `speed`.
 - Each LLM pair has an `llm` object with its band (`match`, `divergent` or `fail`), the reason, and the tool-call comparison.
 - Each LLM pair has an `llmPrompt`: up to 120 characters of the last user message, so you can tell one request from another.
 
 A warning is printed when fewer than 30 pairs were scored, because each pair then moves a rate by several points.
+
+The built-in text scorer compares wording, not meaning. When it bands an answer divergent or failed and no judge ran, the replay summary says how many answers that applies to. To compare meaning, set `llmEval.embedder` or `llmEval.judge` in the [test config](#keep-the-scoring-settings-in-the-test-config), or pass `--semantic` with `--semantic-embedder` or `--semantic-judge`.
 
 ## Compare two checkpoints
 
@@ -157,11 +200,11 @@ LLM quality: 4 scored · tool calls 1/3 matched (33.3%) [-66.7 pts] · divergenc
 
 `-o json` puts the full comparison under `deltas.llm`, including `regressed`, `improved` and every speed metric. `--html` writes the same comparison as one self-contained HTML page with no scripts and no external requests, so it opens from disk on a machine with no network.
 
-proxymock refuses to compare two runs that were scored differently, and names the setting that differs, for example a different `--semantic-pass` threshold, text scorer or judge. A run scored by an older proxymock release can differ in scorer version alone, so score both runs with the same release. It also refuses two runs that share no recorded request. A difference between such runs would describe the scoring or the recordings, not the models. Rerun one replay with the other's settings.
+proxymock refuses to compare two runs that were scored differently, and names the setting that differs, for example a different `--semantic-pass` threshold, text scorer, judge or [sampling pin](#pin-the-sampling-settings). The scorer version is 3. Two runs or reports scored with different scorer versions are refused as well, so score both runs with the same release, and reanalyze a report to rescore it. It also refuses two runs that share no recorded request. A difference between such runs would describe the scoring or the recordings, not the models. Rerun one replay with the other's settings.
 
 ## Measure the noise first
 
-Requests are replayed with their recorded sampling settings, so a model can answer the same prompt differently on two runs. Before you judge a candidate, measure how much the current model disagrees with itself. Replay the recording twice at the model that produced it, then score the second run against the first:
+By default, requests are replayed with their recorded sampling settings, so a model can answer the same prompt differently on two runs. Before you judge a candidate, measure how much the current model disagrees with itself. Replay the recording twice at the model that produced it, then score the second run against the first:
 
 ```shell
 proxymock replay \
@@ -183,6 +226,38 @@ Use the same `--tests-filter` on both replays when the LLM calls were recorded a
 The three rates of either run are the noise floor: what the gate reports when nothing changed. The comparison lists the requests whose verdict differs between the two runs. Those prompts are unstable for this model, so a change on one of them says little about a candidate.
 
 The tool-call match rate is the most stable of the three, because it does not depend on wording.
+
+### Pin the sampling settings
+
+To lower the noise, set the same temperature and seed on every recorded LLM request of a replay. The pin is opt-in: without these flags each request keeps its recorded sampling settings.
+
+```shell
+proxymock replay \
+  --in ./proxymock/recorded-example \
+  --test-against http://localhost:8000 \
+  --llm-temperature 0 \
+  --llm-seed 42 \
+  --out ./proxymock/results/noise-1
+```
+
+| Flag | Effect |
+| --- | --- |
+| `--llm-temperature <number>` | Sets the temperature of every recorded LLM request, replacing the recorded value or adding one. `0` is the usual choice. |
+| `--llm-seed <integer>` | Sets a whole-number seed on every recorded LLM request, replacing the recorded value or adding one. |
+
+| Requests | Temperature | Seed |
+| --- | --- | --- |
+| OpenAI-compatible chat completions and text completions | `temperature` | `seed` |
+| Ollama native | `options.temperature` | `options.seed` |
+| Anthropic Messages | `temperature` | Not set, because the API has no seed |
+| OpenAI Responses API | `temperature` | Not set, because the API has no seed |
+| Amazon Bedrock | Not changed | Not changed |
+
+A seed repeats sampling only as far as the model server honours it, so measure the noise floor again with the pin in place.
+
+The pin is recorded in `replay-verdict.json` as `summary.llm.pinnedTemperature` and `summary.llm.pinnedSeed`. `proxymock replay score --baseline` refuses two runs that were pinned differently, so pin the baseline and the candidate the same way.
+
+The pin is available on local replays only: the flags above, the `llm-temperature` and `llm-seed` parameters of the MCP `replay_traffic` tool, and `llmTemperature` and `llmSeed` of the REST API's `POST /v1/replays/run`. A cluster or cloud replay cannot be pinned, so a pinned local run does not compare with a cloud report.
 
 ## Choose starting conditions
 
@@ -287,7 +362,7 @@ The three rates are report metrics, and a goal in the test config can fail the r
 | `llmDivergencePct` | `llm.divergence-pct` |
 | `llmFailurePct` | `llm.failure-pct` |
 
-For example, a goal of `llmToolCallMatchPct` too low at `100` marks the report as missed goals when any tool call changed. A rate with nothing to measure is not reported, and a goal on a metric the report does not have is not evaluated.
+For example, a goal of `llmToolCallMatchPct` too low at `100` marks the report as missed goals when any tool call changed. A rate with nothing to measure is not reported, and a goal on it fails: the goal shows `not scored`, and the report carries a warning with the reason. [Gate with a test config goal](#gate-with-a-test-config-goal) lists the reasons, which on a report also include generator low data mode.
 
 Each replayed LLM request is tagged with how it scored: `llmBand` is `match`, `divergent`, `fail` or `unscorable`, and `llmToolCalls` is `match` or `mismatch` when either side called a tool. The tags hold the score before any judge ruled. The report also stores every scored request's result, with the judge's rating when one ruled, in its `llm-eval.json` artifact.
 
@@ -297,13 +372,23 @@ A judge or embedding backend on a server the test config names is not called fro
 
 A judge that cannot be reached, or settings that cannot be applied, do not fail the report. The answers keep the verdict their score gave them and the report shows a warning.
 
-Reports made before this feature gain these results when they are reanalyzed. A replay in generator low data mode is not scored, because it keeps no response bodies. A cluster replay that does not report to Speedscale cloud does not score LLM answers.
+Reports made before this feature gain these results when they are reanalyzed, and a report scored with an older scorer version is rescored. A replay in generator low data mode is not scored, because it keeps no response bodies.
+
+### A cluster replay with no Speedscale cloud
+
+A [cluster replay started from your kubeconfig](./cluster.md#replay) with no Speedscale cloud is scored too. Its generator scores the replayed LLM answers in the cluster, with the same scoring a local replay and a cloud report use.
+
+- `proxymock cluster replay status` and `proxymock cluster replay start --wait` show the tool-call match, divergence and failure rates.
+- Goals on the three rates gate the replay: a missed goal makes `--wait` exit nonzero. This path has no `--fail-if`, so set the goals in the test config you pass with `--test-config`.
+- Scoring uses the test config's `llmEval` section. An embedding backend or judge named there is called from the generator pod, and `apiKeyEnv` is read from that pod's environment.
+- The `managed` judge needs Speedscale cloud, so a cloud-free replay scores without it and shows a warning.
+- Every scored answer's result is stored beside the report in the cluster, as `llm-eval.json`.
 
 ## Read a report in the dashboard
 
 A report whose replay sent LLM requests has an **LLM** tab. Its **Answer quality** section shows the three rates with the counts behind them, and says whether a goal on each rate was met.
 
-![The Answer quality section of a report, with a comparison against another report under it](./llm-quality-report.jpg)
+![The Answer quality section of a report, with a comparison against an older report of the same snapshot under it](./llm-quality-report.jpg)
 
 Below the rates:
 
@@ -314,21 +399,43 @@ Below the rates:
 
 Select a request's prompt to read the recorded answer beside the replayed one. Both are shown as the answer itself, with any tool calls and their arguments, so a streamed response and a whole one read the same. The difference that decided the verdict is called out above them.
 
+The answer dialog links to the full requests, and each link opens in a new tab. **Open the recorded request** opens that request in the snapshot's traffic. **Open the replayed request** opens the report's **Accuracy** tab with the exact request the answer was scored from open in the detail pane. For a report analyzed before this was available, or a request that got no response, it opens the list of requests that replayed the recorded one instead; reanalyze the report to get the direct link.
+
+![The answer dialog for one request, with links to the recorded request and to the replayed request](./llm-quality-answer-links.jpg)
+
 ### Compare two reports
 
-Under **Compare with another report**, choose another report of the same snapshot, such as the report from the previous checkpoint. The section then shows:
+Under **Compare with another report**, choose another report of the same snapshot in the **Baseline report** field, such as the report from the previous checkpoint. The field opens on the snapshot's newest reports. To reach another one:
+
+- Type to narrow the list.
+- Select **Load older reports** to add the next 25.
+- Enter an older report's whole tag or report ID to find it directly.
+
+Clear the field to stop comparing. With a baseline chosen, the section shows:
 
 - The change in each of the three rates, in percentage points, with a change for the worse highlighted.
 - The change in the LLM speed metrics, with a change of 10% or more for the worse highlighted.
 - The requests whose verdict got worse, worst first, and the ones that got better.
 
-Select a request in either list to read the recorded answer beside what each report's model answered.
+Select a request in either list to read the recorded answer beside what each report's model answered. Each report's column has its own **Open the replayed request** link.
 
-![A request that got worse, with the recorded answer and both reports' answers](./llm-quality-answers.jpg)
+![A request that got worse, with the recorded answer, both reports' answers and a link to each request](./llm-quality-answers.jpg)
 
 This is the same comparison as [`proxymock replay score --baseline`](#compare-two-checkpoints). When the two reports were scored with different settings, the section says which setting differs and shows no change, because the difference would describe the scoring and not the models.
 
 A report analyzed before answers were scored shows a prompt to reanalyze it. The lists hold up to 200 requests, and a report keeps both answers for up to 1,000 requests that did not match.
+
+### Compare two reports from the command line
+
+The same comparison is available without the dashboard. Pull both reports into a workspace, then score one against the other by report ID:
+
+```bash
+proxymock cloud pull report <baseline-report-id>
+proxymock cloud pull report <candidate-report-id>
+proxymock replay score <candidate-report-id> --baseline <baseline-report-id>
+```
+
+The output has the same `llm` section and the same deltas as a comparison of two local replays, because the report's results were computed by the same scoring. A report and a local replay of the same snapshot can be compared with each other too: name the report ID on one side and the replay's output directory on the other.
 
 ## Try it in a lab
 
