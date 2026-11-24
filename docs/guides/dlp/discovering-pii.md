@@ -79,7 +79,7 @@ The same flags work on `proxymock web` and on `proxymock recommendations accept`
 
 ### Recommended model
 
-Speedscale certifies `qwen3:14b` from the Ollama library, the Q4_K_M build with ID `bdbd181c33f2`, run with thinking turned off. Verdicts from it carry `dlpModelCertified: true`. Any other model still works, and its verdicts carry `dlpModelCertified: false`.
+Speedscale certifies `qwen3:14b` from the Ollama library, the Q4_K_M build with ID `bdbd181c33f2`, run with thinking turned off. It also certifies Claude Haiku 5.5 on Amazon Bedrock under the inference profile id `us.anthropic.claude-haiku-5-5`; see [Amazon Bedrock](#amazon-bedrock). Verdicts from either carry `dlpModelCertified: true`. Any other model still works, and its verdicts carry `dlpModelCertified: false`.
 
 Speedscale picked it on a labeled corpus of 2,269 recorded fields, 886 of them sensitive, with five sample values per field. The scores below are the model's own, before patterns, key names and the rules in [Results and the cache](#results-and-the-cache) take part:
 
@@ -172,6 +172,8 @@ The model id is a Bedrock model id or an inference profile id, such as one start
 
 proxymock streams answers through the Converse API. For a direct model call, grant `bedrock:InvokeModelWithResponseStream` on the foundation model ARN in your Region. For an inference profile, grant the same action on the profile ARN and on the underlying foundation model ARN in every Region the profile can route to. See the [Bedrock inference profile prerequisites](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-prereq.html).
 
+Speedscale certifies `us.anthropic.claude-haiku-5-5`, the US inference profile for Claude Haiku 5.5, which can route a request to us-east-1, us-east-2 or us-west-2. With patterns, key names and the rules in [Results and the cache](#results-and-the-cache) in front of it, it scored precision 0.977, recall 0.992 and F1 0.984 on the corpus in `samples` exposure. On its own it scored F1 0.994, and an instruction planted in one sample value changed 1 of its 883 correct sensitive verdicts. Qwen3 32B on Bedrock (`qwen.qwen3-32b-v1:0`) scored a similar F1 0.987 in the full pipeline, but a planted instruction changed 22.5% of its correct verdicts, so Speedscale does not certify it. Verdicts from the same Haiku model under any other id, such as the Anthropic API's `claude-haiku-5-5`, carry `dlpModelCertified: false`: its resistance to planted instructions was measured only through this profile.
+
 Confirm your account has access to the model. If you get `AccessDeniedException`, check the IAM resource grants and any service control policies for the destination Regions. proxymock caps each answer at 4,096 tokens, so a request does not reserve the model's full output quota.
 
 #### Azure OpenAI
@@ -200,7 +202,7 @@ proxymock recommendations list --in ./proxymock \
 
 Pass `--dlp-model-exposure metadata` yourself: `openai-compatible` defaults to `samples`, because it is usually a server you run. An access token lasts one hour by default. A first analysis of a large workspace can outlast it, so for long runs put an OpenAI-compatible gateway that refreshes Google credentials, such as LiteLLM, in front of Vertex and point `--dlp-model-base-url` at the gateway. The principal behind the token needs permission to call Vertex AI models in that project.
 
-As with a vendor account, you choose the model, its verdicts carry `dlpModelCertified: false`, and your agreement with the cloud provider governs the data.
+As with a vendor account, you choose the model and your agreement with the cloud provider governs the data. Verdicts carry `dlpModelCertified: false` unless the model is `us.anthropic.claude-haiku-5-5` on Bedrock.
 
 ### What the model receives
 
@@ -244,7 +246,7 @@ A verdict that contradicts the rules discovery already applies gets no recommend
 
 Verdicts are saved in `.proxymock/dlp-classifications.json` in the workspace, so each field is asked about once and a second analysis of unchanged traffic makes no model call. An adjudicator model's verdicts are saved beside it, in `.proxymock/dlp-classifications-adjudicator.json`. Changing the model or the exposure starts a new cache. Delete the files to classify every field again.
 
-Verdicts from the [recommended model](#recommended-model) carry `dlpModelCertified: true`, and verdicts from any other model carry `dlpModelCertified: false`. A model can call ordinary data sensitive, such as an order date or a product description, so review its proposals before you accept them, whichever model made them.
+Verdicts from a [certified model](#recommended-model) carry `dlpModelCertified: true`, and verdicts from any other model carry `dlpModelCertified: false`. A model can call ordinary data sensitive, such as an order date or a product description, so review its proposals before you accept them, whichever model made them.
 
 ## Why a value may not produce a recommendation
 
