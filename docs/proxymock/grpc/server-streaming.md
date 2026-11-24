@@ -50,4 +50,4 @@ Content redaction visits every decoded message. If requested content redaction c
 
 [Client streams](./client-streaming.md) and [bidirectional calls](./bidi-streaming.md) are mocked and replayed as well. Streaming scenario generation, grpc-web streaming and kraken qualification are separate follow-up phases.
 
-Cloud capture writers remain disabled by default until storage, cache, analyzer, responder and generator readers have been deployed together. Reader-first rollout is required before enabling `GRPC_STREAMING_ENABLED`. The local proxymock binary ships the compatible readers and writer together, so it always captures streams as calls. Bootstrap-generated recordings can include every kind of finite stream.
+Cloud capture records streams as calls when stream capture is turned on: the `ebpf.configuration.grpcStreaming` Helm value for eBPF capture, or the `sidecar.speedscale.com/grpc-streaming` annotation for the legacy sidecar. Both are off by default. The local proxymock binary ships the compatible readers and writer together, so it always captures streams as calls. Bootstrap-generated recordings can include every kind of finite stream.

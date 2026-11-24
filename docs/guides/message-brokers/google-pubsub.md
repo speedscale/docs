@@ -20,13 +20,33 @@ For more information about Google Pub/Sub, see the [Google Cloud Pub/Sub documen
 | `Pull` | Yes, as gRPC | Yes, from the recorded messages ([mock a subscriber](#mock-a-pubsub-subscriber)) | Its messages can be republished to drive a subscriber |
 | `StreamingPull` | Yes, as a streamed gRPC call, kept in parts when it runs long | Yes, from the recorded messages ([mock a subscriber](#mock-a-pubsub-subscriber)) | Its messages can be republished to drive a subscriber |
 
-Capture needs TLS interception, as for any gRPC service. A subscriber keeps its `StreamingPull` stream open and ends it by cancelling it; capture keeps such a stream as one or more parts of a [long-lived stream](/proxymock/grpc/long-lived-streams/), which the mock serves as one stream. proxymock always records streamed calls; cloud capture records them only when `GRPC_STREAMING_ENABLED` is on (see [native server streaming](/proxymock/grpc/server-streaming/)).
+Capture needs TLS interception, as for any gRPC service. A subscriber keeps its `StreamingPull` stream open and ends it by cancelling it; capture keeps such a stream as one or more parts of a [long-lived stream](/proxymock/grpc/long-lived-streams/), which the mock serves as one stream. proxymock always records streamed calls. Cloud capture records them when stream capture is turned on, as described in [record a subscriber in your cluster](#record-a-subscriber-in-your-cluster).
+
+## Record a subscriber in your cluster
+
+Cloud capture does not record a stream that the client cancels unless stream capture is turned on, and a Pub/Sub subscriber always ends its `StreamingPull` that way. Without stream capture, a recording of a subscriber holds its `Acknowledge` and `ModifyAckDeadline` calls but none of the messages it received, so neither the mock nor republish has anything to send.
+
+With eBPF capture, set the `ebpf.configuration.grpcStreaming` Helm value to `true`. It applies to every workload the node-level capture records:
+
+```bash
+helm upgrade speedscale-operator speedscale/speedscale-operator -n speedscale --reuse-values --set ebpf.configuration.grpcStreaming=true
+```
+
+With the [legacy sidecar](/getting-started/installation/sidecar/install), set the annotation on the subscriber's workload instead:
+
+```yaml
+metadata:
+  annotations:
+    sidecar.speedscale.com/grpc-streaming: "true"
+```
+
+Then check that the recording holds `/google.pubsub.v1.Subscriber/StreamingPull` calls with messages before you create a snapshot from it.
 
 ## Mock a Pub/Sub subscriber
 
 When the service under test is a Pub/Sub subscriber, `proxymock mock` and the Speedscale responder answer its subscriber calls from the messages recorded for its subscription, so it runs with no Google Cloud project and no emulator. The Google client libraries call Pub/Sub over gRPC, and a high-level subscriber opens a bidirectional `StreamingPull` stream and acknowledges messages with separate unary `Acknowledge` and `ModifyAckDeadline` calls. Its keepalives, lease extensions and acknowledgement batches differ on every run, so the mock does not match these calls by signature.
 
-Record the subscriber with proxymock, which records `StreamingPull` streams, including the long-lived streams a subscriber keeps open and ends by cancelling (see [long-lived gRPC streams](/proxymock/grpc/long-lived-streams/)). Cloud capture records them only when `GRPC_STREAMING_ENABLED` is on. Then run the mock with the same mapping you recorded with, as for any [gRPC dependency](/proxymock/grpc/mock-a-grpc-dependency/). With the emulator, set `PUBSUB_EMULATOR_HOST` to the mapped port.
+Record the subscriber with proxymock, which records `StreamingPull` streams, including the long-lived streams a subscriber keeps open and ends by cancelling (see [long-lived gRPC streams](/proxymock/grpc/long-lived-streams/)). To record it in your cluster, turn on stream capture first, as described in [record a subscriber in your cluster](#record-a-subscriber-in-your-cluster). Then run the mock with the same mapping you recorded with, as for any [gRPC dependency](/proxymock/grpc/mock-a-grpc-dependency/). With the emulator, set `PUBSUB_EMULATOR_HOST` to the mapped port.
 
 | Call | What the mock does |
 |---|---|
