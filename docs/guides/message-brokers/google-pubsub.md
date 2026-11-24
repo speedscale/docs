@@ -69,6 +69,23 @@ Every call is saved to the mock's observed output as a match or a miss. A `Strea
 
 The mock does not redeliver a message that is nacked, never acknowledged, or left outstanding on a stream the client cancelled, as Pub/Sub would after the ack deadline. It does not simulate exactly-once delivery or ordering-key delivery rules.
 
+## Catch a publisher regression
+
+When the service under test publishes, its `Publish` calls are outbound calls, so a replay mocks them. With the [`httpOutput` assertion](../../reference/configuration/assertions/httpoutput.md#google-pubsub-publishes) in the test config, the replay also compares what the service published with the recording.
+
+It compares each published message on its own, grouped by topic, so a client library that batches the messages differently is not a difference. JSON data is compared field by field, along with each attribute and the ordering key. A changed amount or event type is reported on its field, such as `data.amount` or `attributes.eventType`, while IDs and timestamps that differ in every message are not compared. A message sent to another topic, or one fewer message than recorded, is reported too.
+
+To compare only one topic, set `includeOnly` to its endpoint:
+
+```json
+{
+  "type": "httpOutput",
+  "config": {
+    "includeOnly": "/google.pubsub.v1.Publisher/Publish/projects/shop/topics/orders"
+  }
+}
+```
+
 ## Drive a subscriber by republishing
 
 When the service under test is a subscriber, replaying its recorded calls to Pub/Sub would pull from the live subscription instead of feeding your service. Republish mode turns each message a recorded `StreamingPull` or `Pull` call received into a `Publish` of the same data, attributes and ordering key to the subscription's topic. Your subscriber then receives the messages again and acknowledges them itself.
@@ -166,5 +183,27 @@ See [test configs](../../proxymock/guides/test-configs.md) for where `pubsub-rep
 Each message is published at the time it arrived in the recording, so the gaps between deliveries match production. To publish faster or slower, set the stage's request delay to a multiple of the recorded time: `0.5` halves every gap. To multiply the volume, raise the number of vUsers: each vUser publishes the whole recording again. With proxymock, `--vus` and `--times` do the same. See [load patterns](../load-patterns.md).
 
 Messages that share an ordering key are published in recorded order within one vUser. Pub/Sub delivers them in order only when the subscription has message ordering turned on.
+
+### Give every vUser its own keys
+
+Every vUser republishes the same data. A subscriber that deduplicates on a business key, such as an order ID, then skips the copies and does less work than it would in production, so the load test looks better than it should. Add a transform that rewrites the key in each message with the [`pubsub_message`](../transformation/extractors/pubsub_message.md) extractor:
+
+```json
+{
+  "filters": {
+    "filters": [{ "include": true, "detectedLocation": "/google.pubsub.v1.Publisher/Publish", "operator": "CONTAINS" }]
+  },
+  "extractor": {
+    "type": "pubsub_message",
+    "config": { "field": "data" }
+  },
+  "transforms": [
+    { "type": "json_path", "config": { "path": "orderId" } },
+    { "type": "rand_string", "config": { "pattern": "ord-[a-z0-9]{12}" } }
+  ]
+}
+```
+
+`pubsub_message` hands the message's data to `json_path`, which reaches the `orderId` field, and `rand_string` gives every published message a new value. To rewrite an attribute instead, set `name` to its key. The same extractor works on the `Publish` calls a publisher recorded.
 
 Republished messages get new message IDs and publish times. Exactly-once delivery is not simulated.
