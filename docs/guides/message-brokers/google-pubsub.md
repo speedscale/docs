@@ -294,7 +294,7 @@ A message not acked within the ack window adds a warning to the report. When you
 }
 ```
 
-A goal on a metric the replay could not measure has nothing to evaluate, so it does not fail the replay. With proxymock, it is listed as not evaluated with the reason.
+In a replay that republished messages, a goal on a Pub/Sub metric the replay could not measure fails as not measured, so a subscriber whose acks nobody saw cannot pass. With proxymock without `--mocks-out`, such a goal is listed as not evaluated, with the reason.
 
 ### Load test a subscriber
 
