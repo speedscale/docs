@@ -247,6 +247,8 @@ A recommendation the model proposed carries the tags `dlpClass`, `dlpReason`, `d
 
 A field the model could not classify keeps the result discovery gives without a model.
 
+The redaction rule a model recommendation creates labels each `REDACTED-` token with the model's class, so a masked field becomes, for example, `REDACTED-BANK_ACCOUNT_NUMBER-<hash>`, and [test data generation](./test-data-generation.md) regenerates it as that class. A value with a sensitive format of its own keeps its own label, so an email the model called a bank account number stays an email. `IP_ADDRESS` and `FREE_TEXT_PII` add no label, since neither has one format.
+
 A verdict that contradicts the rules discovery already applies gets no recommendation:
 
 - a street address or postal code inside a business object such as `store`, `office`, `clinic` or `warehouse`, the same objects key-name discovery skips
