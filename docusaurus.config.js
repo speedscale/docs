@@ -65,6 +65,14 @@ const config = {
             to: "/guides/",
           },
           {
+            from: "/markdown-page/",
+            to: "/",
+          },
+          {
+            from: "/index_old/",
+            to: "/",
+          },
+          {
             from: "/tutorial/",
             to: "/getting-started/tutorial/",
           },
