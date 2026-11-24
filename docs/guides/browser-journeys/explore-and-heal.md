@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Explore and heal journeys
 
-`proxymock journeys` writes and repairs journeys with the frontend's API calls answered from a recording by `proxymock mock`. Nothing it clicks reaches a real backend, so exploring a form that places an order or deletes a record changes nothing.
+`proxymock journeys` writes and repairs journeys with the frontend's API calls answered from a recording by `proxymock mock`. The mock passes nothing through: a call the recording does not have gets a miss instead of reaching the real host. Nothing proxymock clicks reaches a real backend, so exploring a form that places an order or deletes a record changes nothing.
 
 Both commands judge a step by the API calls it makes, which Speedscale already records for every step:
 
@@ -80,6 +80,8 @@ A visit usually starts with a sign-in that has no session yet, so proxymock puts
 - **A recording of the browser**, from `proxymock record --browser` or a browser sent through `proxymock record`, has the frontend's calls as it made them.
 - **A recording of the backend**, such as a snapshot of the API service, has the same calls inbound. proxymock answers them as outbound calls for the browser, and leaves out the page, its scripts and its images so the frontend loads as it is now.
 - **A recording made under another host**, such as an API recorded in a cluster as `orders.shop.svc`, needs `--api-host` set to the host the frontend calls, such as `--api-host localhost:8080`.
+
+- **An API on the frontend's own origin cannot be explored or healed.** The frontend loads straight from its own server, so a call to the same host and port, such as `/api` proxied by a dev server, would reach the real backend. proxymock stops with an error instead. Run the API on its own port, such as the frontend on `localhost:5173` and the API on `localhost:8080`.
 
 If no action makes any recorded call, check that the frontend calls the recorded host, and that `--start` names the page the user started on.
 
