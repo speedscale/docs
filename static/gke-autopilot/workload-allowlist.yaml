@@ -68,6 +68,7 @@ matchingCriteria:
         - name: ^SPEC_[A-Z0-9_]+$
         - name: ^LOG_LEVEL$
         - name: ^FORWARDER_ADDR$
+        - name: ^PROXY_API_HOST$
         - name: ^SPEEDSCALE_[A-Z0-9_]+$
       envFrom:
         - secretRef:
