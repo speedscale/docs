@@ -93,6 +93,8 @@ A journey that fails because a locator no longer finds its element, after a butt
 proxymock journeys heal --in proxymock/recorded --browser journeys --url http://localhost:5173
 ```
 
+`--url` takes the frontend as `--test-against` does, so `localhost:5173` works too.
+
 proxymock runs the journeys with the API answered from the recording. For each one that fails on an action's locator, it looks at the page where the step failed and tries the elements that most resemble the lost one. It accepts a replacement only when the journey then passes and makes the same API calls as the newest replay in which it passed:
 
 ```text
@@ -111,10 +113,10 @@ When several elements moved, proxymock heals the next failure after each accepte
 
 ### Review and apply the patch
 
-heal never changes a journey on its own. It writes the accepted heals as a patch, `journey-heal.diff`, beside the journeys folder:
+heal never changes a journey on its own. It writes the accepted heals as a patch, `journey-heal.diff`, beside the journeys folder. Its paths start at your git repository's root, or at the patch's own folder outside a repository, and heal prints where to apply it from:
 
 ```bash
-git apply journey-heal.diff
+git apply e2e/journey-heal.diff
 ```
 
 Run it again with `--write` to apply the heals to the journey files instead.
