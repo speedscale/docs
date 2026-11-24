@@ -13,7 +13,7 @@ Add the directory to your user Path so you can run `proxymock` from any folder. 
 
 ```powershell
 $dir = "$env:USERPROFILE\.speedscale"
-$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+$userPath = [string][Environment]::GetEnvironmentVariable("Path", "User")
 if (($userPath -split ';') -notcontains $dir) {
   [Environment]::SetEnvironmentVariable("Path", (($userPath.TrimEnd(';') + ";$dir").TrimStart(';')), "User")
 }
