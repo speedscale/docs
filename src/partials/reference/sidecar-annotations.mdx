@@ -44,6 +44,16 @@ otherwise.
 
 ---
 
+### `sidecar.speedscale.com/grpc-streaming`
+
+Record native gRPC streams as calls, including the long-lived streams a Google Pub/Sub subscriber keeps open and ends by cancelling. Without it, the sidecar does not record a stream that the client cancels, so a Pub/Sub subscriber's recording holds no messages. See [long-lived gRPC streams](/proxymock/grpc/long-lived-streams/).
+
+- Accepted Values:
+  - `true`
+  - `false` (default)
+
+---
+
 ### `sidecar.speedscale.com/host-resolution`
 
 Configure how the sidecar determines a hostname for requests to IP addresses for which there is no clear way
