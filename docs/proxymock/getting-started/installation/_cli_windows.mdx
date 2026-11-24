@@ -26,7 +26,7 @@ Add the folder to your user Path:
 
 ```powershell
 $dir = "$env:USERPROFILE\.speedscale"
-$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+$userPath = [string][Environment]::GetEnvironmentVariable("Path", "User")
 if (($userPath -split ';') -notcontains $dir) {
   [Environment]::SetEnvironmentVariable("Path", (($userPath.TrimEnd(';') + ";$dir").TrimStart(';')), "User")
 }
