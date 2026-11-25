@@ -37,3 +37,7 @@ A replay that sends streamed LLM requests reports time to first token, inter-tok
 ## LLM answer quality goals
 
 A replay of LLM traffic also reports whether the answers are still right: `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. Use **too low** on the tool-call match rate and **too high** on the other two, for example `llmToolCallMatchPct` too low at `100`. See [Regression Test a Model Swap](../../proxymock/guides/llm-eval-gate.md#score-a-cloud-or-cluster-replay).
+
+## Pub/Sub subscriber goals
+
+A replay that republishes Google Pub/Sub deliveries reports whether the subscriber kept up: its backlog and ack rate from Cloud Monitoring, and, where the subscriber's own calls were captured, how many republished messages it acked and how fast. Use **too high**, for example `pubsubUnackedCount` too high at `0` or `pubsubBacklogEnd` too high at `0`. See [Check that the subscriber kept up](../../guides/message-brokers/google-pubsub.md#check-that-the-subscriber-kept-up) for every metric name.
