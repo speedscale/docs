@@ -28,7 +28,7 @@ sequenceDiagram
 
 This is why when observed in Speedscale, you see something like this that has a lot of internal Kafka calls along with the most important `Produce` and `Fetch` calls.
 
-![Kafka Traffic](./kafka/traffic.png)
+![The Traffic viewer for a pipeline service, with its Kafka broker in the service map and outbound Kafka Fetch, Produce, OffsetCommit, LeaveGroup and Metadata calls](./kafka/traffic.png)
 
 This sort of outbound traffic would typically be part of a mock when running a replay. In the case of Kafka however, we can simplify the replay process by simply turning `Fetch` calls made by our app into `Produce` calls.
 

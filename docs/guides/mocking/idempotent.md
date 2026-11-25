@@ -54,9 +54,9 @@ In the past, it would be up to the engineer writing the mock to try and handle t
 
 ## Parameterization
 
-The first step in creating consistent and repeatable replication is to parameterize fields and decide what modifications may need to be made. Every request contains a large amount of information that isn't relevant to the actual functioning of the app. Imagine all the monitoring and proxy headers in a typical HTTP request as an example. Speedscale calls the important parts `Interesting Data` and it is discovered automatically during the analysis process. Your data will vary wildly but you know it's working when you see this type of data:
+The first step in creating consistent and repeatable replication is to parameterize fields and decide what modifications may need to be made. Every request contains a large amount of information that isn't relevant to the actual functioning of the app. Imagine all the monitoring and proxy headers in a typical HTTP request as an example. Speedscale calls the important parts data tokens and discovers them automatically during the analysis process. They appear on the **Data** tab of each RRPair, grouped by type with the location of each one. Your data will vary wildly but you know it's working when you see this type of data:
 
-![interesting-data](./idempotent/interesting-data.png)
+![The Data tab of a login RRPair, with Email, UUID, JWT, IP, URI, Trace ID and Span ID tokens and the location of each one](./idempotent/interesting-data.png)
 
 ## Mutating Responses
 

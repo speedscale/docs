@@ -57,8 +57,8 @@ Scope the chain with an endpoint filter as usual. For GraphQL the endpoint is th
 
 ## Reading the raw request
 
-The **Raw** tab always shows the request as it was sent, which is the fastest way to confirm what an edit produced. After a replay, the recorded and the actual request are both available, so an edit can be read as a before and after:
+The raw request always shows the request as it was sent, which is the fastest way to confirm what an edit produced. After a replay, open a call in the report and select **Request**. **Raw recorded** and **Raw replayed** show the recorded and the actual request, so an edit can be read as a before and after:
 
-![graphql_replay](./graphql-replay.png)
+![A graphql-app report call for mutation createDraft with the Raw recorded request above and the longer Raw replayed request below, where the content argument was changed](./graphql-replay.png)
 
 On replay the document is printed back to query text from the parsed form, so whitespace may differ from the recording. Selections and arguments keep the order the client sent them in; only the layout is the printer's. The document is semantically identical, and consumers parse GraphQL rather than byte-comparing it.

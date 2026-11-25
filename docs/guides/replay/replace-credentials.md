@@ -59,7 +59,7 @@ Select **Replace credentials** on the credential's row. The wizard has four step
 
 ![The Save step: the blueprint name, what the replay will do, and the traffic it applies to](./replace-credentials/wizard-save.png)
 
-The Save step describes the blueprint in plain words under **What the replay will do**, and **View as a transform chain** shows the exact chain it adds. Values you save as constants are masked there. **Name** is filled in with a default such as `Fetch token for orders-api` that follows your method and scope until you type your own. The name labels the blueprint in the Credentials tab, on reports and in replay events; it does not change what the blueprint does.
+The Save step describes the blueprint in plain words under **What the replay will do**, and **View as a transform chain** shows the exact chain it adds. Values you save as constants are masked there. **Name** is filled in with a default such as `Fetch token for orders-api` that follows your method and scope until you type your own. The name labels the blueprint on the Prepare tab, on reports and in replay events; it does not change what the blueprint does.
 
 You can also open the wizard from a replay report: from the **Credentials in this replay** card on the Overview tab, or from **Fix with Replace credentials** on an expired-JWT recommendation.
 
@@ -253,7 +253,7 @@ Blueprints saved by older proxymock versions that fetched a token from a recorde
 | `invalid_scope` | The scope is wrong, or the client may not request it. | For Microsoft Entra ID, use the API's application ID URI followed by `/.default`. |
 | The token endpoint is unreachable | The generator cannot reach the token URL: DNS, a NetworkPolicy, a firewall or a missing egress proxy. | Allow egress from the replay namespace to the token host. The token request honors the generator's `HTTPS_PROXY`, `HTTP_PROXY` and `NO_PROXY` settings. |
 | The generator pod stays in `ContainerCreating` with a `FailedMount` event | A Secret the blueprint references is missing from the replay namespace. | Create the Secret and key in the namespace the replay runs in, or save the value as a constant where that is allowed. |
-| The Save step says **Does not match this snapshot** | The scope does not match any request that carries the credential header. | Check the service, host and path against the Credentials tab's **Where** column. |
+| The Save step says **Does not match this snapshot** | The scope does not match any request that carries the credential header. | Check the service, host and path against the credential's **Where** detail on the Prepare tab. |
 | Requests still get 401s and the report shows no token errors | The blueprint's scope does not cover those requests, the recorded header is not a `Bearer` header, or the token is for a different audience. | Widen the scope, check the recorded header, and check that the scope or token audience matches what your service expects. |
 | A pasted token works at first, then 401s return | The token expired during the replay. | Use **Fetch a fresh token** so the replay refreshes it. |
 | The report warns that the operator is too old | The cluster's Speedscale operator predates credential blueprints. | Upgrade the operator to v2.5.1198 or later. |

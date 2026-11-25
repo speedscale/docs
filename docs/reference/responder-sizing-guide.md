@@ -48,27 +48,29 @@ Long-running responders deployed in a Kubernetes cluster by the Speedscale Opera
 
 ### Response Timing
 
-Ensure your application gets responses from the responder immediately by setting the response timing to "Full speed".  This isn't as realistic as using the recorded latency, but it ensures a much faster response.
+Ensure your application gets responses from the responder immediately by selecting **Full speed** under **Response timing** in the **Mocks (Responder)** section of the test config's **Traffic** tab. Full speed is less realistic than recorded latency and responds much faster.
 
-![response timing](./responder-sizing-guide/response-timing.png)
+![The Mocks (Responder) section of the Traffic tab with Response timing set to Full speed](./responder-sizing-guide/response-timing.png)
 
 ### Low Data Mode
 
 The responder should always set the test config to run with [low data mode](/reference/glossary.md#low-data-mode) enabled when running under high load to avoid sending thousands or millions of [RRPairs](/reference/glossary.md#rrpair) to the Speedscale cloud.  If the load is high enough without low data mode the responder may generate RRPairs faster than they can be captured which can result in an out-of-memory crash. For the same reason avoid setting the log level higher than "info" to avoid flooding the logs with millions of events.
 
-![low-data-mode](./responder-sizing-guide/low-data-mode.png)
+Check **Low data mode** in the same **Mocks (Responder)** section.
+
+![The Mocks (Responder) section of the Traffic tab with Low data mode checked](./responder-sizing-guide/low-data-mode.png)
 
 ### Multiple Responders
 
 To configure responder resources, navigate to the "Cluster" tab in your [test config](/reference/glossary.md#test-config).
 
-![test config cluster tab](./generator-sizing-guide/test-config-cluster-tab.png)
+![The Cluster tab of a test config with the number of responder replicas set to 4](./generator-sizing-guide/test-config-cluster-tab.png)
 
 ### CPU and Memory
 
-On the cluster tab you can set both the CPU/memory resources and the number of responder replicas.
+On the Cluster tab you can set the **Number of responder replicas** near the top and the **Responder Resources** CPU and memory fields further down.
 
-![resource configuration](./responder-sizing-guide/resource-configuration.png)
+![The Responder Resources fields on the Cluster tab with a 2G memory limit and a CPU limit of 4](./responder-sizing-guide/resource-configuration.png)
 
 ## Best Practices
 

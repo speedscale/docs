@@ -13,7 +13,9 @@ The Cluster section is used for setting up infrastructure-related configurations
 
 # Container resource warnings
 
-![container-resouce-warning](container-using-95percent-resources-warning.png)
+When a container uses more than 95% of its CPU or memory limit during a replay, the report shows a warning. Open the report's actions menu and select **View Report Alerts** to read it.
+
+![The Report Alerts panel with a warning that the ai-service container is using more than 95% of its CPU limit](./container-using-95percent-resources-warning.png)
 
 Speedscale introduces additional load during testing, which can lead to higher resource consumption, particularly in terms of CPU and memory.
 

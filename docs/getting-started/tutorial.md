@@ -325,7 +325,7 @@ docker compose -f speedscale-docker-capture.yaml down
 
 If we drill down into a request, we can also see data we may not want to leave our environment.
 
-![Auth](../guides/end-to-end/unredacted.png)
+![The Request Headers tab of an inbound java-server request, where the Authorization header holds a Bearer JWT, shown truncated here](../guides/end-to-end/unredacted.png)
 
 You can enable DLP to redact certain fields from an RRPair at capture time. Note that this will cause your replays to have low accuracies because necessary information will be masked. Check out the [dlp](https://docs.speedscale.com/guides/dlp/) section for more information on DLP configuration. As a starter, you cna follow the instructions below.
 
@@ -365,6 +365,6 @@ When running `proxymock` the files are stored locally but don't run through data
 
 Now we see the authorization header is redacted and never makes it to Speedscale.
 
-![Redacted](../guides/end-to-end/redacted.png)
+![The Request Headers tab of a request captured with DLP on, where the Authorization header value is Bearer REDACTED-UNRECOGNIZED followed by a hash](../guides/end-to-end/redacted.png)
 
 For more complex DLP configuration you can use [this guide](/guides/dlp/).

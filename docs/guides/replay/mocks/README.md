@@ -27,21 +27,21 @@ This banking example records calls to Redis, accounts, transactions and user ser
 
 ### Choose mocks for a replay
 
-The following replay-setup example uses a different `payment` service with DynamoDB, Stripe, Hubspot, Plaid and Google Cloud dependencies. Its backend selector controls which dependencies are mocked for that replay.
+The following replay-setup example uses a different `payment` service with DynamoDB, Stripe, Hubspot, Plaid, Google discovery and internal `user` and `notifications` dependencies. Click **Replay** on the snapshot to open the replay wizard. Step 4, **Attach mock services**, controls which dependencies are mocked for that replay.
 
-![The replay setup backend selector, listing dependencies and their detected technologies](./responders/table.png)
+![Step 4 Attach mock services in the replay wizard, listing the payment dependencies with Exclude and Include toggles and their detected technologies](./responders/table.png)
 
-We can also see here that Speedscale has identified the type of backends these are. For eg. Hubspot is a JSON API and Stripe is similar but we've also identified `Bearer` authorization for the API requests. At this point we could uncheck certain backends if we did not them mocked out. For eg. I may not want to mock out DynamoDB because I have a dev instance setup but I want to mock out Stripe because I don't want to make actual credit card transactions. For now, we'll leave these all checked.
+We can also see here that Speedscale has identified the type of backends these are in the **Tech** column, for example Hubspot, Stripe, Plaid and DynamoDB. Set a dependency to **Include** to mock it; Speedscale then asks which workload serves its mock responses. Leave it at **Exclude** to send those calls to the real dependency. For example, you might keep DynamoDB real because you have a dev instance set up, and mock Stripe so the replay never makes actual credit card transactions.
 
 ## Run a replay
 
-![Replay](./responders/replay.png)
+![The How to replay dialog with the Automated k8s option, a Replay Tests and Mocks in Kubernetes Cluster button and a speedctl infra replay command](./responders/replay.png)
 
-Now we can run a replay with the **Replay** button, or choose **How to replay** from the menu beside it for the other ways shown here. Note that by default, both inbound and outbound traffic is generated and mocked respectively. If you want to run a workload with just the mocked backend for development but not run a full test replay, skip to [responder only mode](#responder-only).
+Now we can run a replay with the **Replay** button, or open the menu beside it and choose **How to replay** for the other ways shown here. Note that by default, both inbound and outbound traffic is generated and mocked respectively. If you want to run a workload with just the mocked backend for development but not run a full test replay, skip to [responder only mode](#responder-only).
 
-![Report](./responders/report.png)
+![The Mocked Responses tab of a passed banking-gateway report with a Mock Accuracy of 26 of 26 and every call marked Match](./responders/report.png)
 
-After the replay is done, we can see the corresponding report. We have a 100% passing report and more importantly, we have a 100% responder rate. This means that we were successfully able to match all the requests made by the service under test via our signature matching algorithm. We can inspect the request and response pairs seen by the responder the same way we would with our general traffic capture.
+After the replay is done, we can see the corresponding report. In this banking-gateway example the report passed and, more importantly, the **Mocked Responses** tab shows a Mock Accuracy of 26/26 (100%). This means that we were successfully able to match all the requests made by the service under test via our signature matching algorithm. We can inspect the request and response pairs seen by the responder the same way we would with our general traffic capture.
 
 ## Responder Only
 
@@ -55,11 +55,11 @@ If we want to mock our backends indefinitely and not run a test, we can do this 
 
 Sometimes you don't want to mock everything in the environment. There are three ways to accomplish this:
 
-1. *Disable an entire mock* - You can accomplish this by turning off the mock by unchecking it in the replay wizard:
-![ReplayMockDisabled](./responders/replay_mock_disabled.png)
+1. *Disable an entire mock* - You can accomplish this by setting the dependency to **Exclude** in step 4 of the replay wizard:
+![The Exclude and Include toggles for each payment dependency in step 4 of the replay wizard](./responders/replay_mock_disabled.png)
 
-2. *Allow passthrough requests* - If you want to mock known requests but allow unrecognized transactions to continue to the original destination you can use `passthrough` mode. Just check the passthrough operation in your test config under the Mocks section:
-![TestConfigPassthrough](./responders/tc_passthrough.png)
+2. *Allow passthrough requests* - If you want to mock known requests but allow unrecognized transactions to continue to the original destination you can use `passthrough` mode. Just check **Passthrough** in the **Mocks (Responder)** section of your test config's **Traffic** tab:
+![The Mocks (Responder) section of the Traffic tab with Passthrough checked](./responders/tc_passthrough.png)
 
-3. *Disable the responder* - If you want all mocks to be disabled, regardless of snapshot configuration, set your test config for "Tests only" mode.
-![TestsOnly](./responders/test_only.png)
+3. *Disable the responder* - If you want all mocks to be disabled, regardless of snapshot configuration, select **Tests only** under **Replay mode** on your test config's **Traffic** tab.
+![The Replay mode picker on the Traffic tab with Tests only selected](./responders/test_only.png)

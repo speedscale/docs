@@ -9,7 +9,7 @@ import ScrubDateExample from './scrub_date/scrub-date-example.png'
 
 The `scrub_date` transform walks a JSON body and replaces every value that looks like a date or datetime with `*`. It is the date-aware sibling of [`scrub`](./scrub.md) — instead of scrubbing a specific extracted value, it scrubs **every** date-shaped field in the body. This neutralizes the dynamic-timestamp problem that otherwise breaks responder signature matching for requests that carry `now()`-style fields.
 
-<img src={ScrubDateExample} width="600"/>
+<img src={ScrubDateExample} width="600" alt="A chain that pulls from Response Body and runs Scrub Date, where the createdAt and updatedAt values in the preview become *"/>
 
 - **Transform type name (config/API):** `scrub_date`
 - **Shorthand format:** `scrub_date(ignore=...)`

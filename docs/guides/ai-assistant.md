@@ -48,7 +48,7 @@ The assistant can take real actions on your behalf: searching traffic, analyzing
 - **Start replays:** "Replay snapshot `abc123` against the payments service"
 - **Navigate:** "Take me to the most recent report for the checkout service"
 
-![AI assistant explaining assertion failures on a report page](./ai-assistant-report-chat.png)
+![The AI assistant beside a java-server report answering Why did the assertions fail with the failing endpoints, the 87 percent pass rate and the likely cause](./ai-assistant-report-chat.png)
 
 ## Tips for Effective Prompts
 

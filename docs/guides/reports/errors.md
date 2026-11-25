@@ -49,9 +49,9 @@ The other tabs hold the evidence:
 
 A body check compares each line of the body, including delimiters such as curly braces, so its replayed value reads like "4 lines matched" when the bodies differ. Assertions can be configured in the [test config](/reference/glossary.md#test-config) to ignore fields that should not affect the comparison.
 
-![assertions ignore](./assertions-response-ignore.png)
+![The Response Body view of a GET /spacex/ship call, with the differing ship_id line red on the recorded side and green on the replayed side](./assertions-response-ignore.png)
 
-Ignored fields still have red lines in the margin to show they differ, but the line itself is grey with a crossed eye icon to show that it was ignored. See the [assertions reference](../../reference/configuration/assertions/README.md) for more information.
+In the body view, the recorded value is on the left and the replayed value on the right. A line that differs is red on the recorded side and green on the replayed side, with the changed characters highlighted. Ignored fields still have red lines in the margin to show they differ, but the line itself is grey with a crossed eye icon to show that it was ignored. See the [assertions reference](../../reference/configuration/assertions/README.md) for more information.
 
 ## Fix expected differences
 
