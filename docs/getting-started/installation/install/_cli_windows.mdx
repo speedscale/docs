@@ -1,43 +1,45 @@
-Open PowerShell and create a Speedscale directory.
+Open PowerShell, create a Speedscale directory and download `speedctl` into it:
 
-```
-mkdir -f $env:userprofile\.speedscale
-```
-
-Download `speedctl` into the Speedscale directory.
-
-```
-curl.exe -L "https://downloads.speedscale.com/speedctl/speedctl.exe" -o $env:userprofile\.speedscale\speedctl.exe
+```powershell
+mkdir -Force $env:USERPROFILE\.speedscale
+curl.exe -L "https://downloads.speedscale.com/speedctl/speedctl.exe" -o $env:USERPROFILE\.speedscale\speedctl.exe
 ```
 
-If this is your first time using `speedctl` you may need to add the Speedscale
-directory to your Path environment variable so it is accessible without knowing
-the full path.
+Add the directory to your user Path so you can run `speedctl` from any folder. This does not need administrator rights.
 
-To add the Speedscale directory to your path, right click on the Windows button and click **System**.
+```powershell
+$dir = "$env:USERPROFILE\.speedscale"
+$userPath = [string][Environment]::GetEnvironmentVariable("Path", "User")
+if (($userPath -split ';') -notcontains $dir) {
+  [Environment]::SetEnvironmentVariable("Path", (($userPath.TrimEnd(';') + ";$dir").TrimStart(';')), "User")
+}
+```
 
-![](./windows_add_path-system.png)
+Restart PowerShell, then run `speedctl --help` to confirm it is on your Path.
 
-Click **Advanced system settings** on the right.
+<details>
+<summary>Prefer the Settings window?</summary>
 
-![](./windows_add_path-advanced_system_settings.png)
+Right click the Windows button and click **System**.
+
+![Windows System settings](./windows_add_path-system.png)
+
+Click **Advanced system settings**.
+
+![Advanced system settings link](./windows_add_path-advanced_system_settings.png)
 
 Click **Environment Variables**.
 
-![](./windows_add_path-environment_variables.png)
+![Environment Variables button](./windows_add_path-environment_variables.png)
 
-Under **System variables** select **Path** and click **Edit**.
+Select **Path** and click **Edit**. Choose it under user variables for your account only, or under **System variables** for every user, which needs administrator rights.
 
-![](./windows_add_path-edit_path.png)
+![Path variable selected for editing](./windows_add_path-edit_path.png)
 
-Create a **New** entry in the list with the Speedscale directory.  If you are
-unsure of the exact path run this command from PowerShell.
+Click **New** and enter the Speedscale directory. Run `echo $env:USERPROFILE\.speedscale` in PowerShell if you are unsure of the exact path.
 
-```
-echo $env:userprofile\.speedscale
-```
-
-![](./windows_add_path-new_entry.png)
+![New Path entry for the Speedscale directory](./windows_add_path-new_entry.png)
 
 Click **OK** and restart PowerShell.
 
+</details>
