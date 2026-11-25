@@ -259,15 +259,17 @@ We just did a transform for the traffic coming into our app during a replay. We 
 
 ### Assertions
 
-Select a failed row to see which checks failed. Here a `/spacex/ship` request failed the **HTTP Response Content Type** check, while its status code and headers matched the recording.
+Select a failed row to see which checks failed. Here a `/spacex/ship/{id}` request failed the **HTTP Response Content Type** check, while its status code and headers matched the recording. When this traffic was recorded, the SpaceX API answered some of these requests with an error page, `error code: 522`, instead of JSON. The response is labeled JSON but holds plain text, so the check fails on every replay. The cause is in the recorded traffic, and our app behaves the same as when it was recorded.
 
 ![A failed /spacex/ship request, where 1 of 3 checks failed: HTTP Response Content Type](../guides/end-to-end/failed-check.png)
 
-When a check fails on data you expect to change, such as an ID our app generates on every request, change the assertion instead of the traffic. Open the report's test config and select the **Assertions** tab.
+There are two ways to handle failures like this. You can remove the recorded error responses from the snapshot, or you can change what the replay checks. Assertions live in the test config. Open the report's test config and select the **Assertions** tab.
 
 ![The Assertions tab of a test config, listing the HTTP Status Code, HTTP Headers, HTTP Response Schema and HTTP Response Content Type checks for all traffic](../guides/end-to-end/report-tc.png)
 
-To ignore a field, add or edit an **HTTP Response Body** assertion and enter its JSON path, such as `ship_id`, under **ignore**.
+Each assertion applies to a subset of traffic. To stop checking the content type of the SpaceX error responses, edit the **HTTP Response Content Type** assertion or move it to a subset that leaves out `/spacex/ship/.*`.
+
+This test config has no **HTTP Response Body** assertion, so values that change on every request, such as the `ship_id` our app generates, do not fail the replay. If you add a body assertion, enter those fields under **ignore** so it compares only the data that should stay the same.
 
 ![The Assertion dialog for HTTP Response Body, with ship_id entered under ignore](../guides/end-to-end/report-ignore.png)
 
@@ -285,7 +287,7 @@ In this demo we:
 4. Ran a replay and created a snapshot
 5. Used auto generated mocks during the replay
 6. Transformed some snapshot traffic
-7. Edited the assertions
+7. Found why assertions failed and changed the test config
 8. Reanalyzed the report for a higher accuracy
 
 # Next Steps
