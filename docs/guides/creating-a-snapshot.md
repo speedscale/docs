@@ -18,13 +18,13 @@ Click on one of the instances to open the Traffic Viewer which provides:
 * Throughput graphs for inbound calls to the service and outbound calls to backend systems
 * Filters for searching for specific requests or otherwise customizing the list
 
-![Traffic Viewer](./observe-traffic-viewer.png)
+![The Traffic viewer for banking-gateway, with the time picker, the request chart, the service dependency map and the request list](./observe-traffic-viewer.png)
 
 ### Filtering <a href="#analyze-steps" id="analyze-steps"></a>
 
 Utilize the filters to drill down even further into a subset of requests or to filter out unwanted traffic like heartbeats.
 
-![Filters](./select-filters.png)
+![The Filter traffic dialog, with rules for service and source](./creating-filters/select-filters.png)
 
 :::info
 Did you know that you can filter traffic so that it is never sent to Speedscale cloud? This can help you prevent noise, lower your bill and keep private data safe. Check out the [filters](/reference/filters/README.md) section for suggestions.

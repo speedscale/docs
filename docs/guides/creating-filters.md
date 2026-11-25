@@ -22,7 +22,7 @@ Here's how you create and apply them:
 1. Open the Traffic Viewer and select your service
 2. Apply filters to narrow down the traffic to only the request/response pairs that you want to allow.
 
-![Filters](./creating-filters/select-filters.png)
+![The Filter traffic dialog, with rules for service is banking-gateway and source is goproxy, and Save as filter rule at the bottom left](./creating-filters/select-filters.png)
 
 3. Open the filter editor from the **Filters** bar and click **Save as filter rule** at the bottom left:
 
@@ -30,7 +30,7 @@ Here's how you create and apply them:
 
 4. Give the filter a unique ID (no spaces), and make sure to remember it.
 
-![Filter Name](./creating-filters/filter_name.png)
+![The Create Named Filter Rule dialog, with banking-gateway-only entered as the ID](./creating-filters/filter_name.png)
 
 
 ## Create Filters with the CLI

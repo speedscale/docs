@@ -10,7 +10,7 @@ creating a fresh snapshot from a running service or running a replay.  Running
 replays on a schedule enables regular testing when running Speedscale inside
 CI/CD is not feasible.
 
-![schedules-list](schedules-list.png)
+![The Schedules list, with each schedule's status, service, tasks, schedule, next run and last run](schedules-list.png)
 
 ## Cron Expressions
 

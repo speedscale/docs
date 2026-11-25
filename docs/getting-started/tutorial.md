@@ -142,17 +142,17 @@ proxymock cloud push snapshot --in proxymock/recorded-YOUR_TIMESTAMP
 
 <iframe src="https://www.youtube.com/embed/uxymGbdm_v8?rel=0&modestbranding=1" width="640" height="582" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
 
-After a few minutes you should be able to see your traffic in the [Speedscale dashboard](https://app.speedscale.com). Make sure to select the the same service name that you entered in `speedctl install` from the traffic dropdown. You should be able to see the inbound and outbound calls for this app as shown below.
+After a few minutes you should be able to see your traffic in the [Speedscale dashboard](https://app.speedscale.com). Open **Traffic** and select the service name that you entered in `speedctl install` under **Service**. You should see the inbound and outbound calls for this app as shown below.
 
-![Traffic](../guides/end-to-end/traffic.png)
+![The Traffic viewer filtered to java-server, listing inbound requests and outbound calls to the Treasury API and a demo API](../guides/end-to-end/traffic.png)
 
-You can also drill down into specific requests-response pairs (RRPairs). For eg. we see the request we make to our app to get the max interest rate for treasuries.
+You can also drill down into specific request-response pairs (RRPairs). For example, here is the request we make to our app to get the max interest rate for treasuries.
 
-![Server](../guides/end-to-end/server-request.png)
+![An inbound GET /treasury/max_interest request with its JSON response body](../guides/end-to-end/server-request.png)
 
 And we can also see the outbound request our app makes to the Treasury API to fulfill this request.
 
-![Treasury](../guides/end-to-end/out-request.png)
+![The outbound GET request to api.fiscaldata.treasury.gov, with its filter query parameter](../guides/end-to-end/out-request.png)
 
 You can and inspect it further or you can skip ahead to running a replay which will also create a snapshot as a side effect.
 
@@ -164,13 +164,13 @@ We're now going to run a replay for this captured traffic.
 
 <TabItem value="Kubernetes">
 
-Click the `Replay as Tests/Mocks` button on the top right and walk through the wizard. All the default settings are ok here. You can also do this outside of the UI with more instructions [here](../guides/replay/kube.md).
+Click **Replay** on the top right and walk through the wizard. All the default settings are ok here. You can also do this outside of the UI with more instructions [here](../guides/replay/kube.md).
 
 </TabItem>
 
 <TabItem value="Docker">
 
-1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](../guides/creating-a-snapshot.md) section.
+1. Click **Save** in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](../guides/creating-a-snapshot.md) section.
 2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
 3. Run:
 
@@ -198,7 +198,7 @@ export TEST_REPORT_ID=$(uuidgen |  tr '[:upper:]' '[:lower:]'); docker compose -
 
 <TabItem value="Local">
 
-1. Click the `Save to Tests/Mocks` button in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](../guides/creating-a-snapshot.md) section.
+1. Click **Save** in the top right. All the default settings are ok here. You can find more detailed instructions in the [Create a Snapshot](../guides/creating-a-snapshot.md) section.
 2. Once you see the Snapshot summary, copy the snapshot ID from the URL or by clicking the `Copy Snapshot ID` option from the three dot menu.
 3. This is how you run the application:
 
@@ -227,21 +227,21 @@ proxymock replay --in proxymock/snapshot-SNAPSHOT_ID
 
 ## Making sense of a Replay
 
-If you are already viewing the Snapshot you recorded, you can see your replay appear in the `Replay` tab. Alternatively, you can find a report for your Replay in the [dashboard](https://app.speedscale.com/reports). It should look something like this.
+If you are already viewing the snapshot you recorded, you can see your replay appear in the **Replays** tab. Alternatively, you can find a report for your Replay in the [dashboard](https://app.speedscale.com/reports). It should look something like this.
 
-![Report](../guides/end-to-end/report.png)
+![The Overview of a java-server replay report, where 274 of 315 assertions passed, 98 of 98 outbound calls matched a mock and 1 of 2 goals was met](../guides/end-to-end/report.png)
 
-We can see that all the requests our app makes to third party APIs were mocked out with 100% accuracy. For eg. we can see the request our app made to the Treasury API that was actually mocked out which is great for isolation during tests but we can also do this for other parts of our development cycle as detailed [here](../guides/replay/mocks/README.md#responder-only).
+The **Mocks** check shows that every call our app made to third-party APIs was answered by a mock. Open **Mocked Responses** to see each one, such as the calls to the Treasury API. Mocks isolate your service during tests, and you can use them in other parts of your development cycle as detailed [here](../guides/replay/mocks/README.md#responder-only).
 
-![Responder](../guides/end-to-end/mocks.png)
+![The Mocked Responses tab with Mock Accuracy 98/98, listing matched calls to the SpaceX and Treasury APIs](../guides/end-to-end/mocks.png)
 
-You can also see that the accuracy isn't 100%. We can drill down into a specific assertion to see why.
+Not every check passed. Open the **Accuracy** tab to see which requests failed their checks.
 
-![JWT](../guides/end-to-end/jwt.png)
+![The Accuracy tab, where 274 of 315 checks passed, with failed rows for /spacex/ship requests and /spacex/launches](../guides/end-to-end/accuracy.png)
 
 ### Transform
 
-The JWT we get from the login request is different which is expected. If we were replaying in a different environment, we might need different credentials entirely for the login request. Another pattern might be a set of traffic where we don't have a login request and instead we need to [resign the JWT](../guides/replay/resign-jwt.md) from our captured traffic. This is where [Transforms](../concepts/transforms.md) come into play and we can edit our captured data to parameterize parts of it. As an example, we can transform our snapshot to edit the password.
+Recorded credentials are a common reason replayed requests fail. If we were replaying in a different environment, we might need different credentials entirely for the login request. Another pattern might be a set of traffic where we don't have a login request and instead we need to [resign the JWT](../guides/replay/resign-jwt.md) from our captured traffic. This is where [Transforms](../concepts/transforms.md) come into play and we can edit our captured data to parameterize parts of it. As an example, we can transform our snapshot to edit the password.
 
 Find the request on the snapshot's **Traffic** tab and open **Request**, then click the pencil icon next to the field you want to edit, which in our case is the password. Choose **Modify**.
 
@@ -259,21 +259,21 @@ We just did a transform for the traffic coming into our app during a replay. We 
 
 ### Assertions
 
-Another assertion that failed in our report is for the `/spacex/ship` endpoint.
+Select a failed row to see which checks failed. Here a `/spacex/ship` request failed the **HTTP Response Content Type** check, while its status code and headers matched the recording.
 
-![Ship Endpoint](../guides/end-to-end/random.png)
+![A failed /spacex/ship request, where 1 of 3 checks failed: HTTP Response Content Type](../guides/end-to-end/failed-check.png)
 
-Our app returns a different ship ID every time we make a request so this is an expected failure. We can edit the test config for our Report to account for this.
+When a check fails on data you expect to change, such as an ID our app generates on every request, change the assertion instead of the traffic. Open the report's test config and select the **Assertions** tab.
 
-![Edit Test Config](../guides/end-to-end/report-tc.png)
+![The Assertions tab of a test config, listing the HTTP Status Code, HTTP Headers, HTTP Response Schema and HTTP Response Content Type checks for all traffic](../guides/end-to-end/report-tc.png)
 
-Click the pencil next to the `HTTP Response Body` assertion and we can add `ship_id` as a json path to ignore.
+To ignore a field, add or edit an **HTTP Response Body** assertion and enter its JSON path, such as `ship_id`, under **ignore**.
 
-![Edited](../guides/end-to-end/report-ignore.png)
+![The Assertion dialog for HTTP Response Body, with ship_id entered under ignore](../guides/end-to-end/report-ignore.png)
 
-After saving, we can reanalyze the report and we see much better results!
+Save the test config, then reanalyze the report. When every check passes, the report looks like this.
 
-![Success](../guides/end-to-end/report-success.png)
+![A passed java-server replay report, where 52 of 52 assertions passed and both goals were met](../guides/end-to-end/report-success.png)
 
 ## Overview
 

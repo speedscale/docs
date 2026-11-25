@@ -12,13 +12,13 @@ The Speedscale AI assistant is a chat interface built into the dashboard that le
 
 ## Where to Find It
 
-The AI chat panel is on the home screen of the Speedscale dashboard. It's the first thing you see when you log in. You can also access it from the chat icon available throughout the dashboard.
+Open the assistant from the **Ask about a service, replay or snapshot** box at the top of the home screen, or press Cmd+/ on macOS. You can also open it from the chat icon available throughout the dashboard.
 
-![Speedscale home screen with AI assistant](./ai-assistant-home.png)
+![The Speedscale home screen, with the Ask box for the AI assistant at the top right](../getting-started/home-screen.png)
 
 The assistant shows suggested prompts to help you get started, and you can type any question in the input bar at the bottom.
 
-![AI assistant conversation](./ai-assistant-chat.png)
+![The AI assistant panel open beside the home screen, with suggested prompts and the input box at the bottom](./ai-assistant-chat.png)
 
 ## Context-Aware Assistance
 
