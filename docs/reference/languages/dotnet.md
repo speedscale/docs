@@ -43,7 +43,7 @@ This is the current public .NET demo used for local proxymock examples.
 ## proxymock {#proxymock}
 
 <ProxymockLanguageWorkflow
-  intro="Run the .NET demo from a macOS or Linux shell. For native Windows, see Windows TLS trust below."
+  intro="Run the .NET demo from a macOS or Linux shell. For native Windows, install proxymock from the Windows tab of the installation page and see Windows TLS trust below."
   steps={[
     {
       title: 'Install and initialize proxymock',
@@ -56,7 +56,7 @@ proxymock init`,
       command: `git clone https://github.com/speedscale/mock-lab
 cd mock-lab/languages/dotnet
 proxymock record -- dotnet run`,
-      note: 'proxymock starts the .NET service as a child process and sets its proxy and TLS environment variables. On macOS, proxymock adds its CA to the keychain by default. On Linux and native Windows, configure certificate trust as described below.',
+      note: 'proxymock starts the .NET service as a child process and sets its proxy and TLS environment variables. On macOS and native Windows, `proxymock init` offers to trust its CA in the system store. On Linux, configure certificate trust as described below.',
     },
     {
       title: 'Generate one real workflow',
@@ -84,7 +84,7 @@ On Linux, modern .NET uses OpenSSL and respects `SSL_CERT_FILE`. On macOS, .NET 
 
 ### Windows TLS trust {#windows-tls-trust}
 
-.NET on Windows validates certificates with the Windows certificate store and ignores `SSL_CERT_FILE`. Follow the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) steps to trust the proxymock CA and verify the mock, then route the client through proxymock.
+.NET on Windows validates certificates with the Windows certificate store and ignores `SSL_CERT_FILE`. `proxymock init` offers to add the proxymock CA to your user's store; confirm the Windows dialog. If you skipped it or run headless, follow the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) steps. Then route the client through proxymock.
 
 For `HttpClient` on .NET Core 3.0 or later using its default proxy settings, set `HTTPS_PROXY` in the PowerShell session that launches the HTTPS client. Use the configured proxy address if you changed the default listener.
 

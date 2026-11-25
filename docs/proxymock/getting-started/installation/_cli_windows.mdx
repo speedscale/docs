@@ -1,15 +1,28 @@
-import WindowsWarning from './_windows_warning.mdx'
+Open PowerShell and run:
 
-<WindowsWarning />
+```powershell
+irm https://downloads.speedscale.com/proxymock/install-proxymock.ps1 | iex
+```
 
-Open PowerShell, create a Speedscale directory and download **proxymock** into it:
+The installer needs no administrator rights. It puts `proxymock.exe` in `%USERPROFILE%\.speedscale`, adds that folder to your user Path and runs `proxymock init`. When init offers to trust the proxymock certificate, confirm the **Security Warning** dialog so clients that use the Windows certificate store, such as .NET, accept proxymock for HTTPS. Run the same command again to upgrade.
+
+To install a specific version:
+
+```powershell
+& ([scriptblock]::Create((irm https://downloads.speedscale.com/proxymock/install-proxymock.ps1))) v2.5.1476
+```
+
+<details>
+<summary>Install without the script</summary>
+
+Download `proxymock.exe` into a Speedscale folder:
 
 ```powershell
 mkdir -Force $env:USERPROFILE\.speedscale
 curl.exe -L "https://downloads.speedscale.com/proxymock/proxymock.exe" -o $env:USERPROFILE\.speedscale\proxymock.exe
 ```
 
-Add the directory to your user Path so you can run `proxymock` from any folder. This does not need administrator rights.
+Add the folder to your user Path:
 
 ```powershell
 $dir = "$env:USERPROFILE\.speedscale"
@@ -19,35 +32,8 @@ if (($userPath -split ';') -notcontains $dir) {
 }
 ```
 
-Restart PowerShell, then run `proxymock --help` to confirm it is on your Path.
-
-<details>
-<summary>Prefer the Settings window?</summary>
-
-Right click the Windows button and click **System**.
-
-![Windows System settings](./windows_add_path-system.png)
-
-Click **Advanced system settings**.
-
-![Advanced system settings link](./windows_add_path-advanced_system_settings.png)
-
-Click **Environment Variables**.
-
-![Environment Variables button](./windows_add_path-environment_variables.png)
-
-Select **Path** and click **Edit**. Choose it under user variables for your account only, or under **System variables** for every user, which needs administrator rights.
-
-![Path variable selected for editing](./windows_add_path-edit_path.png)
-
-Click **New** and enter the Speedscale directory. Run `echo $env:USERPROFILE\.speedscale` in PowerShell if you are unsure of the exact path.
-
-![New Path entry for the Speedscale directory](./windows_add_path-new_entry.png)
-
-Click **OK** and restart PowerShell.
+Restart PowerShell and run `proxymock init`. If you skip the certificate prompt or set up a headless machine, follow the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) steps.
 
 </details>
 
-:::note HTTPS traffic on Windows
-Clients that use the Windows certificate store, such as .NET, need the proxymock CA in that store before recording or mocking HTTPS traffic. Follow the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) steps.
-:::
+proxymock also runs inside [WSL](https://learn.microsoft.com/en-us/windows/wsl/). Use the Linux tab there.

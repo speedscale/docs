@@ -1,11 +1,28 @@
-Open PowerShell, create a Speedscale directory and download `speedctl` into it:
+Open PowerShell and run:
+
+```powershell
+irm https://downloads.speedscale.com/speedctl/install-speedctl.ps1 | iex
+```
+
+The installer needs no administrator rights. It puts `speedctl.exe` in `%USERPROFILE%\.speedscale`, adds that folder to your user Path and runs `speedctl init`. Run the same command again to upgrade.
+
+To install a specific version:
+
+```powershell
+& ([scriptblock]::Create((irm https://downloads.speedscale.com/speedctl/install-speedctl.ps1))) v2.5.1476
+```
+
+<details>
+<summary>Install without the script</summary>
+
+Download `speedctl.exe` into a Speedscale folder:
 
 ```powershell
 mkdir -Force $env:USERPROFILE\.speedscale
 curl.exe -L "https://downloads.speedscale.com/speedctl/speedctl.exe" -o $env:USERPROFILE\.speedscale\speedctl.exe
 ```
 
-Add the directory to your user Path so you can run `speedctl` from any folder. This does not need administrator rights.
+Add the folder to your user Path:
 
 ```powershell
 $dir = "$env:USERPROFILE\.speedscale"
@@ -15,31 +32,6 @@ if (($userPath -split ';') -notcontains $dir) {
 }
 ```
 
-Restart PowerShell, then run `speedctl --help` to confirm it is on your Path.
-
-<details>
-<summary>Prefer the Settings window?</summary>
-
-Right click the Windows button and click **System**.
-
-![Windows System settings](./windows_add_path-system.png)
-
-Click **Advanced system settings**.
-
-![Advanced system settings link](./windows_add_path-advanced_system_settings.png)
-
-Click **Environment Variables**.
-
-![Environment Variables button](./windows_add_path-environment_variables.png)
-
-Select **Path** and click **Edit**. Choose it under user variables for your account only, or under **System variables** for every user, which needs administrator rights.
-
-![Path variable selected for editing](./windows_add_path-edit_path.png)
-
-Click **New** and enter the Speedscale directory. Run `echo $env:USERPROFILE\.speedscale` in PowerShell if you are unsure of the exact path.
-
-![New Path entry for the Speedscale directory](./windows_add_path-new_entry.png)
-
-Click **OK** and restart PowerShell.
+Restart PowerShell and run `speedctl init`.
 
 </details>

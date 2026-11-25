@@ -283,6 +283,8 @@ Configure TLS trust in the environment that runs your HTTPS client. Clients that
 
 Native Windows clients that validate certificates with the Windows certificate store ignore `SSL_CERT_FILE`. These include .NET, SQL Server drivers, Go before 1.27, Rust with `native-tls`, and the `curl.exe` that ships with Windows. Trust the proxymock CA in the Windows certificate store instead. Node.js, Python `requests`, and Java keep their own trust settings, described in the tabs above.
 
+On a Windows desktop, `proxymock init` offers to add the CA to your user's **Trusted Root Certification Authorities** store. Confirm the Windows **Security Warning** dialog and no further setup is needed. Use the steps below if you declined the dialog, passed `--no-cert-install`, set up a headless machine, or need trust for another account or the whole machine.
+
 Apply trust to the runtime that opens the HTTPS connection. If the test calls your app and your app calls the dependency, configure trust for your app's account or Windows environment.
 
 1. Locate the public CA, `tls.crt`, from the proxymock instance serving the mock. The default Windows path is `%USERPROFILE%\.speedscale\certs\tls.crt`. Run `proxymock admin certs` if you need to generate the CA. Share only the public certificate with your endpoint administrator and keep `tls.key` on the mock host.
@@ -292,7 +294,11 @@ Apply trust to the runtime that opens the HTTPS connection. If the test calls yo
    certutil.exe -addstore Root "C:\path\to\tls.crt"
    ```
 
-   If per-user trust is approved, open `certmgr.msc` in an interactive session as the user running the HTTPS client. Import the CA into **Trusted Root Certification Authorities > Certificates** and review the Windows confirmation prompt. Per-user imports can require a UI and fail in headless sessions. For unattended jobs, have your administrator provision trust for the account or environment where the client runs.
+   For per-user trust, run this from regular PowerShell as the user running the HTTPS client. It does not need administrator rights. Windows shows a confirmation dialog, so it fails in headless sessions. For unattended jobs, have your administrator provision trust for the account or environment where the client runs.
+
+   ```powershell
+   certutil.exe -user -addstore Root "$env:USERPROFILE\.speedscale\certs\tls.crt"
+   ```
 
 3. To verify mocking, start proxymock with your recording and disable passthrough. The example assumes proxymock and the client are running on the same Windows host.
 
@@ -312,6 +318,12 @@ Apply trust to the runtime that opens the HTTPS connection. If the test calls yo
 
    ```powershell
    certutil.exe -delstore Root <thumbprint>
+   ```
+
+   For the per-user store, run this from regular PowerShell as that user:
+
+   ```powershell
+   certutil.exe -user -delstore Root <thumbprint>
    ```
 
 See [Microsoft's Windows certificate store guide](https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/inspect-certificates-manage-certificate-stores) and [certutil reference](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/certutil#-addstore).
