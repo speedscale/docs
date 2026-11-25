@@ -119,6 +119,13 @@ The service account must use `container-engine-robot.iam.gserviceaccount.com`.
 
 Set the `container.managed.autopilotPrivilegedAdmission` org policy at the project level. Keep `allowAnyGKEPath: true` to preserve the default GKE-approved allowlists while adding the Speedscale bucket path.
 
+This command replaces the policy's `allowPaths` list. If the project already allows other bucket paths, check them first and add them to the file:
+
+```bash
+gcloud org-policies describe container.managed.autopilotPrivilegedAdmission \
+  --project "${PROJECT_ID}" --effective
+```
+
 ```bash
 cat > /tmp/speedscale-autopilot-policy.yaml <<EOF
 name: projects/${PROJECT_ID}/policies/container.managed.autopilotPrivilegedAdmission
@@ -271,6 +278,34 @@ helm upgrade speedscale-operator speedscale/speedscale-operator \
 
 `--reuse-values` preserves your install values. Generate traffic against the workload, then confirm it appears in Speedscale.
 
+To capture more than one workload, put every target in a values file instead of adding `targets[1]` with `--set`. Helm replaces the whole `targets` list when you set one index, which leaves an empty first entry, and nettap stops capturing with `capture target must have a name`.
+
+```yaml title="capture-targets.yaml"
+ebpf:
+  configuration:
+    capture:
+      targets:
+        - name: orders
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: shop
+          podSelector:
+            matchLabels:
+              app: orders
+        - name: payments
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: shop
+          podSelector:
+            matchLabels:
+              app: payments
+```
+
+```bash
+helm upgrade speedscale-operator speedscale/speedscale-operator \
+  --namespace speedscale --reuse-values -f capture-targets.yaml
+```
+
 ## Updating Speedscale versions
 
 The WorkloadAllowlist is not tied to a chart version. Upgrade the operator chart as usual and keep the same allowlist.
@@ -295,7 +330,23 @@ Then upgrade the chart.
 
 For workloads that make outbound HTTPS calls, the Speedscale [Java Agent](../../../reference/languages/java.md) instruments `SSLSocketImpl` and `SSLEngineImpl` to decrypt TLS traffic.
 
-On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior. If you enable the setting by upgrading chart `2.5.828`, restart the operator as shown in Step 6.
+On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. Without it, Warden rejects the pod because the init container requests `0` ephemeral storage. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior. If you enable the setting by upgrading chart `2.5.828`, restart the operator as shown in Step 6.
+
+With the workload already selected as a capture target (Step 7), enable the Java Agent with an annotation. The workload restarts with the agent:
+
+```bash
+kubectl annotate deployment "${APP_NAME}" -n "${APP_NAMESPACE}" \
+  capture.speedscale.com/java-agent=true
+```
+
+Confirm the init container was admitted with storage:
+
+```bash
+kubectl get pods -n "${APP_NAMESPACE}" -l app="${APP_NAME}" \
+  -o jsonpath='{range .items[*].spec.initContainers[*]}{.name}{" "}{.resources.requests.ephemeral-storage}{"\n"}{end}'
+```
+
+The output shows `speedscale-initproxy-java-agent 100Mi`.
 
 ## Troubleshooting
 
