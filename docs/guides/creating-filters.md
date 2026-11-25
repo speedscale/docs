@@ -85,7 +85,7 @@ The following keywords can be used in your filter query:
 | l7protocol | protocol type | l7protocol NOT CONTAINS HTTP
 | location | location/endpoint | location REGEX "^(.*)health$"
 | namespace | kubernetes namespace | namespace IS default
-| networkaddr | network address/host | networkaddr NOT grpc-server:80
+| networkaddr | network address/host | networkaddr NOT payment-service:80
 | req_json[\{key\}] | check request body against a json key/value | req_json[foo] IS bar
 | req_xml[\{key\}] | check request body against an xml key/value | req_xml[foo] IS bar
 | req_soapxpath[\{key\}] | check request body against a soap XPath | req_soapxpath[foo] IS bar
