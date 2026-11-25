@@ -22,7 +22,7 @@ Here's how you create and apply them:
 1. Open the Traffic Viewer and select your service
 2. Apply filters to narrow down the traffic to only the request/response pairs that you want to allow.
 
-![Filters](./creating-filters/select-filters.png)
+![The Filter traffic dialog, with rules for service is banking-gateway and source is goproxy, and Save as filter rule at the bottom left](./creating-filters/select-filters.png)
 
 3. Open the filter editor from the **Filters** bar and click **Save as filter rule** at the bottom left:
 
@@ -30,7 +30,7 @@ Here's how you create and apply them:
 
 4. Give the filter a unique ID (no spaces), and make sure to remember it.
 
-![Filter Name](./creating-filters/filter_name.png)
+![The Create Named Filter Rule dialog, with banking-gateway-only entered as the ID](./creating-filters/filter_name.png)
 
 
 ## Create Filters with the CLI
@@ -85,7 +85,7 @@ The following keywords can be used in your filter query:
 | l7protocol | protocol type | l7protocol NOT CONTAINS HTTP
 | location | location/endpoint | location REGEX "^(.*)health$"
 | namespace | kubernetes namespace | namespace IS default
-| networkaddr | network address/host | networkaddr NOT grpc-server:80
+| networkaddr | network address/host | networkaddr NOT payment-service:80
 | req_json[\{key\}] | check request body against a json key/value | req_json[foo] IS bar
 | req_xml[\{key\}] | check request body against an xml key/value | req_xml[foo] IS bar
 | req_soapxpath[\{key\}] | check request body against a soap XPath | req_soapxpath[foo] IS bar

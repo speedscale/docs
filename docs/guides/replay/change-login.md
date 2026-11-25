@@ -45,9 +45,9 @@ After you have downloaded the demo, follow the instructions in the `languages/go
 
 > **Note:** The mock-lab `/oauth/token` handler does not require these fields to issue a token, so you can supply whatever credential body fits your own auth flow. The point of this example is to show transforming a credential field (here `client_id`) in the login request body; pick whichever field carries the identity value in your environment.
 
-Find this traffic in the traffic viewer, and then use the `Save` button to create a snapshot with this traffic.
+Find this traffic in the traffic viewer, and then use the `Save` button to create a snapshot with this traffic. The screenshot below filters to the synthetic banking login endpoint instead of `/oauth/token`.
 
-![Traffic Viewer](change-login-traffic.png)
+![The Traffic viewer filtered to banking-user and the /api/users/login endpoint, listing inbound POST login requests](change-login-traffic.png)
 
 ### Configuration
 

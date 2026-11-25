@@ -51,7 +51,7 @@ The steps above setup an inbound proxy on port `4143` that forwards requests to 
 
 ## Analyze Traffic
 
-![Traffic](./docker/traffic.png)
+![The Traffic viewer for a service, with its service map and inbound and outbound requests](./docker/traffic.png)
 
 You should be able to see traffic in the Speedscale UI after a few minutes and
 now you can using this traffic to [create a snapshot](../../../guides/creating-a-snapshot.md).

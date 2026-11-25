@@ -28,16 +28,18 @@ For this exercise we want to tag the session ID using the `tag_session` transfor
 
 1. We start by creating a new DLP Rule. For this example you can call it `email_session`. DLP Rules are interpreted at the forwarder before data leaves the cluster. This is an excellent place to identify the session so that all RRPairs will have their correct session ID tagged early.
 2. Identify the `email` HTTP Query Paramter and use it as the source for the transformation chain.
-3. Add a `tag_session` transform to smart replace the Speedscale model on this data.
+3. Add a **Tag Session ID** (`tag_session`) step so Speedscale uses this value as the session ID.
 
-In the end, you will have a DLP rule that looks like this:
-![dlp rule](./identify-session/dlp_rule_complete.png)
+In the end, your DLP rule has a transform chain that looks like this. The preview on the right shows which requests carry an `email` query parameter:
+
+![A transform chain that pulls from the email HTTP Query Parameter and adds a Tag Session ID step, with a matching GET /api/users/check-email request in the preview](./identify-session/dlp_rule_complete.png)
 
 This transform cahin will isolate the `email` HTTP Query Parameter and use it as the session identifier.
 
 :::note
-If your app relies on JWTs then you can think them as being interchangeable with sessions. However, if you have a human readable user ID tucked into the JWT claims then that could also be considered a session. To extract an ID like this you can use the [JSONPath](./transformation/extractors/json_path.md) extractor pointed at the claim:
-![jwt claim](./identify-session/jwt-claim.png)
+If your app relies on JWTs then you can think them as being interchangeable with sessions. However, if you have a human readable user ID tucked into the JWT claims then that could also be considered a session. To extract an ID like this you can use the [JSONPath](./transformation/extractors/json_path.md) extractor pointed at the claim, here `sub`, followed by a **Tag Session ID** step:
+
+![A chain that pulls from JSONPath http.req.headers.Authorization.0.jwt.claims.sub with a Bearer regex, previews the user name from the claim and tags it as the session ID](./identify-session/jwt-claim.png)
 
 Set `readOnly` on that chain so the forwarder tags the session and keeps the token as captured. See [Read-only chains](../concepts/transforms.md#read-only-chains).
 :::
@@ -70,7 +72,7 @@ To make `smart_replace` work you need to assign a new ID later in the transform 
 
 This is what your transform chain might look like with the complete set:
 
-![smart replace transform](./identify-session/transforms-w-train.png)
+![A chain that pulls from Session, runs smart_replace and then a Random String step whose pattern makes foobar.com email addresses](./identify-session/transforms-w-train.png)
 
 The source is the session of the rrpair. If you did the first set of steps correctly then this should be populated. Keep in mind that you can pull the data to replace from anywhere, session is just one choice. The first transform tells Speedscale to identify the current and new values. The last transform creates a random string matching an email in the `foobar.com` domain.
 

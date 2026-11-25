@@ -58,17 +58,17 @@ Speedscale provides a replay wizard that simplifies the process of configuring J
 
 When you open the replay wizard, Speedscale analyzes your snapshot and displays all detected JWTs along with their status:
 
-![JWT List](./jwt/jwt-list.png)
+![The Authentication and Resigning step of the replay wizard, with a JWT Locations table listing the expiry, service, endpoint and location of each JWT](./jwt/jwt-list.png)
 
 ### JWT Details
 
-Clicking on any JWT in the list reveals detailed information including:
+Clicking a JWT in the list opens **JWT Details**, which shows the encoded token next to its decoded form:
+- Token header information (algorithm and type)
 - Token claims (issuer, subject, audience, expiration time, etc.)
-- Token header information
-- Expiration status
-- Where the token appears in the traffic
 
-![JWT Details](./jwt/jwt-details.png)
+The JWT Locations table itself shows the expiration status and where the token appears in the traffic.
+
+![The Decoded column of JWT Details, with a header of HS256 and JWT and a payload with sub, userId, roles and exp claims](./jwt/jwt-details.png)
 
 ## JWT Handling Options
 

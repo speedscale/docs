@@ -45,11 +45,11 @@ For BYOC, configure the data destination and prevent Cloud export before turning
 
 The dashboard workflow below uses Speedscale-managed storage. For BYOC capture and replay, follow your selected [BYOC setup](/byoc/).
 
-![Speedscale home screen](./home-screen.png)
+![The Speedscale home screen, with service performance, recent replays, recent snapshots and the Ask box for the AI assistant](./home-screen.png)
 
 ### AI Assistant
 
-The **AI assistant** on the Speedscale Cloud home screen can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
+Open the **AI assistant** from the **Ask about a service, replay or snapshot** box at the top of the Speedscale Cloud home screen. It can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
 
 Speedscale follows a 3-part workflow: **Observe**, **Analyze**, and **Replay**.
 
@@ -94,11 +94,11 @@ Once you have Speedscale installed, [view your services](https://app.speedscale.
 
 In **Analyze**, you inspect historical traffic by API to understand real system behavior. Traffic is broken into requests and responses so you can investigate normal and failure paths.
 
-![](../observe-rrpair.png)
+![The Traffic viewer filtered to one service, with an inbound request open to show its JSON response body](../observe-rrpair.png)
 
 Use filters to isolate the specific traffic patterns you want to test.
 
-![](../select-service-map.png)
+![The Traffic viewer filtered to banking-gateway, with the Filters bar, the filter list and the service dependency map](../select-service-map.png)
 
 Once your application receives traffic, [view your traffic in Speedscale](https://app.speedscale.com/analyze)
 
@@ -106,7 +106,7 @@ Once your application receives traffic, [view your traffic in Speedscale](https:
 
 In **Replay**, you run recorded traffic against the candidate version of your service before release. Speedscale can orchestrate this replay environment and execute the run automatically.
 
-![](../100-pct-report.png)
+![A passed replay report, where 54 of 54 assertions passed, 26 of 26 outbound calls matched a mock and all 5 goals were met](../100-pct-report.png)
 
 If you do not want outbound calls to hit real dependencies during replay, use a responder to stand in for those systems with captured responses.
 

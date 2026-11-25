@@ -14,9 +14,9 @@ The UI contains hints explaining the different metrics.
 
 ## Examples
 
-Let's create a useful example for our application.
+Let's create a useful example for our application. On the test config's **Goals** tab, click **Add** for each goal, then pick a metric and comparison, enter a value and, optionally, an endpoint filter.
 
-![goals-example](goals-example.png)
+![The Goals tab with six goals for latency percentiles, total requests, assertion success and requests per second](./goals-example.png)
 
 Reports run with this test config will fail if any of the metrics defined are
 true when the replay completes.

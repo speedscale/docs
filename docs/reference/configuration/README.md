@@ -10,7 +10,7 @@ determine how it will behave at runtime.
 
 You can view these in the [UI](https://app.speedscale.com/config):
 
-![test-config](test-config.png)
+![The Traffic tab of a test config, with the Tests only, Tests & Mocks and Mocks only replay modes and the generator settings](test-config.png)
 
 Or via the CLI:
 

@@ -9,7 +9,7 @@ sidebar_position: 8
 Most real-world APIs require authentication. The most common type of authentication we see is JWT/OAuth2. This guide shows you how to train Speedscale to automatically re-sign JWTs for your Service Under Test (SUT).
 
 :::tip
-To fix expired credentials once for every replay of a snapshot, from the dashboard, schedules and CI, use [Replace credentials](/guides/replay/replace-credentials.md). It re-signs JWTs, fetches fresh tokens or pastes a replacement from the snapshot's **Credentials** tab. This page covers re-signing with a transform you edit yourself, and the one-off options the replay wizard applies to a single replay, including JWKS re-signing.
+To fix expired credentials once for every replay of a snapshot, from the dashboard, schedules and CI, use [Replace credentials](/guides/replay/replace-credentials.md). It re-signs JWTs, fetches fresh tokens or pastes a replacement from the snapshot's **Prepare** tab. This page covers re-signing with a transform you edit yourself, and the one-off options the replay wizard applies to a single replay, including JWKS re-signing.
 :::
 
 ## How do I know my app needs to resign JWTs?
@@ -19,7 +19,7 @@ To fix expired credentials once for every replay of a snapshot, from the dashboa
 1. Your application complains of being unable to authenticate with the mocked service
 1. You see an outbound login-style transaction with a response payload containing the JSON key `access token`. For example:
 
-![JWT example](./jwt/JWT_example.png)
+![An outbound POST /login response whose JSON body holds an access_token JWT, shown cut off, plus expires_in and token_type](./jwt/JWT_example.png)
 
 ## Prerequisites
 

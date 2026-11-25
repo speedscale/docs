@@ -13,12 +13,9 @@ signature then it initiates a passthrough request or a 404. Obtaining a good res
 Speedscale responder usually means tweaking the signature of the inbound request to match
 the signature of a request recorded in your snapshot.
 
-All requests contained in the `Mocks` section of the RRPair transform editor will be used for service
-virtualization. Whatever transformations you apply to these requests will affect their signature.
-Also, incoming requests will have the same transforms applied before signature matching. You can see
-the signature in the RRPair viewer.
+All requests contained in the `Mocks` section of the RRPair transform editor will be used for service virtualization. Whatever transformations you apply to these requests will affect their signature. Also, incoming requests will have the same transforms applied before signature matching. You can see the signature in the RRPair viewer. In the snapshot **Traffic** tab, select **Mocks**, open a request and select **Signature**. Select **Combined** to see every key at once.
 
-![signature](./modifying/signature-example.png)
+![The Signature tab of a recorded POST to banking-transactions with Combined selected, showing the http:host, http:method, http:queryparams, http:requestBodyJSON and http:url keys](./modifying/signature-example.png)
 
 As you change the signature you will see it update after the UI refreshes.
 
@@ -38,14 +35,13 @@ RRPair viewer.
   "http:url": "/v1/chat/completions"
 }
 ```
-This signature will match incoming requests with a host of `api.openapi.com`, a method of `POST`, etc.
-Let's imagine that you want the same response to be returned for all command types
-and not only for `POST`. To affect this change we would apply a `json_delete` transform
-to the signature. Here is an example transform chain:
+This signature will match incoming requests with a host of `api.openapi.com`, a method of `POST`, etc. Let's imagine that you want the same response to be returned for all command types and not only for `POST`. To affect this change we would apply a `delete_sig` transform to the signature. Here is an example transform chain:
 
 `All Traffic<->req_body()<-delete_sig("http:method")`
 
-![delete_ex](./modifying/delete-ex.png)
+To build it in the snapshot **Prepare** tab, select **Mocks**, then **New**. Set **Pull from** to **Request Body**, select **Add step**, choose **Delete from signature** and set `key` to `http:method`. The chain preview shows `Signature http:method = removed`. Select **Save and reanalyze** to apply the chain to the snapshot.
+
+![A Mocks chain in the Prepare tab that pulls from Request Body and runs Delete from signature with key http:method, with the preview showing Signature http:method = removed](./modifying/delete-ex.png)
 
 You can see the signature above update to no longer include the `http:method`.
 

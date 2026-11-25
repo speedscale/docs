@@ -16,7 +16,7 @@ The generator sends the token request straight to the token URL. The identity pr
 
 ## From the dashboard
 
-Open the snapshot's **Credentials** tab, select **Replace credentials** on the credential, choose **Fetch a fresh token** and **OAuth client credentials**, and fill in the token URL, client ID, scope and client secret. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you. Speedscale saves a credential blueprint that requests a fresh token in every replay of matching traffic. See [Replace credentials](/guides/replay/replace-credentials.md#fetch-a-fresh-token).
+Open the snapshot's **Prepare** tab, select **Replace credentials** on the credential's row, choose **Fetch a fresh token** and **OAuth client credentials**, and fill in the token URL, client ID, scope and client secret. For a recorded Microsoft Entra ID token, the token URL, scope and client ID are filled in for you. Speedscale saves a credential blueprint that requests a fresh token in every replay of matching traffic. See [Replace credentials](/guides/replay/replace-credentials.md#fetch-a-fresh-token).
 
 ![The Replace credentials wizard configuring OAuth client credentials](../../replay/replace-credentials/wizard-configure.png)
 

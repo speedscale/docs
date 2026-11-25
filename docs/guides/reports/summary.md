@@ -19,6 +19,6 @@ At a glance you should be able to see:
 * How long did the replay take?
 * If goals did were not met, what were they?
 
-![Summary](./screen-shot-2021-08-13-at-11.38.53-am.png)
+![The top of a passed report, with the snapshot, image tag and test config, the replay progress, and the Completed, Accuracy, Mocks and Goals checks](./summary.png)
 
 If a replay has low accuracy or unexpected behavior, inspect the failing requests in the report, then open the snapshot's **Prepare** tab to review credentials and transform chains. Authentication and time shifting may require [traffic transformation](/guides/transformation/overview.md). Preview changes in the chain editor, save the configuration, and replay again to check the result. For help with your configuration, ask in the [Speedscale Slack community](https://slack.speedscale.com) or [email support](mailto:support@speedscale.com).

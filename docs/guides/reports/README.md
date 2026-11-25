@@ -17,7 +17,7 @@ you can find reports sorted with the most recent at the top.
 
 Use search to find a specific report:
 
-![Reports Home](./screen-shot-2021-08-13-at-11.36.55-am.png)
+![The Reports list filtered to banking-gateway, with the snapshot, test config, duration, accuracy and status of each replay](./reports-list.png)
 
 Click into any report to see more detailed information.
 

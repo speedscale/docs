@@ -55,7 +55,7 @@ and [trusting TLS certificates](/getting-started/installation/sidecar/tls/#trust
 
 ### Analyze Traffic
 
-![Traffic](./beanstalk/traffic.png)
+![The Traffic viewer for a notification service, with its service map and inbound and outbound requests](./beanstalk/traffic.png)
 
 You should be able to see traffic in the Speedscale UI after a few minutes and now you can using this traffic to [create a snapshot](../../../guides/creating-a-snapshot.md).
 

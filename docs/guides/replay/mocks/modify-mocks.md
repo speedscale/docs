@@ -34,17 +34,41 @@ code ~/.speedscale/data/snapshots/{SNAPSHOT_ID}/raw.jsonl
 
 Each line in the `raw.jsonl` file represents a single request. Outbound request are turned into service mocks while inbound requests are turned into tests.
 
-Find the request you would like to modify, it will be a single line of JSON that you can edit with your text editor. To help clarify, here is an example raw file opened in Visual Studio Code:
+Find the request you would like to modify, it will be a single line of JSON that you can edit with your text editor. To help clarify, here is a shortened example raw file with two outbound requests:
 
-![Visual Studio Raw File](./modify-mocks/vscode-raw.png)
+```json
+{"msgType":"rrpair","resource":"orders-service","ts":"2026-11-03T12:00:01Z","l7protocol":"http","direction":"OUT","service":"orders-service","command":"GET","location":"/v1/orders/42","status":"200","http":{"req":{"url":"/v1/orders/42","method":"GET","host":"api.example.com","bodyBase64":""},"res":{"statusCode":200,"headers":{"Content-Type":["application/json"]},"bodyBase64":"eyJpZCI6NDIsInN0YXR1cyI6InNoaXBwZWQifQ=="}}}
+{"msgType":"rrpair","resource":"orders-service","ts":"2026-11-03T12:00:02Z","l7protocol":"http","direction":"OUT","service":"orders-service","command":"GET","location":"/v1/orders/43","status":"200","http":{"req":{"url":"/v1/orders/43","method":"GET","host":"api.example.com","bodyBase64":""},"res":{"statusCode":200,"headers":{"Content-Type":["application/json"]},"bodyBase64":"eyJpZCI6NDMsInN0YXR1cyI6InBlbmRpbmcifQ=="}}}
+```
 
 You will want to find the request (or group of requests) you want to edit in this file. The simplest way to do this is to search for the `location` you want to edit (aka Endpoint URI). Once you find the right endpoint you'll want to stay on that line and make edits.
 
 ## Select a Request to Modify
 
-Within the line you are editing, find this JSON location `.http.res.bodyBase64`. It's usually near the end. Take care not to edit the request body (`http.req.bodyBase64`) as they appear similar.
+Within the line you are editing, find this JSON location `.http.res.bodyBase64`. It's usually near the end. Take care not to edit the request body (`http.req.bodyBase64`) as they appear similar. Here is the first line from the example, formatted for readability with the response body highlighted:
 
-![Response Body Highlighted](./modify-mocks/vscode-bodybase64.png)
+```json {17}
+{
+  "msgType": "rrpair",
+  "direction": "OUT",
+  "service": "orders-service",
+  "command": "GET",
+  "location": "/v1/orders/42",
+  "http": {
+    "req": {
+      "url": "/v1/orders/42",
+      "method": "GET",
+      "host": "api.example.com",
+      "bodyBase64": ""
+    },
+    "res": {
+      "statusCode": 200,
+      "headers": {"Content-Type": ["application/json"]},
+      "bodyBase64": "eyJpZCI6NDIsInN0YXR1cyI6InNoaXBwZWQifQ=="
+    }
+  }
+}
+```
 
 Note that the response body is base64 encoded.
 
@@ -54,7 +78,30 @@ You want to modify the contents of `.http.res.bodyBase64` to match the new data 
 
 Now, insert the new string `Zm9vYmFy` into the `.http.res.bodyBase64` location:
 
-![New Response Body Inserted](./modify-mocks/vscode-insert-body.png)
+```json {17}
+{
+  "msgType": "rrpair",
+  "direction": "OUT",
+  "service": "orders-service",
+  "command": "GET",
+  "location": "/v1/orders/42",
+  "http": {
+    "req": {
+      "url": "/v1/orders/42",
+      "method": "GET",
+      "host": "api.example.com",
+      "bodyBase64": ""
+    },
+    "res": {
+      "statusCode": 200,
+      "headers": {"Content-Type": ["application/json"]},
+      "bodyBase64": "Zm9vYmFy"
+    }
+  }
+}
+```
+
+Keep the edited request on a single line in `raw.jsonl`; the formatting above is only for readability.
 
 ## Upload Snapshot
 
