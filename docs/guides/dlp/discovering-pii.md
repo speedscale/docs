@@ -54,7 +54,7 @@ The model is asked about two kinds of field:
 - fields that no pattern or key name recommends, such as a person's name under a vague key
 - credit-card, routing-number and IMEI fields whose evidence sits close to the suppression threshold, where the model's verdict replaces the count heuristic
 
-The model can be one you run on any server that speaks the OpenAI chat API, such as Ollama, vLLM or llama.cpp, with the `openai-compatible` provider. It can also be your own OpenAI or Anthropic account, with the `openai` or `anthropic` provider; see [Use your OpenAI or Anthropic account](#use-your-openai-or-anthropic-account).
+The model can be one you run on any server that speaks the OpenAI chat API, such as Ollama, vLLM or llama.cpp, with the `openai-compatible` provider. It can also be your own OpenAI or Anthropic account, with the `openai` or `anthropic` provider; see [Use your OpenAI or Anthropic account](#use-your-openai-or-anthropic-account). Or it can be a model service in your own cloud account: Amazon Bedrock, Azure OpenAI or Google Vertex AI; see [Use a model service in your cloud account](#use-a-model-service-in-your-cloud-account).
 
 ```bash
 proxymock recommendations list --in ./proxymock \
@@ -65,19 +65,32 @@ proxymock recommendations list --in ./proxymock \
 
 The same flags work on `proxymock web` and on `proxymock recommendations accept` and `reject`. Each flag falls back to an environment variable, so a CI job or an MCP client can enable the classifier without changing its command line.
 
+### When the model runs
+
+Asking the model adds time and model usage to an analysis, several minutes with a large model on your own server, so ordinary analysis never calls it. Analysis still applies the verdicts the model gave before, so its recommendations stay after a reanalysis.
+
+- `proxymock recommendations list` with the `--dlp-model-*` flags asks the model, since the flags are the request.
+- In `proxymock web`, started with the `--dlp-model-*` flags, the Recommendations view shows **Classify with the DLP model**. It warns that the run can take several minutes, then reanalyzes the selected recording with the model.
+- In the Speedscale dashboard, a snapshot's Prepare tab shows **Classify with the DLP model** for tenants with a DLP model. It warns the same way, then reanalyzes the snapshot with the model; the snapshot shows as in progress until it finishes.
+- From the command line, `speedctl analyze snapshot <snapshot-id> --classify-fields` starts the same Speedscale Cloud reanalysis. It fails with `no DLP model is configured for this tenant` when the tenant has none.
+
+Each run asks only about fields the model has not classified before.
+
 | Flag | Environment variable | Meaning |
 | --- | --- | --- |
-| `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`, `openai` or `anthropic`; setting it enables the classifier |
-| `--dlp-model-base-url` | `SPEEDSCALE_DLP_MODEL_BASE_URL` | API root of the model server, for example `http://localhost:11434/v1`; `openai-compatible` only |
+| `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`, `openai`, `anthropic`, `bedrock` or `azure-openai`. See [When the model runs](#when-the-model-runs). |
+| `--dlp-model-base-url` | `SPEEDSCALE_DLP_MODEL_BASE_URL` | API root of the model server, for example `http://localhost:11434/v1`, or the Azure OpenAI resource endpoint; `openai-compatible` and `azure-openai` only |
 | `--dlp-model` | `SPEEDSCALE_DLP_MODEL` | model id on that server or account |
-| `--dlp-model-api-key` | `SPEEDSCALE_DLP_MODEL_API_KEY` | key for the provider; required for `openai` and `anthropic`, optional for `openai-compatible` |
-| `--dlp-model-exposure` | `SPEEDSCALE_DLP_MODEL_EXPOSURE` | `samples` or `metadata`; the default is `samples` for `openai-compatible` and `metadata` for `openai` and `anthropic` |
+| `--dlp-model-api-key` | `SPEEDSCALE_DLP_MODEL_API_KEY` | key for the provider; required for `openai`, `anthropic` and `azure-openai`, optional for `openai-compatible`, not used for `bedrock` |
+| `--dlp-model-region` | `SPEEDSCALE_DLP_MODEL_REGION` | AWS region for `bedrock`; defaults to your AWS configuration |
+| `--dlp-model-api-version` | `SPEEDSCALE_DLP_MODEL_API_VERSION` | Azure OpenAI API version for `azure-openai`; defaults to `2024-10-21` |
+| `--dlp-model-exposure` | `SPEEDSCALE_DLP_MODEL_EXPOSURE` | `samples` or `metadata`; the default is `samples` for `openai-compatible` and `metadata` for every other provider |
 | `--dlp-adjudicator-model` | `SPEEDSCALE_DLP_ADJUDICATOR_MODEL` | optional second model on the same provider that decides grey-zone card, routing-number and IMEI fields |
 | none | `SPEEDSCALE_DLP_MODEL_REASONING_EFFORT` | passed to the server; `none` turns off a reasoning model's thinking where the server supports it. Leave it unset for `anthropic`, which has no `none` value |
 
 ### Recommended model
 
-Speedscale certifies `qwen3:14b` from the Ollama library, the Q4_K_M build with ID `bdbd181c33f2`, run with thinking turned off. Verdicts from it carry `dlpModelCertified: true`. Any other model still works, and its verdicts carry `dlpModelCertified: false`.
+Speedscale certifies `qwen3:14b` from the Ollama library, the Q4_K_M build with ID `bdbd181c33f2`, run with thinking turned off. It also certifies Claude Haiku 5.5 on Amazon Bedrock under the inference profile id `us.anthropic.claude-haiku-5-5`; see [Amazon Bedrock](#amazon-bedrock). Verdicts from either carry `dlpModelCertified: true`. Any other model still works, and its verdicts carry `dlpModelCertified: false`.
 
 Speedscale picked it on a labeled corpus of 2,269 recorded fields, 886 of them sensitive, with five sample values per field. The scores below are the model's own, before patterns, key names and the rules in [Results and the cache](#results-and-the-cache) take part:
 
@@ -151,9 +164,60 @@ Without sample values the model judges a field by its location alone, so a bare 
 
 A second model can decide the grey-zone card, routing-number and IMEI fields while a cheaper one classifies the rest. Name it with `--dlp-adjudicator-model`; it runs on the same provider and key. Published results favour a stronger second model over asking the same model again.
 
+### Use a model service in your cloud account
+
+If your captured traffic lives in your own AWS, Azure or Google Cloud account, the model service approved in that account can classify it, so model calls stay in the account you already chose for the traffic. These services run inside your cloud account but outside the cluster or machine proxymock reads traffic in, so they also default to `metadata` exposure. Whether sample values may go to a service in your own account is your call; pass `--dlp-model-exposure samples` to allow it.
+
+#### Amazon Bedrock
+
+```bash
+proxymock recommendations list --in ./proxymock \
+  --dlp-model-provider bedrock \
+  --dlp-model-region us-east-1 \
+  --dlp-model <model or inference profile id>
+```
+
+proxymock signs requests with the AWS default credential chain: environment variables, your shared profile and SSO login, or an instance or pod role, the same credentials `proxymock import` uses for buckets. It takes no API key. The region comes from `--dlp-model-region`, then `AWS_REGION` or your profile.
+
+The model id is a Bedrock model id or an inference profile id, such as one starting with `us.` or `eu.`. Some models can only be called through an inference profile; Bedrock then rejects the base model id with a message that on-demand throughput is not supported. The prefix of a cross-region profile decides which regions may serve the request, so pick it with your data residency rules in mind.
+
+proxymock streams answers through the Converse API. For a direct model call, grant `bedrock:InvokeModelWithResponseStream` on the foundation model ARN in your Region. For an inference profile, grant the same action on the profile ARN and on the underlying foundation model ARN in every Region the profile can route to. See the [Bedrock inference profile prerequisites](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-prereq.html).
+
+Speedscale certifies `us.anthropic.claude-haiku-5-5`, the US inference profile for Claude Haiku 5.5, which can route a request to us-east-1, us-east-2 or us-west-2. With patterns, key names and the rules in [Results and the cache](#results-and-the-cache) in front of it, it scored precision 0.977, recall 0.992 and F1 0.984 on the corpus in `samples` exposure. On its own it scored F1 0.994, and an instruction planted in one sample value changed 1 of its 883 correct sensitive verdicts. Qwen3 32B on Bedrock (`qwen.qwen3-32b-v1:0`) scored a similar F1 0.987 in the full pipeline, but a planted instruction changed 22.5% of its correct verdicts, so Speedscale does not certify it. Verdicts from the same Haiku model under any other id, such as the Anthropic API's `claude-haiku-5-5`, carry `dlpModelCertified: false`: its resistance to planted instructions was measured only through this profile.
+
+Confirm your account has access to the model. If you get `AccessDeniedException`, check the IAM resource grants and any service control policies for the destination Regions. proxymock caps each answer at 4,096 tokens, so a request does not reserve the model's full output quota.
+
+#### Azure OpenAI
+
+```bash
+SPEEDSCALE_DLP_MODEL_API_KEY=<resource key> proxymock recommendations list --in ./proxymock \
+  --dlp-model-provider azure-openai \
+  --dlp-model-base-url https://<resource>.openai.azure.com \
+  --dlp-model <deployment name>
+```
+
+`--dlp-model` is the name of your deployment, not the model name, and is used exactly as written. The key is one of the resource's keys, from Keys and Endpoint in the Azure portal; proxymock sends it in the `api-key` header. Requests use API version `2024-10-21` unless `--dlp-model-api-version` names another.
+
+#### Google Vertex AI
+
+proxymock has no Vertex provider of its own. Vertex AI serves Gemini models through an OpenAI-compatible endpoint, so use the `openai-compatible` provider with a Google Cloud access token as the key:
+
+```bash
+SPEEDSCALE_DLP_MODEL_API_KEY="$(gcloud auth application-default print-access-token)" \
+proxymock recommendations list --in ./proxymock \
+  --dlp-model-provider openai-compatible \
+  --dlp-model-base-url https://aiplatform.googleapis.com/v1/projects/<project>/locations/global/endpoints/openapi \
+  --dlp-model google/<model id> \
+  --dlp-model-exposure metadata
+```
+
+Pass `--dlp-model-exposure metadata` yourself: `openai-compatible` defaults to `samples`, because it is usually a server you run. An access token lasts one hour by default. A first analysis of a large workspace can outlast it, so for long runs put an OpenAI-compatible gateway that refreshes Google credentials, such as LiteLLM, in front of Vertex and point `--dlp-model-base-url` at the gateway. The principal behind the token needs permission to call Vertex AI models in that project.
+
+As with a vendor account, you choose the model and your agreement with the cloud provider governs the data. Verdicts carry `dlpModelCertified: false` unless the model is `us.anthropic.claude-haiku-5-5` on Bedrock.
+
 ### What the model receives
 
-The classifier sends one request per endpoint, with up to 16 fields in it. Exposure is `samples` by default for a model you run and `metadata` by default for a vendor provider.
+The classifier sends one request per endpoint, with up to 16 fields in it. Exposure defaults to `samples` with `openai-compatible` and to `metadata` with the other providers.
 
 | Sent | `samples` exposure | `metadata` exposure |
 | --- | --- | --- |
@@ -185,6 +249,8 @@ A recommendation the model proposed carries the tags `dlpClass`, `dlpReason`, `d
 
 A field the model could not classify keeps the result discovery gives without a model.
 
+The redaction rule a model recommendation creates labels each `REDACTED-` token with the model's class, so a masked field becomes, for example, `REDACTED-BANK_ACCOUNT_NUMBER-<hash>`, and [test data generation](./test-data-generation.md) regenerates it as that class. A value with a sensitive format of its own keeps its own label, so an email the model called a bank account number stays an email. `IP_ADDRESS` and `FREE_TEXT_PII` add no label, since neither has one format.
+
 A verdict that contradicts the rules discovery already applies gets no recommendation:
 
 - a street address or postal code inside a business object such as `store`, `office`, `clinic` or `warehouse`, the same objects key-name discovery skips
@@ -193,7 +259,19 @@ A verdict that contradicts the rules discovery already applies gets no recommend
 
 Verdicts are saved in `.proxymock/dlp-classifications.json` in the workspace, so each field is asked about once and a second analysis of unchanged traffic makes no model call. An adjudicator model's verdicts are saved beside it, in `.proxymock/dlp-classifications-adjudicator.json`. Changing the model or the exposure starts a new cache. Delete the files to classify every field again.
 
-Verdicts from the [recommended model](#recommended-model) carry `dlpModelCertified: true`, and verdicts from any other model carry `dlpModelCertified: false`. A model can call ordinary data sensitive, such as an order date or a product description, so review its proposals before you accept them, whichever model made them.
+Verdicts from a [certified model](#recommended-model) carry `dlpModelCertified: true`, and verdicts from any other model carry `dlpModelCertified: false`. A model can call ordinary data sensitive, such as an order date or a product description, so review its proposals before you accept them, whichever model made them.
+
+### Teach the classifier your data
+
+The model can misread what a field means, such as a hotel's address, an insurer named in a `payer` field, or a server's IP address. Your accept and reject decisions on its recommendations steer it, for your workspace only.
+
+- Rejecting a model recommendation asks why. **Not sensitive** records the field as not sensitive: the model is not asked about it again, and the same key on other endpoints, such as `Customer.FirstName` or `customer.first_name`, gets no recommendation either. **Sensitive, no rule needed** only hides the recommendation.
+- On the command line, `proxymock recommendations reject --id <id> --reason not-sensitive` does the same. Without `--reason`, the recommendation is only hidden.
+- Accepting a model recommendation records its class, so the same key on another endpoint is proposed with that class without asking the model.
+- Decisions on related fields, whose keys share a word such as `property` in `property.zip` and `Property.PostalCode`, go to the model as examples. An example carries the field's location and class, never a value, so examples are sent in `metadata` exposure too. A field whose examples change is asked again once.
+- A decision never overrides a card number, IBAN, routing number, SSN, email, MAC address, IMEI or VIN whose values match that class's pattern.
+
+Decisions are saved in `.proxymock/dlp-decisions.json` in the workspace, beside the verdict cache. They stay on your machine, apply to that workspace only, and train no model. Undoing a reject removes its decision. Delete the file to forget every decision.
 
 ## Why a value may not produce a recommendation
 
