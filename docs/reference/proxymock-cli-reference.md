@@ -603,6 +603,7 @@ proxymock recommendations reject --id 3f9a1c2e8b7d4056
 
 - `--in string` - Workspace directory holding the traffic to analyze (default `.`)
 - `--type string` - (`list`) Restrict to one kind: `transform` or `traffic`
+- `--reason string` - (`reject`) Why the recommendation is rejected: `not-sensitive` or `no-rule-needed`. `not-sensitive` on a DLP field classifier recommendation also records the field as not sensitive, so the classifier stops proposing it; see [Teach the classifier your data](/guides/dlp/discovering-pii#teach-the-classifier-your-data)
 - `--id string` - Recommendation id to accept or reject (from `recommendations list`)
 - `-o, --output string` - Console output format, one of `pretty`, `json`, `yaml`, or `csv` (default `json`)
 

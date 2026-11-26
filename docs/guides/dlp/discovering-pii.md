@@ -65,6 +65,17 @@ proxymock recommendations list --in ./proxymock \
 
 The same flags work on `proxymock web` and on `proxymock recommendations accept` and `reject`. Each flag falls back to an environment variable, so a CI job or an MCP client can enable the classifier without changing its command line.
 
+### When the model runs
+
+Asking the model adds time and model usage to an analysis, several minutes with a large model on your own server, so ordinary analysis never calls it. Analysis still applies the verdicts the model gave before, so its recommendations stay after a reanalysis.
+
+- `proxymock recommendations list` with the `--dlp-model-*` flags asks the model, since the flags are the request.
+- In `proxymock web`, started with the `--dlp-model-*` flags, the Recommendations view shows **Classify with the DLP model**. It warns that the run can take several minutes, then reanalyzes the selected recording with the model.
+- In the Speedscale dashboard, a snapshot's Prepare tab shows **Classify with the DLP model** for tenants with a DLP model. It warns the same way, then reanalyzes the snapshot with the model; the snapshot shows as in progress until it finishes.
+- From the command line, `speedctl analyze snapshot <snapshot-id> --classify-fields` starts the same Speedscale Cloud reanalysis. It fails with `no DLP model is configured for this tenant` when the tenant has none.
+
+Each run asks only about fields the model has not classified before.
+
 | Flag | Environment variable | Meaning |
 | --- | --- | --- |
 | `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`, `openai`, `anthropic`, `bedrock` or `azure-openai`; setting it enables the classifier |
@@ -238,6 +249,8 @@ A recommendation the model proposed carries the tags `dlpClass`, `dlpReason`, `d
 
 A field the model could not classify keeps the result discovery gives without a model.
 
+The redaction rule a model recommendation creates labels each `REDACTED-` token with the model's class, so a masked field becomes, for example, `REDACTED-BANK_ACCOUNT_NUMBER-<hash>`, and [test data generation](./test-data-generation.md) regenerates it as that class. A value with a sensitive format of its own keeps its own label, so an email the model called a bank account number stays an email. `IP_ADDRESS` and `FREE_TEXT_PII` add no label, since neither has one format.
+
 A verdict that contradicts the rules discovery already applies gets no recommendation:
 
 - a street address or postal code inside a business object such as `store`, `office`, `clinic` or `warehouse`, the same objects key-name discovery skips
@@ -247,6 +260,18 @@ A verdict that contradicts the rules discovery already applies gets no recommend
 Verdicts are saved in `.proxymock/dlp-classifications.json` in the workspace, so each field is asked about once and a second analysis of unchanged traffic makes no model call. An adjudicator model's verdicts are saved beside it, in `.proxymock/dlp-classifications-adjudicator.json`. Changing the model or the exposure starts a new cache. Delete the files to classify every field again.
 
 Verdicts from a [certified model](#recommended-model) carry `dlpModelCertified: true`, and verdicts from any other model carry `dlpModelCertified: false`. A model can call ordinary data sensitive, such as an order date or a product description, so review its proposals before you accept them, whichever model made them.
+
+### Teach the classifier your data
+
+The model can misread what a field means, such as a hotel's address, an insurer named in a `payer` field, or a server's IP address. Your accept and reject decisions on its recommendations steer it, for your workspace only.
+
+- Rejecting a model recommendation asks why. **Not sensitive** records the field as not sensitive: the model is not asked about it again, and the same key on other endpoints, such as `Customer.FirstName` or `customer.first_name`, gets no recommendation either. **Sensitive, no rule needed** only hides the recommendation.
+- On the command line, `proxymock recommendations reject --id <id> --reason not-sensitive` does the same. Without `--reason`, the recommendation is only hidden.
+- Accepting a model recommendation records its class, so the same key on another endpoint is proposed with that class without asking the model.
+- Decisions on related fields, whose keys share a word such as `property` in `property.zip` and `Property.PostalCode`, go to the model as examples. An example carries the field's location and class, never a value, so examples are sent in `metadata` exposure too. A field whose examples change is asked again once.
+- A decision never overrides a card number, IBAN, routing number, SSN, email, MAC address, IMEI or VIN whose values match that class's pattern.
+
+Decisions are saved in `.proxymock/dlp-decisions.json` in the workspace, beside the verdict cache. They stay on your machine, apply to that workspace only, and train no model. Undoing a reject removes its decision. Delete the file to forget every decision.
 
 ## Why a value may not produce a recommendation
 
