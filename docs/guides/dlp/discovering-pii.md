@@ -78,7 +78,7 @@ Each run asks only about fields the model has not classified before.
 
 | Flag | Environment variable | Meaning |
 | --- | --- | --- |
-| `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`, `openai`, `anthropic`, `bedrock` or `azure-openai`; setting it enables the classifier |
+| `--dlp-model-provider` | `SPEEDSCALE_DLP_MODEL_PROVIDER` | `openai-compatible`, `openai`, `anthropic`, `bedrock` or `azure-openai`. See [When the model runs](#when-the-model-runs). |
 | `--dlp-model-base-url` | `SPEEDSCALE_DLP_MODEL_BASE_URL` | API root of the model server, for example `http://localhost:11434/v1`, or the Azure OpenAI resource endpoint; `openai-compatible` and `azure-openai` only |
 | `--dlp-model` | `SPEEDSCALE_DLP_MODEL` | model id on that server or account |
 | `--dlp-model-api-key` | `SPEEDSCALE_DLP_MODEL_API_KEY` | key for the provider; required for `openai`, `anthropic` and `azure-openai`, optional for `openai-compatible`, not used for `bedrock` |
@@ -217,7 +217,7 @@ As with a vendor account, you choose the model and your agreement with the cloud
 
 ### What the model receives
 
-The classifier sends one request per endpoint, with up to 16 fields in it. Exposure is `samples` by default for a model you run and `metadata` by default for every other provider.
+The classifier sends one request per endpoint, with up to 16 fields in it. Exposure defaults to `samples` with `openai-compatible` and to `metadata` with the other providers.
 
 | Sent | `samples` exposure | `metadata` exposure |
 | --- | --- | --- |
