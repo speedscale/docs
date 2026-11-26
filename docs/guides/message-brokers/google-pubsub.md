@@ -130,6 +130,29 @@ Set `"loop": true` instead of `passes` to serve without end. A `--pubsub-passes`
 
 The first pass sends the messages as recorded. Every later pass sends them with new ack IDs and new message IDs, so a subscriber that deduplicates on the message ID processes them again. Each pass keeps the recorded gaps between messages unless you also use `--grpc-streaming-immediate`. A subscriber that deduplicates on a field inside the message data still sees the recorded data on every pass.
 
+### Deliver faster or slower than recorded
+
+The mock sends each `StreamingPull` delivery after the gap recorded before it. To replay the deliveries at a different speed, multiply every recorded gap:
+
+```bash
+proxymock mock --in proxymock/recorded-<timestamp> --pubsub-passes loop --pubsub-gap-multiple 0.5
+```
+
+A multiple of `0.5` delivers twice as fast as recorded, `2` delivers at half speed, and `1` keeps the recorded pace. The multiple applies to every pass, including `loop`. In a test config, set `gapMultiple` next to `passes`, which also works for a replay in your cluster:
+
+```json
+{
+  "responder": {
+    "pubsub": {
+      "loop": true,
+      "gapMultiple": 0.5
+    }
+  }
+}
+```
+
+The multiple must be a number greater than zero, and the test config validation rejects `0`, negative numbers, `NaN` and `Infinity`. A `--pubsub-gap-multiple` flag wins over the test config. `--grpc-streaming-immediate` wins over the multiple and sends each delivery as soon as the subscriber's flow control allows. A latency from a chaos or fault rule is added after the gap is scaled, so `--pubsub-gap-multiple 0.5` with a 400ms latency turns a recorded 600ms gap into 700ms. The multiple paces Pub/Sub `StreamingPull` only, not other gRPC streams.
+
 ## Mock a Pub/Sub publisher
 
 When the service under test publishes to Pub/Sub, the mock answers its `Publish` calls by topic instead of by signature. A client library batches messages by count, size and delay, and messages often carry timestamps or IDs, so a signature match of the whole request would miss.

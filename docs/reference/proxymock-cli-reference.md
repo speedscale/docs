@@ -152,6 +152,7 @@ proxymock mock --map 65432=localhost:5432
 - `--fault stringArray` - Inject faults as `'<regexp>:action=value[,...]'`; a rate alone injects intermittent 503s
 - `--grpc-streaming-immediate` - Send native gRPC stream messages immediately instead of with their recorded timing
 - `--pubsub-passes string` - Serve each Google Pub/Sub subscription's recorded messages this many times, or `loop` to serve them without end, each pass after the first with new ack IDs and message IDs (see [Google Pub/Sub](../guides/message-brokers/google-pubsub.md#serve-more-than-the-recorded-volume))
+- `--pubsub-gap-multiple string` - Multiply every recorded gap between Google Pub/Sub `StreamingPull` deliveries, in every pass: `0.5` delivers twice as fast and `2` at half speed; `--grpc-streaming-immediate` wins over it (see [Google Pub/Sub](../guides/message-brokers/google-pubsub.md#deliver-faster-or-slower-than-recorded))
 - `--health-port int` - Port to expose proxymock's own readiness endpoint
 - `--in strings` - Directories to read mock files from recursively (default current directory)
 - `--log-to string` - File path to redirect all proxymock output to
