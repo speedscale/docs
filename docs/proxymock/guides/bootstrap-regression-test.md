@@ -484,6 +484,8 @@ mock-lab itself ignores `tutorial/*/proxymock/` so that tutorial readers start c
 
 Check the recording, blueprints, and baseline for credentials and personal data before you commit them. Run `sh tutorial/go/scripts/regression-gate.sh` as a CI step from the mock-lab root and retain `tutorial/go/proxymock/results/` as a job artifact. See [Gate CI on replay results](./replay-verdicts.md) and [CI/CD](./cicd.md).
 
+To have your agent set up the whole loop instead, with a readiness-graded gate on every change and nightly in CI and later a daily replay in the service's cluster, see [Validate a service continuously](./continuous-validation.md).
+
 ## If it goes wrong
 
 * **The inventory finds nothing but the code.** The agent writes the requests itself from the routes. Point it at the service's README or tests if it misses a route.

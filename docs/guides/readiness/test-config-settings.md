@@ -180,4 +180,4 @@ Push an edited config with the CLI, or edit `proxymock/testconfigs/<name>.json` 
 speedctl put testconfig my_config.json
 ```
 
-The scorecard is graded by the Speedscale cloud analyzer when the report completes; local and cloud-free replays are not graded, so the `readiness` section has no effect on them.
+The Speedscale cloud analyzer grades a report when it completes, and proxymock grades a local replay with the same grader. On a local replay, the verdict sets the exit code only when this section marks a family as blocking. A replay that runs in a cluster without Speedscale cloud is not graded, so the section has no effect on it.
