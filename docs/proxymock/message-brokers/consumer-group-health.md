@@ -1,7 +1,7 @@
 ---
 title: Kafka consumer-group health and kafka-report
 description: "Report how your app's Kafka consumer groups behaved in a proxymock recording or a Speedscale snapshot: members, rebalances, per-partition lag and commit lag, and findings for consumer lag, stuck partitions, poll timeouts, offset resets and repeated rebalances, with no broker access."
-sidebar_label: Consumer-group health
+sidebar_label: Kafka consumer-group health
 ---
 
 import SnapshotKafkaImage from './consumer-group-health/snapshot-kafka.jpg';
@@ -14,9 +14,9 @@ It is built for the problems a broker-side lag graph shows but cannot explain: a
 
 ## Record consumer traffic
 
-Record your app while it consumes, as described in [Record Kafka traffic](./record.md). The report reads the consumer-group calls a client makes: `JoinGroup`, `SyncGroup`, `Heartbeat`, `LeaveGroup` and `ConsumerGroupHeartbeat` for membership, and `Fetch`, `ListOffsets`, `OffsetFetch` and `OffsetCommit` for positions. Both the classic group protocol and the KIP-848 consumer protocol (`group.protocol=consumer`) are supported.
+Record your app while it consumes, as described in [Record Kafka traffic](./record/kafka.md). The report reads the consumer-group calls a client makes: `JoinGroup`, `SyncGroup`, `Heartbeat`, `LeaveGroup` and `ConsumerGroupHeartbeat` for membership, and `Fetch`, `ListOffsets`, `OffsetFetch` and `OffsetCommit` for positions. Both the classic group protocol and the KIP-848 consumer protocol (`group.protocol=consumer`) are supported.
 
-In Kubernetes, record with the Speedscale operator as usual, with no `--map` setup; see [Kubernetes and eBPF](../../guides/message-brokers/kafka.md#kubernetes) and [In a snapshot](#in-a-snapshot).
+In Kubernetes, record with the Speedscale operator as usual, with no `--map` setup; see [Record Kafka traffic in a cluster](./record/kafka.md#in-a-cluster) and [In a snapshot](#in-a-snapshot).
 
 ## From the CLI or an AI assistant
 
@@ -120,7 +120,7 @@ With `-o json`, or in `kafka-report.json`, the report has `caveat`, `start`, `en
 
 ## Related
 
-- [Record Kafka traffic](./record.md)
-- [Mock a Kafka broker](./mock-kafka.md)
-- [Replay Kafka traffic](./replay.md)
+- [Record Kafka traffic](./record/kafka.md)
+- [Mock a Kafka broker](./mock-a-broker.md#kafka)
+- [Replay Kafka records to a consumer](./test-a-consumer.md#kafka)
 - [MCP tools reference](../how-it-works/mcp-tools.md)

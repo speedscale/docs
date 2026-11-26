@@ -8,22 +8,18 @@ sidebar_position: 1
 
 Message brokers are a critical component of modern distributed systems, facilitating asynchronous communication between services. Load testing message broker integrations requires special considerations since the interaction patterns differ from traditional HTTP-based APIs.
 
-Speedscale provides specialized tooling to help you load test applications that integrate with message brokers by:
+Speedscale helps you test applications that integrate with message brokers by:
 
 - Capturing message broker traffic at the network level
-- Extracting message payloads from captured traffic
-- Converting consumer-side traffic into producer-side load drivers
-- Replaying realistic message patterns with proper timing and ordering
+- Mocking the broker from the recording, so the app runs without one
+- Turning the messages a consumer received into publishes to a real broker, so the consumer receives them again
+- Replaying realistic message patterns with their recorded timing and ordering
+
+The [message brokers](../../proxymock/message-brokers/index.md) section of the proxymock docs covers recording, mocking, testing and credentials for each broker, with a [support table](../../proxymock/message-brokers/index.md#what-is-supported). The guides in this section cover replays in your cluster from Speedscale snapshots.
 
 ## Load Testing Approaches
 
-:::note Protocol Support
-
-For HTTP or gRPC-based protocols (such as AWS SQS, Google Pub/Sub, Azure Service Bus), both Approach 1 (virtualized) and Approach 2 (real broker) are fully supported through Speedscale's standard replay capabilities. However, for Kafka and RabbitMQ (AMQP protocol), only Approach 2 is available, requiring custom load driver scripts.
-
-:::
-
-There are two fundamental approaches to load testing applications that utilize message brokers:
+There are two fundamental approaches to load testing applications that use message brokers, and Speedscale supports both for Kafka, RabbitMQ (AMQP 0.9.1), Amazon MQ for RabbitMQ, Google Pub/Sub and Redis Pub/Sub. For brokers with an HTTP API, such as Amazon SQS, the broker is mocked like any other API.
 
 ### Approach 1: Virtualized Message Broker
 
@@ -47,11 +43,7 @@ graph LR
 - Gives testers a false sense of security by narrowing the problem scope too much
 - Misses real-world issues like network latency, broker backpressure, connection pooling, and rebalancing
 
-:::note
-
-This approach is available for HTTP or gRPC-based brokers, and for Kafka and RabbitMQ (AMQP 0.9.1), which Speedscale can mock from recorded traffic.
-
-:::
+With Speedscale, this is a replay with the broker mocked. See [Mock a broker](../../proxymock/message-brokers/mock-a-broker.md) for what each mock does and does not simulate.
 
 ### Approach 2: Real Message Broker with Load Generator
 
@@ -77,90 +69,36 @@ graph LR
 - More complex test environment setup
 - Higher resource requirements
 
+With Speedscale, this is a replay that publishes the recorded deliveries to the broker. See [Test a consumer](../../proxymock/message-brokers/test-a-consumer.md).
+
 ### Speedscale's Approach
 
-**Speedscale supports Approach 2** because it provides more realistic results. For HTTP/gRPC-based brokers, Speedscale also supports Approach 1 through standard replay capabilities. However, for Kafka and RabbitMQ (AMQP protocol), only Approach 2 is available, requiring custom load driver scripts. By using real message brokers during load testing, you can:
+Use Approach 2 when you can, because it gives more realistic results. By using real message brokers during load testing, you can:
 
 - Uncover real-world [performance issues](./performance-issues.md) before they reach production
 - Test how your application handles broker-specific behaviors like consumer group rebalancing or partition reassignment
 - Validate that your application can handle the actual network latency and overhead of broker communication
 - Ensure your monitoring and observability work correctly with real broker metrics
 
+Use Approach 1 for fast, repeatable tests in development and CI, where a broker would be slow or impossible to run.
+
 ## Supported Message Brokers
 
-Speedscale currently supports the following message brokers:
-
-### Kafka
-
-Support for replaying Kafka traffic through open source load generation. Speedscale can capture both Produce and Fetch operations, allowing you to extract messages and create custom load drivers.
-
-[Learn how to replay Kafka traffic](./kafka.md)
-
-### RabbitMQ (AMQP)
-
-Full support for RabbitMQ (AMQP 0.9.1), including record, mock and replay. A replay publishes your consumer's recorded deliveries to the broker so it consumes them again, and a mock stands in for the broker in development and CI.
-
-[Learn how to replay RabbitMQ traffic](./rabbitmq.md)
-
-### AWS Simple Queue Service (SQS)
-
-Full support for AWS SQS. Since SQS uses HTTP-based APIs, you can capture and replay SQS traffic using standard Speedscale replay capabilities. Message extraction and custom load driver approaches similar to Kafka and RabbitMQ can also be applied.
-
-[Learn how to replay AWS SQS traffic](./aws-sqs.md)
-
-### Google Pub/Sub
-
-The Google Cloud client libraries call Pub/Sub over gRPC. Publish and acknowledge calls are captured, mocked and replayed as gRPC. A subscriber can be [mocked](./google-pubsub.md#mock-a-pubsub-subscriber) from the messages its `StreamingPull` and `Pull` calls received, and driven in replay by republishing them.
-
-[Learn how to replay Google Pub/Sub traffic](./google-pubsub.md)
-
-### AWS Kinesis
-
-Full support for AWS Kinesis Data Streams. Since Kinesis uses HTTP-based APIs and provides a Kafka-compatible interface, you can capture and replay Kinesis traffic using standard Speedscale replay capabilities or Kafka client libraries. Message extraction and custom load driver approaches similar to Kafka can also be applied.
-
-[Learn how to replay AWS Kinesis traffic](./aws-kinesis.md)
-
-### AWS Kinesis Data Firehose
-
-Full support for AWS Kinesis Data Firehose. Since Firehose uses HTTP-based APIs, you can capture and replay Firehose traffic using standard Speedscale replay capabilities. Message extraction and custom load driver approaches similar to SQS can also be applied.
-
-[Learn how to replay AWS Kinesis Data Firehose traffic](./aws-kinesis-data-firehose.md)
-
-### AWS Simple Notification Service (SNS)
-
-Full support for AWS SNS. Since SNS uses HTTP-based APIs, you can capture and replay SNS traffic using standard Speedscale replay capabilities. Message extraction and custom load driver approaches similar to SQS can also be applied.
-
-[Learn how to replay AWS SNS traffic](./aws-sns.md)
-
-### Microsoft Azure Service Bus
-
-Partial support. Calls to the Service Bus HTTPS REST API are captured, mocked and replayed as HTTP. AMQP 1.0, which the Azure SDK messaging clients use, is not supported yet.
-
-[Learn how to replay Azure Service Bus traffic](./azure-service-bus.md)
-
-### Azure Event Hubs
-
-Full support for Azure Event Hubs. Event Hubs provides a Kafka-compatible API, allowing you to use standard Kafka client libraries. Speedscale can capture and replay Event Hubs traffic using Kafka-compatible approaches.
-
-[Learn how to replay Azure Event Hubs traffic](./azure-event-hubs.md)
-
-### Apache Pulsar
-
-Partial support. Applications that reach Pulsar through a Kafka-compatible endpoint, such as Kafka-on-Pulsar, are handled as Kafka traffic. The native Pulsar binary protocol is not supported yet.
-
-[Learn how to replay Apache Pulsar traffic](./apache-pulsar.md)
-
-### Apache ActiveMQ
-
-Not supported yet. The ActiveMQ messaging protocols (OpenWire, AMQP 1.0, STOMP and MQTT) are not decoded. HTTP calls to a broker are handled as ordinary HTTP.
-
-[See what works with Apache ActiveMQ](./apache-activemq.md)
-
-### Amazon MQ
-
-Amazon MQ for RabbitMQ is supported as AMQP 0.9.1 over TLS on port 5671: Speedscale records, mocks and replays it as it does any [RabbitMQ](./rabbitmq.md) broker. Amazon MQ for ActiveMQ is not supported yet.
-
-[Learn how to record, mock and replay Amazon MQ traffic](./amazon-mq.md)
+| Broker | Guide | How it is supported |
+| --- | --- | --- |
+| Kafka | [Kafka](./kafka.md) | Recorded, mocked, and replayed by producing recorded `Fetch` responses |
+| RabbitMQ (AMQP 0.9.1) | [RabbitMQ](./rabbitmq.md) | Recorded, mocked, and replayed by publishing recorded deliveries |
+| Amazon MQ for RabbitMQ | [Amazon MQ](./amazon-mq.md) | As RabbitMQ, over AMQPS on 5671. Amazon MQ for ActiveMQ is not supported yet. |
+| Google Pub/Sub | [Google Pub/Sub](./google-pubsub.md) | Mock recorded pull deliveries to test retry behavior, or republish them to a test topic to see if your subscriber keeps up. Push deliveries replay as inbound HTTP. |
+| Redis Pub/Sub | [Redis Pub/Sub](../../proxymock/message-brokers/record/redis-pubsub.md) | Recorded, mocked, and replayed with `PUBLISH` |
+| Amazon SQS | [AWS SQS](./aws-sqs.md) | HTTP API: recorded, mocked and replayed as HTTP |
+| Amazon SNS | [AWS SNS](./aws-sns.md) | HTTP API: recorded, mocked and replayed as HTTP |
+| Amazon Kinesis Data Streams | [AWS Kinesis](./aws-kinesis.md) | HTTP API: recorded, mocked and replayed as HTTP |
+| Amazon Data Firehose | [AWS Kinesis Data Firehose](./aws-kinesis-data-firehose.md) | HTTP API: recorded, mocked and replayed as HTTP |
+| Azure Event Hubs | [Azure Event Hubs](./azure-event-hubs.md) | Through its Kafka endpoint, as Kafka. The AMQP 1.0 SDKs are not supported yet. |
+| Azure Service Bus | [Azure Service Bus](./azure-service-bus.md) | The HTTPS REST API is handled as HTTP. The SDKs use AMQP 1.0, which is not supported yet. |
+| Apache Pulsar | [Apache Pulsar](./apache-pulsar.md) | Kafka-compatible endpoints are recorded as Kafka. The native Pulsar protocol is not supported yet. |
+| Apache ActiveMQ | [Apache ActiveMQ](./apache-activemq.md) | Not supported yet: OpenWire, AMQP 1.0, STOMP and MQTT are not decoded |
 
 ## Key Concepts
 
@@ -168,21 +106,18 @@ Amazon MQ for RabbitMQ is supported as AMQP 0.9.1 over TLS on port 5671: Speedsc
 
 Message brokers typically use long-lived connections and polling patterns rather than simple request-response cycles. Understanding these patterns is essential for effective load testing:
 
-- **Polling vs Push**: Most broker clients poll for messages rather than receiving pushed notifications
+- **Polling vs Push**: Kafka and SQS clients poll for messages, while RabbitMQ, Pub/Sub `StreamingPull` and Redis subscribers have them pushed on an open connection
 - **Protocol Complexity**: Broker protocols include heartbeats, metadata requests, and other internal operations
+- **Direction**: the client opens the connection, so even the messages a consumer receives are outbound traffic, which a replay mocks unless you [choose them as tests](../../proxymock/guides/choose-replay-tests.md)
 - **Message Ordering**: Maintaining proper message ordering during replay may require special handling
 
 ### Load Testing Strategy
 
 When load testing message broker integrations:
 
-1. **Use Standard Speedscale Replay** (for HTTP/gRPC-based brokers): For brokers using HTTP or gRPC protocols (AWS SQS, Google Pub/Sub, Azure Service Bus, etc.), use Speedscale's standard replay capabilities. Simply capture traffic, create a snapshot, and run a replay - no custom scripts needed.
-
-2. **Use Custom Load Driver Scripts** (optional for Kafka and RabbitMQ): Speedscale replays recorded Kafka Fetches and RabbitMQ deliveries natively. Write a custom load driver when you need full control over pacing or message content:
-   - **Capture Production Traffic**: Use Speedscale to capture real message patterns and timing
-   - **Extract Payloads**: Use `speedctl extract data` to pull message contents from captures
-   - **Build Load Drivers**: Create simple producer clients that replay extracted messages
-   - **Scale and Iterate**: Adjust message rates and patterns to test different load scenarios
+1. **Replay natively** for Kafka, RabbitMQ, Amazon MQ, Google Pub/Sub and Redis: choose the consumer's recorded deliveries as the replay's tests, and the replay publishes them to the broker at the recorded pace or faster. See [Pace and load](../../proxymock/message-brokers/test-a-consumer.md#pace-and-load).
+2. **Use standard replay** for brokers with an HTTP API, such as Amazon SQS: capture traffic, create a snapshot, and run a replay, with no custom scripts.
+3. **Write a custom load driver** when you need full control over pacing or message content: extract the recorded messages with `speedctl extract data` and publish them with a small producer. See [Write your own load driver](../../proxymock/message-brokers/write-your-own-load-driver.md).
 
 ## Getting Started
 
@@ -190,12 +125,8 @@ To begin load testing your message broker integrations:
 
 1. Install [speedctl](/reference/glossary.md#speedctl)
 2. [Create a snapshot](/guides/creating-a-snapshot.md) of your application traffic
-3. Follow the broker-specific guide for your message broker:
-   - **Kafka Protocol**: [Kafka](./kafka.md), [AWS Kinesis](./aws-kinesis.md), [Azure Event Hubs](./azure-event-hubs.md), [Apache Pulsar](./apache-pulsar.md) (Kafka-compatible endpoint)
-   - **AMQP Protocol**: [RabbitMQ](./rabbitmq.md) (AMQP 0.9.1), [Amazon MQ](./amazon-mq.md) (RabbitMQ brokers)
-   - **gRPC**: [Google Pub/Sub](./google-pubsub.md)
-   - **HTTP-based**: [AWS SQS](./aws-sqs.md), [AWS SNS](./aws-sns.md), [Azure Service Bus](./azure-service-bus.md)
-4. Build and run your load driver (if using custom approach) or start a standard replay
+3. Follow the broker-specific guide for your message broker, from the table above
+4. Start a replay, or build and run your load driver if you use the custom approach
 
 ## Need Help?
 

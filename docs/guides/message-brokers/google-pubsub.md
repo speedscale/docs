@@ -4,6 +4,16 @@ description: "Capture, mock and replay Google Pub/Sub traffic with Speedscale an
 sidebar_position: 11
 ---
 
+## Choose a workflow
+
+| If you want to | Start here |
+| --- | --- |
+| Capture a publisher or subscriber on your machine | [Record Google Pub/Sub traffic](../../proxymock/message-brokers/record/google-pubsub.md) |
+| Check retry behavior without a broker | [Mock a Pub/Sub subscriber](#mock-a-pubsub-subscriber) |
+| See whether a subscriber keeps up under load | [Republish recorded deliveries](#drive-a-subscriber-by-republishing) and [check the subscriber's backlog and acknowledgements](#check-that-the-subscriber-kept-up) |
+| Check what a publisher sent | [Catch a publisher regression](#catch-a-publisher-regression) |
+| Replay a push subscriber's HTTP handler | [Push subscriptions](#push-subscriptions) |
+
 ## Background
 
 The Google Cloud client libraries talk to Pub/Sub over gRPC, on `pubsub.googleapis.com:443` or a regional endpoint, so Speedscale records Pub/Sub calls as gRPC calls. The PHP library falls back to the REST API when its gRPC extension is missing, and some clients are configured to use REST. Those calls are recorded as HTTP, and the mock and republish handle them as they handle the gRPC calls. See [REST clients](#rest-clients).
@@ -325,7 +335,7 @@ In a replay that republished messages, a goal on a Pub/Sub metric the replay cou
 
 ### Load test a subscriber
 
-Each message is published at the time it arrived in the recording, so the gaps between deliveries match production. To publish faster or slower, set the stage's request delay to a multiple of the recorded time: `0.5` halves every gap. To multiply the volume, raise the number of vUsers: each vUser publishes the whole recording again. With proxymock, `--vus` and `--times` do the same. See [load patterns](../load-patterns.md).
+A virtual-user stage with no request delay publishes as fast as it can. Set the stage's request delay to `RECORDED` to preserve the gaps between recorded deliveries or use `MULTIPLE` to scale them. A multiple of `0.5` halves every gap. Raise the number of vUsers to increase volume. Each vUser publishes the entire recording again. With proxymock, use `--vus` for concurrency or `--times` for repetitions. See [Pace and load](../../proxymock/message-brokers/test-a-consumer.md#pace-and-load).
 
 To find the rate your subscriber can sustain, raise the load until the backlog stops draining. Goals on `pubsubBacklogEnd`, `pubsubOldestUnackedAgeMax` or `pubsubAckLatencyP95` fail the replay at the point your subscriber falls behind.
 

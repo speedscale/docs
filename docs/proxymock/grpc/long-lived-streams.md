@@ -64,6 +64,8 @@ A live stream can run as long as the recorded stream plus five minutes. The obse
 
 ### Replaying a long-lived stream
 
+To test a Google Pub/Sub subscriber, [republish its recorded deliveries](../../guides/message-brokers/google-pubsub.md#drive-a-subscriber-by-republishing) through a test broker. The subscriber opens its own stream and acknowledges the resulting messages.
+
 Replay starts the stream from its first part. It sends the first part's requests in their recorded order, waits for the responses that part recorded, and then leaves the stream. It compares every response of the first part by ordinal. When the first part was still open, the terminal check passes if the replayed stream was also still open at that point, and fails if the server ended it with a status. Responses that arrive after the first part's last response belong to later parts and are not compared.
 
 Later parts are not replayed as calls of their own. Replay skips them with one log line per stream, and they are not counted as failed or excluded calls.

@@ -438,16 +438,28 @@ const sidebars = {
           "items": [
             {
               "type": "category",
-              "label": "Kafka with proxymock",
+              "label": "With proxymock",
               "link": {
                 "type": "doc",
-                "id": "proxymock/kafka/index"
+                "id": "proxymock/message-brokers/index"
               },
               "items": [
-                "proxymock/kafka/record",
-                "proxymock/kafka/consumer-group-health",
-                "proxymock/kafka/mock-kafka",
-                "proxymock/kafka/replay"
+                {
+                  "type": "category",
+                  "label": "Record your broker",
+                  "items": [
+                    "proxymock/message-brokers/record/kafka",
+                    "proxymock/message-brokers/record/rabbitmq",
+                    "proxymock/message-brokers/record/google-pubsub",
+                    "proxymock/message-brokers/record/redis-pubsub"
+                  ],
+                  "collapsed": true
+                },
+                "proxymock/message-brokers/mock-a-broker",
+                "proxymock/message-brokers/test-a-consumer",
+                "proxymock/message-brokers/connect-to-the-broker",
+                "proxymock/message-brokers/consumer-group-health",
+                "proxymock/message-brokers/write-your-own-load-driver"
               ],
               "collapsed": true
             },
