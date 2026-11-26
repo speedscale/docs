@@ -59,7 +59,7 @@ Select **Replace credentials** on the credential's row. The wizard has four step
 
 ![The Save step: the blueprint name, what the replay will do, and the traffic it applies to](./replace-credentials/wizard-save.png)
 
-The Save step describes the blueprint in plain words under **What the replay will do**, and **View as a transform chain** shows the exact chain it adds. Values you save as constants are masked there. **Name** is filled in with a default such as `Fetch token for orders-api` that follows your method and scope until you type your own. The name labels the blueprint in the Credentials tab, on reports and in replay events; it does not change what the blueprint does.
+The Save step describes the blueprint in plain words under **What the replay will do**, and **View as a transform chain** shows the exact chain it adds. Values you save as constants are masked there. **Name** is filled in with a default such as `Fetch token for orders-api` that follows your method and scope until you type your own. The name labels the blueprint on the Prepare tab, on reports and in replay events; it does not change what the blueprint does.
 
 You can also open the wizard from a replay report: from the **Credentials in this replay** card on the Overview tab, or from **Fix with Replace credentials** on an expired-JWT recommendation.
 
@@ -93,6 +93,37 @@ The replay requests a new token from the issuer, caches it, and sends `Authoriza
 - **Token field in the response**: the JSON path of the token in the response, `access_token` by default. Use `header:<name>` to read a response header instead.
 - **Header**: the request header that carries the credential, `Authorization` by default.
 - **Reuse a token for**: how long to reuse a token when the response has no `expires_in`, as a duration such as `10m`. The default is 5 minutes.
+
+#### Token requests for common identity providers
+
+Each of these goes into the **curl command** source. Store the long-lived value as a Kubernetes Secret and keep only its reference in the command.
+
+**OAuth refresh token.** For a token issued to a user, trade a refresh token for a new access token at the provider's token endpoint. Add `&client_secret=${{secret:orders-client/client_secret}}` for a confidential client. The token field is `access_token`.
+
+```bash
+curl -X POST https://auth.example.com/oauth/token \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=refresh_token&refresh_token=${{secret:orders-user/refresh_token}}&client_id=web-app'
+```
+
+**Amazon Cognito.** A user pool refreshes a user's tokens with `InitiateAuth` and `REFRESH_TOKEN_AUTH`. Set **Token field in the response** to `AuthenticationResult.IdToken`, or `AuthenticationResult.AccessToken` when your API checks access tokens, and set **Reuse a token for** below the pool's token lifetime, such as `50m` for the default hour. App clients with a client secret are not supported: they need a `SECRET_HASH` computed for each user.
+
+```bash
+curl -X POST https://cognito-idp.us-east-1.amazonaws.com/ \
+  -H 'Content-Type: application/x-amz-json-1.1' \
+  -H 'X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth' \
+  -d '{"AuthFlow":"REFRESH_TOKEN_AUTH","ClientId":"<app client id>","AuthParameters":{"REFRESH_TOKEN":"${{secret:cognito-user/refresh_token}}"}}'
+```
+
+**Username and password login.** For a login endpoint the replay can reach, post a replay user's credentials and read the token from the answer.
+
+```bash
+curl -X POST https://orders.example.com/api/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"svc-replay","password":"${{secret:orders-login/password}}"}'
+```
+
+proxymock web has these three as sources of their own, with a form for each. See [In proxymock web](#in-proxymock-web).
 
 The client credentials, curl and Postman sources all build a [`token_fetch`](/guides/transformation/transforms/token_fetch.md) transform. Only values that already start with `Bearer ` are replaced, so a Basic auth header on the same host is left alone, and a request recorded without the header goes out without it. If a curl command or Postman request carries a password or key in plain text, the Save step warns you to replace it with a secret reference.
 
@@ -205,6 +236,7 @@ proxymock web has the same Replace credentials wizard for a local workspace. On 
 The kinds and methods are the same as in the dashboard: **Swap credentials** for Basic auth, **Fetch a fresh token** and **Paste a replacement** for bearer tokens, and **Resign the recorded token** for JWTs. A few things work differently:
 
 - **Secrets stay in your workspace.** When you type a client secret or paste a token, proxymock web writes it to `proxymock/secrets/<name>/<key>` and the blueprint keeps only the `${{secret:name/key}}` reference. There is no Constant option. In a curl command or Postman request, write `${{secret:name/key}}` yourself, as in the dashboard. See [proxymock Secrets](/proxymock/guides/secrets.md).
+- **Three more sources.** **OAuth refresh token**, **Amazon Cognito** and **Username and password login** build the token requests in [Token requests for common identity providers](#token-requests-for-common-identity-providers) from a form, and save the refresh token or password to `proxymock/secrets`. For a recorded Cognito user token, the wizard picks **Amazon Cognito** and fills in the region, app client and whether to send the ID or access token. A Cognito answer carries the token's lifetime, so no reuse time is needed.
 - **Test token request** sends the token request once from your machine and reports whether a token came back and how long it is valid. The token itself is never shown. It is not available for the auth call in the recording.
 - **Basic auth** swaps each recorded user for a replay user from a dataframe you edit. See [Basic auth credentials swap](/proxymock/guides/credentials-swap.md).
 - **Scope** is a host and a path prefix. Leave both empty and the blueprint applies to every request in the workspace.
@@ -221,7 +253,7 @@ Blueprints saved by older proxymock versions that fetched a token from a recorde
 | `invalid_scope` | The scope is wrong, or the client may not request it. | For Microsoft Entra ID, use the API's application ID URI followed by `/.default`. |
 | The token endpoint is unreachable | The generator cannot reach the token URL: DNS, a NetworkPolicy, a firewall or a missing egress proxy. | Allow egress from the replay namespace to the token host. The token request honors the generator's `HTTPS_PROXY`, `HTTP_PROXY` and `NO_PROXY` settings. |
 | The generator pod stays in `ContainerCreating` with a `FailedMount` event | A Secret the blueprint references is missing from the replay namespace. | Create the Secret and key in the namespace the replay runs in, or save the value as a constant where that is allowed. |
-| The Save step says **Does not match this snapshot** | The scope does not match any request that carries the credential header. | Check the service, host and path against the Credentials tab's **Where** column. |
+| The Save step says **Does not match this snapshot** | The scope does not match any request that carries the credential header. | Check the service, host and path against the credential's **Where** detail on the Prepare tab. |
 | Requests still get 401s and the report shows no token errors | The blueprint's scope does not cover those requests, the recorded header is not a `Bearer` header, or the token is for a different audience. | Widen the scope, check the recorded header, and check that the scope or token audience matches what your service expects. |
 | A pasted token works at first, then 401s return | The token expired during the replay. | Use **Fetch a fresh token** so the replay refreshes it. |
 | The report warns that the operator is too old | The cluster's Speedscale operator predates credential blueprints. | Upgrade the operator to v2.5.1198 or later. |

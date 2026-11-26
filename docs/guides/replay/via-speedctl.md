@@ -134,6 +134,8 @@ speedctl infra replay \
   --mock-except 'glob:payments:*:443'
 ```
 
+For a [Google Pub/Sub republish replay](../message-brokers/google-pubsub.md#replay-in-your-cluster), use `--mock-except 'host:pubsub.googleapis.com'` or use the regional hostname in your recording. The subscriber receives messages from the test broker while the replay keeps its other dependencies mocked.
+
 ### Selector syntax
 
 `--mock-only`, `--mock-except`, and `--exclude-in` all accept the same selector formats:

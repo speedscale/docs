@@ -1,0 +1,94 @@
+apiVersion: auto.gke.io/v1
+kind: WorkloadAllowlist
+minGKEVersion: 1.35.0-gke.0
+metadata:
+  name: speedscale-nettap-capture
+  annotations:
+    autopilot.gke.io/no-connect: "false"
+exemptions:
+  - autogke-default-linux-capabilities
+  - autogke-disallow-hostnamespaces
+  - autogke-no-write-mode-hostpath
+  - autogke-no-host-port
+matchingCriteria:
+  hostNetwork: true
+  hostPID: true
+  containers:
+    - name: speedscale-nettap-capture
+      image: gcr.io/speedscale/nettap
+      securityContext:
+        privileged: false
+        capabilities:
+          add:
+            - BPF
+            - PERFMON
+            - NET_ADMIN
+            - SYS_ADMIN
+            - SYS_PTRACE
+            - SYS_RESOURCE
+          drop:
+            - ALL
+      env:
+        - name: ^NETTAP_[A-Z0-9_]+$
+        - name: ^SPEC_[A-Z0-9_]+$
+        - name: ^LOG_LEVEL$
+        - name: ^SPEEDSCALE_[A-Z0-9_]+$
+      volumeMounts:
+        - name: host-procfs
+          mountPath: /host/proc
+          readOnly: true
+        - name: host-cgroup
+          mountPath: /host/sys/fs/cgroup
+          readOnly: true
+        - name: host-sys
+          mountPath: /host/sys
+          readOnly: true
+        - name: host-sys
+          mountPath: /sys/kernel/tracing
+          subPath: kernel/tracing
+          readOnly: true
+        - name: host-netns
+          mountPath: /var/run/netns
+          readOnly: true
+        - name: nettap-shared
+          mountPath: /tmp
+        - name: nettap-config
+          mountPath: /etc/nettap
+    - name: speedscale-nettap-ingest
+      image: gcr.io/speedscale/goproxy
+      securityContext:
+        privileged: false
+        capabilities:
+          add:
+            - NET_RAW
+          drop:
+            - ALL
+      env:
+        - name: ^NETTAP_[A-Z0-9_]+$
+        - name: ^SPEC_[A-Z0-9_]+$
+        - name: ^LOG_LEVEL$
+        - name: ^FORWARDER_ADDR$
+        - name: ^PROXY_API_HOST$
+        - name: ^SPEEDSCALE_[A-Z0-9_]+$
+      envFrom:
+        - secretRef:
+            name: speedscale-apikey
+      volumeMounts:
+        - name: nettap-shared
+          mountPath: /tmp
+  volumes:
+    - name: host-procfs
+      hostPath:
+        path: /proc
+    - name: host-cgroup
+      hostPath:
+        path: /sys/fs/cgroup
+    - name: host-sys
+      hostPath:
+        path: /sys
+    - name: host-netns
+      hostPath:
+        path: /var/run/netns
+    - name: nettap-config
+      configMap:
+        name: speedscale-nettap

@@ -60,6 +60,8 @@ A Chromium window opens on the URL, driven by Playwright's code generator. Click
 
 Treat a recorded spec as a first draft. Add assertions for what the user should see, and wrap the actions in named steps.
 
+With a recording of real users and no one to click, `proxymock journeys explore` finds the clicks for you: see [Explore and heal journeys](./explore-and-heal.md).
+
 ## Start signed in
 
 Most journeys start behind a login. Rather than typing a password in every spec, give the replay a storage state: the cookies and local storage every journey's browser starts with.

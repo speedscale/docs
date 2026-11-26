@@ -67,6 +67,7 @@ See [Installation](../getting-started/installation.md) for the install options p
 # Install (pick one)
 brew update && brew install speedscale/tap/proxymock
 sh -c "$(curl -Lfs https://downloads.speedscale.com/proxymock/install-proxymock)"
+# Windows PowerShell: irm https://downloads.speedscale.com/proxymock/install-proxymock.ps1 | iex
 
 # Sign in and write ~/.speedscale/config.json
 proxymock init

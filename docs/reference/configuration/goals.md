@@ -14,9 +14,9 @@ The UI contains hints explaining the different metrics.
 
 ## Examples
 
-Let's create a useful example for our application.
+Let's create a useful example for our application. On the test config's **Goals** tab, click **Add** for each goal, then pick a metric and comparison, enter a value and, optionally, an endpoint filter.
 
-![goals-example](goals-example.png)
+![The Goals tab with six goals for latency percentiles, total requests, assertion success and requests per second](./goals-example.png)
 
 Reports run with this test config will fail if any of the metrics defined are
 true when the replay completes.
@@ -33,3 +33,11 @@ true when the replay completes.
 ## LLM streaming goals
 
 A replay that sends streamed LLM requests reports time to first token, inter-token latency, request latency and token rates, so goals can hold a model server to them, for example `llmTtftP95` too high at `800`. See [LLM Streaming Metrics](../../guides/replay/llm-streaming-metrics.md) for every metric name and its definition.
+
+## LLM answer quality goals
+
+A replay of LLM traffic also reports whether the answers are still right: `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. Use **too low** on the tool-call match rate and **too high** on the other two, for example `llmToolCallMatchPct` too low at `100`. See [Regression Test a Model Swap](../../proxymock/guides/llm-eval-gate.md#score-a-cloud-or-cluster-replay).
+
+## Pub/Sub subscriber goals
+
+A replay that republishes Google Pub/Sub deliveries reports whether the subscriber kept up: its backlog and ack rate from Cloud Monitoring, and, where the subscriber's own calls were captured, how many republished messages it acked and how fast. Use **too high**, for example `pubsubUnackedCount` too high at `0` or `pubsubBacklogEnd` too high at `0`. See [Check that the subscriber kept up](../../guides/message-brokers/google-pubsub.md#check-that-the-subscriber-kept-up) for every metric name.

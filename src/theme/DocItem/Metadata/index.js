@@ -37,7 +37,6 @@ function getArticleSection(permalink) {
   if (path.includes('/reference/')) return 'Reference';
   if (path.includes('/security/')) return 'Security';
   if (path.includes('/proxymock/')) return 'proxymock';
-  if (path.includes('/qabot/')) return 'QABot';
   return 'Documentation';
 }
 

@@ -89,15 +89,15 @@ Use Approach 1 for fast, repeatable tests in development and CI, where a broker 
 | Kafka | [Kafka](./kafka.md) | Recorded, mocked, and replayed by producing recorded `Fetch` responses |
 | RabbitMQ (AMQP 0.9.1) | [RabbitMQ](./rabbitmq.md) | Recorded, mocked, and replayed by publishing recorded deliveries |
 | Amazon MQ for RabbitMQ | [Amazon MQ](./amazon-mq.md) | As RabbitMQ, over AMQPS on 5671. Amazon MQ for ActiveMQ is not supported yet. |
-| Google Pub/Sub | [Google Pub/Sub](./google-pubsub.md) | Recorded and mocked as gRPC, with subscribers mocked from their messages, and replayed by republishing them |
+| Google Pub/Sub | [Google Pub/Sub](./google-pubsub.md) | Mock recorded pull deliveries to test retry behavior, or republish them to a test topic to see if your subscriber keeps up. Push deliveries replay as inbound HTTP. |
 | Redis Pub/Sub | [Redis Pub/Sub](../../proxymock/message-brokers/record/redis-pubsub.md) | Recorded, mocked, and replayed with `PUBLISH` |
 | Amazon SQS | [AWS SQS](./aws-sqs.md) | HTTP API: recorded, mocked and replayed as HTTP |
 | Amazon SNS | [AWS SNS](./aws-sns.md) | HTTP API: recorded, mocked and replayed as HTTP |
 | Amazon Kinesis Data Streams | [AWS Kinesis](./aws-kinesis.md) | HTTP API: recorded, mocked and replayed as HTTP |
 | Amazon Data Firehose | [AWS Kinesis Data Firehose](./aws-kinesis-data-firehose.md) | HTTP API: recorded, mocked and replayed as HTTP |
 | Azure Event Hubs | [Azure Event Hubs](./azure-event-hubs.md) | Through its Kafka endpoint, as Kafka. The AMQP 1.0 SDKs are not supported yet. |
-| Azure Service Bus | [Azure Service Bus](./azure-service-bus.md) | Not supported yet: its SDKs use AMQP 1.0 |
-| Apache Pulsar | [Apache Pulsar](./apache-pulsar.md) | Not supported yet: the Pulsar binary protocol is not decoded |
+| Azure Service Bus | [Azure Service Bus](./azure-service-bus.md) | The HTTPS REST API is handled as HTTP. The SDKs use AMQP 1.0, which is not supported yet. |
+| Apache Pulsar | [Apache Pulsar](./apache-pulsar.md) | Kafka-compatible endpoints are recorded as Kafka. The native Pulsar protocol is not supported yet. |
 | Apache ActiveMQ | [Apache ActiveMQ](./apache-activemq.md) | Not supported yet: OpenWire, AMQP 1.0, STOMP and MQTT are not decoded |
 
 ## Key Concepts

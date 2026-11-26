@@ -66,6 +66,17 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   height: 72px;
 }
 
+/* Reserve the logo's width so the section links start after it. */
+@media (min-width: 997px) {
+  .navbar__logo {
+    flex: 0 0 220px;
+  }
+}
+
+.navbar__item {
+  white-space: nowrap;
+}
+
 .navbar__logo img {
   height: 72px;
 }

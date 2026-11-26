@@ -89,26 +89,9 @@ Not simulated: queues and routing, so a message published to the mock is never d
 
 When the service under test is a Pub/Sub subscriber, the mock answers its subscriber calls from the messages recorded for its subscription, so it runs with no Google Cloud project and no emulator. Run the mock with the same mapping you recorded with, as for any [gRPC dependency](../grpc/mock-a-grpc-dependency.md). With the emulator, set `PUBSUB_EMULATOR_HOST` to the mapped port.
 
-A subscriber's keepalives, lease extensions and acknowledgement batches differ on every run, so the mock does not match these calls by signature:
+`StreamingPull` matches by subscription and sends the recorded deliveries within the client's flow-control limits. Unary `Pull` draws from the same messages. Two workers on one subscription share those messages. A nack or an expired ack deadline triggers a redelivery with the same message ID and a fresh ack ID. To serve the recorded volume more than once, use `--pubsub-passes`.
 
-| Call | What the mock does |
-|---|---|
-| `StreamingPull` | Matches the stream by the subscription in its first request only. Pushes the messages recorded for that subscription, with their data, attributes, ordering key and message ID, at the pace they arrived in the recording. Then keeps the stream open until the client cancels it. |
-| `Pull` | Answers from the same recorded messages, up to `max_messages`, and returns an empty response once none are left. |
-| `Acknowledge` and `ModifyAckDeadline` | Answers success whatever the ack IDs. |
-| Publisher calls such as `Publish`, and other subscriber calls such as `GetSubscription` | Matched by signature, like any other gRPC call. |
-
-The mock answers these four calls this way for a Pub/Sub host once the recording holds at least one of them for that host.
-
-The mock uses the messages of every recorded `StreamingPull` and `Pull` call for the subscription, in the order they were recorded, including streams recorded as several parts and streams the client cancelled. A message recorded twice with the same ack ID is sent once, and a redelivery recorded with a new ack ID is sent again as recorded. Use `proxymock mock --grpc-streaming-immediate` to send the messages without the recorded gaps.
-
-**Flow control.** The mock honors the `max_outstanding_messages` and `max_outstanding_bytes` that the client sends in its first `StreamingPull` request. It stops sending while the messages it sent and the client has not acknowledged reach either limit, and splits a recorded response when only part of it fits. An acknowledgement frees room whether it arrives on the stream or as an `Acknowledge` call, and so does a nack, which is a `ModifyAckDeadline` of 0 seconds. A lease extension frees nothing, and keepalives are ignored.
-
-**Shared subscriptions.** Each recorded message is sent once per mock instance and subscription. Two subscribers on the same subscription share the recorded messages, as they share a real subscription, instead of both receiving all of them. A `Pull` takes from the same messages, so it gets only what the streams have not taken. Restart or reload the mock to send the messages again.
-
-**Misses.** A `StreamingPull` for a subscription with no recorded `StreamingPull` or `Pull` call returns `NOT_FOUND`. A `Pull` for such a subscription goes to the normal gRPC match instead, which can answer it from a `Pull` recorded by an older release. A subscription whose recordings hold no messages keeps its stream open and answers `Pull` with an empty response. Every call is saved to the mock's output as a match or a miss. A `StreamingPull` is saved when the stream ends, with the requests the client sent and the messages the mock sent.
-
-Not simulated: redelivery of a message that is nacked, never acknowledged, or left outstanding on a stream the client cancelled, as Pub/Sub would do after the ack deadline; exactly-once delivery; and ordering-key delivery rules.
+The mock answers gRPC `Publish` calls by recorded topic. Use [`httpOutput`](../../reference/configuration/assertions/httpoutput.md#google-pubsub-publishes) to compare the events your app published, one message at a time. The [Pub/Sub guide](../../guides/message-brokers/google-pubsub.md#mock-a-pubsub-subscriber) covers retry behavior, mock limits and fault injection. [REST clients](../../guides/message-brokers/google-pubsub.md#rest-clients) can use the broker mock too.
 
 ## Redis Pub/Sub {#redis-pubsub}
 

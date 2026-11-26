@@ -1,0 +1,9 @@
+apiVersion: auto.gke.io/v1
+kind: AllowlistSynchronizer
+metadata:
+  name: speedscale-nettap-sync
+spec:
+  projectNumber: YOUR_PROJECT_NUMBER
+  bucketName: YOUR_BUCKET_NAME
+  allowlistPaths:
+    - nettap/workload-allowlist.yaml

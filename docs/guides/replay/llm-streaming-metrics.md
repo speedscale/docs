@@ -94,6 +94,8 @@ These are the LLM names `--fail-if` accepts, with the matching goal name for a t
 
 A replay that sent no LLM stream reports none of these metrics, and a percentile with no samples is left out rather than reported as zero.
 
+These metrics say how fast a model answers. To gate on whether its answers are still right, `--fail-if` also accepts `llm.tool-call-match-pct`, `llm.divergence-pct` and `llm.failure-pct`, and a cloud or cluster report carries the same rates as `llmToolCallMatchPct`, `llmDivergencePct` and `llmFailurePct`. See [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md).
+
 ## Goals in a test config
 
 In a [test config](../../reference/configuration/goals.md), add a goal on any goal metric in the table above. Use **too high** for durations and counts such as `llmTtftP95` or `llmIncompleteCount`, and **too low** for rates such as `llmUserTokensPerSecP50`. LLM goals apply to the whole run, so leave the location empty; they cannot be scoped to an endpoint or a load stage. The replay launcher shows them with labels such as **LLM TTFT p95**.
@@ -108,7 +110,7 @@ Watch how to compare recorded and replayed stream timing, inspect an individual 
   <a href={useBaseUrl('/videos/replay/speedscale-llm-streaming-metrics.mp4')}>Download the video</a>
 </video>
 
-A report from a replay that sent LLM streams has an **LLM** tab. It shows TTFT, request latency, ITL and tokens per second per user at p50, p95 and max, with the number of streams, output tokens, output tokens per second and the share of approximate token counts. Alerts above the table explain cut-off streams and approximate counts when there are any.
+A report from a replay that sent LLM requests has an **LLM** tab. Its **Answer quality** section says whether the answers are still right: see [Regression Test a Model Swap](/proxymock/guides/llm-eval-gate.md#read-a-report-in-the-dashboard). When the replay sent LLM streams, the streaming metrics follow. It shows TTFT, request latency, ITL and tokens per second per user at p50, p95 and max, with the number of streams, output tokens, output tokens per second and the share of approximate token counts. Alerts above the table explain cut-off streams and approximate counts when there are any.
 
 When the recording had frame timing, each value has the recorded value under it with the change from it. A change of 10% or more in the wrong direction is highlighted, such as a slower TTFT or a lower token rate. Smaller changes are usually run-to-run variation.
 

@@ -20,7 +20,7 @@ A consumer's calls to its broker are outbound, and a replay sends the recording'
 |---|---|---|
 | Kafka | The records in each recorded `Fetch` response, produced to the same topic and partition | `(command IS "Fetch") AND (location IS "orders")` |
 | RabbitMQ and Amazon MQ | Each recorded `Basic.Deliver`, published to the exchange and routing key it arrived through | `(command IS "Basic.Deliver")` |
-| Google Pub/Sub | Each message a `StreamingPull` or `Pull` call received, published to the subscription's topic, with republish turned on | `(location CONTAINS "google.pubsub.v1.Subscriber")` |
+| Google Pub/Sub | Each message a `StreamingPull`, `Pull` or REST `:pull` received, republished to the subscription's topic | gRPC: `(location CONTAINS "google.pubsub.v1.Subscriber")`. REST: `(location CONTAINS ":pull")`. |
 | Redis Pub/Sub | Each message a subscription received, sent with `PUBLISH` or `SPUBLISH` | `(tech IS Redis) AND (command IS "message")` |
 
 The replay does not consume for your app. Start the consumer against the same broker, subscribed as it is in production, and it receives the messages the replay publishes.
@@ -131,33 +131,9 @@ The replay prints a row per destination with the count and any failures.
 
 ## Google Pub/Sub {#google-pubsub}
 
-Replaying a subscriber's recorded calls to Pub/Sub as they were would pull from the live subscription instead of feeding your service. Republish mode turns each message a recorded `StreamingPull` or `Pull` call received into a `Publish` of the same data, attributes and ordering key to the subscription's topic. Your subscriber then receives the messages again and acknowledges them itself. Turn it on in the test config:
+Republish mode turns deliveries from a recorded `StreamingPull`, `Pull` or REST `:pull` into publishes to the subscription's topic. Run your subscriber against an emulator or a test project so it receives and acknowledges the messages itself. Follow [Replay locally with proxymock](../../guides/message-brokers/google-pubsub.md#replay-locally-with-proxymock) for the test config and command, and [Connect to the broker](./connect-to-the-broker.md#google-pubsub) for credentials and topic routing.
 
-```json
-{
-  "generator": {
-    "pubsub": {
-      "republish": true
-    }
-  }
-}
-```
-
-Then run your subscriber against the emulator or a test project, and replay the recorded deliveries:
-
-```bash
-PUBSUB_EMULATOR_HOST=localhost:8085 proxymock replay --in proxymock/recorded-<timestamp> \
-  --tests-filter '(location CONTAINS "google.pubsub.v1.Subscriber")' \
-  --test-config pubsub-republish
-```
-
-See [test configs](../guides/test-configs.md) for where `pubsub-republish` lives. Create the topic and the subscription in the emulator before the replay starts, as your subscriber's own setup would.
-
-- The topic is looked up from the subscription with `GetSubscription`. To publish to another topic, or when the replay cannot read the subscription, map the subscription to a topic in `subscriptionTopics`; see [Connect to the broker](./connect-to-the-broker.md#google-pubsub).
-- The recorded `Acknowledge`, `ModifyAckDeadline` and other subscriber calls are not replayed, because your subscriber makes them. `Publish` calls your service made still replay as gRPC.
-- Each message is one request on the report, shown as `/google.pubsub.v1.Publisher/Publish` with the topic it went to. A message Pub/Sub refuses fails the request.
-- Messages that share an ordering key are published in recorded order within one virtual user. Pub/Sub delivers them in order only when the subscription has message ordering turned on.
-- Republished messages get new message IDs and publish times. Exactly-once delivery is not simulated.
+Publish latency measures broker acceptance. To see whether your subscriber kept up, [check backlog and acknowledgements](../../guides/message-brokers/google-pubsub.md#check-that-the-subscriber-kept-up). If the subscriber uses an HTTP push endpoint, [replay the inbound HTTP deliveries](../../guides/message-brokers/google-pubsub.md#push-subscriptions).
 
 ## Redis Pub/Sub {#redis-pubsub}
 
@@ -186,7 +162,7 @@ To test the messages your app publishes, replay its recorded inbound requests, t
 | Kafka | The [`kafkaOutput` assertion](#kafka-output), in Speedscale cloud reports |
 | Amazon SQS, SNS, Kinesis and Firehose | The [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion, which compares outbound HTTP calls field by field |
 | RabbitMQ and Amazon MQ | The mock's output: a publish to an exchange and routing key the recording has is a hit, and any other publish is a miss. Message bodies are not compared. |
-| Google Pub/Sub | The mock's output: `Publish` is matched by signature like any gRPC call. |
+| Google Pub/Sub | [`httpOutput`](../../reference/configuration/assertions/httpoutput.md#google-pubsub-publishes) compares gRPC publishes by topic and per message, including JSON fields, attributes and ordering keys. |
 | Redis Pub/Sub | The mock's output: a `PUBLISH` the recording has gets its recorded reply. Messages are not compared. |
 
 Locally, run the app behind `proxymock mock` and send it the recorded requests:

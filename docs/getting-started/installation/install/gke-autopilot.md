@@ -12,7 +12,7 @@ sidebar_position: 12
 
 Autopilot's restrictions affect how Speedscale captures traffic. There are two supported approaches — pick one:
 
-- **eBPF capture** (the main path on this page). A privileged `nettap` DaemonSet captures traffic for whole namespaces. It needs a **customer-owned [WorkloadAllowlist](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-privileged-allowlists)** to admit the privileged pods, which requires a one-time Google Cloud eligibility request (about one week of lead time). Best for broad, low-touch capture across many workloads. This path is needed until the Speedscale Autopilot partner allowlist is published globally.
+- **eBPF capture** (the main path on this page). A privileged `nettap` DaemonSet captures traffic for whole namespaces. It needs a **customer-owned [WorkloadAllowlist](https://cloud.google.com/kubernetes-engine/docs/how-to/autopilot-privileged-allowlists)** to admit the privileged pods, which requires a one-time Google Cloud eligibility request (about one week of lead time). Best for broad, low-touch capture across many workloads.
 - **[Sidecar capture (dual proxy mode)](#sidecar-capture-dual-proxy-mode)** (deprecated). A per-workload sidecar proxy retained for existing deployments and clusters that cannot obtain a WorkloadAllowlist. Autopilot forbids the sidecar's transparent proxy, so it must run in `dual` proxy mode and the app's outbound traffic must be pointed at it.
 
 The rest of this page walks through the recommended eBPF path. Jump to [Sidecar Capture](#sidecar-capture-dual-proxy-mode) only if you need the deprecated fallback.
@@ -22,13 +22,21 @@ The rest of this page walks through the recommended eBPF path. Jump to [Sidecar 
 - A GCP project with billing enabled.
 - A GCP **Organization** with a paid Customer Care tier (Standard or higher). Google requires an Organization resource to purchase any paid support tier, and you need a support case to request WorkloadAllowlist eligibility. A standalone billing account with no Organization (for example a personal account) cannot buy support and cannot complete Step 1.
 - Permission to set project org policies.
+- A GKE Autopilot cluster on version `1.35.0-gke.0` or later. Older versions reject the allowlist.
 - `gcloud`, `kubectl`, and `helm`.
 - A Speedscale API key.
-- Two files from Speedscale support, matched to a specific operator chart version:
-  - `workload-allowlist.yaml`
-  - `allowlist-synchronizer.yaml`
+- The two Speedscale allowlist files:
+  - [`workload-allowlist.yaml`](pathname:///gke-autopilot/workload-allowlist.yaml)
+  - [`allowlist-synchronizer.yaml`](pathname:///gke-autopilot/allowlist-synchronizer.yaml)
 
-Contact [Speedscale support](https://slack.speedscale.com) to get the allowlist files. The `workload-allowlist.yaml` pins exact container image SHA-256 digests, so it is tied to one operator chart version. Install that exact chart version (see [Step 6](#6-install-speedscale-with-ebpf)).
+Download them:
+
+```bash
+curl -fsSLO https://docs.speedscale.com/gke-autopilot/workload-allowlist.yaml
+curl -fsSLO https://docs.speedscale.com/gke-autopilot/allowlist-synchronizer.yaml
+```
+
+The allowlist is not tied to an operator chart version, so you can keep the same file when you upgrade Speedscale.
 
 Set these variables for the commands below:
 
@@ -38,7 +46,6 @@ export REGION="us-central1"
 export CLUSTER_NAME="YOUR_CLUSTER_NAME"
 export BUCKET_NAME="${PROJECT_ID}-speedscale-autopilot-allowlists"
 export SPEEDSCALE_API_KEY="YOUR_SPEEDSCALE_API_KEY"
-export CHART_VERSION="VERSION_MATCHED_TO_YOUR_ALLOWLIST"
 ```
 
 Enable the required APIs:
@@ -70,10 +77,6 @@ PERFMON, NET_ADMIN, SYS_ADMIN, SYS_PTRACE, and SYS_RESOURCE, plus hostNetwork,
 hostPID, and hostPath mounts for /proc, /sys, and /var/run/netns.
 
 We are requesting eligibility to use customer-owned WorkloadAllowlists.
-
-Speedscale is a GCP partner currently in the Autopilot Partner Allowlist review
-process. This customer-owned path is needed until the partner allowlist is
-published globally.
 
 Project ID: PROJECT_ID
 Cluster: CLUSTER_NAME
@@ -115,6 +118,13 @@ The service account must use `container-engine-robot.iam.gserviceaccount.com`.
 ## 3. Allow the Bucket Path
 
 Set the `container.managed.autopilotPrivilegedAdmission` org policy at the project level. Keep `allowAnyGKEPath: true` to preserve the default GKE-approved allowlists while adding the Speedscale bucket path.
+
+This command replaces the policy's `allowPaths` list. If the project already allows other bucket paths, check them first and add them to the file:
+
+```bash
+gcloud org-policies describe container.managed.autopilotPrivilegedAdmission \
+  --project "${PROJECT_ID}" --effective
+```
 
 ```bash
 cat > /tmp/speedscale-autopilot-policy.yaml <<EOF
@@ -183,7 +193,7 @@ Verify the synchronizer and allowlist were created:
 
 ```bash
 kubectl get allowlistsynchronizer speedscale-nettap-sync -o yaml
-kubectl get workloadallowlist speedscale-nettap -o yaml
+kubectl get workloadallowlist speedscale-nettap-capture -o yaml
 ```
 
 If the synchronizer is not Ready, inspect `status.conditions[*].message` and `status.managedAllowlistStatus[*].lastError`.
@@ -192,16 +202,11 @@ If the synchronizer is not Ready, inspect `status.conditions[*].message` and `st
 
 Add the Speedscale Helm repo and [install the operator](./kubernetes-operator.md) with eBPF enabled.
 
-:::caution Pin the chart version
-Install the chart version that matches your `workload-allowlist.yaml`. The allowlist pins exact image SHA-256 digests; a different chart version pulls different `nettap`/`goproxy` images whose digests will not match, and Warden will reject the nettap pods. To move to a newer version, get a re-pinned `workload-allowlist.yaml` from Speedscale first.
-:::
-
 ```bash
 helm repo add speedscale https://speedscale.github.io/operator-helm/
 helm repo update
 
 helm upgrade --install speedscale-operator speedscale/speedscale-operator \
-  --version "${CHART_VERSION}" \
   --namespace speedscale --create-namespace \
   --set apiKey="${SPEEDSCALE_API_KEY}" \
   --set clusterName="${CLUSTER_NAME}" \
@@ -218,7 +223,7 @@ helm upgrade --install speedscale-operator speedscale/speedscale-operator \
 
 Autopilot requires that resource requests and limits match, and that every container declares `ephemeral-storage`. The sidecar values cover replay init containers. `ensureMinimumEphemeralStorage=true` adds a `100Mi` request and limit to the Java Agent init container.
 
-The `ensureMinimumEphemeralStorage` setting requires operator chart `2.5.828` or later. If your WorkloadAllowlist is pinned to an older chart, request an updated allowlist before enabling the Java Agent.
+The `ensureMinimumEphemeralStorage` setting requires operator chart `2.5.828` or later.
 
 Chart `2.5.828` does not restart a running operator when this value changes during a Helm upgrade. Restart the operator once so it reads the updated ConfigMap:
 
@@ -265,18 +270,47 @@ export APP_NAMESPACE="YOUR_APP_NAMESPACE"
 export APP_NAME="YOUR_APP_LABEL"
 
 helm upgrade speedscale-operator speedscale/speedscale-operator \
-  --version "${CHART_VERSION}" \
   --namespace speedscale --reuse-values \
   --set "ebpf.configuration.capture.targets[0].name=${APP_NAME}" \
   --set "ebpf.configuration.capture.targets[0].namespaceSelector.matchLabels.kubernetes\\.io/metadata\\.name=${APP_NAMESPACE}" \
   --set "ebpf.configuration.capture.targets[0].podSelector.matchLabels.app=${APP_NAME}"
 ```
 
-`--reuse-values` preserves your install values but not the chart version, so pin `--version` again here. Generate traffic against the workload, then confirm it appears in Speedscale.
+`--reuse-values` preserves your install values. Generate traffic against the workload, then confirm it appears in Speedscale.
+
+To capture more than one workload, put every target in a values file instead of adding `targets[1]` with `--set`. Helm replaces the whole `targets` list when you set one index, which leaves an empty first entry, and nettap stops capturing with `capture target must have a name`.
+
+```yaml title="capture-targets.yaml"
+ebpf:
+  configuration:
+    capture:
+      targets:
+        - name: orders
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: shop
+          podSelector:
+            matchLabels:
+              app: orders
+        - name: payments
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: shop
+          podSelector:
+            matchLabels:
+              app: payments
+```
+
+```bash
+helm upgrade speedscale-operator speedscale/speedscale-operator \
+  --namespace speedscale --reuse-values -f capture-targets.yaml
+```
 
 ## Updating Speedscale versions
 
-The WorkloadAllowlist pins container image digests, so it must be updated in lockstep with the chart. When Speedscale provides an updated `workload-allowlist.yaml` (and its matching chart version), upload it to the same bucket path:
+The WorkloadAllowlist is not tied to a chart version. Upgrade the operator chart as usual and keep the same allowlist.
+
+Older allowlists pinned container image digests to one chart version. If your `workload-allowlist.yaml` contains a `containerImageDigests` section, download the current file (see [Prerequisites](#prerequisites)) before you upgrade, then upload it to the same bucket path:
 
 ```bash
 gcloud storage cp workload-allowlist.yaml \
@@ -290,13 +324,29 @@ kubectl annotate allowlistsynchronizer speedscale-nettap-sync \
   force-sync="$(date +%s)" --overwrite
 ```
 
-Then upgrade the chart to the matching `--version`.
+Then upgrade the chart.
 
 ## Java Agent notes
 
 For workloads that make outbound HTTPS calls, the Speedscale [Java Agent](../../../reference/languages/java.md) instruments `SSLSocketImpl` and `SSLEngineImpl` to decrypt TLS traffic.
 
-On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior. If you enable the setting by upgrading chart `2.5.828`, restart the operator as shown in Step 6.
+On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStorage=true` before enabling the Java Agent. This setting makes the operator add a `100Mi` `ephemeral-storage` request and limit to `speedscale-initproxy-java-agent`, which satisfies Warden admission. Without it, Warden rejects the pod because the init container requests `0` ephemeral storage. The setting defaults to `false` so non-Autopilot clusters keep their existing resource behavior. If you enable the setting by upgrading chart `2.5.828`, restart the operator as shown in Step 6.
+
+With the workload already selected as a capture target (Step 7), enable the Java Agent with an annotation. The workload restarts with the agent:
+
+```bash
+kubectl annotate deployment "${APP_NAME}" -n "${APP_NAMESPACE}" \
+  capture.speedscale.com/java-agent=true
+```
+
+Confirm the init container was admitted with storage:
+
+```bash
+kubectl get pods -n "${APP_NAMESPACE}" -l app="${APP_NAME}" \
+  -o jsonpath='{range .items[*].spec.initContainers[*]}{.name}{" "}{.resources.requests.ephemeral-storage}{"\n"}{end}'
+```
+
+The output shows `speedscale-initproxy-java-agent 100Mi`.
 
 ## Troubleshooting
 
@@ -308,7 +358,7 @@ On Autopilot, install chart `2.5.828` or later with `ensureMinimumEphemeralStora
 | Nettap pods rejected by Warden | Resource requests and limits do not match | Reinstall with matching requests and limits |
 | Replay init containers rejected by Warden | Missing `ephemeral-storage` values | Reinstall with the `sidecar.resources.*.ephemeral-storage=100Mi` values |
 | `speedscale-initproxy-java-agent` rejected with an `ephemeral-storage` minimum such as `10Mi` | The Java Agent storage setting is disabled, the operator has not restarted, or the chart is older than `2.5.828` | Install chart `2.5.828` or later. Set `ensureMinimumEphemeralStorage=true`, or use the override ConfigMap workaround. Restart the operator, then retry the capture update. |
-| Nettap image digest mismatch after a chart upgrade | Installed chart version does not match the allowlist | Install the chart `--version` that matches your `workload-allowlist.yaml`, or upload the updated allowlist from Speedscale |
+| Nettap pods rejected after a chart upgrade | The bucket holds an older allowlist that pins image digests | Download the current `workload-allowlist.yaml`, upload it to your bucket and force a sync (see [Updating Speedscale versions](#updating-speedscale-versions)) |
 | Forwarder crashes with `FATAL: failed to get filter rule` | `filterRule=none` in the configmap | Patch it: `kubectl patch cm speedscale-forwarder -n speedscale --type merge -p '{"data":{"SPEEDSCALE_FILTER_RULE":"standard"}}'` |
 
 ## Sidecar Capture (Dual Proxy Mode)

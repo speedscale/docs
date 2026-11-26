@@ -86,7 +86,7 @@ With the annotation `sidecar.speedscale.com/tls-out` set to `"true"`, the operat
 - volume mount the user-provided outbound certificates to the SUT workload
 - modify the TLS environment variables or trust store in the SUT workload
 
-In order to add the TLS inbound configuration, supply the name of your TLS secret in the `sidecar.speedscale.com/tls-secret` annotation.
+In order to add the TLS inbound configuration, supply the name of your Kubernetes TLS secret in the `sidecar.speedscale.com/tls-in-secret` annotation. The key and certificate filenames inside the secret default to `tls.key` and `tls.crt`. Set `sidecar.speedscale.com/tls-in-private` and `sidecar.speedscale.com/tls-in-public` if yours differ.
 
 At this point, the operator will return the patch list to the Kubernetes API and the workload will continue.
 

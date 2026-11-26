@@ -54,7 +54,9 @@ This filter lists every subscriber call, which is also the filter that picks the
 
 ## In a cluster
 
-In Kubernetes, the sidecar records Pub/Sub calls once it decrypts outbound TLS, as for any gRPC service, and the [eBPF collector](/reference/ebpf-traffic-collection/) reads the plaintext without TLS interception. Cloud capture records streamed calls such as `StreamingPull` only when `GRPC_STREAMING_ENABLED` is on; see [native server streaming](../../grpc/server-streaming.md). Java subscribers built on `google-cloud-pubsub` need a current Java agent image; see [gRPC Java and Google Cloud clients](/reference/java/agent#grpc-java).
+In Kubernetes, the sidecar can decrypt outbound TLS to record Pub/Sub, and the [eBPF collector](/reference/ebpf-traffic-collection/) can read plaintext where the application opens the TLS connection. Both capture `StreamingPull` by default. Look for a `StreamingPull` call containing messages before you create the snapshot. See [Record a subscriber in your cluster](../../../guides/message-brokers/google-pubsub.md#record-a-subscriber-in-your-cluster) for troubleshooting. Java subscribers built on `google-cloud-pubsub` need a current Java agent image. See [gRPC Java and Google Cloud clients](/reference/java/agent#grpc-java).
+
+[REST clients](../../../guides/message-brokers/google-pubsub.md#rest-clients) are captured as outbound HTTP calls. If you use a [push subscription](../../../guides/message-brokers/google-pubsub.md#push-subscriptions), capture the inbound HTTP deliveries to your handler.
 
 ## Next
 

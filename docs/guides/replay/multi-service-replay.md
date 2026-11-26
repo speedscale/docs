@@ -25,99 +25,97 @@ Append a snapshot and map each recorded service to its test workload.
 
 To start we will need to create two [snapshots](/reference/glossary.md#snapshot) and merge them together.
 
-The first snapshot contains only the authentication request / response.  Here the `frontend` service provides the authentication token we need.
+The first snapshot contains only the authentication request and response. In this banking example, the `banking-user` service provides the token we need from `POST /api/users/login`.
 
-![](./traffic-frontend-payment-login.png)
+![The Traffic viewer filtered to banking-user and the /api/users/login endpoint, listing only login requests](./traffic-auth-login.png)
 
-The second snapshot contains traffic to the API server we want to test, `payment` in this case.
+The second snapshot contains traffic to the API server we want to test, `banking-accounts` in this case.
 
-![](./traffic-payment-no-login.png)
+![The Traffic viewer filtered to banking-accounts, with its inbound requests and its calls to Postgres and external APIs](./traffic-api-requests.png)
 
 ### Merge Snapshots
 
-From the first snapshot containing the authentication request select the menu and choose "Append snapshot".
+From the first snapshot containing the authentication request, open the menu at the top right and choose **Append snapshot**.
 
-![](./append-snapshot.png)
+![The snapshot actions menu, with Append snapshot under Edit snapshot](./append-snapshot.png)
 
-Then select the second snapshot.
+Then select the second snapshot and select **Append**. By default **Create a new merged snapshot instead of modifying this snapshot** is checked, so the merge is saved as a new snapshot and the first one does not change.
 
-![](./select-append-snapshot.png)
+![The Select snapshot to append dialog, with a banking-accounts snapshot selected and Create a new merged snapshot checked](./select-append-snapshot.png)
 
-Now the first snapshot contains traffic from both services.
+Now the merged snapshot contains traffic from both services.
 
 Just to be sure we can investigate the snapshot traffic to verify by pulling the snapshot files and looking at the `resource` fields in the [action file](/reference/glossary.md#action-file):
 
 ```shell
 $ speedctl pull snapshot $SNAPSHOT_ID
 $ cat ~/.speedscale/data/snapshots/$SNAPSHOT_ID/raw.jsonl | head -n 5 | jq '.resource'
-"frontend"
-"payment"
-"payment"
-"payment"
-"payment"
+"banking-user"
+"banking-accounts"
+"banking-accounts"
+"banking-accounts"
+"banking-accounts"
 ```
 
-The first request is from `frontend` and the rest are from `payment`.  The **Overview** tab of the new snapshot shows the inbound and outbound [traffic](/reference/glossary.md#traffic) from both services.
+The first request is from `banking-user` and the rest are from `banking-accounts`.  The **Overview** tab of the new snapshot shows the inbound and outbound [traffic](/reference/glossary.md#traffic) from both services.
 
 ### Transforms
 
-The snapshot now contains the `/api/payment/login` request, which means that request will be made again during the replay to retrieve a new token, but this is not enough.  We need to configure Speedscale to pass the `access_token` from the auth response to the `X-Access-Token` header in subsequent requests.
+The snapshot now contains the `/api/users/login` request, which means that request will be made again during the replay to retrieve a new token, but this is not enough. We need to configure Speedscale to pass the `token` from the login response to the `Authorization` header in subsequent requests.
 
-We will create [Transforms](/reference/glossary.md#transform) to [store](/guides/transformation/transforms/variable_store) the `access_token` from the auth response body and [load](/guides/transformation/transforms/variable_load) it into the header field later. Transforms can be created for the snapshot under the `transforms` tab.
+We will create [Transforms](/reference/glossary.md#transform) to [store](/guides/transformation/transforms/variable_store) the `token` from the login response body and [load](/guides/transformation/transforms/variable_load) it into the header field later. Transforms for the snapshot are created on its **Prepare** tab.
 
-Store the access token by selecting the `/api/payment/login` [RRPair](/reference/glossary.md#rrpair) on the **Traffic** tab, opening **Response**, clicking the pencil by the `access_token` field and choosing **Modify**.
+Store the token by selecting the `/api/users/login` [RRPair](/reference/glossary.md#rrpair) on the **Traffic** tab, opening **Response**, clicking the pencil by the `token` field and choosing **Modify token**.
 
-![](./transform-login-pencil.png)
+![The pencil menu on the token field of a login response, with Modify token](./transform-login-pencil.png)
 
 On the **Prepare** tab, select **Add step**, pick `Store Variable` and enter a variable name.
 
-![](./transform-store-var.png)
+![A transform chain on the login response with a JSON Path step and a Store Variable step](./transform-store-var.png)
 
 Now we can manually create a new transform by clicking **New** at the top of the Prepare list.  The new transforms will:
 
-- Match all requests EXCEPT those with endpoint `/api/payment/login`
-- Target the HTTP Request Header `X-Access-Token`
-- Load the variable `access_token` into the header field at index 1, since the full header string is `Bearer [token]`
+- Match all requests EXCEPT those with endpoint `/api/users/login`
+- Target the HTTP Request Header `Authorization`
+- Load the stored variable into the header field at index 1, since the full header string is `Bearer [token]`
 
-Now during replay the `X-Access-Token` header for all requests, save the first one, will contain the `access_token` from the response of the `/api/payment/login` request which gives us the flexibility to test with our real service with real, valid authentication.
+Now during replay the `Authorization` header for all requests, except the login itself, will contain the `token` from the response of the `/api/users/login` request which gives us the flexibility to test with our real service with real, valid authentication.
 
 ## Replay
 
-The merged snapshot now has traffic from both services and transforms to route to different locations.  Let's replay it by clicking the `Replay` button.
+The merged snapshot now has traffic from both services and transforms to route to different locations. Let's replay it by clicking the **Replay** button.
 
 ### Cluster / Namespace
 
-Use the replay wizard to select the cluster and namespace where the replay will run.
+The replay page shows the service dependency map with both services, then numbered steps. In step 1, select the cluster and namespace where the replay will run. Make sure both target workloads are running there.
 
-![](./replay-wizard-select-cluster.png)
-
-### Tests
-
-The "Tests" page shows the service map at the top and recorded traffic at the bottom.  The traffic for each service is shown on the left side of the service map and may be configured separately.  We will click the pencil to edit and select the workload where recorded `frontend` app traffic will be sent.
-
-![](./replay-wizard-select-frontend.png)
-
-Here we are selecting the `frontend` workload.
-
-![](./replay-wizard-select-workload-frontend.png)
-
-And similarly we can configure recorded `payment` app traffic to go to the `payment` workload.
-
-![](./replay-wizard-select-workload-payment.png)
-
-The replay has been configured such that `frontend` app traffic will go to the `frontend` workload and `payment` app traffic will go to the `payment` workload.
-
-![](./replay-wizard-sut-configured.png)
+![Step 1 of the replay page, with both services in the dependency map and the dev-decoy cluster and banking-app namespace selected](./replay-wizard-select-cluster.png)
 
 ### Test Config
 
-The [test config](/reference/glossary.md#test-config) is used to configure additional details like load and duration.  Test configs can be modified under the `Test Configs` tab.  Select an existing config.
+In step 2, select the type of test. The [test config](/reference/glossary.md#test-config) behind it sets details like load and duration. Pick a regression test, or select **Custom Scenario** to choose a saved config. Test configs are edited under **Test Configs** in the navigation.
 
-![](./replay-wizard-test-config.png)
+![Step 2 of the replay page, with API Contract and Correctness expanded and Regression with service mocks selected](./replay-wizard-test-config.png)
 
-### Summary
+### Tests
 
-Review the details of the replay and click `Start Replay` to begin.
+Step 3, **Choose where to send traffic**, has one row for each recorded service. Each row's target can be set separately.
 
-![](./replay-wizard-summary.png)
+![Step 3 of the replay page, with inbound rows for banking-accounts and banking-user and the target of each](./replay-wizard-two-services.png)
+
+Select the pencil on the `banking-accounts` row and pick where its recorded traffic should go. Here we select the `banking-accounts` Kubernetes service.
+
+![The target editor for traffic recorded from banking-accounts, with Kubernetes Services selected and the banking-accounts service chosen](./replay-wizard-target-accounts.png)
+
+Do the same for `banking-user` and select the `banking-user` service.
+
+![The target editor for traffic recorded from banking-user, filtered to banking-user, with the banking-user service chosen](./replay-wizard-target-user.png)
+
+Step 4 lists the dependencies each service called. Each one is mocked unless you exclude it.
+
+### Start
+
+Review the targets and mocks, then select **Start Replay**. **Run In Terminal** shows the same replay as a `speedctl infra replay` command, with one `--route` for each service.
+
+![The Start Replay button and the Run In Terminal command, with a route for banking-accounts and one for banking-user](./replay-wizard-summary.png)
 

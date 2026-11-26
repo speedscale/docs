@@ -76,4 +76,4 @@ proxymock replay --test-against http://localhost:8080`,
 
 ## TLS Trust {#tls-trust}
 
-Go usually respects `SSL_CERT_FILE`. See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and any OpenSSL-specific notes.
+Go reads `SSL_CERT_FILE` on Linux. Go 1.27 and later also reads it on macOS and Windows. Earlier versions use the keychain on macOS and the Windows certificate store on Windows; see [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust). See the shared [Language Configuration](/proxymock/getting-started/language-reference#tls-trust) page for the exact command and any OpenSSL-specific notes.

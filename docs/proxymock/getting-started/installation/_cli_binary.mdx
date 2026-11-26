@@ -1,6 +1,5 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import WindowsWarning from './_windows_warning.mdx'
 
 Some of us are control freaks, or just hackers who like to mess with all of the knobs and switches.  You can download the **proxymock** binary directly if that's your jam.
 
@@ -17,10 +16,8 @@ curl "https://downloads.speedscale.com/proxymock/proxymock-linux-$(case $(uname 
   </TabItem>
   <TabItem value="windows" label="Windows">
 
-<WindowsWarning />
-
-```
-curl.exe -L "https://downloads.speedscale.com/proxymock/proxymock.exe" -o $env:userprofile\.speedscale\proxymock.exe
+```powershell
+curl.exe -L "https://downloads.speedscale.com/proxymock/proxymock.exe" -o proxymock.exe
 ```
 
   </TabItem>

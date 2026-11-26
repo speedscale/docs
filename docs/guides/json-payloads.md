@@ -53,7 +53,7 @@ req_body() | json_path(path=foo) | constant(value="a new value")
 }
 ```
 
-![example-1](./json-payloads/example-1.png)
+![A chain that pulls from Request Body, selects foo with JSON Path and sets it with a Constant of a new value](./json-payloads/example-1.png)
 
 ### 2. Nested Key Modification
 
@@ -97,7 +97,7 @@ req_body() | json_path(path=address.zip) | constant(value="a new value")
 }
 ```
 
-![example-2](./json-payloads/example-2.png)
+![A chain that pulls from Request Body, selects address.zip with JSON Path and sets it with a Constant of a new value](./json-payloads/example-2.png)
 
 ### 3. Deleting a Key
 
@@ -137,7 +137,7 @@ req_body() | json_delete(path="address.zip")
 }
 ```
 
-![example-3](./json-payloads/example-3.png)
+![A chain that pulls from Request Body and removes address.zip with a JSON Delete step](./json-payloads/example-3.png)
 
 ## Performance Considerations
 

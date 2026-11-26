@@ -54,21 +54,22 @@ Make sure your desired scenario is not already covered by the default test confi
 
 ### Constant Load Pattern
 
-All examples in this section are created by modifying or creating a new test [config](../reference/configuration/README.md). You can enter these workflows by navigating to an existing config like [performance_100replicas](https://dev.speedscale.com/config/performance_100replicas) and clicking `Create Test Config`.
+All examples in this section are created by modifying or creating a new test [config](../reference/configuration/README.md). You can enter these workflows by opening an existing config like [performance_100replicas](https://app.speedscale.com/config/performance_100replicas) and clicking **Copy test config**, or by clicking **Create Test Config**.
 
+Each example edits stages on the test config's **Load Pattern** tab. Click the pencil on a stage to edit it, or **Add stage** to add one, then click **Ok** in the stage dialog and **Save** on the test config.
 
 **Scenario**: A company wants to ensure their e-commerce website can handle a steady stream of 500 concurrent vUsers during normal business hours.
 
 **Implementation in Speedscale**:
 1. Create a new Test [config](../reference/configuration/README.md).
-2. Select the Load Pattern editor.
-3. Create one stage.
-3. Select 500 vUsers.
-4. Run a replay and select this test config.
+2. Open the **Load Pattern** tab.
+3. Edit stage 1.
+4. Select **vUsers** and enter 500.
+5. Run a replay and select this test config.
 
 Your single stage should look something like this:
 
-![500_vusers](./load-patterns/500_vusers.png)
+![The Stage 1 dialog set to run until all requests are sent with 500 vUsers at full speed](./load-patterns/500_vusers.png)
 
 ### Ramp-Up Load Pattern
 
@@ -76,12 +77,13 @@ Your single stage should look something like this:
 
 **Implementation in Speedscale**:
 1. Create a new Test [config](../reference/configuration/README.md).
-2. Select the Load Pattern editor.
-3. Create a stage with vUsers set to 3000 and duration of 10,800 seconds (3 hours)
-4. Select Ramp Time of 3600 seconds (1 hour)
-5. Run a replay and select this test config.
+2. Open the **Load Pattern** tab.
+3. Edit stage 1. Select **Run for a fixed time** and enter 10800 seconds (3 hours).
+4. Set **Ramp Time** to 3600 seconds (1 hour).
+5. Select **vUsers** and enter 3000.
+6. Run a replay and select this test config.
 
-![ramp](./load-patterns/ramp.png)
+![The Stage 1 dialog with a fixed time of 10800 seconds, a ramp time of 3600 seconds and 3000 vUsers](./load-patterns/ramp.png)
 
 ### Peak Load Pattern
 
@@ -89,15 +91,15 @@ Your single stage should look something like this:
 
 **Implementation in Speedscale**:
 1. Create a new Test [config](../reference/configuration/README.md).
-2. Select the Load Pattern editor.
-3. Create a new stage. Set the RPS to the expected steady-state or normal load (e.g., 100).
-4. Create a new stage. Set the RPS to the expected peak load (e.g., 3000)
-5. Create a new stage. Set the RPS to the expected steady-state or normal load k (e.g., 100).
+2. Open the **Load Pattern** tab.
+3. Edit stage 1. Select **Run for a fixed time** and enter the stage length (e.g., 3600 seconds). Select **Request rate** and enter the expected steady-state or normal load (e.g., 100 TPS). A request rate stage needs a fixed time.
+4. Add a stage with the same fixed time and a **Request rate** of the expected peak load (e.g., 3000 TPS).
+5. Add a stage with the same fixed time and a **Request rate** of the expected steady-state or normal load (e.g., 100 TPS).
 6. Run a replay and select this test config.
 
-You will end up with a set of three total stages looking like the following screenshot:
+You will end up with three stages, shown in the chart and the stages table like this:
 
-![peak](./load-patterns/peak.png)
+![The Load Pattern tab with three one-hour stages at 100, 3000 and 100 TPS and a chart of the peak](./load-patterns/peak.png)
 
 ### Soak Load Pattern
 
@@ -105,12 +107,12 @@ You will end up with a set of three total stages looking like the following scre
 
 **Implementation in Speedscale**:
 1. Create a new Test [config](../reference/configuration/README.md).
-2. Select the Load Pattern editor.
-3. Create a new stage. Set the RPS to the expected average load (e.g., 1000).
-4. Configure the Duration to 86400 seconds (24 hours).
+2. Open the **Load Pattern** tab.
+3. Edit stage 1. Select **Request rate** and enter the expected average load (e.g., 1000 TPS).
+4. Select **Run for a fixed time** and enter 86400 seconds (24 hours).
 5. Run a replay and select this test config.
 
-![soak](./load-patterns/soak.png)
+![The Stage 1 dialog with a fixed time of 86400 seconds and a request rate of 1000 TPS](./load-patterns/soak.png)
 
 ### Stress Load Pattern
 
@@ -118,17 +120,17 @@ You will end up with a set of three total stages looking like the following scre
 
 **Implementation in Speedscale**:
 1. Create a new Test [config](../reference/configuration/README.md).
-2. Select the Load Pattern editor.
-3. Create a new stage. Set the RPS to an unreasonable amount of load (e.g., 5000).
+2. Open the **Load Pattern** tab.
+3. Edit stage 1. Select **Run for a fixed time** and enter a long duration (e.g., 1800 seconds), then select **Request rate** and enter an unreasonable amount of load (e.g., 5000 TPS).
 4. Run a replay and select this test config.
-5. Open the replay you just ran and let it run for a while.
-6. If the app can handle the load, you'll see a steadily increasing throughput chart.
+5. Open the report for the replay you just ran and select the **Performance** tab.
+6. If the app can handle the load, throughput climbs to the target and holds steady, as in this report from a 50 TPS replay.
 
-![steady](./load-patterns/steady.png)
+![A report Performance tab where throughput climbs to the 50 RPS goal and holds steady while latency stays low](./load-patterns/steady.png)
 
-Note that some app "jitter" during the start of the test for a variety of reasons including cache population. If this type of jitter happens later in the test it may be a sign of the app breaking down:
+Some app jitter at the start of a test is normal, for a variety of reasons including cache population. If jitter shows up later in the test, like the throughput dip and latency spike near the four minute mark in this soak test, it may be a sign of the app breaking down:
 
-![soak-jitter](./load-patterns/soak-jitter.png)
+![A soak test report where throughput dips and latency spikes near the four minute mark](./load-patterns/soak-jitter.png)
 
 ### Spike Load Pattern
 

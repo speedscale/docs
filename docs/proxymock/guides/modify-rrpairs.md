@@ -3,7 +3,6 @@ description: "Modify tests and mock responses in proxymock recordings effortless
 sidebar_position: 5
 ---
 
-import RRPairDetail from './modify-rrpairs/rrpair-response-detail.png'
 import FieldTransformMenu from './modify-rrpairs/field-transform-menu.png'
 import PreviewBlueprintsStepper from './modify-rrpairs/preview-blueprints-stepper.png'
 

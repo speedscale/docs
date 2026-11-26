@@ -1,41 +1,39 @@
 ---
-description: "Choose Speedscale Cloud, BYOC direct storage, BYOC collector export on Kubernetes or ECS, or local proxymock for traffic capture and replay."
+title: Speedscale documentation
+description: "Speedscale records real API traffic and replays it against a new build, with dependencies mocked from the same recording. Start on your machine with proxymock, or plan a cluster evaluation."
 slug: /
 sidebar_position: 1
-sidebar_label: Getting Started
+sidebar_label: Overview
 ---
 
-# Getting Started
+import StartPaths from '@site/src/components/StartPaths';
 
-Speedscale captures real API traffic from your running services and replays it against code changes before release. Recorded requests become tests, and recorded dependency responses become mocks.
+# Speedscale documentation
 
-## Choose your setup
+Speedscale records the real API traffic your service handles and replays it against a new build before release. The recorded requests become the tests. The recorded responses from databases and downstream APIs become the mocks, so the service under test runs without its dependencies. Each replay produces a report with one readiness verdict for that build.
 
-Choose where captured traffic and replay results should live before installing:
+## Choose a start
 
-| Setup | Use it when | Start here |
-| --- | --- | --- |
-| Speedscale Cloud | You want Speedscale-managed storage and dashboard workflows, with a classic or namespaced Kubernetes installation. | [Choose a Kubernetes installation](./installation/install/kubernetes.md) |
-| BYOC direct storage | Captures, replay inputs, and reports must stay in your S3, S3-compatible, GCS, or Azure Blob storage. Requires a namespaced Kubernetes installation. | [Choose direct storage](/byoc/#direct-storage) |
-| BYOC collector export on Kubernetes | You want an OpenTelemetry Collector to send captured traffic to your storage or observability tools. | [Configure Kubernetes export](/byoc/#collector-export-on-kubernetes) |
-| BYOC collector export on ECS/Fargate | Your application runs on ECS/Fargate and captured traffic should go through a collector to your storage. | [Configure ECS/Fargate export](/byoc/#collector-export-on-ecs-fargate) |
-| Local proxymock | You want to record, mock dependencies, and replay on your machine. | [Follow the local quickstart](/proxymock/getting-started/quickstart/quickstart-cli.md) |
+<StartPaths />
 
-Already have traffic in a BYOC bucket? [Import it into proxymock](/byoc/use-traffic.md) to inspect, mock, and replay it.
+Both starts use the same recordings and reports. Traffic recorded in a cluster can be pulled down and replayed with proxymock, and a proxymock recording can be pushed to Speedscale Cloud.
 
-Speedscale Cloud and all BYOC deployments require Speedscale API connectivity for registration, configuration, and operational telemetry. BYOC controls the destination of captured traffic; it is not a self-hosted or air-gapped Speedscale platform. BYOC also uses your Speedscale tenant, through the dashboard or speedctl, for tenant values and rule configuration. Direct storage can use local Forwarder rule files; named collector exporters use tenant-managed filter and DLP configurations. Review [BYOC setup and data boundaries](/byoc/) before enabling capture.
+## Find your way around
 
-Local proxymock keeps recordings on your machine by default. See [data and privacy](/proxymock/how-it-works/data_and_privacy/) for activation and telemetry details.
-
-## Plan an evaluation
-
-Start with [evaluation prerequisites and plan](./evaluation.md) to choose a service, prepare your environment and agree on success criteria before installation.
+| You want to | Go to |
+| --- | --- |
+| Follow a full walkthrough with a demo app | [Tutorials](/tutorials/) |
+| Do one job: capture, mock, replay, load test, protect data | [How-to guides](/guides/) |
+| Decide whether a build is ready to ship | [Readiness and reports](/guides/readiness/) |
+| Work with a specific database, message broker or protocol | [Technologies](/technologies/) |
+| Install Speedscale or choose where traffic is stored | [Install Speedscale](./installation/install/README.md) |
+| Look up a command, transform or config field | [Reference](/reference/) |
 
 ## Install
 
 For an agent-assisted install, choose the scope first. The [proxymock-only prompt](/proxymock/getting-started/installation/#install-with-ai-agent) installs proxymock and MCP for local workflows. The [platform install prompt](./quick-start.md#install-with-ai-agent) deliberately installs both CLIs and can install the Kubernetes operator, asking before it touches a cluster.
 
-Choose your tool before installing: [Command-line tools: proxymock and speedctl](./command-line-tools.md) explains their roles and links to both CLI installs. For manual Kubernetes setup, follow the [Kubernetes installation options](./installation/install/kubernetes.md). For recording, mocking, and replaying with proxymock, start with the [proxymock overview](/proxymock/).
+[Command-line tools: proxymock and speedctl](./command-line-tools.md) explains what each CLI is for. [Install Speedscale](./installation/install/README.md) lists every environment and compares Speedscale Cloud with BYOC storage.
 
 ## Security and data control options
 
@@ -47,11 +45,11 @@ For BYOC, configure the data destination and prevent Cloud export before turning
 
 The dashboard workflow below uses Speedscale-managed storage. For BYOC capture and replay, follow your selected [BYOC setup](/byoc/).
 
-![Speedscale home screen](./home-screen.png)
+![The Speedscale home screen, with service performance, recent replays, recent snapshots and the Ask box for the AI assistant](./home-screen.png)
 
 ### AI Assistant
 
-The **AI assistant** on the Speedscale Cloud home screen can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
+Open the **AI assistant** from the **Ask about a service, replay or snapshot** box at the top of the Speedscale Cloud home screen. It can help you record traffic, find snapshots, run replays, and interpret results. See the [AI Chat Assistant guide](/guides/ai-assistant) for details on what it can do.
 
 Speedscale follows a 3-part workflow: **Observe**, **Analyze**, and **Replay**.
 
@@ -96,11 +94,11 @@ Once you have Speedscale installed, [view your services](https://app.speedscale.
 
 In **Analyze**, you inspect historical traffic by API to understand real system behavior. Traffic is broken into requests and responses so you can investigate normal and failure paths.
 
-![](../observe-rrpair.png)
+![The Traffic viewer filtered to one service, with an inbound request open to show its JSON response body](../observe-rrpair.png)
 
 Use filters to isolate the specific traffic patterns you want to test.
 
-![](../select-service-map.png)
+![The Traffic viewer filtered to banking-gateway, with the Filters bar, the filter list and the service dependency map](../select-service-map.png)
 
 Once your application receives traffic, [view your traffic in Speedscale](https://app.speedscale.com/analyze)
 
@@ -108,7 +106,7 @@ Once your application receives traffic, [view your traffic in Speedscale](https:
 
 In **Replay**, you run recorded traffic against the candidate version of your service before release. Speedscale can orchestrate this replay environment and execute the run automatically.
 
-![](../100-pct-report.png)
+![A passed replay report, where 54 of 54 assertions passed, 26 of 26 outbound calls matched a mock and all 5 goals were met](../100-pct-report.png)
 
 If you do not want outbound calls to hit real dependencies during replay, use a responder to stand in for those systems with captured responses.
 

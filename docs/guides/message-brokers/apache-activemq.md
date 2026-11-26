@@ -10,6 +10,8 @@ Apache ActiveMQ Classic and ActiveMQ Artemis accept several protocols: OpenWire,
 
 ActiveMQ's AMQP is AMQP 1.0, a different protocol from the AMQP 0.9.1 that RabbitMQ speaks. A RabbitMQ broker, including Amazon MQ for RabbitMQ, [is supported](./rabbitmq.md).
 
+Speedscale records calls to an ActiveMQ HTTP API as ordinary HTTP traffic.
+
 For more information about Apache ActiveMQ, see the [Apache ActiveMQ documentation](https://activemq.apache.org/).
 
 ## What you can do today

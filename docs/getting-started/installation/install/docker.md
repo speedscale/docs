@@ -33,7 +33,7 @@ acting as the entry point for the app now.
 
 ## Analyze Traffic
 
-![Traffic](./docker/traffic.png)
+![The Traffic viewer for a service, with its service map and inbound and outbound requests](./docker/traffic.png)
 
 You should be able to see traffic in the Speedscale UI after a few minutes and
 now you can using this traffic to [create a snapshot](../../../guides/creating-a-snapshot.md).
