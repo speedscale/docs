@@ -8,7 +8,7 @@ description: Practical guidance for writing DLP rules that mask what they should
 
 ## Find What to Mask
 
-- **Discover in a test environment** whose traffic has the same shape as production. Discovery finds formats such as emails and card numbers, so also read representative payloads for names, addresses and internal identifiers that no pattern recognizes. See [Discover Sensitive Data](./discovering-pii.md).
+- **Discover in a test environment** whose traffic has the same shape as production. Discovery finds formats such as emails and card numbers, and names, addresses and similar fields by their key names, so also read representative payloads for sensitive fields under other keys and for internal identifiers that nothing recognizes. See [Discover Sensitive Data](./discovering-pii.md).
 - **Capture every endpoint that carries sensitive data**, including error responses, which often echo the request.
 - **Treat a missing recommendation as unknown, not safe.** Decide for each field whether it is sensitive in your application.
 

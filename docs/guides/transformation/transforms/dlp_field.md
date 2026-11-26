@@ -33,18 +33,18 @@ The extracted `customerId` value is replaced with a `REDACTED-<category>-<hash>`
 
 ### Default mode (`reverse=false`)
 
-1. **Detect the category.** The DLP engine inspects the incoming bytes and assigns a data pattern (e.g. `UUID`, `EMAIL`, `SSN`, `CREDIT_CARD`, `JWT`, `DATETIME`, `IP`, `E164_PHONE_NUMBER`). If the value doesn't match a known pattern, the category falls back to a generic label.
+1. **Detect the category.** The DLP engine inspects the incoming bytes and assigns a data pattern (e.g. `UUID`, `EMAIL`, `SSN`, `CREDIT_CARD`, `JWT`, `DATETIME`, `IP`, `E164_PHONE_NUMBER`). When the value is not a sensitive format, the selected field's key can name the category instead, such as `PERSON_NAME` for a value under `firstName` or `CVV` under `cvv`; see [Fields recognized by key name](../../dlp/discovering-pii.md#fields-recognized-by-key-name). A JWT or UUID keeps its own category. If neither names one, the category falls back to a generic label.
 2. **Hash the original.** A hash of the original bytes is computed so the redacted output is deterministic — the same input always produces the same output, allowing match-rate signatures to remain stable across runs.
 3. **Emit the redacted token** in the form `REDACTED-<CATEGORY>-<HASH>`. The category portion only appears when data pattern discovery is enabled at the redactor level.
 4. **Record metadata.** The transform reports the data token to the RRPair (so the body's redaction state is tracked) and marks the RRPair as containing redacted content under the active DLP configuration's ID.
 
 ### Reverse mode (`reverse=true`)
 
-The same transform with `reverse=true` does the opposite — given an already-redacted token, it generates a new, random, category-shaped value.
+The same transform with `reverse=true` does the opposite: given an already-redacted token, it generates a category-shaped value. The value is derived from the token itself, so the same token always produces the same value: in every request and response, in both the replay and its mocks, and in every run.
 
 | Input | Behavior |
 |---|---|
-| Starts with `REDACTED-` and the category is recognized | A fresh random value of the right shape is emitted (e.g. a new UUID, a new email-shaped string). |
+| Starts with `REDACTED-` and the category is recognized | A value of the right shape is emitted (e.g. a UUID, an email-shaped string, a first name for `PERSON_NAME`), the same one every time for that token. |
 | Starts with `REDACTED-` but the category cannot be parsed | The token is returned unchanged. |
 | Does **not** start with `REDACTED-` | Falls back to the default redaction path — i.e. the value is redacted normally. |
 
