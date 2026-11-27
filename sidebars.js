@@ -307,6 +307,7 @@ const sidebars = {
               "id": "proxymock/guides/cicd",
               "label": "CI/CD with proxymock"
             },
+            "proxymock/guides/continuous-validation",
             "proxymock/guides/rest-api",
             "proxymock/guides/replay-verdicts",
             "guides/argo"
