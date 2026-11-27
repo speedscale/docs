@@ -3,7 +3,11 @@ description: "Extract a JSON value by path with the json_path transform in Speed
 sidebar_position: 13
 ---
 
-# json_path
+# JSON Path transform (json_path)
+
+:::info Where the path starts
+The path starts inside whatever the previous step produced, never at `http.`. After a **Response Body** source, the card number in `{"CreditCardOnFile":{"CardNumber":"4111..."}}` is `CreditCardOnFile.CardNumber`. A path such as `http.res.bodyBase64.CreditCardOnFile.CardNumber` belongs to the [RRPair field (full record)](../extractors/json_path.md) source, and in this step it matches nothing.
+:::
 
 The `json_path` transform extracts a value from a JSON document using a JSONPath expression and acts as a window onto that value for the rest of the chain. Downstream transforms see only the extracted scalar; when they're done, `json_path` writes the new value back into the same location of the original document, preserving JSON types where possible.
 
@@ -116,14 +120,17 @@ Use `create=false` when you want to *only* operate on documents that already hav
 
 ## Examples
 
-### Example 1 — Simple find/replace
+### Example 1: Mask a field
 
 ```
-req_body() → json_path(path="client_secret") → constant(value="redacted")
+req_body() → json_path(path="client_secret", create=false) → dlp_field()
 ```
 
 - Input: `{"client_id":"...","client_secret":"<long>"}`
-- Output: `{"client_id":"...","client_secret":"redacted"}`
+- Output: `{"client_id":"...","client_secret":"REDACTED-<hash>"}`
+- Input without the field: `{"client_id":"..."}` stays unchanged, because `create=false` skips documents that do not have the path.
+
+For masking in a DLP rule, follow [Creating DLP Rules](../../dlp/creating-rules.md). Leave `create` at its default of `true` only when the chain should add the field.
 
 ### Example 2 — Numeric field type preservation
 

@@ -1,10 +1,16 @@
 ---
-description: "Utilize the json_path feature in Speedscale to flatten RRPair data and extract values using JSONPath locators and regex filters for advanced automation tasks"
+description: "Read any field of the full RRPair by path with the RRPair field (full record) source (json_path). For a field in a request or response body, use a body source and the JSON Path transform."
 canonicalUrl: 'https://docs.speedscale.com/guides/transformation/extractors/json_path/'
 sidebar_position: 12
 ---
 
-# json_path
+# RRPair field (full record)
+
+:::caution Advanced
+This source reads a path from the full RRPair. To change a field in a request or response body, pick **Request Body** or **Response Body** as the source and add a [JSON Path transform](../transforms/json_path.md) step with a path inside the body, such as `CreditCardOnFile.CardNumber`.
+:::
+
+The dashboard lists this source as **RRPair field (full record)** under **Advanced**. Its type name in configs and the API is `json_path`.
 
 ### Purpose
 
