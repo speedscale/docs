@@ -43,4 +43,6 @@ After activation, refresh the page and open **Test sign-in**. Use the account-sp
 
 If it fails, check the callback URI, user assignment, consent, company email domain, and credentials. A pending connection's login URL works only after activation. Keep an alternate login available until the test succeeds.
 
+Once the test succeeds, an Admin can [require SSO](./require-sso.md) so that password, Google, and GitHub sign-ins stop working for the organization.
+
 To rotate a secret, submit its replacement under **Connection settings** and coordinate activation before the old value expires. For providers outside the setup choices, or a missing domain mapping, contact [Speedscale support](mailto:support@speedscale.com).
