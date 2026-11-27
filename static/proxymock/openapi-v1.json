@@ -24,6 +24,97 @@
         ],
         "type": "object"
       },
+      "GoalverdictReadiness": {
+        "properties": {
+          "confidence": {
+            "type": "number"
+          },
+          "families": {
+            "items": {
+              "$ref": "#/components/schemas/GoalverdictReadinessFamily"
+            },
+            "type": "array"
+          },
+          "gates": {
+            "description": "True when the test config's readiness section marks a family as blocking; a local replay's verdict then sets its exit code.",
+            "type": "boolean"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "pathToReady": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "score": {
+            "description": "Weighted mean of the graded letters, A=4 to F=0; n/a families stay out.",
+            "type": "number"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "verdict": {
+            "description": "ready or not-ready, from the families that block.",
+            "enum": [
+              "ready",
+              "not-ready",
+              "unknown"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "verdict",
+          "score",
+          "confidence",
+          "gates",
+          "families"
+        ],
+        "type": "object"
+      },
+      "GoalverdictReadinessFamily": {
+        "properties": {
+          "blocks": {
+            "type": "boolean"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string"
+          },
+          "floor": {
+            "type": "string"
+          },
+          "letter": {
+            "description": "A to F, or n/a when the run gave the family no input.",
+            "type": "string"
+          },
+          "measured": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "blocks",
+              "advises",
+              "off",
+              "unknown"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "family",
+          "letter",
+          "role"
+        ],
+        "type": "object"
+      },
       "Job": {
         "properties": {
           "created": {
@@ -78,6 +169,157 @@
         },
         "required": [
           "jobs"
+        ],
+        "type": "object"
+      },
+      "LlmevalComparison": {
+        "properties": {
+          "compared": {
+            "type": "integer"
+          },
+          "divergencePct": {
+            "$ref": "#/components/schemas/LlmevalRateDelta"
+          },
+          "failurePct": {
+            "$ref": "#/components/schemas/LlmevalRateDelta"
+          },
+          "improved": {
+            "items": {
+              "$ref": "#/components/schemas/LlmevalPairChange"
+            },
+            "type": "array"
+          },
+          "onlyInBaseline": {
+            "type": "integer"
+          },
+          "onlyInCandidate": {
+            "type": "integer"
+          },
+          "regressed": {
+            "items": {
+              "$ref": "#/components/schemas/LlmevalPairChange"
+            },
+            "type": "array"
+          },
+          "speed": {
+            "items": {
+              "$ref": "#/components/schemas/LlmevalSpeedDelta"
+            },
+            "type": "array"
+          },
+          "toolCallMatchPct": {
+            "$ref": "#/components/schemas/LlmevalRateDelta"
+          }
+        },
+        "required": [
+          "compared"
+        ],
+        "type": "object"
+      },
+      "LlmevalPairChange": {
+        "properties": {
+          "baseline": {
+            "type": "string"
+          },
+          "candidate": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "baseline",
+          "candidate"
+        ],
+        "type": "object"
+      },
+      "LlmevalRateDelta": {
+        "properties": {
+          "baseline": {
+            "type": "number"
+          },
+          "candidate": {
+            "type": "number"
+          },
+          "delta": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "baseline",
+          "candidate",
+          "delta"
+        ],
+        "type": "object"
+      },
+      "LlmevalSettings": {
+        "properties": {
+          "embedder": {
+            "type": "string"
+          },
+          "embedderModel": {
+            "type": "string"
+          },
+          "failThreshold": {
+            "type": "number"
+          },
+          "judgeModel": {
+            "type": "string"
+          },
+          "judgePromptVersion": {
+            "type": "string"
+          },
+          "passThreshold": {
+            "type": "number"
+          },
+          "pinnedSeed": {
+            "type": "integer"
+          },
+          "pinnedTemperature": {
+            "type": "number"
+          },
+          "scorerVersion": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "scorerVersion",
+          "passThreshold",
+          "failThreshold"
+        ],
+        "type": "object"
+      },
+      "LlmevalSpeedDelta": {
+        "properties": {
+          "baseline": {
+            "type": "number"
+          },
+          "candidate": {
+            "type": "number"
+          },
+          "changePct": {
+            "type": "number"
+          },
+          "delta": {
+            "type": "number"
+          },
+          "metric": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "metric",
+          "baseline",
+          "candidate",
+          "delta"
         ],
         "type": "object"
       },
@@ -267,6 +509,9 @@
           "input": {
             "$ref": "#/components/schemas/ScoreInput"
           },
+          "llm": {
+            "$ref": "#/components/schemas/ScoreLLM"
+          },
           "matchRate": {
             "$ref": "#/components/schemas/ScoreMatchRate"
           },
@@ -275,6 +520,9 @@
               "type": "string"
             },
             "type": "array"
+          },
+          "readiness": {
+            "$ref": "#/components/schemas/GoalverdictReadiness"
           },
           "sources": {
             "additionalProperties": {
@@ -374,6 +622,9 @@
           },
           "goals": {
             "$ref": "#/components/schemas/ScoreGoalDeltas"
+          },
+          "llm": {
+            "$ref": "#/components/schemas/LlmevalComparison"
           },
           "matchRate": {
             "$ref": "#/components/schemas/ScoreMatchRateDeltas"
@@ -539,6 +790,75 @@
         "required": [
           "kind",
           "path"
+        ],
+        "type": "object"
+      },
+      "ScoreLLM": {
+        "properties": {
+          "divergencePct": {
+            "type": "number"
+          },
+          "divergent": {
+            "type": "integer"
+          },
+          "fail": {
+            "type": "integer"
+          },
+          "failurePct": {
+            "type": "number"
+          },
+          "match": {
+            "type": "integer"
+          },
+          "multiChoice": {
+            "type": "integer"
+          },
+          "noCompletion": {
+            "type": "integer"
+          },
+          "pairs": {
+            "type": "integer"
+          },
+          "scored": {
+            "type": "integer"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/LlmevalSettings"
+          },
+          "speed": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object"
+          },
+          "toolCallMatchPct": {
+            "type": "number"
+          },
+          "toolCallMatches": {
+            "type": "integer"
+          },
+          "toolCallPairs": {
+            "type": "integer"
+          },
+          "toolCallReordered": {
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "integer"
+          },
+          "unscorableBaseline": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pairs",
+          "scored",
+          "match",
+          "divergent",
+          "fail",
+          "toolCallPairs",
+          "toolCallMatches",
+          "settings"
         ],
         "type": "object"
       },
@@ -1405,9 +1725,29 @@
                     },
                     "type": "array"
                   },
+                  "llmApiKeyEnv": {
+                    "description": "Name of the environment variable, in the server's environment, that holds the API key for the model under evaluation. It replaces the recorded credential on LLM requests; on a Bedrock request it is an Amazon Bedrock API key, sent as a Bearer token in place of the recorded SigV4 signature. Send the variable's name, never the key.",
+                    "type": "string"
+                  },
+                  "llmModel": {
+                    "description": "Model name to send in recorded LLM requests in place of the recorded one, to evaluate another model on the prompts production sent. Applies to OpenAI-compatible, Anthropic Messages, Ollama and Amazon Bedrock requests. A Bedrock request names its model in the URL, where a model id or an inference profile ARN replaces it; one signed with SigV4 is changed only together with llmApiKeyEnv, because its signature covers the URL. Point testAgainst at the model server.",
+                    "type": "string"
+                  },
+                  "llmSeed": {
+                    "description": "Whole-number seed to set on every recorded LLM request. Anthropic Messages and the OpenAI Responses API have no seed, so those requests are sent without one. Omit it to send each request as recorded. Use the same value on every run you compare.",
+                    "type": "number"
+                  },
+                  "llmTemperature": {
+                    "description": "Temperature to set on every recorded LLM request, to cut run-to-run noise; 0 is the usual choice. Omit it to send each request's sampling settings as recorded. Use the same value on every run you compare.",
+                    "type": "number"
+                  },
                   "loadTest": {
                     "description": "Load-test mode: skip response comparison to drive more load.",
                     "type": "boolean"
+                  },
+                  "mocksOut": {
+                    "description": "The mock server's outDirectory while it served this replay: evaluates the outbound HTTP assertion and the Mock fidelity and Data layer readiness families. Requires testConfig.",
+                    "type": "string"
                   },
                   "noOut": {
                     "description": "Write nothing to disk. The result then has no score.",
@@ -1489,8 +1829,13 @@
                   "outDirectory",
                   "noOut",
                   "testConfig",
+                  "mocksOut",
                   "failIf",
                   "rewriteHost",
+                  "llmModel",
+                  "llmApiKeyEnv",
+                  "llmTemperature",
+                  "llmSeed",
                   "testsFilter",
                   "vus",
                   "sessions",
