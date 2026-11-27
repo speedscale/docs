@@ -261,15 +261,18 @@ Verdicts from the [recommended model](#recommended-model) carry `dlpModelCertifi
 
 ### Teach the classifier your data
 
-The model can misread what a field means, such as a hotel's address, an insurer named in a `payer` field, or a server's IP address. Your accept and reject decisions on its recommendations steer it, for your workspace only.
+The model can misread what a field means, such as a hotel's address, an insurer named in a `payer` field, or a server's IP address. Your accept and reject decisions on its recommendations steer it, for your workspace or Speedscale tenant only.
 
 - Rejecting a model recommendation asks why. **Not sensitive** records the field as not sensitive: the model is not asked about it again, and the same key on other endpoints, such as `Customer.FirstName` or `customer.first_name`, gets no recommendation either. **Sensitive, no rule needed** only hides the recommendation.
 - On the command line, `proxymock recommendations reject --id <id> --reason not-sensitive` does the same. Without `--reason`, the recommendation is only hidden.
+- In the Speedscale dashboard, **Ignore** on a model recommendation in a snapshot's Prepare tab asks the same question. **Restore** undoes the decision, and **Accept** records the class.
 - Accepting a model recommendation records its class, so the same key on another endpoint is proposed with that class without asking the model.
 - Decisions on related fields, whose keys share a word such as `property` in `property.zip` and `Property.PostalCode`, go to the model as examples. An example carries the field's location and class, never a value, so examples are sent in `metadata` exposure too. A field whose examples change is asked again once.
 - A decision never overrides a card number, IBAN, routing number, SSN, email, MAC address, IMEI or VIN whose values match that class's pattern.
 
-Decisions are saved in `.proxymock/dlp-decisions.json` in the workspace, beside the verdict cache. They stay on your machine, apply to that workspace only, and train no model. Undoing a reject removes its decision. Delete the file to forget every decision.
+In proxymock, decisions are saved in `.proxymock/dlp-decisions.json` in the workspace, beside the verdict cache. They stay on your machine, apply to that workspace only, and train no model. Undoing a reject removes its decision. Delete the file to forget every decision.
+
+In Speedscale cloud, decisions are kept per tenant in the tenant's storage and apply to every snapshot that tenant classifies. They are never shared with another tenant or used to train a model.
 
 ## Why a value may not produce a recommendation
 
