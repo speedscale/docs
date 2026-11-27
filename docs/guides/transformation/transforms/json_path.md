@@ -3,7 +3,11 @@ description: "Extract a JSON value by path with the json_path transform in Speed
 sidebar_position: 13
 ---
 
-# json_path
+# JSON Path transform (json_path)
+
+:::info Where the path starts
+The path starts inside whatever the previous step produced, never at `http.`. After a **Response Body** source, the card number in `{"CreditCardOnFile":{"CardNumber":"4111..."}}` is `CreditCardOnFile.CardNumber`. A path such as `http.res.bodyBase64.CreditCardOnFile.CardNumber` belongs to the [RRPair field (full record)](../extractors/json_path.md) source. In this step it finds nothing, and with the default `create=true` the step then adds a new `http` object to the body and leaves the real field unchanged.
+:::
 
 The `json_path` transform extracts a value from a JSON document using a JSONPath expression and acts as a window onto that value for the rest of the chain. Downstream transforms see only the extracted scalar; when they're done, `json_path` writes the new value back into the same location of the original document, preserving JSON types where possible.
 
@@ -116,14 +120,17 @@ Use `create=false` when you want to *only* operate on documents that already hav
 
 ## Examples
 
-### Example 1 — Simple find/replace
+### Example 1: Mask a field
 
 ```
-req_body() → json_path(path="client_secret") → constant(value="redacted")
+req_body() → json_path(path="client_secret", create=false) → dlp_field()
 ```
 
 - Input: `{"client_id":"...","client_secret":"<long>"}`
-- Output: `{"client_id":"...","client_secret":"redacted"}`
+- Output: `{"client_id":"...","client_secret":"REDACTED-<hash>"}`
+- Input without the field: `{"client_id":"..."}` stays unchanged, because `create=false` skips documents that do not have the path.
+
+`dlp_field` needs a DLP redactor, so run this chain in a DLP rule; see [Creating DLP Rules](../../dlp/creating-rules.md). Leave **Create if missing** (`create`) on only when the chain should add the field.
 
 ### Example 2 — Numeric field type preservation
 
@@ -196,7 +203,7 @@ The inner `json_path` operates on the string yielded by the outer one; both re-i
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Chain init: `missing parameter path` | `path` not set | Add `"path": "..."` |
-| Token unchanged, "path value not found" error | The path doesn't exist in the input document and `create=false` | Either set `create=true` or fix the path |
+| Token unchanged, "path value not found" warning | The path doesn't exist in the input document and `create=false` | Expected for a masking chain on traffic without the field. Set `create=true` only when the chain should add the field; otherwise fix the path |
 | Numeric field becomes `0` | Downstream produced non-numeric text for a number field | Make the upstream transform produce numeric text, or restructure the chain |
 | Output JSON has the new value but different formatting (whitespace, key order) | `sjson` rewrites the document on insert | This is expected; downstream consumers should parse JSON, not match byte-for-byte |
 | Top-level array path doesn't work with `#` | Targeting a root-level array | Use the `#.field...` form — the transform expands it across all indices |
