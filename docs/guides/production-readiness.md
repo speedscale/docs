@@ -1,162 +1,76 @@
 ---
-description: "Prepare a Speedscale eBPF traffic capture deployment for a safe production rollout."
+description: "Rehearse production traffic capture in non-production, approve the IaC change, and verify that capture and replay data stay in your object storage."
 sidebar_position: 20
 ---
 
 # Production Readiness
 
-Use the Speedscale eBPF collector for new Kubernetes production deployments. It observes traffic from each node without injecting a proxy into application pods or adding a network hop. Review the [eBPF system requirements](/reference/ebpf-traffic-collection#system-requirements) and [workload impact](/reference/ebpf-traffic-collection/workload-impact) before rollout.
+Before recording production traffic, run one business transaction through the capture, storage, and replay setup you plan to promote. Use Speedscale Cloud in non-production to inspect traffic and tune rules quickly. Then rehearse the production BYOC configuration against a test bucket. Your deployment approval should identify the tested Git revision, the settings that differ in production, and how to stop capture.
 
-Use [sidecar capture](/getting-started/installation/sidecar/install) only for an existing deployment or a workload that does not meet the eBPF requirements.
+## Choose the production storage and capture mode {#preparation-checklist}
 
-## Preparation Checklist
+For Kubernetes deployments where captured requests and responses, replay inputs, and reports must stay in your account, use [BYOC direct storage](/byoc/#direct-storage). The namespaced Forwarder writes to your S3, S3-compatible, GCS, or Azure Blob object store. Capture uses a sidecar on a Deployment or StatefulSet. The sidecar's init container needs `NET_ADMIN` and `NET_RAW`, so the workload namespace needs a [Pod Security exemption](/getting-started/installation/install/kubernetes-namespaced#a-pod-security-exemption-for-the-instrumented-namespace) or an equivalent admission rule. Check the [service mesh limitations](/getting-started/installation/install/kubernetes-namespaced-limitations#service-mesh-istio-only-and-ambientcni-mode-must-be-stated-explicitly) before injecting into a meshed workload. Stage the snapshot locally and run a namespaced replay with `--snapshot-source local` to keep replay artifacts in your storage. Dashboard-initiated Cloud replays upload snapshots to Speedscale Cloud.
 
-- [ ] Sign the Speedscale SaaS agreement.
-- [ ] Confirm the target clusters, namespaces, and workloads.
-- [ ] Confirm that cluster nodes meet the eBPF requirements.
-- [ ] Check for a service mesh or other cluster security controls.
-- [ ] Size the Operator, forwarder, and nettap for the expected traffic volume.
-- [ ] Decide whether to disable remote control.
-- [ ] Configure data loss prevention and traffic filters.
-- [ ] Restrict access to Kubernetes secrets if required.
-- [ ] Define rollout and rollback criteria.
+If you need node-level eBPF capture, use the classic Operator with [BYOC collector export](/byoc/#collector-export-on-kubernetes). The Forwarder sends captured traffic to your OpenTelemetry Collector. To reuse it, [import from the bucket](/byoc/use-traffic) and replay locally with proxymock. Direct replay storage requires the namespaced install. Adding a collector exporter to the classic install leaves its Cloud traffic route active. For a storage-only production capture, create a drop-all filter in your tenant, as the [ECS example](/byoc/examples/ecs) does with `speedctl put filter`, and assign its ID to the Cloud `filterRule` before enabling capture. The default `standard` filter sends RRPairs to Cloud. Give the bucket exporter its own keep filter and DLP rule.
 
-### Sign the SaaS agreement
+Confirm the production support agreement and BYOC Enterprise entitlement with Speedscale. For either path, allow the Speedscale API route needed for registration, configuration, and operational telemetry. Approve the storage route, workload identity, bucket access, encryption, and retention separately. See [Configure BYOC on Kubernetes](/byoc/configure-kubernetes).
 
-Speedscale requires a signed SaaS agreement for a commercial license before it will support a production deployment.
+## Tune one transaction in non-production
 
-### Scope the initial target
+1. Choose a representative operation, for example a checkout that calls an inventory service. Give the request a unique, non-sensitive marker. Record the expected application response and dependency calls.
+2. Where your data policy permits, enable a hybrid capture for that workload. Send approved non-production traffic to Speedscale Cloud and use a named collector exporter to send a copy to a test bucket. Configure filters and data loss prevention (DLP) for **each** destination before sending the request. Redaction is off by default. For the classic Operator, set `dlp.enabled: true` and put the reviewed rule ID in `dlp.config`. For a namespaced install, set `namespaced.dlp.enabled: true` and put the reviewed rule ID in `namespaced.dlp.config`. Filter probes and out-of-scope workloads before export.
+3. Find the marked request in Traffic Viewer and in a newly written bucket object. Inspect the inbound request, application response, and outbound dependency exchange in both places. Check that sensitive fields are masked in the stored object before applying any import-time redaction. Check that the excluded traffic is absent.
+4. Save the tested filter and DLP definitions in Git. If you tuned a rule in the UI, pull its JSON and run the [local rule tests](/proxymock/guides/local-rules) against representative recordings. Keep raw captures and credentials out of the pull request. A named exporter applies its own `filter_rule` and `dlp_config_id`, while direct storage applies `namespaced.filterRule` and `namespaced.dlp` to its primary stream. Set the tuned rules on the controls your production path uses.
+5. Plan how the reviewed rules stay pinned. The Forwarder reads a tenant rule by ID, so an edit after approval changes production without a pull request. Enabled [group rules](/guides/dlp/group-rules) whose scope names the production namespace apply only there. Before each deployment, compare `proxymock cloud pull dlp <ID>` and `proxymock cloud pull filter <ID>` output with the Git copy, and list the group rules that cover each namespace. If the Forwarder reads local rule files from its `speedscale-forwarder-dlp` and `speedscale-forwarder-filter` ConfigMaps, deploy them from the same pipeline. The chart render does not include them.
 
-Speedscale records only the workloads selected by the eBPF capture configuration. Start with one representative service and a limited traffic window. Expand to additional workloads after validating capture quality, resource use, data controls, and ingest volume.
+## Rehearse the production change {#deployment-checklist}
 
-Target workloads with namespace and pod selectors in the Operator Helm values, or use the `capture.speedscale.com/enabled` annotation. See [eBPF traffic collection](/reference/ebpf-traffic-collection#enabling-via-helm) for both options.
+Build the approval workflow in non-production with the same IaC pipeline that will deploy production. Use a separate rehearsal namespace and test bucket for the production storage mode. In the rehearsal, disable Cloud payload export and exercise the same capture and replay paths you will use in production.
 
-### Review cluster and workload requirements
+### Example promotion pull request
 
-Confirm the supported Kubernetes version, Linux kernel, container runtime, protocols, and TLS libraries before installation. If the workload uses TLS, check [TLS traffic visibility](/reference/ebpf-traffic-collection#tls-traffic-visibility) for language-specific requirements.
+Suppose you are promoting direct S3 storage for a `checkout` canary. Commit the pinned chart and component versions, shared Helm values, capture target, and rule contents. Put the environment-specific values in separate overlays. Reference credentials through workload identity or an existing Secret. A reviewer should be able to account for every difference, including the following example settings.
 
-The collector is a privileged DaemonSet. Review its security context, host mounts, and required capabilities with the platform and security teams. Managed Kubernetes platforms can require additional admission configuration. For example, see the [GKE Autopilot guide](/getting-started/installation/install/gke-autopilot).
+| Setting | Non-production rehearsal | Production canary |
+| --- | --- | --- |
+| Workload and namespace | `checkout-canary` in `checkout-test` | `checkout-canary` in `checkout-prod` |
+| Capture and transport | Namespaced sidecar, `namespaced.forwarder.primaryTransport: byoc` | Same mode, with the same chart, image pins, and rule contents |
+| Redaction | `namespaced.dlp.enabled: true` and the tested rule ID in `namespaced.dlp.config` | Same rule ID and contents, plus any group rules scoped to `checkout-prod` |
+| Workload namespace policy | Same Pod Security level and admission rules as production | Exemption for the sidecar's `NET_ADMIN` and `NET_RAW` init container |
+| Storage destination | `checkout-capture-test` bucket | `checkout-capture-prod` bucket |
+| Forwarder identity | Role scoped to the test bucket and prefix | Role scoped to the production bucket and prefix |
+| Other payload destinations | None | None |
 
-Istio and its derivatives are supported natively. If you run Istio, follow the [external networking requirements](/getting-started/installation/install/istio#external-networking-requirements) while configuring the Operator. The sidecar configuration on that page applies only to legacy sidecar capture. For any other service mesh, contact [support](https://slack.speedscale.com) before you start.
-
-Ask your security team whether cluster-level security tooling is in place. Admission controllers and runtime security agents can block the collector's privileged DaemonSet, and the failures present as obscure timeouts rather than clear denials. Namespaces such as `twistlock` or `calico-` are a hint that such tools are installed. Speedscale has recipes for coexisting with many of them; ask support.
-
-### Disable remote control when required
-
-Speedscale can optionally accept control-plane commands from the web application. For production recording clusters that require all changes to pass through Kubernetes RBAC and GitOps, set `dashboardAccess: false` in the Operator Helm values. This prevents the remote-control container from being deployed.
-
-With remote control disabled, manage capture targets and replays through cluster configuration.
-
-### Configure data loss prevention
-
-[Data loss prevention (DLP)](/guides/dlp) filters and redacts traffic before it leaves the cluster. Test DLP rules in a non-production cluster with representative traffic before applying them to production.
-
-A safe validation sequence is:
-
-1. Copy the `standard` DLP rule and add the fields that must be redacted.
-2. Install or upgrade the Operator with `dlp.enabled: true` and set `dlp.config` to the custom rule.
-3. Enable capture for one workload.
-4. Confirm that sensitive fields are redacted in the Traffic Viewer.
-5. Add remaining rules and repeat the check.
-
-### Restrict secret access
-
-The Operator can read Kubernetes secrets for transforms such as JWT resigning. Use the `secretAccessList` Helm value to restrict access to the specific secrets required by your replay workflows. An empty list allows access to all secrets in the configured namespaces.
-
-### Filter traffic before ingest
-
-Use [traffic filters](/guides/creating-filters) to exclude health checks, monitoring traffic, large payloads, and out-of-scope services before data is sent to Speedscale Cloud. Start from the `standard` filter and add environment-specific rules. Filtering is also the primary control for limiting ingest volume and network egress.
-
-## Deployment Checklist
-
-- [ ] Scope the Operator to the namespaces it needs.
-- [ ] Install the Operator and enable eBPF.
-- [ ] Apply a narrow capture target.
-- [ ] Confirm the collector and forwarder are healthy.
-- [ ] Generate representative traffic.
-- [ ] Validate redaction, filtering, and TLS decoding.
-- [ ] Measure resource use and application latency.
-- [ ] Expand the target set gradually.
-
-### Scope the Operator with a namespace selector
-
-The Operator installs a mutating webhook that runs on every deployment in the cluster. Restrict it to a subset of namespaces with the `namespaceSelector` Helm value. This also changes the RBAC the chart creates:
-
-- A `ClusterRole` and `ClusterRoleBinding` named `speedscale-operator` is always created. It always carries the minimal permissions the Operator needs to function, such as listing namespaces, webhooks, and its own role.
-- Without a namespace selector, that `ClusterRole` also gets permission to read and modify `deployments`, `statefulsets`, `daemonsets`, `secrets`, and similar resources across the whole cluster.
-- With a namespace selector, those broader permissions move into a `Role` and `RoleBinding` created in each selected namespace instead, so the Operator has no access outside them.
-
-:::tip
-A `ClusterRole` is a non-namespaced resource granting permissions across the entire cluster. A `Role` is namespaced and grants permissions only within its own namespace.
-:::
-
-Security reviewers usually want the namespace-scoped form for production. The exact resources and verbs are in `rbac.yaml` in the [chart templates](https://github.com/speedscale/operator-helm).
-
-### Install and target eBPF capture
-
-Enable the collector in the Operator Helm values and define an initial target:
-
-```yaml title="production-values.yaml"
-ebpf:
-  enabled: true
-  configuration:
-    capture:
-      targets:
-        - name: checkout
-          namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: production
-          podSelector:
-            matchLabels:
-              app: checkout
-```
-
-Add these values to the normal [Operator installation](/getting-started/installation/install/kubernetes-operator). For an existing installation, apply them with an upgrade:
+Start from the [direct-storage Helm values](/byoc/configure-kubernetes#customer-owned-s3-replay-storage), including `namespaced.enabled: true`. In CI, render the rehearsal and production values from the same checkout. For example, if your repository stores the approved chart version in `chart-version.txt` and the values in `capture/`, this Bash step produces a review copy with Kubernetes Secret values removed. It stops if the version file is missing or empty, and it uses yq v4.
 
 ```bash
-helm upgrade speedscale-operator speedscale/speedscale-operator \
-  --namespace speedscale \
-  --reuse-values \
-  -f production-values.yaml
+set -euo pipefail
+chart_version="$(cat chart-version.txt)"
+test -n "$chart_version"
+helm repo add speedscale https://speedscale.github.io/operator-helm/ --force-update
+helm template checkout-capture speedscale/speedscale-operator \
+  --version "$chart_version" --namespace checkout-prod \
+  -f capture/shared.yaml -f capture/production.yaml |
+  yq 'with(select(.kind == "Secret"); del(.data, .stringData))' > production-review.yaml
 ```
 
-For an existing Operator installation, you can instead enable a deployment with an annotation:
+Render again with `checkout-test` and `capture/rehearsal.yaml`. Compare the manifests, including the Forwarder transport, enabled exporters, identities, and permissions. A namespaced direct-storage render should contain only namespaced resources. Deploy from the pinned chart and committed values. Reserve the sanitized manifests for review. Include the workload capture step in the review as well. For namespaced capture, the [sidecar injection and removal steps](/guides/capture/sidecar-namespaced) both roll the workload. They are `proxymock cluster capture` commands run with a kubeconfig, so name the commands, who runs them, and the time window in the review. If Argo CD or Flux manages the canary, inject refuses because the controller would revert the sidecar. [Pause its sync](/guides/capture/sidecar-namespaced#gitops-detection) for the window. Keep the canary's pod template unchanged until you uninject, because uninject refuses when a recorded field has changed since injection.
 
-```bash
-kubectl annotate deployment checkout -n production \
-  capture.speedscale.com/enabled="true" --overwrite
-```
+### Evidence to attach before approval {#validation}
 
-### Size the in-cluster components
+- Send the marked request through the rehearsal canary. Retrieve the stored request/response pair with the expected service and namespace. Verify the response body, dependency calls, and redactions. Confirm that the same marker is absent from Cloud traffic for that cluster and time window.
+- Import a bounded sample and replay against an isolated test workload. Verify the application status and assertions, expected mock hits, and any unexpected dependency passthrough. Check that replayed requests authenticate. A finished replay can contain `401` responses from the application when recorded credentials have expired. Bucket access through the Forwarder's workload identity is a separate check.
+- For direct storage, retrieve the final replay report from the test bucket. For collector export, verify both the stored capture and the local replay result. The [BYOC verification guide](/byoc/verify) gives the checks for each path.
+- Attach the sanitized manifest diff, the revision tested, redacted evidence, and the rollback procedure to the pull request. Record the acceptable application latency, error rate, capture volume, and resource limits for the canary window. Include Forwarder and sidecar CPU, memory, restarts, and throttling measured during the rehearsal. The namespaced chart runs a single Forwarder replica, so size its resources for the canary's traffic. Route the change through your normal deployment approval. Deploy the reviewed revision and repeat the rehearsal if capture behavior or rules change.
 
-Monitor CPU, memory, restarts, and throttling for the Operator, forwarder, and nettap during the initial recording window. Increase the relevant Helm resource requests and limits if components approach their limits. The forwarder needs enough capacity for filtering, DLP, and compression at the expected traffic rate.
+## Run and stop the production canary
 
-Because nettap runs once per selected node, compare node resource use before and after enabling the target. The [workload impact guide](/reference/ebpf-traffic-collection/workload-impact) provides a repeatable measurement procedure.
+Enable capture for one workload for the approved time window. If you need only a fraction of its traffic, route that share to a dedicated canary with stable labels. Send a fresh marked request. Verify production identity and storage access, locate the redacted record in the production bucket, and check Cloud traffic for an unintended copy. Compare application latency and errors to the baseline, and watch Forwarder and sidecar resource use against the recorded limits. Check the Forwarder logs and, if using collector export, the collector logs for queue drops, retries, or rejected writes. Healthy pods alone cannot confirm delivery.
 
-### Expand in stages
+At the end of the window, or sooner if a check fails, apply the rehearsed stop change through the same pipeline. For namespaced sidecar capture, uninject the canary while the Forwarder is available and wait for the workload rollout. For eBPF, remove the target from the Operator values or [set `capture.speedscale.com/enabled: "false"`](/guides/capture/kubernetes#disable-capture) in the workload source, then reconcile. After queued writes drain, send a fresh marker to the workload. Confirm the application still responds and no new capture for that marker appears. Expand to the next workload only after the first canary meets the agreed limits and the stop procedure works.
 
-Add workloads in small groups after the initial target passes validation. Prefer selectors that identify stable application labels. Avoid revision-specific labels that change with each deployment.
+### Additional checks for classic eBPF capture
 
-If only a percentage of traffic should be captured, route that percentage to a canary deployment and target the canary's stable labels. Use the platform's normal canary or service-mesh traffic management rather than injecting a separate capture proxy.
-
-## Validation
-
-Confirm each of these before expanding production capture:
-
-- The nettap DaemonSet is ready on every node that hosts a target workload.
-- Captured traffic is attributed to the expected service and namespace.
-- Supported TLS traffic is decoded and long-lived connections were restarted after probes attached.
-- DLP rules redact sensitive fields before upload.
-- Filters exclude health checks, monitoring traffic, and other known noise.
-- Operator, nettap, and forwarder resource use remains within limits.
-- Application latency and error rates remain within the agreed rollout threshold.
-- Ingest volume matches the expected traffic sample.
-
-To stop capture for an annotation-based target:
-
-```bash
-kubectl annotate deployment checkout -n production \
-  capture.speedscale.com/enabled="false" --overwrite
-```
-
-For selector-based targets, remove the target from the Operator Helm values and apply the updated configuration. Contact [Speedscale support](https://slack.speedscale.com) if the rollout does not meet the validation criteria.
+- Check [kernel, container runtime, protocol, and TLS support](/reference/ebpf-traffic-collection#system-requirements). Have the platform team verify that admission policy permits the nettap DaemonSet's host network, host PID, read-only host mounts, and [added capabilities](/reference/ebpf-traffic-collection#runtime-requirements). Check [Istio networking](/getting-started/installation/install/istio#external-networking-requirements) or [GKE Autopilot requirements](/getting-started/installation/install/gke-autopilot) where applicable.
+- Use the Operator's `namespaceSelector` to limit webhook scope and permissions. Separately [select the workloads to capture](/reference/ebpf-traffic-collection#enabling-via-helm). For GitOps-only control, set `dashboardAccess: false`. Review `secretAccessList` for transforms that read Secrets. An empty list allows access to all Secrets in the configured namespaces.
+- Verify nettap is ready on each target node. Where TLS capture requires it, re-establish long-lived connections after probes attach and confirm the marked exchange decodes. Measure Operator, Forwarder, and per-node nettap CPU, memory, restarts, and throttling during capture. Follow the [workload impact procedure](/reference/ebpf-traffic-collection/workload-impact) to compare against the baseline.
