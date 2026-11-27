@@ -102,6 +102,10 @@ include:
 
 Each README lists every input, such as the proxymock `version` to pin and, on GitHub, a `webhook-url` to post failures to Slack.
 
+Build the application before the replay starts, because the replay gives `app-command` 30 seconds to start listening. On GitHub, build in an earlier step. On GitLab, set the component's `build-command`.
+
+Most database drivers ignore proxy environment variables, so record and mock a database on a mapped port. Record with `proxymock record --map 65432=postgres://localhost:5432`, point the application at port 65432, and pass the same map to the mock with `mock-args: --map 65432=postgres://localhost:5432`.
+
 The command prints what is left to do by hand: adding your API key as the secret `SPEEDSCALE_API_KEY`, and adding the steps that build your application.
 
 | Flag | Use it to |
