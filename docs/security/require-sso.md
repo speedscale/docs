@@ -52,7 +52,9 @@ Each person whose personal API key is refused can replace it after signing in th
 
 1. Sign in to Speedscale through SSO.
 2. Open the [Profile page](https://app.speedscale.com/profile) and select **Regenerate** next to the personal API key. The new key is tied to the SSO sign-in. The old key value stops working.
-3. Select **Download personal config** and replace the `config.yaml` used by `speedctl` and `proxymock`.
+3. Put the new key in the configuration file your CLI reads by following [Replace an existing configuration](../proxymock/guides/initialize.md#replace-credentials). Newer clients read `config.json` before `config.yaml`, so replacing only one file can leave the refused key in use. To check which file each client reads, see [Credentials](../getting-started/command-line-tools.md#credentials).
+
+To skip the Profile page, run `proxymock init`, choose browser sign-in, sign in through SSO, and accept the prompt to back up and overwrite the configuration.
 
 ## Replacing the SSO connection
 
