@@ -5,7 +5,7 @@ sidebar_position: 8
 
 # Require SSO
 
-Once [SSO](./sso.md) is active, anyone with an email address on your company domain can still sign in with a password, Google, or GitHub. Requiring SSO closes that path: every person in the organization must sign in through your SSO connection, and their personal API keys must have been issued after an SSO sign-in.
+Setting up [SSO](./sso.md) still allows other ways to sign in to your Speedscale organization. Requiring SSO closes that path: every person in the organization must sign in through your SSO connection, and their personal API keys must have been issued after an SSO sign-in.
 
 The requirement is off by default. An Admin turns it on for the organization, and it applies to everyone in it, Admins included.
 
@@ -31,7 +31,7 @@ Service account keys keep working because no person signs in with them. Use them
 ## Before you turn it on
 
 1. Confirm that the SSO connection is active and that [Test sign-in](./sso.md#test-sign-in) succeeds for a user assigned to the provider application.
-2. Assign everyone who needs access to the provider application. A person who is not assigned cannot sign in once SSO is required.
+2. Confirm that the right people have access to the SSO application and that sign-in takes them to the expected Speedscale organization.
 3. Move clusters and CI pipelines that use a personal API key to a service account key.
 4. Sign in to Speedscale through SSO yourself. Speedscale refuses the change from a session that did not come through the SSO connection, so you cannot lock yourself out.
 
