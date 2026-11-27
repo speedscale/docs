@@ -32,8 +32,7 @@ Adding anything to your CI/CD pipeline generally involves the same 3 steps:
 In order to integrate **proxymock** into your CI/CD you will need:
 
 - Access to modify your CI/CD pipeline
-- Your **proxymock** API key
-- A paid **proxymock** account (see [proxymock.io](https://proxymock.io/pricing) for pricing details)
+- A **proxymock** API key. A [free account](https://app.speedscale.com/proxymock/signup) provides one.
 - Pre-recorded traffic files (see [recording](/proxymock/getting-started/quickstart/quickstart-cli.md#recording) to record from your app)
 
 ## Let proxymock write the pipeline
@@ -106,7 +105,7 @@ Build the application before the replay starts, because the replay gives `app-co
 
 Most database drivers ignore proxy environment variables, so record and mock a database on a mapped port. Record with `proxymock record --map 65432=postgres://localhost:5432`, point the application at port 65432, and pass the same map to the mock with `mock-args: --map 65432=postgres://localhost:5432`.
 
-The command prints what is left to do by hand: adding your API key as the secret `SPEEDSCALE_API_KEY`, and adding the steps that build your application.
+Store your API key as the `SPEEDSCALE_API_KEY` repository secret on GitHub or as a masked CI/CD variable on GitLab. Add any build steps your application needs. For GitHub pull request comments, grant the workflow `pull-requests: write`. For GitLab merge request comments, add `PROXYMOCK_GITLAB_TOKEN` as a masked CI/CD variable using a project access token with the `api` scope.
 
 | Flag | Use it to |
 | --- | --- |
@@ -117,7 +116,7 @@ The command prints what is left to do by hand: adding your API key as the secret
 | `--dry-run` | Print the files instead of writing them. |
 | `--force` | Replace a pipeline file that already exists. |
 
-The replay in the pipeline names the built-in test config with `--test-config regression`. A replay holds a test config's goals as gates only when the config is named, so this is what makes a changed response fail the job. See [Test configs](./test-configs.md) to hold the run to your own goals instead.
+Both packages use the built-in `regression` test config by default. The job fails when a request's status code changes or the replay misses a goal set by the config. Use `fail-if` to gate on response body changes or latency. Give each GitHub condition its own line and separate GitLab conditions with semicolons. Open the [failure bundle](./replay-verdicts.md#failure-bundles) in the replay artifact to compare the exchanges, see dependency calls, and read the likely cause. See [Test configs](./test-configs.md) to define your own goals.
 
 For any other CI system, or to build the pipeline yourself, follow the three steps below.
 
