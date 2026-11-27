@@ -30,7 +30,7 @@ Other limits still end the stream as a partial call: a single message over 256 K
 
 ### Streams that the client cancels
 
-Subscribers such as Pub/Sub StreamingPull never half-close. They end their stream by cancelling it, which the client sends as an HTTP/2 `RST_STREAM` with the `CANCEL` or `NO_ERROR` code. Once a call has streamed, a client cancel closes its final part as a stream that the client ended, with the reset as its termination, and mock and replay use it. A stream that fits in one part is recorded as a single final part. A message cut short by the cancel is dropped, and every whole message before it is kept. In a stream that fits in one part, a reset with any other code or a reset from the server still leaves a partial call.
+Subscribers such as Pub/Sub StreamingPull never half-close. They end their stream by cancelling it, which the client sends as an HTTP/2 `RST_STREAM` with the `CANCEL` or `NO_ERROR` code. Once a call has streamed, a client cancel closes its final part as a stream that the client ended, with the reset as its termination, and mock and replay use it. A stream that fits in one part is recorded as a single final part. A message cut short by the cancel is dropped, and every whole message before it is kept. A subscriber process that exits right after cancelling can close its connection before the reset is sent. A stream whose connection closes is kept the same way, with the connection end as its termination, whether it fits in one part or spans several. In a stream that fits in one part, a reset with any other code or a reset from the server still leaves a partial call.
 
 ### How parts appear in a recording
 
