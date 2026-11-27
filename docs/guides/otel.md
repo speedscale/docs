@@ -39,11 +39,11 @@ For this guide, we'll focus on replicating only a specific Trace. Virtually any 
 
 ### Step 1: Identify OpenTelemetry ID in Traffic Viewer
 
-First, pick a Trace ID to investigate. Conveniently, Speedscale automatically identifies and parses these values from many kinds of transactions. If Speedscale is monitoring your production environment, this involves simply opening the traffic viewer, selecting an RRPair and looking for the Trace ID in its Interesting Data. Speedscale will automatically populate the Trace ID if it is in a standard location. Here is an example HTTP Header taken from the traffic viewer:
+First, pick a Trace ID to investigate. Conveniently, Speedscale automatically identifies and parses these values from many kinds of transactions. If Speedscale is monitoring your production environment, this involves simply opening the traffic viewer, selecting an RRPair and looking for the Trace ID on its **Data** tab. Speedscale will automatically populate the Trace ID if it is in a standard location. Here is an example HTTP Header taken from the traffic viewer:
 
 `Traceparent=00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00`
 
-This will break down into a `TraceID=4bf92f3577b34da6a3ce929d0e0e4736` and a `SpanID=00f067aa0ba902b7` in the RRPair's Interesting Data.
+This will break down into a `TraceID=4bf92f3577b34da6a3ce929d0e0e4736` and a `SpanID=00f067aa0ba902b7` on the RRPair's **Data** tab, as `TRACE_ID` and `SPAN_ID` tokens.
 
 ### Step 2: Create Trace ID Snapshot
 

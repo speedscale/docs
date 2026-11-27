@@ -17,7 +17,7 @@ The generator sends the token request straight to the token URL. The identity pr
 
 ## From the dashboard
 
-You rarely need to write this transform by hand. Open the snapshot's **Credentials** tab, select **Replace credentials** on the credential, choose **Fetch a fresh token**, and pick **OAuth client credentials**, **curl command** or **Postman request**. Speedscale saves a credential blueprint with a `token_fetch` chain and adds it to every replay of matching traffic. The [Replace credentials guide](/guides/replay/replace-credentials.md#fetch-a-fresh-token) walks through each field.
+You rarely need to write this transform by hand. Open the snapshot's **Prepare** tab, select **Replace credentials** on the credential's row, choose **Fetch a fresh token**, and pick **OAuth client credentials**, **curl command** or **Postman request**. Speedscale saves a credential blueprint with a `token_fetch` chain and adds it to every replay of matching traffic. The [Replace credentials guide](/guides/replay/replace-credentials.md#fetch-a-fresh-token) walks through each field.
 
 ![The Replace credentials wizard configuring OAuth client credentials, which builds a token_fetch chain](../../replay/replace-credentials/wizard-configure.png)
 

@@ -29,12 +29,9 @@ The [banking walkthrough](./endpoint-load-how-to.md) takes you through endpoint 
 
 ## Load test an entire recording
 
-Use a [test config](/reference/glossary.md#test-config) to define the load
-pattern for your test.  Start by making a copy of the test config
-[performance-100replicas](https://app.speedscale.com/config/performance_100replicas)
-since the built in test configs cannot be modified.
+Use a [test config](/reference/glossary.md#test-config) to define the load pattern for your test. Built-in test configs cannot be modified, so start by opening [performance_100replicas](https://app.speedscale.com/config/performance_100replicas) and clicking **Copy test config**.
 
-![copy-performance-100-replicas](./copy-performance-100-replicas.png)
+![The read-only performance_100replicas test config with its maintained by Speedscale banner and the Copy test config button](./copy-performance-100-replicas.png)
 
 Notice the existing settings on the test config like [**low data
 mode**](/reference/glossary.md#low-data-mode).
@@ -50,41 +47,26 @@ overall accuracy of the replay report.
 :::
 
 
-Now click on the **Load Pattern** tab to configure load for the
-[replay](/reference/glossary.md#replay).  From this screen we can edit and add
-replay stages.
+Now click on the **Load Pattern** tab to configure load for the [replay](/reference/glossary.md#replay). From this screen you can edit and add replay stages, and the chart above the stages table previews the pattern.
 
-![test-config-load-pattern](./test-config-load-pattern.png)
+![The Load Pattern tab of the copy with one stage of 100 vUsers for 300 seconds and its chart](./test-config-load-pattern.png)
 
-A replay may have one or more stages and each stage may have a different
-configuration.  Let's break down the settings in a stage.  Click the edit
-button on stage 1.
+A replay may have one or more stages and each stage may have a different configuration. Let's break down the settings in a stage. Click the pencil on stage 1.
 
-![load-pattern-stage](./load-pattern-stage.png)
+![The Stage 1 dialog set to run for a fixed time of 300 seconds with 100 vUsers at full speed](./load-pattern-stage.png)
 
-The left side sets the **Duration** and determines how long the stage will last.
-Select **One traffic set** to replay each request in the
-[snapshot](/reference/glossary.md#snapshot) only once, per traffic copy.
-Alternatively, set a **Fixed time** to cycle traffic from the snapshot until
-the time is reached.  The **Ramp time** will ramp traffic up to the **Request
-Volume/Speed** over the duration given.
+The left side sets the **Duration** and determines how long the stage will last. Select **Run as long as it takes to send all requests** to replay each request in the [snapshot](/reference/glossary.md#snapshot) once per vUser. Alternatively, select **Run for a fixed time** to cycle traffic from the snapshot until the time is reached. The **Ramp Time** moves traffic from the previous stage's level to this stage's target over the time given, and cannot exceed the stage duration.
 
-The right side sets the **Request Volume/Speed** and determines fast requests
-will be made.  Selecting a **RPS** sets the number of [requests per
-second](/reference/glossary.md#requests-per-second) this stage will
-target.  While the replay is running the
-[generator](/reference/glossary.md#generator) monitors the current RPS and
-increases or decreases load accordingly, holding load once the target is
-reached.
+The right side sets the **Request Volume/Speed** and determines how fast requests will be made. Select **Request rate** to set the number of [requests per second](/reference/glossary.md#requests-per-second) this stage will target, in TPS, or per minute with TPM. While the replay is running the [generator](/reference/glossary.md#generator) monitors the current rate and increases or decreases load accordingly, holding load once the target is reached. A request rate stage needs a fixed time, and the rate must be a positive whole number. Select **vUsers** instead to set the number of concurrent traffic copies, sent at **Full speed** or with the recorded delay between requests scaled by **Multiply original latency**.
 
-Let's look at an example with multiple stages using RPS to control load.
+Let's look at an example with multiple stages using a request rate to control load.
 
 | Stage | Ramp time | Duration  | Request Volume |
 |-------|-----------|-----------|----------------|
-| 1     | 0s        | 120s      | 50 RPS         |
-| 2     | 0s        | 180s      | 100 RPS        |
-| 3     | 30s       | 300s      | 200 RPS        |
-| 4     | 45s       | 45s       | 0 RPS          |
+| 1     | 0s        | 120s      | 50 TPS         |
+| 2     | 0s        | 180s      | 100 TPS        |
+| 3     | 30s       | 300s      | 200 TPS        |
+| 4     | 45s       | 45s       | 1 TPS          |
 
 This load pattern would result in a replay that looks like this:
 
@@ -94,27 +76,27 @@ This load pattern would result in a replay that looks like this:
      ^           ^         ^         ^           ^
      |           |         |         |           |
  stage 1         |         |         |           |
-targets 50 RPS   |         |         |           |
+targets 50 TPS   |         |         |           |
                  |         |         |           |
               stage 2      |         |           |
             immediately    |         |           |
-          targets 100 RPS  |         |           |
+          targets 100 TPS  |         |           |
                            |         |           |
                      stage 3 spends  |           |
                     30s ramping from |           |
-                     100 to 200 RPS  |           |
+                     100 to 200 TPS  |           |
                                      |           |
                                stage 3 spends    |
-                                the reamining    |
-                               270s at 200 RPS   |
+                                the remaining    |
+                               270s at 200 TPS   |
                                                  |
                                    stage 4 spends all of its 45s
-                                   ramping down from 200 RPS to 0
+                                   ramping down from 200 TPS to 1
 ```
 
-The graph for this load pattern might look something like this:
+A report's **Performance** tab shows each stage in its throughput chart. This report ran three stages: 2 vUsers for 30 seconds, a 5 second ramp to 20 vUsers held for 30 seconds, then 2 vUsers for 60 seconds.
 
-![replay-load-pattern](./replay-load-pattern.png)
+![A load test report Performance tab where throughput jumps from about 120 to about 450 RPS during the middle stage and drops back](./replay-load-pattern.png)
 
 There are several performance oriented test configs available by default to get you started.
 

@@ -8,17 +8,17 @@ Front end applications and APIs typically have back and forth conversations that
 
 ## Session detection
 
-In many cases, sessions are automatically detected and given a unique identifier matching some aspect of the traffic. As an example, consider an OAuth2 login. In the RRPair viewer you will see a JSON response from the server like this:
+In many cases, sessions are automatically detected and given a unique identifier matching some aspect of the traffic. As an example, consider an OAuth2 login. Open the login RRPair from the snapshot's **Traffic** tab and its **Response** body shows an `access_token` like this:
 
-![access_token](./sessions/access_token.png)
+![The Response Body tab of a POST /oauth2/v1/token RRPair, with an access_token and a token_type of Bearer](./sessions/access_token.png)
 
-Now click on the `Info` tab on that same RRPair. You can tell that Speedscale detected this token because it populates the JWT as the session ID.
+Now choose **More** > **Info** on that same RRPair. You can tell that Speedscale detected this token because it uses the token as the Session ID.
 
-![session_id](./sessions/session_id.png)
+![The Info view of the same RRPair, where the Session ID row holds the access_token value](./sessions/session_id.png)
 
 When a snapshot is created data about the sessions will be aggregated into a summary. The list of detected tokens/sessions can be viewed from the snapshot's **⋮** menu with **View Tokens**:
 
-![The Tokens panel, with tokens grouped by type and the location of each one](./sessions/token_summary.png)
+![The Tokens panel, with Unrecognized, Email, UUID, JWT and Datetime token groups and the location of each token](./sessions/token_summary.png)
 
 ## Replay
 

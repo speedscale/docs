@@ -13,7 +13,7 @@ Speedscale's pricing is based on the amount of data ingested, measured in gigaby
 
 Speedscale charges based on the total amount of data ingested to Speedscale Cloud, measured in GB per month. You can view your usage within Usage section of the [Speedscale UI](https://app.speedscale.com/tenant#tenant-tab-usage).
 
-<img src={PricingDashboard} width="800"/>
+<img src={PricingDashboard} width="800" alt="The Usage tab of Settings, with a monthly ingest chart and the Tenant Ingest Current Month and Last Month totals"/>
 
 ## 🔍 What counts toward my monthly data usage?
 
@@ -79,17 +79,17 @@ Yes. Speedscale offers the ability to:
 
 You can see current and historical usage by navigating to **Settings > Usage** in the Speedscale UI. Detailed breakdowns by service and namespace are available for the last seven days to help identify cost centers. Click on the main navigation -> Services for a list of services that have reported traffic in the last seven days.
 
-![services](./pricing-faq/services.png)
+![The Services list, with throughput, p95 latency, errors, snapshot and replay counts for each service](./pricing-faq/services.png)
 
 Click on a service to see more detail.  In the traffic viewer you can adjust traffic filters to isolate high volume requests. For instance, you might want to filter for the `/heartbeat` endpoint to see if that is the source of your traffic. The service map will show total transaction counts by service, with the current filters applied.
 
-![service map](./pricing-faq/service-map.png)
+![The Service Dependencies map for banking-notification, with transaction counts for its inbound client and each outbound dependency](./pricing-faq/service-map.png)
 
 The number in each box is the number of transactions for the particular inbound or outbound service. Calculating the exact volume in bytes of a particular set of traffic requires creating a snapshot. Press the *Save* button to create a snapshot. 
 
 Select the three dot menu in the top right of the snapshot page and select "View tags." The *raw.jsonl_size* contains the amount of ingest in bytes used by this specific traffic set.
 
-![snapshot tags](./pricing-faq/snapshot-tags.png)
+![The Snapshot tags panel, listing artifact sizes such as raw.jsonl_size](./pricing-faq/snapshot-tags.png)
 
 ## 🚨 Can I set usage limits?
 

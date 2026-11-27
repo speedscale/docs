@@ -43,6 +43,68 @@ const config = {
       "@docusaurus/plugin-client-redirects",
       {
         redirects: [
+          // Pages removed in the navigation rebuild
+          {
+            from: "/proxymock/how-it-works/",
+            to: "/proxymock/how-it-works/architecture/",
+          },
+          {
+            from: "/guides/replay/config/",
+            to: "/reference/configuration/",
+          },
+          {
+            from: "/proxymock/getting-started/help/",
+            to: "/reference/faq/",
+          },
+          {
+            from: "/qabot/",
+            to: "/guides/recommendations/",
+          },
+          {
+            from: "/proxymock/guides/",
+            to: "/guides/",
+          },
+          {
+            from: "/markdown-page/",
+            to: "/",
+          },
+          {
+            from: "/index_old/",
+            to: "/",
+          },
+          {
+            from: "/tutorial/",
+            to: "/getting-started/tutorial/",
+          },
+          {
+            from: "/guides/local-capture/",
+            to: "/proxymock/getting-started/quickstart/quickstart-cli/",
+          },
+          // Old URLs that still get visits and had no redirect
+          {
+            from: "/upgrade/changed-annotations/",
+            to: "/getting-started/installation/sidecar/annotations/",
+          },
+          {
+            from: "/cli/speedscale/guides/",
+            to: "/guides/cli/",
+          },
+          {
+            from: "/reference/proxymock/",
+            to: "/reference/proxymock-cli-reference/",
+          },
+          {
+            from: "/capture/",
+            to: "/concepts/capture/",
+          },
+          {
+            from: "/guides/reports/accuracy/",
+            to: "/guides/reports/errors/",
+          },
+          {
+            from: "/guides/replay/compare/",
+            to: "/guides/reports/",
+          },
           {
             from: "/reference/cli/",
             to: "/guides/cli/",
@@ -50,6 +112,27 @@ const config = {
           {
             from: "/getting-started/poc-prerequisites/",
             to: "/getting-started/evaluation/",
+          },
+          // Message brokers section: the Kafka pages moved into it
+          {
+            from: "/proxymock/kafka/",
+            to: "/proxymock/message-brokers/",
+          },
+          {
+            from: "/proxymock/kafka/record/",
+            to: "/proxymock/message-brokers/record/kafka/",
+          },
+          {
+            from: "/proxymock/kafka/consumer-group-health/",
+            to: "/proxymock/message-brokers/consumer-group-health/",
+          },
+          {
+            from: "/proxymock/kafka/mock-kafka/",
+            to: "/proxymock/message-brokers/mock-a-broker/",
+          },
+          {
+            from: "/proxymock/kafka/replay/",
+            to: "/proxymock/message-brokers/test-a-consumer/",
           },
           // Databases sections (S-13517)
           {
@@ -331,7 +414,7 @@ const config = {
           },
           {
             from: "/guides/replay/optional-replay-annotations/",
-            to: "/guides/replay/config/",
+            to: "/reference/configuration/",
           },
           {
             from: "/guides/resign_jwt_mocks/",
@@ -701,7 +784,7 @@ const config = {
           },
           {
             from: "/proxymock/reference/",
-            to: "/proxymock/how-it-works/",
+            to: "/proxymock/how-it-works/architecture/",
           },
           {
             from: "/proxymock/reference/lifecycle/",
@@ -1462,16 +1545,12 @@ const config = {
             to: "/guides/replay/kube/",
           },
           {
-            from: "/reference/",
-            to: "/reference/faq/",
-          },
-          {
             from: "/proxymock/reference/data_and_privacy/",
             to: "/proxymock/how-it-works/data_and_privacy/",
           },
           {
             from: "/proxymock/how-it-works/index/",
-            to: "/proxymock/how-it-works/",
+            to: "/proxymock/how-it-works/architecture/",
           },
           {
             from: "/proxymock/guides/grpc/",
@@ -1656,7 +1735,7 @@ const config = {
     },
   ],
 
-  clientModules: [],
+  clientModules: [require.resolve("./src/clientModules/docsEvents.js")],
 
   presets: [
     [
@@ -1684,11 +1763,7 @@ const config = {
           // on low-value URLs (and so GSC/Bing don't flag them as
           // soft-404 or thin-content).
           ignorePatterns: [
-            "/index_old/**",
-            "/markdown-page/**",
             "/search/**",
-            "/**/index_old/**",
-            "/**/markdown-page/**",
             "/**/search/**",
           ],
           filename: "sitemap.xml",
@@ -1726,6 +1801,9 @@ const config = {
           height: 72,
         },
         items: [
+          { to: "/tutorials/", label: "Tutorials", position: "left" },
+          { to: "/guides/", label: "How-to", position: "left" },
+          { to: "/reference/", label: "Reference", position: "left" },
           {
             href: "https://speedscale.com",
             position: "right",

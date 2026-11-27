@@ -81,7 +81,7 @@ The ultimate goal is to achieve **100% Mock Accuracy**, meaning every request in
 - Understand why any requests remain unmatched
 - Continuously refine signatures as your application evolves
 
-![Mock Accuracy metric card in Responder toolbar showing hits/total (percentage)](./signature-refinement-guide/mock-accuracy.png)
+![The Mock Accuracy card on the Mocked Responses tab showing 282 of 898 requests matched at 31.4 percent](./signature-refinement-guide/mock-accuracy.png)
 
 ---
 
@@ -250,37 +250,36 @@ Reports are generated from test runs and contain information about how well your
 
 The Mock Accuracy metric appears in two key locations:
 
-**Report Overview Page**:
-- Displayed as a metric card alongside other report statistics
-- Shows the percentage and absolute numbers (e.g., "200/250 (80%)")
+**Report Overview tab**:
+- The **Mocks** card shows how many outbound calls matched (e.g., "282 of 898 matched") and how many calls reached the real dependency
 - Provides a high-level view of your mock's performance
 
-**Responder Toolbar**:
-- Located at the top of the Mocked Responses tab
-- Shows the same metric with a standby icon
+**Mocked Responses tab**:
+- The **Mock Accuracy** card sits at the top of the tab
+- Shows hits, total and percentage (e.g., "282/898 (31.4%)")
 - Serves as a constant reminder of your current accuracy
 
 ### 4.3 Accessing the Mocked Responses Tab
 
 To access the detailed view:
 
-1. From the Report Overview page, click on the Mock Accuracy metric card, OR
-2. Click on the "Mocked Responses" tab in the report navigation
+1. On the Overview tab, click **Review unmatched** in the Mocks card, OR
+2. Click the **Mocked Responses** tab in the report navigation
 
 Both actions take you to the Mocked Responses view, where you can see the detailed list of all requests and their match statuses.
 
 ### 4.4 Understanding the Report Overview Metrics
 
-The Report Overview provides several metrics:
+The report gives you several mock metrics:
 
-- **Total Requests**: Total number of requests in the test run
+- **Matched calls**: The Mocks card on the Overview tab shows matched calls out of the total
 - **Mock Accuracy**: Percentage of requests that matched (Matches)
-- **Passthrough Count**: Number of requests sent to real services
-- **Miss Count**: Number of requests that failed to match
+- **Passthrough count**: Calls that reached the real dependency, shown on the Mocks card and on the **Add N Passthrough Requests** button
+- **Unmatched count**: The badge on the Mocked Responses tab
 
 These metrics help you understand the overall health of your mock configuration before diving into specific request details.
 
-![Report Overview with Mock Accuracy metric card, clicking through to Mocked Responses tab](./signature-refinement-guide/mocked-responses-tab.png)
+![The Mocked Responses tab with the Mock Accuracy card, the Add 616 Passthrough Requests button and the responder filters](./signature-refinement-guide/mocked-responses-tab.png)
 
 ---
 
@@ -290,21 +289,23 @@ These metrics help you understand the overall health of your mock configuration 
 
 The Mocked Responses tab displays an **RRPair List** ([Request-Response Pair](../reference/glossary.md#rrpair) List). Each row represents a single request from your test run, showing:
 
-- Request method and URL
-- Match status icon (Match, No Match, or Passthrough)
-- Timestamp
-- Response status code
-- Service name
+- Match status icon
+- Offset from the start of the replay
+- Tech (for example DynamoDB, Stripe or Hubspot)
+- Operation, host and endpoint
+- Duration
+- Status pill (Match, No Match or Passthrough)
+- Chaos, when chaos was injected into the call
 
-The list is typically sorted by timestamp but can be filtered and sorted by various criteria.
+The list is sorted by offset by default but can be filtered and sorted by various criteria.
 
 ### 5.2 Identifying No Match and Passthrough Status Icons
 
 Look for visual indicators in the list:
 
-- **Match** (Green checkmark or success icon): Request matched successfully - no action needed
-- **No Match** (Red X or error icon): Request failed to match - requires attention
-- **Passthrough** (Yellow warning icon): Request went to real service - may require attention
+- **Match** (green checkmark and Match pill): Request matched successfully - no action needed
+- **No Match** (No Match pill): Request failed to match - requires attention
+- **Passthrough** (arrow icon and blue Passthrough pill): Request went to real service - may require attention
 
 Focus your refinement efforts on No Match and Passthrough requests, as these represent gaps in your mock coverage.
 
@@ -320,16 +321,20 @@ Start with requests that occur frequently or represent critical paths in your ap
 
 ### 5.4 Opening the RRPair Details Drawer
 
-When you click on an RRPair, a details drawer opens on the right side of the screen. This drawer contains multiple tabs:
+When you click on an RRPair, a details drawer opens on the right side of the screen. It shows the endpoint, status, host, direction and operation, followed by these tabs:
 
+- **Info**: Summary of the call
 - **Request**: Full details of the incoming request
 - **Response**: Full details of the response (if any)
+- **Sequence**: Where the call sits in the request sequence
 - **Signature**: The signature extracted from the request - this is where you'll spend most of your time
-- **Transform**: History of transforms applied to this request
+- **Infra**: Infrastructure details for the call
+- **Transforms**: History of transforms applied to this request
+- **Data**: Data extracted from the call
 
 The Signature tab is your primary tool for understanding why a match failed.
 
-![Example signature with key-value pairs displayed in tabular format](./signature-refinement-guide/match-examples.png)
+![The Mocked Responses list with DynamoDB, Stripe and Hubspot calls marked Match or Passthrough](./signature-refinement-guide/match-examples.png)
 
 ---
 
@@ -353,41 +358,41 @@ The signature table displays:
 - **Value**: The actual value extracted from the request
 - **Status Indicator**: Visual indicator showing if this key caused a mismatch
 
-The table uses vertical tabs for keys, allowing you to quickly navigate between different signature components. You may see a diff view similar to Visual Studio Code if there have been changes applied by the transform system.
+The table uses vertical tabs for keys, allowing you to move quickly between different signature components. The **Combined** tab shows all keys together. You may see a diff view similar to Visual Studio Code if there have been changes applied by the transform system.
 
-![signature key values](./signature-refinement-guide/signature-example.png)
+![The Signature tab of a passthrough DynamoDB GetItem call with http:requestBodyJSON selected and its JSON value shown](./signature-refinement-guide/signature-example.png)
 
 ### 6.3 Understanding Change Indicators
 
-When a No Match occurs, the signature view shows change indicators (pills) that highlight differences:
+When you open the Signature Suggestions dialog (see section 7), each key that differs from the selected suggestion is marked with a change indicator (pill):
 
 #### 6.3.1 Added Keys (Plus + Pill)
 
-**Indicator**: Green pill with "+" symbol
-**Meaning**: This key exists in the incoming request but not in any recorded signature
-**Implication**: The incoming request has additional data that wasn't present during recording
+- **Indicator**: Orange pill with "+" symbol
+- **Meaning**: This key exists in the recorded signature but is missing from the incoming request
+- **Implication**: The incoming request is missing data that was present during recording
 
 Example:
 ```
-+ http:newHeader = "extra-data"
++ instance = (missing from the incoming request)
 ```
 
 #### 6.3.2 Removed Keys (Minus - Pill)
 
-**Indicator**: Red pill with "-" symbol
-**Meaning**: This key existed in recorded signatures but is missing from the incoming request
-**Implication**: The incoming request is missing data that was present during recording
+- **Indicator**: Red pill with "-" symbol
+- **Meaning**: This key exists in the incoming request but not in the recorded signature
+- **Implication**: The incoming request has additional data that was not present during recording
 
 Example:
 ```
-- http:sessionToken = (missing)
+- http:newHeader = "extra-data"
 ```
 
 #### 6.3.3 Modified Keys (Tilde ~ Pill)
 
-**Indicator**: Yellow/Orange pill with "~" symbol
-**Meaning**: This key exists in both recorded and incoming requests, but the values differ
-**Implication**: The data changed between recording and replay
+- **Indicator**: Blue pill with "~" symbol
+- **Meaning**: This key exists in both recorded and incoming requests, but the values differ
+- **Implication**: The data changed between recording and replay
 
 Example:
 ```
@@ -400,7 +405,7 @@ Modified keys are the most common cause of mismatches and often require signatur
 
 ### 6.4 Using Quick Filter Actions
 
-The Signature tab provides quick filter buttons for common keys:
+Click the funnel icon next to a key in the Signature tab to open its menu. The menu offers a filter action for common keys, **View As...** to show the value in another format, and **Remove** to queue removing the key from the signature:
 
 #### 6.4.1 Filter for Host
 
@@ -431,7 +436,7 @@ Useful when combining with other filters to target specific operations.
 
 These quick filters help you create precise transform chains that affect only the requests you intend to modify.
 
-![Signature tab showing signature keys with change indicator pills](./signature-refinement-guide/filter-example.png)
+![The key menu for http:url in the Signature tab with Filter for URL, View As and Remove](./signature-refinement-guide/filter-example.png)
 
 ---
 
@@ -461,28 +466,27 @@ The retrieval process compares the incoming signature against all recorded signa
 
 ### 7.3 Understanding the Side-by-Side Comparison
 
-The dialog displays a split-screen comparison:
+The dialog lists the signature keys on the left, with a change pill next to each key that differs. Select a key to see its values in a split-screen comparison:
 
-#### 7.3.1 Recorded Signature (Left Panel)
+#### 7.3.1 Incoming Signature (Left Panel)
 
 The left panel shows:
-- **Title**: "Recorded" or "Recorded Signature"
-- **Content**: The signature from the original traffic recording
+- **Content**: The value of the selected key in the incoming request
 - **Format**: JSON format with syntax highlighting
-- **Keys**: All keys that were present in the recorded signature
+- **Highlights**: Differences are highlighted in the editor
 
-This represents what the responder is looking for - the "target" signature.
+This represents what actually arrived - the signature that failed to match.
 
 #### 7.3.2 Suggested Signature (Right Panel)
 
 The right panel shows:
-- **Title**: "Suggested" or "Incoming Signature"
-- **Content**: The signature extracted from the incoming request
+- **Content**: The value of the selected key in a similar signature from the original traffic recording
 - **Format**: JSON format with syntax highlighting
-- **Keys**: All keys extracted from the incoming request
 - **Highlights**: Differences are highlighted in the editor
 
-This represents what actually arrived - the signature that failed to match.
+This represents what the responder is looking for - the "target" signature.
+
+Above the comparison, **Copy Recorded** and **Copy Suggested** copy the left and right values, **View As...** shows the value in another format, and supported keys add **Remove** and **Transform**.
 
 The Monaco editor-based diff viewer makes it easy to spot differences with color coding:
 - **Red**: Content removed or missing in incoming
@@ -493,7 +497,7 @@ The Monaco editor-based diff viewer makes it easy to spot differences with color
 
 The dialog can display up to 10 similar signatures from your recording:
 
-1. Use the navigation controls (dropdown or arrows) to switch between suggestions
+1. Use the numbered tabs (1 to 10) across the top of the dialog to switch between suggestions
 2. Each suggestion shows a different recorded signature that partially matched
 3. The system orders suggestions by similarity score (most similar first)
 
@@ -506,11 +510,10 @@ Reviewing multiple suggestions helps you identify patterns:
 
 To navigate suggestions:
 
-1. **Dropdown Menu**: Select a specific suggestion number (1-10)
-2. **Arrow Buttons**: Click previous/next arrows to move sequentially
-3. **Keyboard Shortcuts**: Use arrow keys if supported
+1. **Numbered tabs**: Click a suggestion number (1-10) at the top of the dialog
+2. **Key tabs**: Click a key on the left to compare that key for the current suggestion
 
-As you navigate, the left panel updates to show different recorded signatures while the right panel remains constant (showing your incoming request).
+As you switch suggestions, the right panel updates to show different recorded signatures while the left panel remains constant (showing your incoming request).
 
 ### 7.6 Auto-Selected Changed Keys
 
@@ -522,7 +525,7 @@ When the dialog opens, it automatically:
 
 This auto-selection helps you quickly identify the most likely cause of the mismatch without manually searching through potentially large JSON structures.
 
-![SignatureSuggestionsDialog with side-by-side comparison and highlighted differences](./signature-refinement-guide/suggested-signatures.png)
+![The Suggested Signatures dialog comparing the incoming http:requestBodyJSON value on the left with suggestion 1 on the right, with Remove and Transform buttons above](./signature-refinement-guide/suggested-signatures.png)
 
 ---
 
@@ -651,21 +654,21 @@ If you remove `http:url` from the signature, ALL requests to the same host would
 
 ## 9. Queuing Signature Changes
 
-### 9.1 Using "Queue Remove from Signature"
+### 9.1 Using "Remove"
 
 Once you've identified a problematic key, queue its removal:
 
-1. In the Signature Suggestions dialog, locate the problematic key
-2. Click the **"Queue Remove from Signature"** button next to the key
+1. In the Signature Suggestions dialog, select the problematic key
+2. Click the **Remove** button above the comparison
 3. A transform chain is created and added to the pending changes queue
 
-**Note**: The "Queue Remove from Signature" button typically appears for keys like `http:requestBodyJSON` and `http:requestBodyXML`.
+**Note**: In the dialog, the **Remove** button appears for `http:host`, `http:url`, `http:method`, `http:requestBodyJSON` and `http:requestBodyXML`. You can also queue a removal from the Signature tab by clicking the funnel icon next to a key and choosing **Remove**. Keys that support it also offer **Transform**, which queues a transform that changes the value instead of removing the key.
 
 The term "queue" indicates that the change isn't applied immediately - it's staged for batch application later.
 
 ### 9.2 Understanding Transform Chain Creation
 
-When you click "Queue Remove from Signature", the system creates a transform chain:
+When you click **Remove**, the system creates a transform chain:
 
 ```javascript
 {
@@ -682,8 +685,8 @@ When you click "Queue Remove from Signature", the system creates a transform cha
     }
   ],
   "tags": {
-    "source": "signature-suggestions",
-    "action": "remove-from-signature",
+    "source": "signature_suggestions_dialog",
+    "action": "delete_sig",
     "endpoint": "/api/v1/users",
     "operation": "POST"
   }
@@ -721,8 +724,8 @@ The `delete_sig` transform type specifically removes a signature key. When appli
 #### 9.3.3 Metadata Tags
 
 Tags provide traceability:
-- `source`: Where the transform originated (e.g., "signature-suggestions")
-- `action`: What action was taken (e.g., "remove-from-signature")
+- `source`: Where the transform originated (e.g., "signature_suggestions_dialog")
+- `action`: What action was taken (e.g., "delete_sig")
 - `endpoint` & `operation`: The targeted request pattern
 
 These tags help you understand your transform chains later when reviewing the configuration.
@@ -750,20 +753,20 @@ All queued transforms accumulate in the pending changes panel. This allows you t
 
 ### 10.1 Viewing the Pending Transforms Panel
 
-The **Pending Transforms Panel** appears in the Responder toolbar area when you have queued transforms:
+The **Pending Transform Changes** panel appears at the top of the Mocked Responses tab when you have queued transforms:
 
-- Location: Below the Mock Accuracy metric and main toolbar buttons
+- Location: Above the Mock Accuracy card and toolbar buttons
 - Appearance: Collapsible panel with a blue-tinted background
 - Visibility: Only visible when there are pending transforms
 
-The panel serves as a staging area where you can review all queued changes before applying them.
+The panel serves as a staging area where you can review all queued changes before applying them. Queued changes are held in the open page only; nothing is saved until you apply them, and reloading the page or opening another report clears the queue.
 
 ### 10.2 Understanding the Transform Count Badge
 
 The pending transforms panel displays a count badge showing:
 
 ```
-Pending Transforms (3)
+Pending Transform Changes (3)
 ```
 
 This number represents the total queued transforms. It also appears on the **"Apply X Change(s) & Create New Report"** button, ensuring you always know how many changes will be applied.
@@ -788,8 +791,8 @@ The description includes:
 #### 10.3.2 Timestamps
 
 Each transform card shows:
-- **Queued At**: When the transform was added to the queue
-- **Format**: Typically relative time (e.g., "2 minutes ago") or absolute timestamp
+- **Added**: The time the transform was added to the queue (e.g., "Added: 12:47:53 PM")
+- **Chain**: The filters and transform that will be applied (e.g., `Endpoint = /`, `Operation = GetItem`, then **Delete from signature** `http:requestBodyJSON`)
 
 Timestamps help you track when changes were made, especially in longer refinement sessions.
 
@@ -811,10 +814,10 @@ Use this when you:
 
 To remove all pending transforms at once:
 
-1. Click the **"Discard All"** button in the Responder toolbar
-2. A confirmation dialog may appear
-3. All pending transforms are removed from the queue
-4. The Pending Transforms Panel disappears
+1. Click the **"Discard All"** button next to the Mock Accuracy card
+2. All pending transforms are removed from the queue without a confirmation dialog
+3. A notice confirms that all pending transforms were discarded
+4. The Pending Transform Changes panel disappears
 
 Use "Discard All" when:
 - You want to start fresh with a different approach
@@ -823,7 +826,7 @@ Use "Discard All" when:
 
 **Warning**: Discarding is permanent for queued transforms. Once discarded, you'll need to re-queue changes manually.
 
-![Clicking "Queue Remove from Signature" button for http:requestBodyJSON](./signature-refinement-guide/pending-transform-changes.png)
+![The Pending Transform Changes panel with one queued removal of http:requestBodyJSON for GetItem, above the Apply 1 Change(s) and Create New Report and Discard All buttons](./signature-refinement-guide/pending-transform-changes.png)
 
 ---
 
@@ -844,7 +847,7 @@ Apply your queued transforms when:
 
 To apply your pending transforms:
 
-1. Locate the **"Apply X Change(s) & Create New Report"** button in the Responder toolbar
+1. Locate the **"Apply X Change(s) & Create New Report"** button next to the Mock Accuracy card
 2. The button shows the exact number of pending transforms (e.g., "Apply 3 Change(s)...")
 3. Click the button to begin the application process
 4. A loading indicator appears while the system processes your request
@@ -983,7 +986,7 @@ Decide whether to continue refining:
 - **90-95%**: Good - acceptable for most use cases
 - **&lt;90%**: Needs more work - significant gaps in mock coverage
 
-![Mock Accuracy metric showing improved percentage after applying changes](./signature-refinement-guide/mock-accuracy-perfect.png)
+![The Mock Accuracy card showing 98 of 98 requests matched at 100 percent](./signature-refinement-guide/mock-accuracy-perfect.png)
 
 ---
 
@@ -1112,7 +1115,7 @@ Passthrough requests indicate gaps in your mock coverage but don't necessarily r
 
 ### 14.2 When "Add Passthrough Requests" Appears
 
-The **"Add Passthrough Requests"** button appears in the Responder toolbar when:
+The **"Add N Passthrough Requests"** button appears next to the Mock Accuracy card when:
 
 ```
 passthroughCount > 0
@@ -1121,14 +1124,14 @@ passthroughCount > 0
 This button is shown when your test run generated requests that weren't in the original snapshot. The button displays the count:
 
 ```
-Add Passthrough Requests (15)
+Add 15 Passthrough Requests
 ```
 
 ### 14.3 Adding Passthrough Calls to Snapshot
 
 To add passthrough requests to your snapshot:
 
-1. Click the **"Add Passthrough Requests"** button
+1. Click the **"Add N Passthrough Requests"** button
 2. The system adds these request patterns to the snapshot
 3. Future test runs will mock these requests instead of passing them through
 
@@ -1153,7 +1156,7 @@ Passthrough requests affect Mock Accuracy depending on how they're counted:
 
 Check your system's documentation to understand how passthrough requests factor into your Mock Accuracy metric.
 
-!["Add Passthrough Requests" button in Responder toolbar](./signature-refinement-guide/add-passthrough-requests.png)
+![The Add 616 Passthrough Requests button on the Mocked Responses tab](./signature-refinement-guide/add-passthrough-requests.png)
 
 ---
 
@@ -1414,7 +1417,7 @@ Incoming: {"action": "create", "timestamp": 9876543210, "uuid": "xyz-789"}
 
 **Option 3: Remove Entire Body** (Simple but less granular)
 1. Open Signature Suggestions for a No Match request
-2. Click "Queue Remove from Signature" for `http:requestBodyJSON`
+2. Click **Remove** for `http:requestBodyJSON`
 3. Apply changes and verify that the endpoint matches based only on host, method, and URL
 4. Use this only when the entire request body is non-semantic
 
@@ -1669,16 +1672,16 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| **Mock Accuracy Metric Card** | Report Overview / Responder Toolbar | Displays current Mock Accuracy percentage |
+| **Mock Accuracy Metric Card** | Mocked Responses tab | Displays current Mock Accuracy percentage |
 | **Mocked Responses Tab** | Report Detail View | Lists all RRPairs with match statuses |
 | **RRPair List** | Mocked Responses Tab | Scrollable list of all requests in the report |
 | **RRPair Details Drawer** | Right side when RRPair selected | Shows request, response, signature, and transform details |
 | **Signature Tab** | RRPair Details Drawer | Displays signature keys and values with change indicators |
 | **Signature Suggestions Dialog** | Opens from Signature Tab | Side-by-side comparison of recorded vs. incoming signatures |
-| **Pending Transforms Panel** | Below Responder Toolbar | Lists queued transforms awaiting application |
-| **Apply Changes Button** | Responder Toolbar | Applies pending transforms and creates new report |
-| **Discard All Button** | Responder Toolbar | Removes all pending transforms from queue |
-| **Add Passthrough Requests Button** | Responder Toolbar | Adds passthrough request patterns to snapshot |
+| **Pending Transform Changes Panel** | Top of the Mocked Responses tab | Lists queued transforms awaiting application |
+| **Apply Changes Button** | Next to the Mock Accuracy card | Applies pending transforms and creates new report |
+| **Discard All Button** | Next to the Mock Accuracy card | Removes all pending transforms from queue |
+| **Add Passthrough Requests Button** | Next to the Mock Accuracy card | Adds passthrough request patterns to snapshot |
 
 ---
 
@@ -1741,7 +1744,7 @@ Manually analyze the signature keys and guess which ones might be dynamic. Remov
                                  │
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│   Click "Queue Remove from Signature" for Problematic Key       │
+│   Click "Remove" for Problematic Key                            │
 │        (e.g., http:requestBodyJSON, timestamp, etc.)            │
 └────────────────────────────────┬────────────────────────────────┘
                                  │
@@ -1859,7 +1862,7 @@ Use this checklist for each refinement iteration:
   - [ ] Document your reasoning (mental note or written)
 
 - [ ] **6. Queue Transforms**
-  - [ ] Click "Queue Remove from Signature" for each problematic key
+  - [ ] Click **Remove** for each problematic key
   - [ ] Verify the transform description is correct
   - [ ] Repeat for 1-3 more similar No Match requests if needed
 

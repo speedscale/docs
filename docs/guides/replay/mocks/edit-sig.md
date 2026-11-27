@@ -4,8 +4,6 @@ description: Learn how to edit signature mocks in Speedscale to enhance your API
 sidebar_position: 4
 ---
 
-import JsonDeleteImage from './edit-sig/json-delete.jpg';
-
 # Using Transforms for better Mocks
 
 ## Prerequisites
@@ -15,56 +13,42 @@ import JsonDeleteImage from './edit-sig/json-delete.jpg';
 
 ## Replay without Transforms
 
-For this guide, we're going to use this very simple snapshot for an app that uses Google Spanner as a database. This snapshot has two inbound calls to `/player` and `/score` that use Spanner and we are purposefully not including any other traffic to this app for this demo.
+For this guide, we use a snapshot of a `banking-notification` service. Its tests are calls to `/notifications` and `/health`, and its mocks answer the JSON APIs it calls to send messages: SendGrid, Slack and Twilio.
 
-![Snapshot](./edit-sig/snapshot.png)
+![The snapshot Overview, with tests for banking-notification and mocks for hooks.slack.com, api.sendgrid.com, api.twilio.com and Kafka](./edit-sig/snapshot.png)
 
-We run a replay with this snapshot and no special settings. This report has a 0% accuracy.
+We run a replay with this snapshot and no special settings. Every assertion passes, but the **Mocks** card shows that only 35 of 45 outbound calls matched a mock. The rest reached the real dependency or got no match.
 
-![Failed Report](./edit-sig/failed-report.png)
+![The report Overview, with 50 of 50 assertions passed and 35 of 45 mocks matched](./edit-sig/failed-report.png)
 
-We notice that besides the accuracy being low, the Mock response rate is also not 100%. For some apps this may be normal but given how simple our test is, we want to know why.
+On the **Mocked Responses** tab, **Mock accuracy by host** shows that none of the three calls to `api.twilio.com` matched. Selecting one shows `No Match` for `POST /2010-04-01/Accounts/AC.../Messages.json`.
 
-![Responder](./edit-sig/responder-miss.png)
+![The Mocked Responses tab, with 0 of 3 calls matched for api.twilio.com and a Twilio call with the No Match status](./edit-sig/responder-miss.png)
 
-Inspecting this `No Match` call to spanner, we see that field 11 in the body contains a value that looks like a constantly changing value, in this case the name of the pod that made the request. Upon further inspection of the protobuf for this request, we see that field 11 is `RequestOptions`.
+Open the call's **Signature** tab and select **Suggestions...** to compare it with the closest recorded requests. The method, host and JSON body match. Only `http:url` differs: the Twilio account ID in the path was `ACdummy...` when the traffic was recorded, and the test environment uses a different account.
 
-![Proto](./edit-sig/proto-message.png)
+![Suggested Signatures, with http:url selected and the account ID in the URL path differing between the incoming request and the recording](./edit-sig/suggested-url.png)
 
-And we see that the field itself contains a bunch of settings that are dynamic.
-
-![Field](./edit-sig/proto-field.png)
-
-We could transform the snapshot to always set that pod name to a constant and that may be good enough for this case. But to future proof this, it would be safer to completely ignore a field with dynamic information like this.
+We could transform the account ID in both the recording and the replay to the same constant. But the account ID tells the mock nothing about which response to return, since the message body already identifies the request. It is simpler and safer to leave the URL out of the signature for these calls.
 
 ## Transform
 
-Open the snapshot's **Traffic** tab and select **Mocks**. Find a request to `/google.spanner.v1.Spanner/ExecuteStreamingSql` and open its request body.
+Open the snapshot's **Prepare** tab, select **Mocks** and then **New**. Set **Runs on** to `Host is api.twilio.com:443` so the change only applies to the Twilio calls. Pull from **Request Body**, then select **Add step** and pick **Delete from signature** with the key `http:url`. The preview shows `Signature http:url = removed` for all three matching requests.
 
-![Request body](./edit-sig/pre-delete.png)
+![A mocks transform chain that runs on api.twilio.com, pulls from the request body and deletes http:url from the signature, with 3 matching requests](./edit-sig/delete-sig-url.png)
 
-Use the field's transform action to open the chain in **Prepare**. For this example, extract the request body and add **JSON Delete** with `path` set to `fieldsMap.11`. This removes the dynamic RequestOptions field before the responder matches the request.
+Select **Save and reanalyze**. The responder applies the same chain to each incoming request before it looks for a match, so both sides of the comparison now ignore the URL.
 
-<div className="docs-diagram-scroll" style={{'--docs-diagram-width': '618px'}} tabIndex={0} role="region" aria-label="JSON Delete step configuration">
+On the **Traffic** tab, open one of the Twilio mocks, select **Signature** and choose **Compare**. `http:url` is now marked **Removed**.
 
-![The JSON Delete path field set to fieldsMap.11](./edit-sig/json-delete.jpg)
-
-</div>
-
-<a href={JsonDeleteImage}>Open screenshot full size</a>
-
-Check the chain preview against the recorded request, then select **Done** and **Save and reanalyze**. Keep the path specific to this example; other protobuf messages can use a different field number.
-
-Now you can see that this field is completely removed from the request body.
-
-![Request body](./edit-sig/post-delete.png)
+![The Signature tab of a Twilio mock in Compare view, with http:url struck through and marked Removed](./edit-sig/post-delete.png)
 
 ## Replay with Transforms
 
-Now we run another replay with the transformed snapshot.
+Now we run another replay with the transformed snapshot, with the same cluster, namespace and test config.
 
-![Success](./edit-sig/success.png)
+![The Mocked Responses tab of the new replay, where api.twilio.com now has 3 of 3 calls matched](./edit-sig/success.png)
 
-We have 100% Mock rate and also 100% accuracy! Our replay behaved exactly like our app did when we did our initial recording and we didn't have to use an actual Google Spanner instance where the data might have changed since our recording.
+All three Twilio calls now match a mock, and Mock Accuracy rises from 35 of 45 to 37 of 44. The remaining misses are Kafka consumer-group calls, which are a separate fix. The Twilio calls behave as they did when we recorded them, and we didn't have to call the real Twilio API or share an account between environments.
 
 Transforms are extremely powerful for parameterizing and modifying dynamic data. Lots of data that we use in our apps is static but there are always things like timestamps, session ids, environment tags, etc. that we need to control for in tests and Transforms help us do exactly that on the inbound and outbound side.

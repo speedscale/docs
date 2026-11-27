@@ -86,11 +86,11 @@ See [load patterns](/guides/load-patterns/) for suggestions on simulating specif
 To ensure the generator has enough CPU for the task set cluster requests / limits in the test config.  This
 can be configured under the "Cluster" tab.
 
-![test config cluster tab](./generator-sizing-guide/test-config-cluster-tab.png)
+![The Cluster tab of a test config with the number of responder replicas set to 4](./generator-sizing-guide/test-config-cluster-tab.png)
 
-On the cluster tab set the "Generator Resources" to set CPU requests and limits on the Speedscale generator pod.
+On the Cluster tab set the **Generator Resources** fields to set CPU requests and limits on the Speedscale generator pod.
 
-![resource configuration](./generator-sizing-guide/resource-configuration.png)
+![The Generator Resources fields on the Cluster tab with a CPU limit of 16 and a CPU request of 8](./generator-sizing-guide/resource-configuration.png)
 
 ## Best Practices
 

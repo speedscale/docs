@@ -13,15 +13,15 @@ While Speedscale's core function is capturing and replaying API traffic, it oper
 
 ## Exposing Prometheus Metrics via UI
 
-The simplest way to turn on Prometheus metrics reporting is to turn on metrics collection in the Infrastructure inject view. Select **Infrastructure->Workloads->(Select a) Namespace->(Select a) Workload**. Scroll down and you should see Prometheus related options:
+The simplest way to turn on Prometheus metrics reporting is from the workload's capture settings. Select **Infrastructure**, open a cluster, and on its **Workloads** tab select a workload. On the **Capture** tab choose **Sidecar**, open **Exclusions & Monitoring**, and you should see the Prometheus options. Click **Apply and restart** to apply them, which restarts the workload's pods.
 
-<img src={PrometheusOptions} width="600"/>
+<img src={PrometheusOptions} width="600" alt="The Exclusions and Monitoring sidecar settings with Prometheus metrics and scrape annotations turned on and port 4145"/>
 
-- **prometheus.enable** - toggle switch for all Prometheus metrics in goproxy
-- **prometheus.enableScrapeAnnotations** - set to true if you want Prometheus annotations added to the goproxy workload (prometheus.io/scrape, etc)
-- **prometheus.port** - port to listen for Prometheus requests on (default: 4145)
+- **Enable Prometheus Metrics** (`sidecar.speedscale.com/prometheus-enable`) - toggle switch for all Prometheus metrics in goproxy
+- **Enable Prometheus Scrape Annotations** (`sidecar.speedscale.com/prometheus-enable-scrape-annotations`) - turn on if you want Prometheus annotations added to the goproxy workload (prometheus.io/scrape, etc)
+- **Prometheus Metrics Port** (`sidecar.speedscale.com/prometheus-port`) - port to listen for Prometheus requests on (default: 4145)
 
-If you are setting your Prometheus scrape points in a central config file (like *prometheus.yml*) then you likely don't need **prometheus.enableScrapeAnnotations** set to true. This option adds the annotations that tell Prometheus to scrape this pod. For example:
+If you are setting your Prometheus scrape points in a central config file (like *prometheus.yml*) then you likely don't need **Enable Prometheus Scrape Annotations** turned on. This option adds the annotations that tell Prometheus to scrape this pod. For example:
 
 ```yaml
 metadata:

@@ -25,9 +25,9 @@ metadata:
     sidecar.speedscale.com/tls-out: "true"
 ```
 
-Run a curl against your pod against the `/nasa` endpoint with a valid call for the NASA API, and you should see a transaction. I decided to filter only for outbound calls and then saved the snapshot.
+Run a curl against your pod against the `/nasa` endpoint with a valid call for the NASA API, and you should see a transaction. I decided to filter only for outbound calls and then saved the snapshot. In **Traffic**, select your service and set **Direction** to **outbound (egress)**, then select **Save as snapshot**. The example below shows the same filter for a `banking-gateway` service.
 
-![Screen Shot 2022-12-21 at 1.19.32 PM.png](mock-scratch/Screen_Shot_2022-12-21_at_1.19.32_PM.png)
+![The Traffic viewer filtered to banking-gateway with Direction set to outbound egress, showing only OUT calls and the Save as snapshot action](mock-scratch/traffic-outbound-filter.png)
 
 Download the snapshot with a command like this:
 
@@ -79,9 +79,9 @@ You can view the traffic by going to the `Traffic` tab and selecting `Mocks`:
 
 ![The Traffic tab with Mocks selected and the 2 calls to /planetary/apod](mock-scratch/Screen_Shot_2022-12-21_at_1.26.07_PM.png)
 
-Once it loads the traffic you will see the 2 calls, and the 2nd call has the Hello World response:
+Once it loads the traffic you will see the 2 calls. Select a call, then open **Response** and **Body** to see the mock response it returns. The call you added returns the body you encoded, such as the Hello World JSON:
 
-![Screen Shot 2022-12-21 at 1.25.36 PM.png](mock-scratch/Screen_Shot_2022-12-21_at_1.25.36_PM.png)
+![The nginx-nasa-test2 snapshot Traffic tab with Mocks selected and a GET /planetary/apod response body open](mock-scratch/snapshot-mock-response.png)
 
 ## Delete Mock Responses
 
@@ -93,9 +93,9 @@ speedctl push snapshot {SNAPSHOT_ID}
 
 ## Configuring Passthrough
 
-This is now a feature of the test config. Check the box, and if the responder does not match, instead of returning a 404, it will fetch from the live backend system.
+This is now a feature of the test config. Check **Passthrough** in the **Mocks (Responder)** section of the test config's **Traffic** tab, and if the responder does not match, instead of returning a 404, it will fetch from the live backend system.
 
-![Screen Shot 2022-12-21 at 1.23.11 PM.png](mock-scratch/Screen_Shot_2022-12-21_at_1.23.11_PM.png)
+![The Mocks (Responder) section of a test config Traffic tab with Passthrough checked](mock-scratch/test-config-passthrough.png)
 
 ## Running the snapshot
 

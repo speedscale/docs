@@ -61,6 +61,25 @@ Mocks recorded for sessions or services the replay did not run as tests are not 
 
 Calls are compared for the whole run. There is no attribution of an outbound call to the inbound request that caused it.
 
+### Google Pub/Sub publishes {#google-pubsub-publishes}
+
+A Google Pub/Sub `Publish` call is compared message by message, not call by call. Client libraries batch messages by count, size and delay, so the same messages can arrive in fewer or more calls under load, and a batch grouped differently is not a difference.
+
+Each message is grouped under its topic, as the endpoint `/google.pubsub.v1.Publisher/Publish/<topic>`, for example `/google.pubsub.v1.Publisher/Publish/projects/shop/topics/orders`. Counts are counts of messages. Use the endpoint in `includeOnly` or `ignore` to compare or leave out one topic, or `/google.pubsub.v1.Publisher/Publish` for every topic.
+
+A message's fields are:
+
+| Field | What it holds |
+| --- | --- |
+| `data.<path>` | One field of JSON data, such as `data.amount` or `data.customer.id`. |
+| `data` | Data that is not JSON, as text, or as `base64:` followed by the bytes when it is not text. |
+| `attributes.<key>` | One attribute, such as `attributes.eventType`. |
+| `orderingKey` | The ordering key, when the message has one. |
+
+The usual rules apply to these fields, so an order ID or timestamp that changes from message to message is not compared, while a changed amount or event type is an `ARGUMENT` difference on that field. Avro and protobuf data is compared as a whole value.
+
+A `Publish` call that cannot be decoded as a Pub/Sub request is compared as one call, like any other gRPC call.
+
 ### Differences <a href="#differences" id="differences"></a>
 
 | Kind | Meaning |
@@ -69,7 +88,7 @@ Calls are compared for the whole run. There is no attribution of an outbound cal
 | `UNEXPECTED` | The replay called an endpoint that the recording never called. |
 | `COUNT` | Both called the endpoint, but the replay's call count is outside `countTolerance` of the scaled recorded count. |
 | `RETRIES` | The replay made more calls of a recorded request than `countTolerance` and `maxRetries` together allow. Repeats are not counted again as `COUNT`. |
-| `ARGUMENT` | A query parameter or body field that is stable in the recording has another value in the replay, or a field was added or dropped. |
+| `ARGUMENT` | A query parameter, body field or Pub/Sub message field that is stable in the recording has another value in the replay, or a field was added or dropped. |
 | `PASSTHROUGH` | A call to a `mockRequired` host was missed or passed through to the live service. |
 
 ### When the comparison cannot run <a href="#when-the-comparison-cannot-run" id="when-the-comparison-cannot-run"></a>

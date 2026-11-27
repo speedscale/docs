@@ -1,6 +1,6 @@
 ---
 title: proxymock overview
-sidebar_label: Overview
+sidebar_label: proxymock overview
 description: "Use proxymock CLI, web, or MCP to record traffic, mock dependencies, and replay tests locally, in Kubernetes, or through Speedscale Cloud."
 sidebar_position: 1
 ---
@@ -8,6 +8,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import MacCLIInstall from './index/\_cli_macos_minified.mdx'
 import LinuxCLIInstall from './index/\_cli_linux_minified.mdx'
+import WindowsCLIInstall from './index/\_cli_windows_minified.mdx'
 import ProxymockLanguageLinks from '@site/src/components/ProxymockLanguageLinks';
 import AgentInstall from './getting-started/installation/_agent_install.mdx'
 import { 
@@ -44,12 +45,15 @@ Prefer to install manually? Pick your OS:
   <TabItem value="linux" label="Linux">
     <LinuxCLIInstall />
   </TabItem>
+  <TabItem value="windows" label="Windows">
+    <WindowsCLIInstall />
+  </TabItem>
   <TabItem value="binary" label="Other (Detailed)">
     For other operating systems and more detailed instructions, see the [installation](./getting-started/installation.md) instructions.
   </TabItem>
 </Tabs>
 
-Need another OS like Windows or are you having issues? See advanced [installation](./getting-started/installation.md).
+Having issues? See advanced [installation](./getting-started/installation.md).
 
 ## Language-specific guides
 

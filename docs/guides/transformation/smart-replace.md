@@ -63,9 +63,9 @@ The values in the first column should represent IDs we see in our API traffic sn
 
 1. Open the snapshot's **Prepare** tab. If you don't already have a snapshot you can create one as part of the [tutorial](../../getting-started/tutorial.md)
 2. Identify the ID that you would like to replace. For this example, we'll replace the set of values in the CSV above. They are found scattered throughout the traffic in HTTP Headers and request bodies.
-3. Here is an example of such an ID in the RRPair viewer:
+3. Here is an example of such an ID, `fromAccountId`, in a request body on the snapshot's **Traffic** tab:
 
-![id_example](./smart-replace/id_exmple.png)
+![The Request Body of a recorded POST /api/transactions/create call with fromAccountId 92001 and toAccountId 92003](./smart-replace/id_exmple.png)
 
 ### Step 2: Upload CSV File
 
@@ -94,7 +94,7 @@ If you also run this snapshot through `proxymock replay` locally, use the portab
 1. Start a replay using the snapshot you just edited. It's best to start by running a simple regression to make sure values are replaced before running a more complex scenario.
 2. Review the changes to ensure all specified values have been replaced correctly. You will see these types of changes in your report results:
 
-![diff_results](./smart-replace/diff_results.png)
+![A report call with the Response Body view comparing the recorded and replayed values, where the ship_id value changed](./smart-replace/diff_results.png)
 
 ## Support
 

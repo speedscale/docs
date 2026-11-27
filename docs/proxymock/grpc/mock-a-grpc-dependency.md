@@ -35,6 +35,8 @@ grpcurl -plaintext -proto fraud.proto -d '{"account_id":"acct-1001","user_id":"u
 
 A gRPC mock matches on the method path, the host and the whole request message. A call that asks for a different account than the recording did is a different call, so it does not match. That keeps answers exact, and it means a mock answers only the requests that were recorded or written into it.
 
+Google Pub/Sub uses broker-specific matching. `StreamingPull` matches by subscription, and `Publish` matches by recorded topic. The [Pub/Sub mock](../message-brokers/mock-a-broker.md#google-pubsub) honors subscriber flow control and redelivers nacked or expired messages.
+
 When a call does not match, the mock's output shows the closest recorded call and the fields that differ:
 
 ```

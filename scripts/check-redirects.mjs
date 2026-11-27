@@ -82,9 +82,16 @@ function findManualRenames(deleted, added) {
 
 const manualRenames = findManualRenames(deletedFiles, addedFiles);
 
-const deletedDocs = deletedFiles.filter(
-  (f) => f.startsWith("docs/") && /\.(md|mdx)$/.test(f),
-);
+// docusaurus.config.js excludes `_`-prefixed partials, so they have no URL to redirect.
+function isPublishedDoc(f) {
+  return (
+    f.startsWith("docs/") &&
+    /\.(md|mdx)$/.test(f) &&
+    !path.basename(f).startsWith("_")
+  );
+}
+
+const deletedDocs = deletedFiles.filter(isPublishedDoc);
 
 if (!existsSync(CONFIG_FILE)) {
   console.error("❌ docusaurus.config.js not found");
@@ -110,8 +117,7 @@ for (const docFile of deletedDocs) {
 }
 
 for (const { from, to } of manualRenames) {
-  if (!from.startsWith("docs/") || !to.startsWith("docs/")) continue;
-  if (!/\.(md|mdx)$/.test(from)) continue;
+  if (!isPublishedDoc(from) || !to.startsWith("docs/")) continue;
   const fromUrl = docPathToUrl(from);
   if (!redirectFromPaths.has(fromUrl)) {
     console.error(`❌ Missing redirect for renamed doc: ${from} → ${to}`);

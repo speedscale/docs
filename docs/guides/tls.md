@@ -11,13 +11,11 @@ sidebar_position: 7
 3. Confirm that your language and TLS library are listed under [TLS Traffic Visibility](/reference/ebpf-traffic-collection#tls-traffic-visibility).
 
 ## Our app
-For this guide, we are using an app called `bq-app` that has an endpoint `/name/{state}` and makes calls out to Google's BigQuery on every inbound request.
+For this guide, we are using a Java app called `java-runc`. It serves endpoints such as `/treasury/max_interest` and `/api/projects`, and each inbound request makes an HTTPS call to `api.fiscaldata.treasury.gov` or `demo-api.trafficreplay.com`.
 
 ## Viewing traffic
 
-![Traffic](./tls/unrecognized.png)
-
-In the traffic viewer for our service, we can see individual requests and their headers and bodies. If a request is marked as TLS, Speedscale observed the connection but could not read the plaintext payload.
+In the traffic viewer for our service, we can see individual requests and their headers and bodies. If a request is marked as TLS in the **Tech** column, Speedscale observed the connection but could not read the plaintext payload.
 
 ## Enable TLS capture
 
@@ -26,14 +24,14 @@ The eBPF collector reads plaintext at supported TLS library boundaries. It does 
 Enable capture for the deployment:
 
 ```bash
-kubectl annotate deployment bq-app -n YOUR_NAMESPACE \
+kubectl annotate deployment java-runc -n YOUR_NAMESPACE \
   capture.speedscale.com/enabled="true" --overwrite
 ```
 
 Java workloads also require the Operator-managed JVMTI agent. Enable it before restarting the workload:
 
 ```bash
-kubectl annotate deployment bq-app -n YOUR_NAMESPACE \
+kubectl annotate deployment java-runc -n YOUR_NAMESPACE \
   capture.speedscale.com/java-agent="true" --overwrite
 ```
 
@@ -42,12 +40,12 @@ The Java agent changes the pod template so it can load inside the JVM. See [Java
 Restart long-lived workloads after enabling capture so the collector sees new TLS connections from the beginning:
 
 ```bash
-kubectl rollout restart deployment bq-app -n YOUR_NAMESPACE
+kubectl rollout restart deployment java-runc -n YOUR_NAMESPACE
 ```
 
-![Decoded](./tls/decoded.png)
+![The Traffic viewer filtered to java-runc and its two HTTPS hosts, listing decoded outbound GET requests to demo-api.trafficreplay.com and api.fiscaldata.treasury.gov](./tls/decoded.png)
 
-The previously opaque requests are now decoded. In this example, the application makes one POST request for the BigQuery query and two GET requests to paginate through the results.
+The outbound HTTPS requests are now decoded. In this example, `/treasury/max_interest` makes a GET request to `api.fiscaldata.treasury.gov`, and the `/api/projects` and `/api/categories` endpoints make GET requests to `demo-api.trafficreplay.com`.
 
 ## If traffic remains encrypted
 

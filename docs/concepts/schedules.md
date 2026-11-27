@@ -10,19 +10,15 @@ creating a fresh snapshot from a running service or running a replay.  Running
 replays on a schedule enables regular testing when running Speedscale inside
 CI/CD is not feasible.
 
-![schedules-list](schedules-list.png)
+![The Schedules list, with each schedule's status, service, tasks, schedule, next run and last run](schedules-list.png)
 
 ## Cron Expressions
 
-Speedscale schedules use a
-[cron expression](https://en.wikipedia.org/wiki/Cron) to define when the actions
-should run, but there are several predefined intervals to get up and running
-right away.
+Speedscale schedules use a [cron expression](https://en.wikipedia.org/wiki/Cron) to define when the actions should run, but there are several predefined intervals to get up and running right away. Click **Create schedule** and choose an **Interval**, or select **Custom** and enter a **Cron expression**.
 
-![scheduler-interval](scheduler-interval.png)
+![The Interval options on the new schedule page with Custom selected and a cron expression for 15:00 on weekdays](./scheduler-interval.png)
 
-The cron expression here, `0 15 * * 1-5`, defines a schedule which will run every
-day at 15:00 UTC, Monday through Friday.
+The cron expression here, `0 15 * * 1-5`, defines a schedule which will run every weekday at 15:00, Monday through Friday. Schedules run in UTC unless you set a **Time Zone**.
 
 Visit [crontab.guru](https://crontab.guru/) for help creating and
 understanding cron expressions.

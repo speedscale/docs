@@ -187,7 +187,7 @@ helm upgrade --install byoc-elasticsearch speedscale-byoc/elasticsearch \
   -n byoc-elasticsearch --create-namespace
 ```
 
-For Azure Blob, Datadog, Dynatrace, New Relic, and advanced values, select the chart from the [backend guide](./backends.md) and follow its README.
+For Azure Blob, Datadog, Dynatrace, New Relic, and advanced values, select the chart from the [backend guide](./backends.md) and follow its README. For Apache Iceberg tables, follow [Install the sink](./backends.md#install-the-sink).
 
 ## 4. Configure named Forwarder exporters
 

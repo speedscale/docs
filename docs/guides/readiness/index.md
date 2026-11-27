@@ -20,7 +20,7 @@ Use the scorecard when you want a replay to act as a release gate rather than a 
 
 The test config decides which families block the verdict and at which letter, so a team can start with the Speedscale defaults and tighten them as the service matures.
 
-Local proxymock replays and replays that never reach the Speedscale cloud are not graded; the scorecard needs the cloud analyzer.
+A local proxymock replay is graded by the same grader on up to seven families; Runtime health, Trend and Coverage need the cloud and read n/a. A replay that runs in a cluster without Speedscale cloud is not graded. See [Validate a service continuously](/proxymock/guides/continuous-validation) for a local gate built on it.
 
 ## Investigate a Not ready verdict
 

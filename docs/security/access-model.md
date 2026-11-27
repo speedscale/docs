@@ -95,4 +95,4 @@ Generative AI features are enabled or disabled for all users by the tenant owner
 
 ## SSO and roles
 
-When using [Single Sign-On (SSO)](./sso.md), users are provisioned with the Developer role by default. An Admin must manually promote users to Maintainer or Admin after their first login.
+When using [Single Sign-On (SSO)](./sso.md), users are provisioned with the Developer role by default. An Admin must manually promote users to Maintainer or Admin after their first login. To stop people in the organization from signing in any other way, an Admin can [require SSO](./require-sso.md).

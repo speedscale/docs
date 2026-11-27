@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
 ```
 
-Go applications using OpenSSL will respect the `SSL_CERT_FILE` environment variable to locate trusted root certificates. This environment variable will be automatically populated by the Speedscale operator.
+Go reads the `SSL_CERT_FILE` environment variable on Linux to locate trusted root certificates. This environment variable will be automatically populated by the Speedscale operator. Go 1.27 and later also reads it on macOS and Windows. Earlier versions use the keychain on macOS and the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust) on Windows.
 
 </TabItem>
 <TabItem value="nodejs" label="Node.js">
@@ -36,7 +36,7 @@ export SSL_CERT_FILE="${HOME}/.speedscale/certs/tls.crt"
 ```
 
 :::info
-.NET Core uses OpenSSL on Linux and Mac which respects default settings. The default Microsoft .NET Docker base images are Linux based which means these settings apply, however running Windows based workloads may require additional configuration.
+.NET uses OpenSSL on Linux, which respects `SSL_CERT_FILE`. The default Microsoft .NET Docker base images are Linux based, so this setting applies. On macOS, .NET uses the system keychain, where proxymock adds its CA by default. On Windows, .NET uses the [Windows certificate store](/proxymock/getting-started/language-reference#windows-tls-trust).
 :::
 
 </TabItem>

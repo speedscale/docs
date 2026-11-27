@@ -36,31 +36,23 @@ Here are a few examples:
 
 ## Endpoint Grouping
 
-Traditionally the
-[latency summary table](/guides/reports/performance-details.md#latency-summary)
-is provided with the raw endpoints observed during replay, but a common pattern
-in API design involves embedding identifiers as a part of the URL.  This leads
-to so many entries in the table that they are no longer useful.
+Traditionally the [latency summary table](/guides/reports/performance-details.md#latency-summary) is provided with the raw endpoints observed during replay, but a common pattern in API design involves embedding identifiers as a part of the URL. This leads to so many entries in the table that they are no longer useful.
 
-Here the `/user/{id}/registration` endpoint has a new entry for each user.
+Here the `/api/accounts/{id}/balance` endpoint has a new entry for each account.
 
-![summary-no-group](./endpoint-summary-no-group.png)
+![The Latency Summary by Endpoint table with a separate balance row for each account ID under /api/accounts](./endpoint-summary-no-group.png)
 
-By providing endpoint regex patterns in the test config we can group distinct
-URLs together into what we would call a single API endpoint in an API server.
+By providing endpoint regex patterns in the test config we can group distinct URLs together into what we would call a single API endpoint in an API server.
 
-Using regular expressions (regex) we can group endpoints so they make more sense.  Here
-we set the **Endpoint regex** pattern to `/user/.*/registration`.
+Using regular expressions (regex) we can group endpoints so they make more sense. On the **Traffic** tab, click **+** under **Endpoint Grouping** and set the **Endpoint regex** pattern to `/accounts/.*/balance`.
 
-![endpoint-grouping](./endpoint-grouping.png)
+![The Endpoint Grouping field on the Traffic tab with the endpoint regex /accounts/.*/balance](./endpoint-grouping.png)
 
-Now replays run with this test config will provide a more concise latency summary table.
-
-![summary-with-group](./endpoint-summary-grouped.png)
+Now replays run with this test config will provide a more concise latency summary table, grouping those requests under `/accounts/.*/balance` in place of a row for each account.
 
 And using the exact same pattern in [goals](../configuration/goals.md) will set thresholds for the endpoint group.
 
-![goals-endpoint-filter](./goals-endpoint-filter.png)
+![A goal on the Goals tab for 95th percentile latency over 500 ms with the endpoint filter /accounts/.*/balance](./goals-endpoint-filter.png)
 
 ### Regex Troubleshooting
 

@@ -32,22 +32,28 @@ End-to-end testing with Speedscale involves capturing production traffic, transf
 
 The screenshots in this section demonstrate:
 
-![JWT Token Example](end-to-end/jwt.png)
-*JWT token transformation and validation*
+![The Accuracy tab of a replay report, with passed and failed checks per request](end-to-end/accuracy.png)
+
+*Replay accuracy and failed checks*
 
 ![Login Flow](end-to-end/login-new.png)
+
 *User authentication flow capture*
 
 ![Transform Modal](end-to-end/login-transform-modal.png)
+
 *Data transformation configuration*
 
-![Traffic Analysis](end-to-end/traffic.png)
+![The Traffic viewer filtered to java-server, listing inbound and outbound calls](end-to-end/traffic.png)
+
 *Real-time traffic monitoring and analysis*
 
-![Test Reports](end-to-end/report.png)
+![The Overview of a replay report, with the Accuracy, Mocks and Goals checks](end-to-end/report.png)
+
 *Comprehensive test result reporting*
 
-![Mock Configuration](end-to-end/mocks.png)
+![The Mocked Responses tab, listing outbound calls answered by mocks](end-to-end/mocks.png)
+
 *Service mock setup and configuration*
 
 ## Getting Started

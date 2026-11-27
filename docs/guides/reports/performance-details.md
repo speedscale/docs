@@ -18,7 +18,7 @@ The performance view gives you information at a glance about how your code is pe
 * **Saturation** measured by looking at CPU and Memory from the environment
 * **Errors** there is an entire dashboard devoted to this information
 
-![Golden Signals](./report.png)
+![The Performance tab of a load test report, with latency percentiles, throughput, virtual users and CPU and memory](./report.png)
 
 ## Latency Summary
 
@@ -29,5 +29,5 @@ etc.  Use this information to identify slow API calls and set
 [goals](/reference/configuration/goals.md) to fail the report when an
 endpoint falls outside service level objectives.
 
-![Performance by URL](./latency-summary.png)
+![The Latency Summary by Endpoint table, with average, P50, P95 and P99 latency, RPS, count and errors for each endpoint](./latency-summary.png)
 

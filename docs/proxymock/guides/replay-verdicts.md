@@ -95,6 +95,60 @@ A difference from the recorded calls fails the goal verdict and exits `1`, and t
 
 Use the actual blueprint name. A violated `--fail-if` condition exits `1`. These metrics and blueprint checks answer different questions from the per-pair verdict; requiring a blueprint proves that at least one of its chains ran, not that the response was correct.
 
+## Failure bundles
+
+When a request, a browser journey or a gate fails, the replay writes a `replay-failures` directory beside `replay-verdict.json`. It holds one bundle per distinct failure, written for a coding agent to act on without reading the whole run.
+
+| File | Holds |
+| --- | --- |
+| `replay-failures/index.json` | The list to read first: every failure with its id, key, kind, title and likely cause, and the count per cause |
+| `replay-failures/<id>.json` | One failure's evidence |
+| `replay-failures/<id>.md` | A fix prompt: the same evidence as Markdown, with what to do and how to confirm the fix |
+
+The `id`, such as `request-01`, numbers a failure within one run. The `key` names it across runs: the same request failing again on a later run has the same key, whatever it answered, which is how [`ci tickets`](./cicd.md#file-tickets-for-regressions) finds a failure's ticket.
+
+Requests that fail the same way are one failure. The same endpoint, statuses and set of changed fields make one bundle, and `occurrences` counts the requests behind it. A known mismatch, one that fails the same way in `--baseline`, gets no bundle.
+
+### What a bundle holds
+
+A request's bundle names the recorded pair and the replayed pair, the recorded and observed status, and each response field that changed.
+
+It also lists `outboundCalls`: the calls the application made to its dependencies while the request was in flight, each marked `HIT`, `MISS` or `PASSTHROUGH`. They are read from the output of the `proxymock mock` run that overlaps the replay in time. Name that output with `--mocks-out` when it is outside the workspace. With more than one virtual user, a request's calls can include a neighbouring request's.
+
+A journey's bundle names the spec and line, the failed step, every step in order with the calls it made, the calls the recording could not answer, and the paths of the screenshot and trace.
+
+A gate's bundle names the goal or `--fail-if` condition, what it requires and what was observed.
+
+When the replay started the application and wrote its log with `--app-log-to`, the index also holds the last error lines of that log.
+
+### Likely cause
+
+Each bundle sorts its failure into one cause, with the evidence for it in `bucketReason` and what to do in `nextStep`:
+
+| `bucket` | Evidence | What to do |
+| --- | --- | --- |
+| `sut-regression` | The status changed, or a response field that was stable in the recording changed | Fix the application, or record again if the change is intended |
+| `mock-gap` | A dependency call made during the request was a `MISS` or a `PASSTHROUGH`, or a journey made a call the recording could not answer | Record the missing calls, or [tune the mocks](./mock-match-rate.md) |
+| `volatile-data` | The application refused the recorded credential with `401` or `403`, or every changed field holds a value that differs on each run | Apply a [recommendation](./recommendations.md) that keeps the value current |
+| `environment` | No response came back, or the browser could not reach the frontend | Check that the target is running and reachable |
+| `test-config` | A goal or `--fail-if` condition failed while every request replayed as recorded | Check the limit itself |
+
+A cloud replay report names causes with the same rules, on its Accuracy tab. See [Likely cause of a failed request](/guides/reports/README.md#likely-cause-of-a-failed-request).
+
+The cause is read from the evidence, not proven. A gate that fails beside failing requests is marked `sut-regression`, because it most likely reads their result. Fix the requests first.
+
+### Fix prompts
+
+A fix prompt is self-contained. It previews the recorded and replayed request and response with header names only, never header values, and with bodies cut to 1,024 bytes, so it can be handed to a model without carrying a credential or a whole payload. It names both pairs by path for an agent that needs the rest.
+
+It ends with how to confirm the fix. The same replay runs again with the failing run as `--baseline` and `--fail-on-new-mismatch`, so anything else the fix broke fails the run with exit `3`.
+
+That exit code does not say the failure itself is gone. A request that still fails the way it failed in the baseline is a known mismatch, which the baseline exempts, so the run can exit `0` with the bug still there. The prompt gives the `jq` command that reads the failed request's own row in the new `replay-verdict.json`: it is fixed when `match` is `pass` and `bodyMatch` is not `fail`.
+
+A run writes at most 50 bundles. Past that, `index.json` counts the rest in `omitted`. A run with no failures writes no `replay-failures` directory, and removes one an earlier run left in the same output directory.
+
+The same output directory also holds `replay-summary.md`, the result for a person. See [Report the result on the pull request](./cicd.md#report-the-result-on-the-pull-request).
+
 ## Output and load-mode limits
 
 Baseline, fix-verification, and [semantic comparison](./semantic-comparison.md) need response output. They cannot run with `--no-out` or `--load-test`. High-throughput load mode also omits `requests.result-match-pct` and `requests.response-match-pct` and cannot verify blueprint activity. `--no-out` omits `requests.response-match-pct` too.
