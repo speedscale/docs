@@ -10,7 +10,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 The readiness scorecard answers one question about a replay report: is this build ready for production?
 
-Every report that finishes with the status Passed or Missed Goals is graded once by the Speedscale cloud analyzer.
+Every report that finishes with the status Passed or Missed Goals is graded once by the Speedscale cloud analyzer, and every local `proxymock replay` run with a test config is graded by the same grader on your machine.
 
 The grade is a verdict word (Ready, Not ready or Still grading), a letter from A to F for each of ten metric families, a weighted score out of 4 and a confidence factor that says how much of production the replay vouches for.
 
@@ -20,7 +20,7 @@ Use the scorecard when you want a replay to act as a release gate rather than a 
 
 The test config decides which families block the verdict and at which letter, so a team can start with the Speedscale defaults and tighten them as the service matures.
 
-Local proxymock replays and replays that never reach the Speedscale cloud are not graded; the scorecard needs the cloud analyzer.
+A local replay grades seven of the ten families; see [Local replays](#local-replays).
 
 ## Investigate a Not ready verdict
 
@@ -72,6 +72,29 @@ The reports grid has an Image tag column and a filter on it, and the CLI lists t
 ```bash
 speedctl get reports --image-tag=v1.4.131
 ```
+
+## Local replays
+
+`proxymock replay` with `--test-config` grades the run with the same grader the cloud analyzer uses, and writes the scorecard to `replay-verdict.json` under `goals.readiness`, with `verdict` (`ready` or `not-ready`), `score`, `confidence`, `summary`, `gates` and `families`.
+
+The replay summary, `replay-summary.md`, shows the verdict in its Readiness row.
+
+Three families need data only Speedscale cloud has, so a local replay grades them n/a: Runtime health (Kubernetes events), Trend (the service's previous graded reports) and Coverage (production call volume).
+
+Performance compares the replay's p99 with the p99 of the recording, because a local run has no previous report to compare with.
+
+Mock fidelity and Data layer grade the calls `proxymock mock` answered, so pass the directory the mock wrote with `--mocks-out`; without it both grade n/a. Resilience also needs `--mocks-out` and chaos rules in the test config.
+
+```bash
+proxymock mock --in proxymock --out proxymock/results/mocks &
+proxymock replay --in proxymock --test-config regression --mocks-out proxymock/results/mocks -- ./start-your-service
+```
+
+Spec adherence reads the OpenAPI document at `proxymock/applications/<workload>.openapi.yaml`, or the file named with `--spec`.
+
+When the test config's `readiness` section marks a family as blocking, a Not ready verdict fails the replay with a nonzero exit code; otherwise the verdict is reported and does not change the exit code.
+
+The [proxymock GitHub Action and GitLab CI/CD component](../../proxymock/guides/cicd.md) pass `--mocks-out` for you.
 
 ## Reading the verdict with speedctl
 

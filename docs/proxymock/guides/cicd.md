@@ -105,6 +105,8 @@ Build the application before the replay starts, because the replay gives `app-co
 
 Most database drivers ignore proxy environment variables, so record and mock a database on a mapped port. Record with `proxymock record --map 65432=postgres://localhost:5432`, point the application at port 65432, and pass the same map to the mock with `mock-args: --map 65432=postgres://localhost:5432`.
 
+The replay also grades the run on the [readiness scorecard](../../guides/readiness/index.md#local-replays): Regression, Performance, Security, Mock fidelity and Data layer from a local run, plus Resilience with chaos rules and Spec adherence with an OpenAPI document. The verdict is in the replay summary and in `replay-verdict.json` under `goals.readiness`.
+
 Store your API key as the `SPEEDSCALE_API_KEY` repository secret on GitHub or as a masked CI/CD variable on GitLab. Add any build steps your application needs. For GitHub pull request comments, grant the workflow `pull-requests: write`. For GitLab merge request comments, add `PROXYMOCK_GITLAB_TOKEN` as a masked CI/CD variable using a project access token with the `api` scope.
 
 | Flag | Use it to |
