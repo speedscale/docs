@@ -29,10 +29,12 @@ The top of the tab counts the journeys that passed, failed and were skipped. Eac
 | Column | Shows |
 |---|---|
 | Result | **Passed**, **Failed** or **Skipped**, as Playwright reported it. A journey that ran out of time says **Timed out**. |
-| Journey | The test's title, with the first line of its error when it failed. |
+| Journey | The test's title, with the first line of its error when it failed, and its likely cause. |
 | Spec | The spec file and line the test starts on. |
 | Duration | How long the journey ran. |
 | Requests | How many requests the browser made during the journey. |
+
+A failed journey's likely cause is one of four: **Environment** when the browser could not start or reach the frontend, **Mock gap** when the frontend made a call the recording could not answer, and **App regression** when the real API answered differently from the recording or every call was answered as recorded, so the frontend itself, or a journey that no longer fits a changed page, is what remains. A locator that no longer finds its element can be repaired with [`proxymock journeys heal`](./explore-and-heal.md#heal-a-journey-whose-element-moved).
 
 ## Steps and the calls behind them
 

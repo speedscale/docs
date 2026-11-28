@@ -81,7 +81,7 @@ A visit usually starts with a sign-in that has no session yet, so proxymock puts
 - **A recording of the backend**, such as a snapshot of the API service, has the same calls inbound. proxymock answers them as outbound calls for the browser, and leaves out the page, its scripts and its images so the frontend loads as it is now.
 - **A recording made under another host**, such as an API recorded in a cluster as `orders.shop.svc`, needs `--api-host` set to the host the frontend calls, such as `--api-host localhost:8080`.
 
-- **An API on the frontend's own origin cannot be explored or healed.** The frontend loads straight from its own server, so a call to the same host and port, such as `/api` proxied by a dev server, would reach the real backend. proxymock stops with an error instead. Run the API on its own port, such as the frontend on `localhost:5173` and the API on `localhost:8080`.
+- **An API on the frontend's own origin works too.** When the dev server serves `/api` itself, proxymock sends the page's calls to that origin to the mock and loads only the pages and scripts from the dev server, so the backend behind it is never reached.
 
 If no action makes any recorded call, check that the frontend calls the recorded host, and that `--start` names the page the user started on.
 

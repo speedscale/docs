@@ -137,6 +137,14 @@ The causes are also in the report artifact `failure-causes.json`, which `proxymo
 
 The list and the counts appear for reports analyzed after causes were added. A report in [low data mode](#low-data-mode) counts only the failures it kept, and a report whose responder kept no calls cannot show a mock gap.
 
+## Likely cause of a failed journey or a missed goal
+
+A failed browser journey shows its likely cause on the **Journeys** tab, under its error, with the same causes a request has: the browser could not reach the frontend, a call the recording could not answer, or the real API or the frontend changed. See [Read the results](../browser-journeys/read-results.md#journeys).
+
+A missed goal shows its likely cause in the missed goals list on the **Overview** tab. When requests or journeys failed in the same run, the goal most likely reads their result, so fix those first. When every request replayed as recorded, the goal failed on its own threshold, such as a latency limit, and the cause is **Test config**: decide whether the limit is right for this run before treating the miss as a regression.
+
+Both are also in `failure-causes.json`, after the requests, with `kind` set to `journey` or `goal`.
+
 ## Outbound HTTP calls
 
 When the test config has an [`httpOutput`](/reference/configuration/assertions/httpoutput.md) assertion, the **Accuracy** tab shows **Outbound HTTP calls** next to the Kafka output and [SQL output](/reference/configuration/assertions/sqloutput.md) results.
